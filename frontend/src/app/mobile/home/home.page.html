@@ -1,0 +1,154 @@
+<ion-header [translucent]="true" class="instagram-header">
+  <ion-toolbar color="light">
+    <ion-title slot="start">
+      <div class="instagram-logo">
+        <h1>DFashion</h1>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="onNotificationsClick()">
+        <ion-icon name="heart-outline" size="large"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" (click)="onMessagesClick()">
+        <ion-icon name="chatbubble-outline" size="large"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading amazing fashion...</p>
+  </div>
+
+  <!-- Instagram-style Main Content -->
+  <div *ngIf="!isLoading" class="instagram-feed">
+
+    <!-- Stories Section -->
+    <div class="stories-section"
+         [style.display]="recentStories && recentStories.length > 0 ? 'block' : 'none'">
+      <swiper [config]="storySlideOpts" class="stories-slider">
+        <!-- Add Story Button -->
+        <ng-template swiperSlide>
+          <div class="story-item add-story" (click)="onAddStoryClick()">
+            <div class="story-avatar">
+              <div class="add-story-circle">
+                <ion-icon name="add" size="large"></ion-icon>
+              </div>
+            </div>
+            <span class="story-username">Your Story</span>
+          </div>
+        </ng-template>
+
+        <!-- User Stories -->
+        <ng-template swiperSlide *ngFor="let story of recentStories; let i = index; trackBy: trackByStoryId">
+          <div class="story-item" (click)="onStoryClick(story, i)">
+            <div class="story-avatar" [class.has-story]="true">
+              <img [src]="story.user?.avatar || 'assets/images/default-avatar.svg'" [alt]="story.user?.fullName">
+            </div>
+            <span class="story-username">{{ story.user?.username || 'User' }}</span>
+          </div>
+        </ng-template>
+      </swiper>
+    </div>
+
+    <!-- Instagram-style Posts Feed -->
+    <div class="posts-feed"
+         [style.display]="trendingPosts && trendingPosts.length > 0 ? 'block' : 'none'">
+      <div *ngFor="let post of trendingPosts; trackBy: trackByPostId" class="post-item">
+        <!-- Post Header -->
+        <div class="post-header">
+          <div class="user-info">
+            <img [src]="post.user?.avatar || 'assets/images/default-avatar.svg'"
+                 [alt]="post.user?.fullName" class="user-avatar">
+            <div class="user-details">
+              <span class="username">{{ post.user?.username || 'User' }}</span>
+              <span class="location" *ngIf="post.location">{{ post.location }}</span>
+            </div>
+          </div>
+          <ion-button fill="clear" size="small">
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </ion-button>
+        </div>
+
+        <!-- Post Image/Video -->
+        <div class="post-media">
+          <img [src]="post.featuredImage || 'assets/images/default-post.svg'"
+               [alt]="post.title" class="post-image">
+          <div class="media-overlay" *ngIf="post.media?.type === 'video'">
+            <ion-icon name="play-circle" size="large"></ion-icon>
+          </div>
+        </div>
+
+        <!-- Post Actions -->
+        <div class="post-actions">
+          <div class="action-buttons">
+            <ion-button fill="clear" size="small" (click)="onLikePost(post)">
+              <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'"
+                        [color]="post.isLiked ? 'danger' : 'dark'"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" (click)="onCommentPost(post)">
+              <ion-icon name="chatbubble-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" (click)="onSharePost(post)">
+              <ion-icon name="paper-plane-outline"></ion-icon>
+            </ion-button>
+          </div>
+          <ion-button fill="clear" size="small" (click)="onSavePost(post)" slot="end">
+            <ion-icon [name]="post.isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+          </ion-button>
+        </div>
+
+        <!-- Post Info -->
+        <div class="post-info">
+          <div class="likes-count" *ngIf="post.analytics?.likes">
+            <strong>{{ formatCount(post.analytics.likes) }} likes</strong>
+          </div>
+          <div class="post-caption">
+            <span class="username">{{ post.user?.username }}</span>
+            <span class="caption-text">{{ post.excerpt || post.title }}</span>
+          </div>
+          <div class="view-comments" *ngIf="post.analytics?.comments > 0">
+            <span (click)="onViewComments(post)">View all {{ post.analytics.comments }} comments</span>
+          </div>
+          <div class="post-time">
+            <span>{{ getTimeAgo(post.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggested Products (Instagram-style) -->
+    <div class="suggested-section" *ngIf="trendingProducts.length > 0">
+      <div class="section-title">
+        <h3>Suggested for you</h3>
+      </div>
+      <div class="suggested-grid">
+        <div *ngFor="let product of trendingProducts.slice(0, 6)"
+             class="suggested-item" (click)="onProductClick(product)">
+          <img [src]="getProductImage(product)" [alt]="product.name" class="suggested-image">
+          <div class="suggested-overlay">
+            <div class="product-price">₹{{ product.discountPrice || product.price }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load More Posts Button -->
+    <div class="load-more-section" *ngIf="trendingPosts.length > 0">
+      <ion-button fill="clear" expand="block" (click)="loadMorePosts()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Load more posts
+      </ion-button>
+    </div>
+
+    <!-- Instagram-style Bottom Spacing -->
+    <div class="instagram-bottom-spacing"></div>
+  </div>
+</ion-content>
