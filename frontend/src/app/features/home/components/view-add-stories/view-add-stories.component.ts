@@ -143,7 +143,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
 
     // Try to load from API first
     this.subscriptions.push(
-      this.http.get<any>('http://10.0.2.2:5000/api/v1/stories/active').subscribe({ // Direct IP for testing
+      this.http.get<any>('http://localhost:3001/api/v1/stories/active').subscribe({ // Updated to correct port
         next: (response) => {
           if (response.success && response.data && response.data.length > 0) {
             this.stories = response.data;

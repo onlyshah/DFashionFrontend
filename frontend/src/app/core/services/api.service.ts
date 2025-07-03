@@ -29,7 +29,7 @@ export interface ApiError {
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://10.0.2.2:5000/api'; // Direct IP for testing
+  private baseUrl = environment.apiUrl; // Use environment configuration
 
   constructor(
     private http: HttpClient,

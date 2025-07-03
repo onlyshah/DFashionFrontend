@@ -43,7 +43,7 @@ export interface UploadResponse {
   providedIn: 'root'
 })
 export class UploadService {
-  private baseUrl = 'http://10.0.2.2:5000/api/upload'; // Direct IP for testing
+  private baseUrl = 'http://localhost:3001/api/upload'; // Updated to correct port
   private uploadProgress$ = new BehaviorSubject<UploadProgress | null>(null);
 
   // Allowed file types and sizes

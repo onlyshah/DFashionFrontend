@@ -82,7 +82,7 @@ export interface CompetitorAnalysis {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://10.0.2.2:5000/api'; // Direct IP for testing
+  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
   private analyticsData$ = new BehaviorSubject<AnalyticsData | null>(null);
 
   constructor(private http: HttpClient) {}

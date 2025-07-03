@@ -67,7 +67,7 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class AdminApiService {
-  private apiUrl = 'http://10.0.2.2:5000/api'; // Direct IP for testing
+  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
 
   constructor(
     private http: HttpClient,

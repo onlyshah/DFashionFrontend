@@ -10,7 +10,7 @@ import { User, LoginRequest, RegisterRequest, AuthResponse } from '../models/use
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://10.0.2.2:5000/api'; // Direct IP for testing
+  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 

@@ -64,7 +64,7 @@ export interface UserAnalytics {
   providedIn: 'root'
 })
 export class RecommendationService {
-  private apiUrl = 'http://10.0.2.2:5000'; // Direct IP for mobile compatibility
+  private apiUrl = 'http://localhost:3001'; // Updated to correct port
   private userAnalytics$ = new BehaviorSubject<UserAnalytics | null>(null);
   private realTimeRecommendations$ = new BehaviorSubject<RecommendationProduct[]>([]);
   private userBehavior$ = new BehaviorSubject<any>(null);

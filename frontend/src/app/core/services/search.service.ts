@@ -82,7 +82,7 @@ export interface SearchAnalytics {
   providedIn: 'root'
 })
 export class SearchService {
-  private readonly API_URL = 'http://10.0.2.2:5000/api/v1'; // Direct IP for testing
+  private readonly API_URL = 'http://localhost:3001/api/v1'; // Updated to correct port
   
   // Search state management
   private searchQuerySubject = new BehaviorSubject<string>('');

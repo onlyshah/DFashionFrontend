@@ -93,7 +93,7 @@ export interface AdminProductResponse {
   providedIn: 'root'
 })
 export class AdminProductService {
-  private apiUrl = 'http://10.0.2.2:5000/api/admin'; // Direct IP for testing
+  private apiUrl = 'http://localhost:3001/api/admin'; // Updated to correct port
   private productsSubject = new BehaviorSubject<Product[]>([]);
   public products$ = this.productsSubject.asObservable();
 

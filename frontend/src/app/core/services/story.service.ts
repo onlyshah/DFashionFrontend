@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class StoryService {
-  private readonly API_URL = 'http://10.0.2.2:5000/api'; // Direct IP for testing
+  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
 
   constructor(private http: HttpClient) {}
 

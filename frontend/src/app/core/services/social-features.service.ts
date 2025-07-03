@@ -35,7 +35,7 @@ export interface SocialInteraction {
   providedIn: 'root'
 })
 export class SocialFeaturesService {
-  private apiUrl = 'http://10.0.2.2:5000/api/api/v1'; // Direct IP for testing
+  private apiUrl = 'http://localhost:3001/api/v1'; // Updated to correct port
   
   // Subjects for real-time updates
   private followingUpdatesSubject = new BehaviorSubject<any>(null);
