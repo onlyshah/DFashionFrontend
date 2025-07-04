@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-
 import { environment } from '../../../environments/environment';
 
 export interface WishlistItem {
@@ -45,7 +44,7 @@ export interface WishlistResponse {
   providedIn: 'root'
 })
 export class WishlistService {
-  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private readonly API_URL = environment.apiUrl;
   private wishlistItemsSubject = new BehaviorSubject<WishlistItem[]>([]);
   private wishlistCountSubject = new BehaviorSubject<number>(0);
 

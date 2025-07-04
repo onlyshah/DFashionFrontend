@@ -4,19 +4,78 @@
   height: fit-content;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   padding-right: 8px;
+
+  // Custom scrollbar for webkit browsers
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
 }
 
 // Styling for the new components in sidebar
 app-trending-products,
 app-featured-brands,
-app-new-arrivals {
+app-new-arrivals,
+app-suggested-for-you,
+app-top-fashion-influencers,
+app-shop-by-category {
   width: 100%;
   display: block;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+
+  // Instagram-like card styling
+  ::ng-deep {
+    .component-container {
+      background: #ffffff;
+      border: 1px solid #dbdbdb;
+      border-radius: 8px;
+      overflow: hidden;
+
+      .component-header {
+        padding: 16px;
+        border-bottom: 1px solid #efefef;
+
+        h3 {
+          margin: 0;
+          font-size: 16px;
+          font-weight: 600;
+          color: #262626;
+        }
+
+        .see-all {
+          color: #0095f6;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+
+      .component-content {
+        padding: 16px;
+      }
+    }
+  }
 }
 
 // Suggestions section with Trending Now styling

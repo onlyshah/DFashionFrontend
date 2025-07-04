@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-// Removed environment import - using direct IP for mobile compatibility
+import { environment } from '../../../environments/environment';
 
 export interface AnalyticsData {
   totalUsers: number;
@@ -82,7 +82,7 @@ export interface CompetitorAnalysis {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
+  private apiUrl = environment.apiUrl;
   private analyticsData$ = new BehaviorSubject<AnalyticsData | null>(null);
 
   constructor(private http: HttpClient) {}

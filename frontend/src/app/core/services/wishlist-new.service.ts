@@ -96,7 +96,7 @@ export interface WishlistSummary {
   providedIn: 'root'
 })
 export class WishlistNewService {
-  private apiUrl = 'http://localhost:3001/api/wishlist-new'; // Updated to correct port
+  private apiUrl = `${environment.apiUrl}/wishlist-new`;
   private wishlistSubject = new BehaviorSubject<Wishlist | null>(null);
   private wishlistSummarySubject = new BehaviorSubject<WishlistSummary>({
     totalItems: 0,

@@ -6,7 +6,12 @@ const config: CapacitorConfig = {
   webDir: 'dist/dfashion-frontend',
   server: {
     androidScheme: 'http',
-    cleartext: true
+    cleartext: true,
+    allowNavigation: [
+      'http://localhost:3001',
+      'http://10.0.2.2:3001',
+      'http://192.168.*:3001'
+    ]
   },
   plugins: {
     CapacitorHttp: {

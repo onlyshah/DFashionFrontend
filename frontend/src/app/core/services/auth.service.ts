@@ -4,13 +4,13 @@ import { BehaviorSubject, Observable, tap, catchError, throwError, of, map } fro
 import { Router } from '@angular/router';
 
 import { User, LoginRequest, RegisterRequest, AuthResponse } from '../models/user.model';
-// Removed environment import - using direct IP for mobile compatibility
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private readonly API_URL = environment.apiUrl;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
 

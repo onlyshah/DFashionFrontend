@@ -622,7 +622,7 @@ export class PostDetailComponent implements OnInit {
     this.loading = true;
     
     // Load post from real API
-    fetch(`http://10.0.2.2:5000/api/posts/${postId}`) // Direct IP for testing
+    fetch(`http://localhost:3001/api/posts/${postId}`) // Updated to correct port
       .then(response => response.json())
       .then(data => {
         if (data.success) {

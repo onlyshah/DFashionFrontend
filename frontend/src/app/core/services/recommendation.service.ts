@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, timer } from 'rxjs';
 import { map, catchError, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
 // Removed environment import - using direct IP for mobile compatibility
 
 export interface RecommendationProduct {
@@ -64,7 +65,7 @@ export interface UserAnalytics {
   providedIn: 'root'
 })
 export class RecommendationService {
-  private apiUrl = 'http://localhost:3001'; // Updated to correct port
+  private apiUrl = environment.apiUrl;
   private userAnalytics$ = new BehaviorSubject<UserAnalytics | null>(null);
   private realTimeRecommendations$ = new BehaviorSubject<RecommendationProduct[]>([]);
   private userBehavior$ = new BehaviorSubject<any>(null);

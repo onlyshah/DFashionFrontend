@@ -1,14 +1,57 @@
 <div class="home-container">
+  <!-- Mobile Header with Instagram-like styling -->
+  <div class="mobile-header" *ngIf="isMobile">
+    <div class="header-left">
+      <h1 class="app-logo">DFashion</h1>
+      <ion-icon name="chevron-down" class="logo-dropdown"></ion-icon>
+    </div>
+    <div class="header-right">
+      <ion-icon name="heart-outline" class="header-icon"></ion-icon>
+      <div class="menu-icon-container" (click)="toggleSidebar()">
+        <ion-icon name="menu" class="header-icon menu-icon"></ion-icon>
+        <div class="notification-dot" *ngIf="hasNotifications"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="content-grid">
     <!-- Main Feed -->
     <div class="main-content">
-     <app-view-add-stories></app-view-add-stories>
-
+      <app-view-add-stories></app-view-add-stories>
       <!-- Instagram-style Feed with Posts and Reels -->
       <app-feed></app-feed>
     </div>
 
-    <!-- Sidebar -->
-    <app-sidebar></app-sidebar>
+    <!-- Desktop Sidebar -->
+    <app-sidebar class="desktop-sidebar"></app-sidebar>
+  </div>
+
+  <!-- Mobile Sidebar Overlay -->
+  <div class="sidebar-overlay"
+       [class.active]="isSidebarOpen"
+       (click)="closeSidebar()"
+       *ngIf="isMobile">
+  </div>
+
+  <!-- Mobile Sidebar -->
+  <div class="mobile-sidebar"
+       [class.active]="isSidebarOpen"
+       *ngIf="isMobile">
+    <div class="sidebar-header">
+      <div class="user-profile">
+        <div class="profile-avatar">
+          <img src="assets/images/default-avatar.svg" alt="Profile">
+        </div>
+        <div class="profile-info">
+          <h3>Your Profile</h3>
+          <p>&#64;username</p>
+        </div>
+      </div>
+      <ion-icon name="close-outline" class="close-icon" (click)="closeSidebar()"></ion-icon>
+    </div>
+
+    <div class="sidebar-content">
+      <app-sidebar></app-sidebar>
+    </div>
   </div>
 </div>
