@@ -802,7 +802,56 @@
   }
 }
 
-// Content Grid
+// Web Layout: Stories Section + Two Column Layout
+.web-layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 20px 20px;
+  min-height: calc(100vh - 100px);
+
+  @media (min-width: 769px) {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Stories Section Container (Full Width)
+.stories-section-container {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+// Two Column Layout
+.two-column-layout {
+  display: flex;
+  gap: 20px;
+}
+
+// Post Section (Left Column)
+.post-section {
+  flex: 1;
+}
+
+// Sidebar Section (Right Column)
+.sidebar-section {
+  flex: 1;
+}
+
+// Mobile Layout: Original Layout
+.mobile-layout {
+  @media (min-width: 769px) {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+}
+
+// Content Grid (Mobile)
 .content-grid {
   display: grid;
   grid-template-columns: 1fr 400px;

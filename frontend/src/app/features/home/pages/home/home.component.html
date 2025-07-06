@@ -20,17 +20,41 @@
   <!-- Removed separate mobile stories section - using unified responsive stories component -->
 
 
-  <div class="content-grid">
-    <!-- Main Feed -->
-    <div class="main-content">
-      <!-- Responsive Stories Component (Works on all screen sizes) -->
+  <!-- Web Layout: Stories Section + Two Column Layout -->
+  <div class="web-layout" *ngIf="!isMobile">
+    <!-- Stories Section (Full Width) -->
+    <div class="stories-section-container">
       <app-view-add-stories></app-view-add-stories>
-      <!-- Instagram-style Feed with Posts and Reels -->
-      <app-feed></app-feed>
     </div>
 
-    <!-- Desktop Sidebar -->
-    <app-sidebar class="desktop-sidebar"></app-sidebar>
+    <!-- Two Column Layout -->
+    <div class="two-column-layout">
+      <!-- Post Section (Left Column) -->
+      <div class="post-section">
+        <app-feed></app-feed>
+      </div>
+
+      <!-- Sidebar Section (Right Column) -->
+      <div class="sidebar-section">
+        <app-sidebar class="desktop-sidebar"></app-sidebar>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Layout: Original Layout -->
+  <div class="mobile-layout" *ngIf="isMobile">
+    <div class="content-grid">
+      <!-- Main Feed -->
+      <div class="main-content">
+        <!-- Responsive Stories Component (Works on all screen sizes) -->
+        <app-view-add-stories></app-view-add-stories>
+        <!-- Instagram-style Feed with Posts and Reels -->
+        <app-feed></app-feed>
+      </div>
+
+      <!-- Desktop Sidebar -->
+      <app-sidebar class="desktop-sidebar"></app-sidebar>
+    </div>
   </div>
 
   <!-- Mobile Tab Menu Overlay -->

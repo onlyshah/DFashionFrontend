@@ -148,11 +148,27 @@
       <div class="ecommerce-section" *ngIf="post.products && post.products.length > 0">
         <div class="product-showcase">
           <div *ngFor="let product of post.products.slice(0, 3)" class="featured-product">
+
+            <!-- Web Layout: Original horizontal layout (image + details + actions) -->
+            <!-- Image for web -->
             <img [src]="product.image" [alt]="product.name" class="product-thumbnail">
+
+            <!-- Details for web -->
             <div class="product-details">
               <span class="product-name">{{ product.name }}</span>
               <span class="product-price">{{ formatPrice(product.price) }}</span>
             </div>
+
+            <!-- Mobile Layout: Image + Title inline (425px and below) -->
+            <div class="product-header">
+              <img [src]="product.image" [alt]="product.name" class="product-thumbnail">
+              <div class="product-details">
+                <span class="product-name">{{ product.name }}</span>
+                <span class="product-price">{{ formatPrice(product.price) }}</span>
+              </div>
+            </div>
+
+            <!-- Product Actions: Buttons (inline for web, below for mobile) -->
             <div class="product-actions">
               <button class="shop-btn" (click)="viewProduct(product)">Shop</button>
               <button class="cart-btn" (click)="addToCart(product)">

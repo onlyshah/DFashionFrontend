@@ -140,6 +140,34 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     }
   };
 
+  // Web Layout Carousel Options
+  carouselOptions: OwlOptions = {
+    loop: false,
+    mouseDrag: true,
+    touchDrag: true,
+    pullDrag: true,
+    dots: false,
+    navSpeed: 700,
+    navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+    responsive: {
+      0: {
+        items: 3,
+        nav: false,
+        margin: 8
+      },
+      600: {
+        items: 4,
+        nav: true,
+        margin: 10
+      },
+      768: {
+        items: 5,
+        nav: true,
+        margin: 12
+      }
+    }
+  };
+
   private subscriptions: Subscription[] = [];
 
   constructor(
