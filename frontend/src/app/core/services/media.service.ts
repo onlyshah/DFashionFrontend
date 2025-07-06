@@ -141,13 +141,13 @@ export class MediaService {
    * Get replacement media URL for broken local paths
    */
   private getReplacementMediaUrl(originalUrl: string, type: 'user' | 'product' | 'post' | 'story'): string {
-    // Map broken local URLs to working Unsplash URLs based on content
+    // Map broken local URLs to working local assets based on content
     const urlMappings: { [key: string]: string } = {
-      'summer-collection': 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=800',
-      'behind-scenes': 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800',
-      'customer-spotlight': 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=800',
-      'styling-tips': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800',
-      'design': 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=800'
+      'summer-collection': '/assets/images/placeholder-product.svg',
+      'behind-scenes': '/assets/images/placeholder.svg',
+      'customer-spotlight': '/assets/images/default-avatar.svg',
+      'styling-tips': '/assets/images/placeholder.svg',
+      'design': '/assets/images/placeholder.svg'
     };
 
     // Try to match content from filename

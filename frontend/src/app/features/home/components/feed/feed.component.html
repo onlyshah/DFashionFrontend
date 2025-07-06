@@ -17,6 +17,11 @@
 
   <!-- Posts and Reels -->
   <div *ngIf="!loading" class="feed-posts">
+    <!-- Debug info -->
+    <div *ngIf="posts.length === 0" class="no-posts-message">
+      <p>No posts available. Loading posts...</p>
+    </div>
+
     <article *ngFor="let post of posts; trackBy: trackByPostId" class="instagram-post">
 
       <!-- Post Header -->

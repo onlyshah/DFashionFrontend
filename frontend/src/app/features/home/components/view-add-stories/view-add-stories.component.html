@@ -1,5 +1,11 @@
 <!-- Instagram-style Stories Bar -->
 <div class="stories-container">
+  <!-- Web Stories Header (Desktop/Tablet Only) -->
+  <div class="stories-header">
+    <h3 class="stories-title">Stories</h3>
+    <p class="stories-subtitle">Watch stories from people you follow</p>
+  </div>
+
   <!-- Loading State -->
   <div *ngIf="isLoadingStories" class="stories-loading">
     <div *ngFor="let item of [1,2,3,4,5]" class="story-skeleton">
@@ -8,11 +14,11 @@
     </div>
   </div>
 
-  <!-- Stories Section -->
+  <!-- E-commerce Stories Section - Static Add Story + Slider -->
   <div class="stories-section" *ngIf="!isLoadingStories">
-    <!-- Add Story Button (Static - Outside Slider) -->
+    <!-- Static Add Story (Outside Slider) -->
     <div class="add-story-static">
-      <div class="story-item add-story-item" (click)="openAddStoryModal()">
+      <div class="story-slide add-story-slide" (click)="openAddStoryModal()">
         <div class="story-avatar-container">
           <div class="add-story-avatar">
             <div class="add-story-icon">
@@ -25,25 +31,33 @@
       </div>
     </div>
 
-    <!-- Stories Slider Container -->
+    <!-- Stories Slider (Only Brand/User Stories) -->
     <div class="stories-slider-wrapper">
-      <!-- Owl Carousel Stories Slider -->
       <div class="stories-slider-container">
         <owl-carousel-o
           [options]="customOptions"
           (initialized)="onInitialized($event)"
           (changed)="onSlideChanged($event)">
 
-          <!-- User Stories -->
+          <!-- Brand/User Stories Only -->
           <ng-container *ngFor="let story of stories; let i = index">
             <ng-template carouselSlide>
-              <div class="story-slide" (click)="openStories(i)">
+              <div class="story-slide brand-story-slide" (click)="openStories(i)">
                 <div class="story-avatar-container">
                   <div class="story-avatar"
                        [style.background-image]="'url(' + story.user.avatar + ')'">
+                    <!-- E-commerce Badge for Brand Stories -->
+                    <div class="brand-badge" *ngIf="story.user.isBrand">
+                      <i class="fas fa-crown"></i>
+                    </div>
+                    <!-- New Product Badge -->
+                    <div class="new-product-badge" *ngIf="story.hasNewProducts">
+                      <span>NEW</span>
+                    </div>
                   </div>
                   <div class="story-ring"
-                       [class.viewed]="story.isViewed">
+                       [class.viewed]="story.isViewed"
+                       [class.brand-ring]="story.user.isBrand">
                   </div>
                 </div>
                 <div class="story-username">{{ story.user.username }}</div>

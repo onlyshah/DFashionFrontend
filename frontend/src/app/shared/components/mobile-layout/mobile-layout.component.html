@@ -14,7 +14,7 @@
 
       <!-- Logo -->
       <div class="header-logo" routerLink="/">
-        <img src="assets/images/logo.png" alt="DFashion" class="logo-image">
+        <img src="assets/images/logo.svg" alt="DFashion" class="logo-image">
         <span class="logo-text">DFashion</span>
       </div>
 
@@ -65,7 +65,7 @@
       <!-- User Profile Section -->
       <div class="menu-profile" *ngIf="currentUser">
         <div class="profile-avatar">
-          <img [src]="currentUser.avatar || 'assets/images/default-avatar.png'" 
+          <img [src]="currentUser.avatar || 'assets/images/default-avatar.svg'"
                [alt]="currentUser.fullName">
         </div>
         <div class="profile-info">
@@ -101,14 +101,24 @@
           <span>Categories</span>
         </a>
         
-        <a routerLink="/trending" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/trending')">
-          <i class="fas fa-fire"></i>
-          <span>Trending</span>
+        <a routerLink="/trending-now" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/trending-now')">
+          <img src="assets/svg/trending-now.svg" alt="Trending Now" class="menu-icon">
+          <span>Trending Now</span>
         </a>
-        
-        <a routerLink="/brands" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/brands')">
-          <i class="fas fa-tags"></i>
-          <span>Brands</span>
+
+        <a routerLink="/featured-brands" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/featured-brands')">
+          <img src="assets/svg/featured-brands.svg" alt="Featured Brands" class="menu-icon">
+          <span>Featured Brands</span>
+        </a>
+
+        <a routerLink="/new-arrivals" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/new-arrivals')">
+          <img src="assets/svg/new-arrivals.svg" alt="New Arrivals" class="menu-icon">
+          <span>New Arrivals</span>
+        </a>
+
+        <a routerLink="/trending" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/trending')">
+          <img src="assets/svg/trending.svg" alt="Trending" class="menu-icon">
+          <span>Trending</span>
         </a>
         
         <a routerLink="/offers" (click)="closeMenu()" class="menu-item" [class.active]="isCurrentRoute('/offers')">
@@ -194,10 +204,12 @@
       <span>Shop</span>
     </a>
     
-    <a routerLink="/search" class="nav-item search-nav" [class.active]="isCurrentRoute('/search')">
-      <i class="fas fa-search"></i>
-      <span>Search</span>
-    </a>
+    <button class="nav-item create-nav" (click)="toggleCreateMenu()" [class.active]="isCreateMenuOpen">
+      <div class="create-btn">
+        <i class="fas fa-plus"></i>
+      </div>
+      <span>Create</span>
+    </button>
     
     <a routerLink="/wishlist" class="nav-item" [class.active]="isCurrentRoute('/wishlist')">
       <i class="fas fa-heart"></i>
@@ -205,11 +217,57 @@
       <span *ngIf="wishlistCount > 0" class="nav-badge">{{ formatCount(wishlistCount) }}</span>
     </a>
     
-    <a routerLink="/profile" class="nav-item" [class.active]="isCurrentRoute('/profile')">
-      <i class="fas fa-user"></i>
+    <a routerLink="/profile" class="nav-item profile-nav" [class.active]="isCurrentRoute('/profile')">
+      <div class="profile-avatar" [style.background-image]="'url(' + getCurrentUserAvatar() + ')'">
+        <i class="fas fa-user" *ngIf="!getCurrentUserAvatar()"></i>
+      </div>
       <span>Profile</span>
     </a>
   </nav>
+
+  <!-- Create Menu Popup -->
+  <div class="create-menu-overlay" [class.active]="isCreateMenuOpen" (click)="closeCreateMenu()">
+    <div class="create-menu" [class.active]="isCreateMenuOpen" (click)="$event.stopPropagation()">
+      <div class="create-menu-header">
+        <h3>Create New</h3>
+        <button class="close-btn" (click)="closeCreateMenu()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="create-options">
+        <button class="create-option" (click)="createReel()">
+          <div class="option-icon">
+            <img src="assets/svg/create-reel.svg" alt="Create Reel">
+          </div>
+          <div class="option-content">
+            <h4>Reel</h4>
+            <p>Create a short video</p>
+          </div>
+        </button>
+
+        <button class="create-option" (click)="createStory()">
+          <div class="option-icon">
+            <img src="assets/svg/create-story.svg" alt="Create Story">
+          </div>
+          <div class="option-content">
+            <h4>Story</h4>
+            <p>Share a moment</p>
+          </div>
+        </button>
+
+        <button class="create-option" (click)="createPost()">
+          <div class="option-icon">
+            <img src="assets/svg/create-post.svg" alt="Create Post">
+          </div>
+          <div class="option-content">
+            <h4>Post</h4>
+            <p>Share a photo or video</p>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Mobile Footer -->
   <footer *ngIf="showFooter && !showBottomNav" class="mobile-footer">

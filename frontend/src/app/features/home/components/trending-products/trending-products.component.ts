@@ -37,6 +37,13 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   isAutoSliding = true;
   isPaused = false;
 
+  // Section interaction properties
+  isSectionLiked = false;
+  isSectionBookmarked = false;
+  sectionLikes = 365;
+  sectionComments = 105;
+  isMobile = false;
+
   // Owl Carousel Options with Auto-sliding
   carouselOptions: OwlOptions = {
     loop: true,
@@ -103,6 +110,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
+    this.checkMobileDevice();
   }
 
   ngOnDestroy() {
@@ -335,5 +343,57 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.slideOffset = 0;
       this.startAutoSlide();
     }, 100);
+  }
+
+  // Section interaction methods
+  toggleSectionLike() {
+    this.isSectionLiked = !this.isSectionLiked;
+    if (this.isSectionLiked) {
+      this.sectionLikes++;
+    } else {
+      this.sectionLikes--;
+    }
+  }
+
+  toggleSectionBookmark() {
+    this.isSectionBookmarked = !this.isSectionBookmarked;
+  }
+
+  openComments() {
+    // Open comments modal/sheet
+    console.log('Opening comments for trending products section');
+  }
+
+  shareSection() {
+    // Share section functionality
+    if (navigator.share) {
+      navigator.share({
+        title: 'Trending Products',
+        text: 'Check out these trending fashion products!',
+        url: window.location.href
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(window.location.href);
+      console.log('Link copied to clipboard');
+    }
+  }
+
+  openMusicPlayer() {
+    // Open music player for section
+    console.log('Opening music player for trending products');
+  }
+
+  formatCount(count: number): string {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + 'M';
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+  }
+
+  private checkMobileDevice() {
+    this.isMobile = window.innerWidth <= 768;
   }
 }

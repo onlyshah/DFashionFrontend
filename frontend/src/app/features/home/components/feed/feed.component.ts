@@ -47,10 +47,10 @@ export class FeedComponent implements OnInit {
           _id: 'user-1',
           username: 'ai_fashionista_maya',
           fullName: 'Maya Chen',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150'
+          avatar: 'assets/images/default-avatar.svg'
         },
         content: 'Sustainable fashion is the future! 🌱✨ This eco-friendly dress is made from recycled materials and looks absolutely stunning. #SustainableFashion #EcoFriendly #OOTD',
-        mediaUrl: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600',
+        mediaUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop',
         mediaType: 'image',
         location: 'Mumbai, India',
         likes: 1247,
@@ -66,7 +66,7 @@ export class FeedComponent implements OnInit {
             _id: 'prod-1',
             name: 'Eco-Friendly Summer Dress',
             price: 2499,
-            image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=200'
+            image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop'
           }
         ]
       },
@@ -77,10 +77,10 @@ export class FeedComponent implements OnInit {
           _id: 'user-3',
           username: 'ai_trendsetter_zara',
           fullName: 'Zara Patel',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150'
+          avatar: 'assets/images/default-avatar.svg'
         },
         content: 'Ethnic fusion at its finest! Traditional meets modern ✨ This kurti is perfect for any occasion.',
-        mediaUrl: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600',
+        mediaUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop',
         mediaType: 'image',
         location: 'Bangalore, India',
         likes: 2156,
@@ -96,7 +96,7 @@ export class FeedComponent implements OnInit {
             _id: 'prod-3',
             name: 'Designer Ethnic Kurti',
             price: 1899,
-            image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=200'
+            image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop'
           }
         ]
       }

@@ -1,22 +1,29 @@
-<div class="home-container">
+<div class="home-container" [class.mobile-instagram]="isMobile" [class.sidebar-open]="isSidebarOpen" [class.mobile]="isMobile">
   <!-- Mobile Header with Instagram-like styling -->
-  <div class="mobile-header" *ngIf="isMobile">
+  <div class="mobile-header instagram-style" *ngIf="isMobile">
     <div class="header-left">
       <h1 class="app-logo">DFashion</h1>
       <ion-icon name="chevron-down" class="logo-dropdown"></ion-icon>
     </div>
     <div class="header-right">
       <ion-icon name="heart-outline" class="header-icon"></ion-icon>
+      <div class="menu-icon-container" (click)="toggleTabMenu()">
+        <ion-icon name="grid-outline" class="header-icon menu-icon"></ion-icon>
+        <div class="notification-dot" *ngIf="hasNotifications">3</div>
+      </div>
       <div class="menu-icon-container" (click)="toggleSidebar()">
-        <ion-icon name="menu" class="header-icon menu-icon"></ion-icon>
-        <div class="notification-dot" *ngIf="hasNotifications"></div>
+        <ion-icon name="menu-outline" class="header-icon menu-icon"></ion-icon>
       </div>
     </div>
   </div>
 
+  <!-- Removed separate mobile stories section - using unified responsive stories component -->
+
+
   <div class="content-grid">
     <!-- Main Feed -->
     <div class="main-content">
+      <!-- Responsive Stories Component (Works on all screen sizes) -->
       <app-view-add-stories></app-view-add-stories>
       <!-- Instagram-style Feed with Posts and Reels -->
       <app-feed></app-feed>
@@ -26,11 +33,84 @@
     <app-sidebar class="desktop-sidebar"></app-sidebar>
   </div>
 
+  <!-- Mobile Tab Menu Overlay -->
+  <div class="tab-menu-overlay"
+       [class.active]="isTabMenuOpen"
+       (click)="closeTabMenu()"
+       *ngIf="isMobile">
+  </div>
+
   <!-- Mobile Sidebar Overlay -->
   <div class="sidebar-overlay"
        [class.active]="isSidebarOpen"
        (click)="closeSidebar()"
        *ngIf="isMobile">
+  </div>
+
+  <!-- Instagram-Style Tab Menu -->
+  <div class="instagram-tab-menu"
+       [class.active]="isTabMenuOpen"
+       *ngIf="isMobile">
+    <div class="tab-menu-header">
+      <h3>Discover</h3>
+      <ion-icon name="close-outline" class="close-icon" (click)="closeTabMenu()"></ion-icon>
+    </div>
+
+    <div class="tab-menu-grid">
+      <!-- Trending Products Tab -->
+      <div class="tab-item" (click)="openSidebarTab('trending')">
+        <div class="tab-icon trending">
+          <ion-icon name="trending-up"></ion-icon>
+        </div>
+        <span class="tab-label">Trending</span>
+        <div class="tab-tooltip">Hot products right now</div>
+      </div>
+
+      <!-- Featured Brands Tab -->
+      <div class="tab-item" (click)="openSidebarTab('brands')">
+        <div class="tab-icon brands">
+          <ion-icon name="diamond"></ion-icon>
+        </div>
+        <span class="tab-label">Brands</span>
+        <div class="tab-tooltip">Top fashion brands</div>
+      </div>
+
+      <!-- New Arrivals Tab -->
+      <div class="tab-item" (click)="openSidebarTab('arrivals')">
+        <div class="tab-icon arrivals">
+          <ion-icon name="sparkles"></ion-icon>
+        </div>
+        <span class="tab-label">New</span>
+        <div class="tab-tooltip">Latest arrivals</div>
+      </div>
+
+      <!-- Suggested for You Tab -->
+      <div class="tab-item" (click)="openSidebarTab('suggested')">
+        <div class="tab-icon suggested">
+          <ion-icon name="heart"></ion-icon>
+        </div>
+        <span class="tab-label">For You</span>
+        <div class="tab-tooltip">Personalized picks</div>
+      </div>
+
+      <!-- Fashion Influencers Tab -->
+      <div class="tab-item" (click)="openSidebarTab('influencers')">
+        <div class="tab-icon influencers">
+          <ion-icon name="people"></ion-icon>
+        </div>
+        <span class="tab-label">Influencers</span>
+        <div class="tab-tooltip">Top fashion creators</div>
+      </div>
+
+      <!-- Categories Tab -->
+      <div class="tab-item" (click)="openSidebarTab('categories')">
+        <div class="tab-icon categories">
+          <ion-icon name="grid"></ion-icon>
+        </div>
+        <span class="tab-label">Categories</span>
+        <div class="tab-tooltip">Browse by category</div>
+      </div>
+    </div>
   </div>
 
   <!-- Mobile Sidebar -->
@@ -52,6 +132,76 @@
 
     <div class="sidebar-content">
       <app-sidebar></app-sidebar>
+    </div>
+  </div>
+
+  <!-- Sidebar Content Modal -->
+  <div class="sidebar-content-modal"
+       [class.active]="isSidebarContentOpen"
+       *ngIf="isMobile">
+    <div class="modal-header">
+      <h3>{{currentSidebarTitle}}</h3>
+      <ion-icon name="close-outline" class="close-icon" (click)="closeSidebarContent()"></ion-icon>
+    </div>
+
+    <div class="modal-content">
+      <!-- Trending Products Section -->
+      <div *ngIf="currentSidebarTab === 'trending'" class="sidebar-section">
+        <app-trending-products></app-trending-products>
+      </div>
+
+      <!-- Featured Brands Section -->
+      <div *ngIf="currentSidebarTab === 'brands'" class="sidebar-section">
+        <app-featured-brands></app-featured-brands>
+      </div>
+
+      <!-- New Arrivals Section -->
+      <div *ngIf="currentSidebarTab === 'arrivals'" class="sidebar-section">
+        <app-new-arrivals></app-new-arrivals>
+      </div>
+
+      <!-- Suggested for you -->
+      <div *ngIf="currentSidebarTab === 'suggested'" class="sidebar-section">
+        <app-suggested-for-you></app-suggested-for-you>
+      </div>
+
+      <!-- Top Fashion Influencers -->
+      <div *ngIf="currentSidebarTab === 'influencers'" class="sidebar-section">
+        <app-top-fashion-influencers></app-top-fashion-influencers>
+      </div>
+
+      <!-- Categories (placeholder) -->
+      <div *ngIf="currentSidebarTab === 'categories'" class="sidebar-section">
+        <div class="categories-grid">
+          <div class="category-item" *ngFor="let category of categories">
+            <div class="category-icon">
+              <ion-icon [name]="category.icon"></ion-icon>
+            </div>
+            <span>{{category.name}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instagram Bottom Navigation (Mobile Only) -->
+  <div class="instagram-bottom-nav" *ngIf="isMobile">
+    <div class="nav-item active">
+      <ion-icon name="home"></ion-icon>
+    </div>
+    <div class="nav-item">
+      <ion-icon name="search"></ion-icon>
+    </div>
+    <div class="nav-item">
+      <ion-icon name="add-circle-outline"></ion-icon>
+    </div>
+    <div class="nav-item">
+      <ion-icon name="play-circle-outline"></ion-icon>
+    </div>
+    <div class="nav-item">
+      <div class="profile-avatar-nav">
+        <img src="assets/images/default-avatar.svg" alt="Profile">
+      </div>
     </div>
   </div>
 </div>

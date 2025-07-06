@@ -32,6 +32,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
   
   isMenuOpen = false;
   isSearchOpen = false;
+  isCreateMenuOpen = false;
   searchQuery = '';
 
   private subscriptions: Subscription[] = [];
@@ -260,6 +261,45 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   onTouchEnd(event: TouchEvent) {
     // Handle touch end for custom gestures
+  }
+
+  // Create Menu Methods
+  toggleCreateMenu() {
+    this.isCreateMenuOpen = !this.isCreateMenuOpen;
+    if (this.isCreateMenuOpen) {
+      this.closeMenu();
+      this.isSearchOpen = false;
+    }
+  }
+
+  closeCreateMenu() {
+    this.isCreateMenuOpen = false;
+  }
+
+  createReel() {
+    this.closeCreateMenu();
+    // Navigate to create reel page
+    console.log('Creating reel...');
+    // TODO: Implement navigation to reel creation
+  }
+
+  createStory() {
+    this.closeCreateMenu();
+    // Navigate to create story page
+    console.log('Creating story...');
+    // TODO: Implement navigation to story creation
+  }
+
+  createPost() {
+    this.closeCreateMenu();
+    // Navigate to create post page
+    console.log('Creating post...');
+    // TODO: Implement navigation to post creation
+  }
+
+  // Get current user avatar
+  getCurrentUserAvatar(): string {
+    return this.currentUser?.avatar || '/assets/images/default-avatar.svg';
   }
 
   // Performance Optimization

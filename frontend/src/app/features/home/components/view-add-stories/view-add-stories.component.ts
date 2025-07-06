@@ -15,6 +15,8 @@ export interface Story {
     username: string;
     fullName: string;
     avatar: string;
+    isBrand?: boolean; // E-commerce: Brand account indicator
+    isVerified?: boolean; // E-commerce: Verified account
   };
   mediaUrl: string;
   mediaType: 'image' | 'video';
@@ -24,6 +26,7 @@ export interface Story {
   views: number;
   isActive: boolean;
   isViewed?: boolean; // Added for story viewing state
+  hasNewProducts?: boolean; // E-commerce: Has new products
   products?: Array<{
     _id: string;
     name: string;
@@ -48,6 +51,9 @@ export interface CurrentUser {
 })
 export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   @ViewChild('storiesContainer', { static: false }) storiesContainer!: ElementRef;
+
+  // Mobile detection
+  isMobile = false;
   @ViewChild('feedCover', { static: false }) feedCover!: ElementRef;
   @ViewChild('storiesSlider', { static: false }) storiesSlider!: ElementRef;
 
@@ -78,40 +84,60 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   isAutoPlaying = true;
   currentSlideIndex = 0;
 
-  // Owl Carousel Options
+  // E-commerce Optimized Carousel Options - Mobile Responsive
   customOptions: OwlOptions = {
-    loop: true,
+    loop: false, // Don't loop for better UX with Add Story first
     mouseDrag: true,
-    touchDrag: true,
-    pullDrag: false,
+    touchDrag: true, // Essential for mobile
+    pullDrag: true, // Allow pull drag on mobile
     dots: false,
-    navSpeed: 700,
+    nav: false, // Hide nav on mobile, show on desktop
+    navSpeed: 500,
     navText: ['<i class="fas fa-chevron-left"></i>', '<i class="fas fa-chevron-right"></i>'],
+    margin: 8, // Default margin
+    stagePadding: 10, // Add padding for better mobile UX
+    autoplay: false,
+    autoplayHoverPause: true,
+    slideBy: 1, // Slide one item at a time
+    freeDrag: true, // Allow free dragging on mobile
     responsive: {
       0: {
-        items: 3,
-        nav: false
+        items: 3, // 3 stories visible on small mobile
+        nav: false,
+        margin: 6,
+        stagePadding: 15,
+        touchDrag: true,
+        mouseDrag: true,
+        pullDrag: true
       },
       400: {
-        items: 4,
-        nav: false
+        items: 4, // 4 stories on larger mobile
+        nav: false,
+        margin: 8,
+        stagePadding: 12,
+        touchDrag: true,
+        mouseDrag: true,
+        pullDrag: true
       },
-      740: {
-        items: 5,
-        nav: true
+      600: {
+        items: 5, // 5 stories on tablet
+        nav: false,
+        margin: 10,
+        stagePadding: 10
+      },
+      768: {
+        items: 6, // 6 stories on large tablet
+        nav: true,
+        margin: 12,
+        stagePadding: 0
       },
       940: {
-        items: 6,
-        nav: true
+        items: 7, // 7 stories on desktop
+        nav: true,
+        margin: 12,
+        stagePadding: 0
       }
-    },
-    nav: true,
-    margin: 2, // Minimal gap between items
-    stagePadding: 0,
-    autoplay: true, // Enable auto sliding
-    autoplayTimeout: 4000, // 4 seconds between slides
-    autoplayHoverPause: true, // Pause on hover
-    autoplaySpeed: 1000 // Animation speed for auto sliding
+    }
   };
 
   private subscriptions: Subscription[] = [];
@@ -124,6 +150,9 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    // Check screen size for mobile detection
+    this.checkScreenSize();
+
     // Only load stories if none are provided as input
     if (!this.stories || this.stories.length === 0) {
       this.loadStories();
@@ -141,24 +170,112 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   loadStories() {
     this.isLoadingStories = true;
 
-    // Try to load from API first
-    this.subscriptions.push(
-      this.http.get<any>('http://localhost:3001/api/v1/stories/active').subscribe({ // Updated to correct port
-        next: (response) => {
-          if (response.success && response.data && response.data.length > 0) {
-            this.stories = response.data;
-          } else {
-            this.stories = []; // No fallback stories - only use database data
-          }
-          this.isLoadingStories = false;
+    // Use mock stories data for now since stories API is not implemented
+    this.stories = [
+      {
+        _id: '1',
+        user: {
+          _id: 'user1',
+          username: 'zara',
+          fullName: 'Zara Official',
+          avatar: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop&crop=face',
+          isBrand: true,
+          isVerified: true
         },
-        error: (error) => {
-          console.error('Error loading stories:', error);
-          this.stories = []; // No fallback stories - only use database data
-          this.isLoadingStories = false;
-        }
-      })
-    );
+        mediaUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop',
+        mediaType: 'image',
+        caption: 'New Summer Collection 🌞',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+        expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(), // 22 hours from now
+        views: 1250,
+        hasNewProducts: true,
+        products: [
+          {
+            _id: 'prod1',
+            name: 'Summer Dress',
+            price: 89.99,
+            image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=200&h=200&fit=crop'
+          }
+        ],
+        isActive: true,
+        isViewed: false
+      },
+      {
+        _id: '2',
+        user: {
+          _id: 'user2',
+          username: 'nike',
+          fullName: 'Nike',
+          avatar: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop&crop=center',
+          isBrand: true,
+          isVerified: true
+        },
+        mediaUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop',
+        mediaType: 'image',
+        caption: 'Just Do It ✨',
+        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
+        expiresAt: new Date(Date.now() + 20 * 60 * 60 * 1000).toISOString(), // 20 hours from now
+        views: 2340,
+        hasNewProducts: false,
+        products: [
+          {
+            _id: 'prod2',
+            name: 'Air Max Sneakers',
+            price: 129.99,
+            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop'
+          }
+        ],
+        isActive: true,
+        isViewed: false
+      },
+      {
+        _id: '3',
+        user: {
+          _id: 'user3',
+          username: 'adidas',
+          fullName: 'Adidas',
+          avatar: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center',
+          isBrand: true,
+          isVerified: true
+        },
+        mediaUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=600&fit=crop',
+        mediaType: 'image',
+        caption: 'Impossible is Nothing 🔥',
+        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+        expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(), // 18 hours from now
+        views: 1890,
+        hasNewProducts: true,
+        products: [
+          {
+            _id: 'prod3',
+            name: 'Ultraboost Shoes',
+            price: 159.99,
+            image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop'
+          }
+        ],
+        isActive: true,
+        isViewed: false
+      },
+      {
+        _id: '4',
+        user: {
+          _id: 'user4',
+          username: 'hm',
+          fullName: 'H&M',
+          avatar: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=100&h=100&fit=crop&crop=center'
+        },
+        mediaUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=600&fit=crop',
+        mediaType: 'image',
+        caption: 'Fashion for Everyone 💫',
+        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
+        expiresAt: new Date(Date.now() + 16 * 60 * 60 * 1000).toISOString(), // 16 hours from now
+        views: 3420,
+        isActive: true,
+        isViewed: false
+      }
+    ];
+
+    this.isLoadingStories = false;
   }
 
   // Removed fallback stories - only use database data
@@ -378,7 +495,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
 
   getCurrentUserAvatar(): string {
     // Use currentUser input if available, otherwise return default avatar
-    return this.currentUser?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150';
+    return this.currentUser?.avatar || '/assets/images/default-avatar.svg';
   }
 
   openAddStoryModal() {
@@ -501,5 +618,20 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     // Note: Owl Carousel doesn't have a direct method to toggle autoplay
     // This would require reinitializing the carousel with new options
     console.log(`Auto-play ${this.isAutoPlaying ? 'enabled' : 'disabled'}`);
+  }
+
+  // Mobile detection method
+  private checkScreenSize() {
+    const width = window.innerWidth;
+    const userAgent = navigator.userAgent;
+    const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+
+    // Consider it mobile if width <= 768px OR if it's a mobile user agent
+    this.isMobile = width <= 768 || isMobileUserAgent;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.checkScreenSize();
   }
 }

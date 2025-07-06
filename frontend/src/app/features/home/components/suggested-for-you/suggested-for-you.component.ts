@@ -43,12 +43,20 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   isAutoSliding = true;
   isPaused = false;
 
+  // Section interaction properties
+  isSectionLiked = false;
+  isSectionBookmarked = false;
+  sectionLikes = 198;
+  sectionComments = 67;
+  isMobile = false;
+
   constructor(private router: Router) {}
 
   ngOnInit() {
     this.loadSuggestedUsers();
     this.updateResponsiveSettings();
     this.setupResizeListener();
+    this.checkMobileDevice();
   }
 
   ngOnDestroy() {
@@ -276,5 +284,53 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
       this.slideOffset = 0;
       this.startAutoSlide();
     }, 100);
+  }
+
+  // Section interaction methods
+  toggleSectionLike() {
+    this.isSectionLiked = !this.isSectionLiked;
+    if (this.isSectionLiked) {
+      this.sectionLikes++;
+    } else {
+      this.sectionLikes--;
+    }
+  }
+
+  toggleSectionBookmark() {
+    this.isSectionBookmarked = !this.isSectionBookmarked;
+  }
+
+  openComments() {
+    console.log('Opening comments for suggested users section');
+  }
+
+  shareSection() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Suggested for You',
+        text: 'Discover amazing fashion creators!',
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      console.log('Link copied to clipboard');
+    }
+  }
+
+  openMusicPlayer() {
+    console.log('Opening music player for suggested users');
+  }
+
+  formatCount(count: number): string {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + 'M';
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+  }
+
+  private checkMobileDevice() {
+    this.isMobile = window.innerWidth <= 768;
   }
 }

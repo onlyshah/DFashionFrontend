@@ -1,4 +1,35 @@
 <div class="suggested-users-container">
+  <!-- Mobile Action Buttons (TikTok/Instagram Style) -->
+  <div class="mobile-action-buttons" *ngIf="isMobile">
+    <button class="action-btn like-btn"
+            [class.active]="isSectionLiked"
+            (click)="toggleSectionLike()">
+      <ion-icon [name]="isSectionLiked ? 'heart' : 'heart-outline'"></ion-icon>
+      <span class="action-count">{{ formatCount(sectionLikes) }}</span>
+    </button>
+
+    <button class="action-btn comment-btn" (click)="openComments()">
+      <ion-icon name="chatbubble-outline"></ion-icon>
+      <span class="action-count">{{ formatCount(sectionComments) }}</span>
+    </button>
+
+    <button class="action-btn share-btn" (click)="shareSection()">
+      <ion-icon name="arrow-redo-outline"></ion-icon>
+      <span class="action-text">Share</span>
+    </button>
+
+    <button class="action-btn bookmark-btn"
+            [class.active]="isSectionBookmarked"
+            (click)="toggleSectionBookmark()">
+      <ion-icon [name]="isSectionBookmarked ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+    </button>
+
+    <button class="action-btn music-btn" (click)="openMusicPlayer()">
+      <ion-icon name="musical-notes"></ion-icon>
+      <span class="action-text">Music</span>
+    </button>
+  </div>
+
   <!-- Header -->
   <div class="section-header">
     <div class="header-content">

@@ -1,18 +1,103 @@
-// Instagram-style Stories Container
+// Instagram-style Stories Container - Fully Responsive
 .stories-container {
   background: white;
-  border-bottom: 1px solid #dbdbdb;
-  padding: 16px 0;
-  margin-bottom: 0;
-  max-width: 500px;
+  border: 1px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+
+  // Mobile responsive (up to 768px)
+  @media (max-width: 768px) {
+    padding: 12px 8px;
+    border: none;
+    border-radius: 0;
+    border-bottom: 1px solid #efefef;
+    background: #ffffff;
+    box-shadow: none;
+    margin-bottom: 0;
+
+    // Ensure touch interactions work
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Web responsive design (769px and up)
+  @media (min-width: 769px) {
+    background: #ffffff;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    // Make it prominent in the marked area
+    position: relative;
+    z-index: 10;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    min-height: 150px; // Ensure minimum height
+  }
 }
 
-// Stories Section Layout
+// Stories Header for Web
+.stories-header {
+  margin-bottom: 20px;
+
+  @media (min-width: 769px) {
+    border-bottom: 1px solid #efefef;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+}
+
+.stories-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #262626;
+  margin: 0 0 4px 0;
+
+  @media (min-width: 769px) {
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+.stories-subtitle {
+  font-size: 14px;
+  color: #8e8e8e;
+  margin: 0;
+
+  @media (min-width: 769px) {
+    font-size: 15px;
+  }
+}
+
+// Stories Section Layout - Enhanced for Web Responsive
 .stories-section {
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  padding: 0 16px;
+  padding: 0;
+
+  // Web responsive design
+  @media (min-width: 769px) {
+    padding: 0;
+    gap: 20px;
+    align-items: center;
+    min-height: 120px;
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    padding: 0 16px;
+    gap: 16px;
+  }
 }
 
 // Static Add Story Button (Left Side)
@@ -21,49 +106,83 @@
   width: 82px; // Fixed width to match story item
 }
 
-// Stories Slider Container (Right Side)
+// Stories Slider Container (Right Side) - Mobile Responsive
 .stories-slider-wrapper {
   flex: 1;
   overflow: hidden;
-  max-width: calc(100% - 98px); // Account for add story button + gap
   position: relative;
 
-  // Gradient overlay to indicate scrollable content
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 20px;
-    height: 100%;
-    background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
-    pointer-events: none;
-    z-index: 5;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+  // Mobile responsive
+  @media (max-width: 768px) {
+    max-width: calc(100% - 70px); // Account for smaller add story button on mobile
+
+    // Enable touch scrolling
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x;
   }
 
-  &.has-overflow::after {
-    opacity: 1;
+  // Desktop
+  @media (min-width: 769px) {
+    max-width: calc(100% - 98px); // Account for add story button + gap
+  }
+
+  // Gradient overlay to indicate scrollable content (desktop only)
+  @media (min-width: 769px) {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(to left, rgba(255, 255, 255, 0.8), transparent);
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &.has-overflow::after {
+      opacity: 1;
+    }
   }
 }
 
-// Owl Carousel Stories Container
+// Owl Carousel Stories Container - Mobile Responsive
 .stories-slider-container {
   position: relative;
   width: 100%;
   overflow: visible; /* allows children to overflow */
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    // Ensure touch interactions work properly
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
 
   // Owl Carousel Custom Styles
   ::ng-deep {
     .owl-carousel {
       .owl-stage-outer {
         padding: 0;
+
+        // Mobile touch optimization
+        @media (max-width: 768px) {
+          overflow: hidden;
+          touch-action: pan-x;
+        }
       }
 
       .owl-stage {
         display: flex;
         align-items: flex-start;
+
+        // Mobile optimization
+        @media (max-width: 768px) {
+          touch-action: pan-x;
+          will-change: transform;
+        }
       }
 
       .owl-item {
@@ -71,6 +190,11 @@
         justify-content: center;
         align-items: flex-start;
         min-height: 120px;
+
+        // Mobile responsive height
+        @media (max-width: 768px) {
+          min-height: 90px;
+        }
       }
 
       // Custom Navigation Arrows
@@ -239,6 +363,25 @@
   min-width: 82px;
   position: relative;
 
+  // Enhanced web responsive design
+  @media (min-width: 769px) {
+    width: 90px;
+    min-width: 90px;
+    padding: 8px;
+    border-radius: 12px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      transform: scale(1.08);
+    }
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    width: 76px;
+    min-width: 76px;
+  }
+
   &:hover {
     transform: scale(1.05);
 
@@ -292,6 +435,11 @@
 .story-avatar-container {
   position: relative;
   margin-bottom: 8px;
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    margin-bottom: 6px;
+  }
 }
 
 .story-avatar {
@@ -300,9 +448,32 @@
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  border: 2px solid white;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 2;
+  transition: all 0.3s ease;
+
+  // Enhanced web responsive design
+  @media (min-width: 769px) {
+    width: 74px;
+    height: 74px;
+    border: 3px solid #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    width: 60px;
+    height: 60px;
+    border: 1.5px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .story-ring {
@@ -315,6 +486,24 @@
   background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
   z-index: 1;
   animation: pulse 2s infinite;
+
+  // Enhanced web responsive design
+  @media (min-width: 769px) {
+    top: -3px;
+    left: -3px;
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    box-shadow: 0 0 20px rgba(240, 148, 51, 0.3);
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+    top: -2px;
+    left: -2px;
+  }
 
   // Viewed state (gray ring)
   &.viewed {
@@ -344,6 +533,29 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.2;
+  margin-top: 8px;
+
+  // Enhanced web responsive design
+  @media (min-width: 769px) {
+    font-size: 13px;
+    font-weight: 500;
+    max-width: 90px;
+    margin-top: 10px;
+    color: #262626;
+
+    // Better text rendering for web
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  // Mobile responsive
+  @media (max-width: 768px) {
+    font-size: 11px;
+    max-width: 70px;
+    font-weight: 500;
+    margin-top: 6px;
+  }
 }
 
 // Add Story Button Styles
@@ -1238,6 +1450,151 @@
       span {
         font-size: 12px;
       }
+    }
+  }
+}
+
+// ===== E-COMMERCE SPECIFIC STYLES =====
+
+// Brand Badge for Brand Stories
+.brand-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #ffd700, #ffb300);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  z-index: 10;
+
+  i {
+    font-size: 10px;
+    color: white;
+  }
+
+  @media (min-width: 769px) {
+    width: 24px;
+    height: 24px;
+
+    i {
+      font-size: 12px;
+    }
+  }
+}
+
+// New Product Badge
+.new-product-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background: linear-gradient(135deg, #ff4757, #ff3742);
+  color: white;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid white;
+  z-index: 10;
+
+  span {
+    font-size: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  @media (min-width: 769px) {
+    font-size: 9px;
+    padding: 3px 7px;
+
+    span {
+      font-size: 9px;
+    }
+  }
+}
+
+// Brand Ring for Brand Stories
+.story-ring.brand-ring {
+  background: linear-gradient(45deg, #ffd700, #ffb300, #ff6b6b, #4ecdc4);
+  background-size: 300% 300%;
+  animation: brandGradient 3s ease infinite;
+}
+
+@keyframes brandGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Enhanced Add Story Slide
+.add-story-slide {
+  .story-avatar-container {
+    position: relative;
+
+    .add-story-avatar {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #dbdbdb;
+
+      @media (min-width: 769px) {
+        width: 74px;
+        height: 74px;
+        border: 3px solid #dbdbdb;
+      }
+
+      .current-user-avatar {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-color: #f5f5f5;
+      }
+
+      .add-story-icon {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 24px;
+        height: 24px;
+        background: #0095f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+        z-index: 10;
+
+        i {
+          font-size: 12px;
+          color: white;
+        }
+
+        @media (min-width: 769px) {
+          width: 28px;
+          height: 28px;
+
+          i {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Brand Story Slide Enhancements
+.brand-story-slide {
+  .story-avatar-container {
+    position: relative;
+
+    .story-avatar {
+      position: relative;
+      overflow: visible; // Allow badges to show outside
     }
   }
 }

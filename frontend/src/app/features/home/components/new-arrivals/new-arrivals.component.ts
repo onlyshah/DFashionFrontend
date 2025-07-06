@@ -33,6 +33,13 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   autoSlideInterval: any;
   autoSlideDelay = 3500; // 3.5 seconds for new arrivals
 
+  // Section interaction properties
+  isSectionLiked = false;
+  isSectionBookmarked = false;
+  sectionLikes = 421;
+  sectionComments = 156;
+  isMobile = false;
+
   constructor(
     private trendingService: TrendingService,
     private socialService: SocialInteractionsService,
@@ -47,6 +54,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.subscribeLikedProducts();
     this.initializeSlider();
     this.startAutoSlide();
+    this.checkMobileDevice();
   }
 
   ngOnDestroy() {
@@ -264,5 +272,53 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
 
   get canGoNext(): boolean {
     return this.currentSlide < this.maxSlide;
+  }
+
+  // Section interaction methods
+  toggleSectionLike() {
+    this.isSectionLiked = !this.isSectionLiked;
+    if (this.isSectionLiked) {
+      this.sectionLikes++;
+    } else {
+      this.sectionLikes--;
+    }
+  }
+
+  toggleSectionBookmark() {
+    this.isSectionBookmarked = !this.isSectionBookmarked;
+  }
+
+  openComments() {
+    console.log('Opening comments for new arrivals section');
+  }
+
+  shareSection() {
+    if (navigator.share) {
+      navigator.share({
+        title: 'New Arrivals',
+        text: 'Check out these fresh new fashion arrivals!',
+        url: window.location.href
+      });
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      console.log('Link copied to clipboard');
+    }
+  }
+
+  openMusicPlayer() {
+    console.log('Opening music player for new arrivals');
+  }
+
+  formatCount(count: number): string {
+    if (count >= 1000000) {
+      return (count / 1000000).toFixed(1) + 'M';
+    } else if (count >= 1000) {
+      return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+  }
+
+  private checkMobileDevice() {
+    this.isMobile = window.innerWidth <= 768;
   }
 }
