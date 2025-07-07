@@ -645,4 +645,9 @@ export class HeaderComponent implements OnInit {
     this.authService.logout();
     this.showUserMenu = false;
   }
+
+  onAvatarError(event: any) {
+    // Fallback to default avatar if the current one fails to load
+    event.target.src = 'assets/images/default-avatar.svg';
+  }
 }

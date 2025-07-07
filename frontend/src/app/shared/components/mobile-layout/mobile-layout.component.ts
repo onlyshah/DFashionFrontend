@@ -306,4 +306,9 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
   trackByIndex(index: number): number {
     return index;
   }
+
+  onAvatarError(event: any) {
+    // Fallback to default avatar if the current one fails to load
+    event.target.src = 'assets/images/default-avatar.svg';
+  }
 }
