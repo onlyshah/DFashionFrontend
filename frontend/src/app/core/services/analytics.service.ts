@@ -89,7 +89,7 @@ export class AnalyticsService {
 
   // Core Analytics
   getAnalyticsOverview(): Observable<AnalyticsData> {
-    return this.http.get<any>(`${this.apiUrl}/analytics/overview`)
+    return this.http.get<any>(`${this.apiUrl}/api/v1/analytics/overview`)
       .pipe(
         map(response => response.success ? response.data : this.getFallbackAnalytics()),
         catchError(error => {
@@ -199,7 +199,7 @@ export class AnalyticsService {
         { name: 'Footwear', count: 521, revenue: 228700 },
         { name: 'Beauty', count: 387, revenue: 169800 }
       ],
-      userGrowth: this.generateGrowthData(),
+      userGrowth: [],
       searchTrends: [
         { query: 'summer dress', count: 1247, trend: 'up' },
         { query: 'casual wear', count: 892, trend: 'stable' },
@@ -312,23 +312,9 @@ export class AnalyticsService {
     ];
   }
 
+  // Mock data generation removed - use real API data only
   private generateGrowthData() {
-    const data = [];
-    const today = new Date();
-    
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(today);
-      date.setDate(date.getDate() - i);
-      
-      data.push({
-        date: date.toISOString().split('T')[0],
-        users: Math.floor(Math.random() * 200) + 100,
-        orders: Math.floor(Math.random() * 50) + 20,
-        revenue: Math.floor(Math.random() * 10000) + 5000
-      });
-    }
-    
-    return data;
+    return [];
   }
 
   // Update analytics data locally

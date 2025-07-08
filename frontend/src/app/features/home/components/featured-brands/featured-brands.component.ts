@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TrendingService, FeaturedBrand } from '../../../../core/services/trending.service';
-import { Product } from '../../../../core/models/product.model';
+import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
@@ -49,6 +49,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('🟡 FeaturedBrandsComponent ngOnInit called');
     this.loadFeaturedBrands();
     this.subscribeFeaturedBrands();
     this.subscribeLikedProducts();
@@ -93,8 +94,8 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   }
 
   onBrandClick(brand: FeaturedBrand) {
-    this.router.navigate(['/products'], { 
-      queryParams: { brand: brand.brand } 
+    this.router.navigate(['/products'], {
+      queryParams: { brand: brand.name }
     });
   }
 
@@ -156,7 +157,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   }
 
   trackByBrandName(index: number, brand: FeaturedBrand): string {
-    return brand.brand;
+    return brand.name;
   }
 
   isProductLiked(productId: string): boolean {
@@ -208,15 +209,24 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
+    const sidebarWidth = width * 0.21; // 21% of screen width
+
     if (width <= 768) {
       this.cardWidth = 280;
       this.visibleCards = 1;
+    } else if (width <= 1024) {
+      // Calculate based on 21% sidebar width - 1 card per row
+      const availableWidth = sidebarWidth - 40; // Minus padding
+      this.cardWidth = availableWidth - 4; // Full width minus gap
+      this.visibleCards = 1;
     } else if (width <= 1200) {
-      this.cardWidth = 320;
-      this.visibleCards = 2;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = availableWidth - 5;
+      this.visibleCards = 1;
     } else {
-      this.cardWidth = 340;
-      this.visibleCards = 3;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = availableWidth - 6;
+      this.visibleCards = 1;
     }
     this.updateSliderLimits();
     this.updateSlideOffset();

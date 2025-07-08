@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TrendingService } from '../../../../core/services/trending.service';
-import { Product } from '../../../../core/models/product.model';
+import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
@@ -199,16 +199,21 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
 
   private updateResponsiveSettings() {
     const containerWidth = window.innerWidth;
+    const sidebarWidth = containerWidth * 0.21; // 21% of screen width
 
     if (containerWidth >= 1200) {
-      this.visibleCards = 4;
-      this.cardWidth = 280;
-    } else if (containerWidth >= 992) {
-      this.visibleCards = 3;
-      this.cardWidth = 260;
-    } else if (containerWidth >= 768) {
+      // Calculate based on 21% sidebar width - 2 cards per row
+      const availableWidth = sidebarWidth - 40; // Minus padding
       this.visibleCards = 2;
-      this.cardWidth = 240;
+      this.cardWidth = Math.floor(availableWidth / 2) - 3; // 2 cards with gap
+    } else if (containerWidth >= 1024) {
+      const availableWidth = sidebarWidth - 40;
+      this.visibleCards = 2;
+      this.cardWidth = Math.floor(availableWidth / 2) - 2.5;
+    } else if (containerWidth >= 768) {
+      const availableWidth = sidebarWidth - 40;
+      this.visibleCards = 2;
+      this.cardWidth = Math.floor(availableWidth / 2) - 2;
     } else {
       this.visibleCards = 1;
       this.cardWidth = 220;
@@ -223,7 +228,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   }
 
   private updateSlidePosition() {
-    this.slideOffset = this.currentSlide * (this.cardWidth + 16); // 16px gap
+    this.slideOffset = this.currentSlide * this.cardWidth; // Gap already included in cardWidth
   }
 
   nextSlide() {

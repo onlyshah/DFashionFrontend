@@ -4,19 +4,32 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
-interface TopInfluencer {
-  id: string;
+interface Influencer {
+  _id: string;
   username: string;
   fullName: string;
   avatar: string;
-  followerCount: number;
-  category: string;
-  isVerified: boolean;
+  bio?: string;
+  followersCount: number;
+  postsCount: number;
+  engagement?: number;
   isFollowing: boolean;
-  engagementRate: number;
-  recentPosts: number;
-  topBrands: string[];
+  isInfluencer: boolean;
+  socialStats?: {
+    followersCount: number;
+    followingCount: number;
+    postsCount: number;
+    likesReceived: number;
+    commentsReceived: number;
+    sharesReceived: number;
+  };
+  category?: string;
+  isVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Component({
@@ -27,7 +40,7 @@ interface TopInfluencer {
   styleUrls: ['./top-fashion-influencers.component.scss']
 })
 export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
-  topInfluencers: TopInfluencer[] = [];
+  topInfluencers: Influencer[] = [];
   isLoading = true;
   error: string | null = null;
   private subscription: Subscription = new Subscription();
@@ -35,27 +48,27 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 240; // Width of each influencer card including margin
-  visibleCards = 3; // Number of cards visible at once
+  cardWidth = 200;
+  visibleCards = 4;
   maxSlide = 0;
   
   // Auto-sliding properties
   autoSlideInterval: any;
-  autoSlideDelay = 6000; // 6 seconds for influencers
+  autoSlideDelay = 4500;
   isAutoSliding = true;
   isPaused = false;
 
   // Section interaction properties
   isSectionLiked = false;
   isSectionBookmarked = false;
-  sectionLikes = 512;
-  sectionComments = 234;
+  sectionLikes = 1247;
+  sectionComments = 89;
   isMobile = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadTopInfluencers();
+    this.loadInfluencers();
     this.updateResponsiveSettings();
     this.setupResizeListener();
     this.checkMobileDevice();
@@ -66,115 +79,30 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private async loadTopInfluencers() {
+  private async loadInfluencers() {
     try {
       this.isLoading = true;
       this.error = null;
-      
-      // Mock data for top fashion influencers
-      this.topInfluencers = [
-        {
-          id: '1',
-          username: 'fashionista_queen',
-          fullName: 'Priya Sharma',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-          followerCount: 2500000,
-          category: 'High Fashion',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 8.5,
-          recentPosts: 24,
-          topBrands: ['Gucci', 'Prada', 'Versace']
-        },
-        {
-          id: '2',
-          username: 'street_style_king',
-          fullName: 'Arjun Kapoor',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          followerCount: 1800000,
-          category: 'Streetwear',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 12.3,
-          recentPosts: 18,
-          topBrands: ['Nike', 'Adidas', 'Supreme']
-        },
-        {
-          id: '3',
-          username: 'boho_goddess',
-          fullName: 'Ananya Singh',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-          followerCount: 1200000,
-          category: 'Boho Chic',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 9.7,
-          recentPosts: 32,
-          topBrands: ['Free People', 'Anthropologie', 'Zara']
-        },
-        {
-          id: '4',
-          username: 'luxury_lifestyle',
-          fullName: 'Kavya Reddy',
-          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-          followerCount: 3200000,
-          category: 'Luxury',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 6.8,
-          recentPosts: 15,
-          topBrands: ['Chanel', 'Dior', 'Louis Vuitton']
-        },
-        {
-          id: '5',
-          username: 'minimalist_maven',
-          fullName: 'Ravi Kumar',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-          followerCount: 950000,
-          category: 'Minimalist',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 11.2,
-          recentPosts: 21,
-          topBrands: ['COS', 'Uniqlo', 'Everlane']
-        },
-        {
-          id: '6',
-          username: 'vintage_vibes',
-          fullName: 'Meera Patel',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
-          followerCount: 780000,
-          category: 'Vintage',
-          isVerified: true,
-          isFollowing: false,
-          engagementRate: 13.5,
-          recentPosts: 28,
-          topBrands: ['Vintage Stores', 'Thrift Finds', 'Custom']
-        }
-      ];
-      
-      this.isLoading = false;
-      this.updateSliderOnInfluencersLoad();
+
+      const response = await this.http.get<any>(`${environment.apiUrl}/api/v1/users/influencers`).toPromise();
+      if (response?.success && response?.data) {
+        this.topInfluencers = response.data.slice(0, 8);
+        this.updateSliderOnInfluencersLoad();
+      } else {
+        console.warn('No influencers found');
+        this.topInfluencers = [];
+      }
     } catch (error) {
-      console.error('Error loading top influencers:', error);
-      this.error = 'Failed to load top influencers';
+      console.error('Error loading influencers:', error);
+      this.topInfluencers = [];
+      this.error = 'Failed to load influencers';
+    } finally {
       this.isLoading = false;
     }
   }
 
-  onInfluencerClick(influencer: TopInfluencer) {
-    this.router.navigate(['/profile', influencer.username]);
-  }
-
-  onFollowInfluencer(influencer: TopInfluencer, event: Event) {
-    event.stopPropagation();
-    influencer.isFollowing = !influencer.isFollowing;
-    
-    if (influencer.isFollowing) {
-      influencer.followerCount++;
-    } else {
-      influencer.followerCount--;
-    }
+  onInfluencerClick(influencer: Influencer) {
+    this.router.navigate(['/profile', influencer._id]);
   }
 
   formatFollowerCount(count: number): string {
@@ -187,11 +115,11 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   }
 
   onRetry() {
-    this.loadTopInfluencers();
+    this.loadInfluencers();
   }
 
-  trackByInfluencerId(index: number, influencer: TopInfluencer): string {
-    return influencer.id;
+  trackByInfluencerId(index: number, influencer: Influencer): string {
+    return influencer._id;
   }
 
   // Auto-sliding methods
@@ -232,7 +160,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.startAutoSlide();
   }
 
-  // Responsive methods
+  // Responsive and slider methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
     if (width <= 480) {
@@ -241,7 +169,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     } else if (width <= 768) {
       this.cardWidth = 220;
       this.visibleCards = 2;
-    } else if (width <= 1200) {
+    } else if (width <= 1024) {
       this.cardWidth = 240;
       this.visibleCards = 2;
     } else {
@@ -258,7 +186,6 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Slider methods
   updateSliderLimits() {
     this.maxSlide = Math.max(0, this.topInfluencers.length - this.visibleCards);
   }
@@ -287,17 +214,16 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
     setTimeout(() => {
       this.startAutoSlide();
-    }, 2000);
+    }, 3000);
   }
 
-  // Update slider when influencers load
   private updateSliderOnInfluencersLoad() {
-    setTimeout(() => {
+    if (this.topInfluencers.length > 0) {
       this.updateSliderLimits();
       this.currentSlide = 0;
       this.slideOffset = 0;
       this.startAutoSlide();
-    }, 100);
+    }
   }
 
   // Section interaction methods
@@ -315,24 +241,23 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   }
 
   openComments() {
-    console.log('Opening comments for top fashion influencers section');
+    console.log('Opening comments for influencers section');
   }
 
   shareSection() {
     if (navigator.share) {
       navigator.share({
         title: 'Top Fashion Influencers',
-        text: 'Follow the top fashion trendsetters!',
+        text: 'Check out these amazing fashion influencers!',
         url: window.location.href
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
+      console.log('Sharing influencers section');
     }
   }
 
   openMusicPlayer() {
-    console.log('Opening music player for top fashion influencers');
+    console.log('Opening music player');
   }
 
   formatCount(count: number): string {
@@ -342,6 +267,12 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count.toString();
+  }
+
+  onFollowInfluencer(influencer: Influencer, event: Event) {
+    event.stopPropagation();
+    influencer.isFollowing = !influencer.isFollowing;
+    console.log(`${influencer.isFollowing ? 'Following' : 'Unfollowed'} ${influencer.username}`);
   }
 
   private checkMobileDevice() {

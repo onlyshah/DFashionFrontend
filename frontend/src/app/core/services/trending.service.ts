@@ -1,67 +1,20 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Product } from '../models/product.model';
+import { Product } from '../models/product.interface';
+import { FeaturedBrand } from '../models/featured-brand.interface';
+import { Influencer } from '../models/influencer.interface';
 
-export interface TrendingResponse {
-  success: boolean;
-  products: Product[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}
-
-export interface FeaturedBrand {
-  brand: string;
-  productCount: number;
-  avgRating: number;
-  totalViews: number;
-  topProducts: Product[];
-}
-
-export interface FeaturedBrandsResponse {
-  success: boolean;
-  brands: FeaturedBrand[];
-}
-
-export interface Influencer {
-  _id: string;
-  username: string;
-  fullName: string;
-  avatar: string;
-  bio: string;
-  socialStats: {
-    followersCount: number;
-    postsCount: number;
-    followingCount: number;
-  };
-  isInfluencer: boolean;
-}
-
-export interface InfluencersResponse {
-  success: boolean;
-  influencers: Influencer[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    hasNextPage: boolean;
-    hasPrevPage: boolean;
-  };
-}
+export { FeaturedBrand } from '../models/featured-brand.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TrendingService {
-  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private apiUrl = environment.apiUrl;
 
-  // BehaviorSubjects for caching
+  // BehaviorSubjects for caching data
   private trendingProductsSubject = new BehaviorSubject<Product[]>([]);
   private suggestedProductsSubject = new BehaviorSubject<Product[]>([]);
   private newArrivalsSubject = new BehaviorSubject<Product[]>([]);
@@ -77,41 +30,30 @@ export class TrendingService {
 
   constructor(private http: HttpClient) {}
 
-  // Get trending products
-  getTrendingProducts(page: number = 1, limit: number = 12): Observable<TrendingResponse> {
-    return this.http.get<TrendingResponse>(`${this.API_URL}/v1/products/trending`, {
-      params: { page: page.toString(), limit: limit.toString() }
-    });
+  // API methods
+  getTrendingProducts(page: number = 1, limit: number = 12): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/products/trending?page=${page}&limit=${limit}`);
   }
 
-  // Get suggested products
-  getSuggestedProducts(page: number = 1, limit: number = 12): Observable<TrendingResponse> {
-    return this.http.get<TrendingResponse>(`${this.API_URL}/v1/products/suggested`, {
-      params: { page: page.toString(), limit: limit.toString() }
-    });
+  getSuggestedProducts(page: number = 1, limit: number = 12): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/products/suggested?page=${page}&limit=${limit}`);
   }
 
-  // Get new arrivals
-  getNewArrivals(page: number = 1, limit: number = 12): Observable<TrendingResponse> {
-    return this.http.get<TrendingResponse>(`${this.API_URL}/v1/products/new-arrivals`, {
-      params: { page: page.toString(), limit: limit.toString() }
-    });
+  getNewArrivals(page: number = 1, limit: number = 12): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/products/new-arrivals?page=${page}&limit=${limit}`);
   }
 
-  // Get featured brands
-  getFeaturedBrands(): Observable<FeaturedBrandsResponse> {
-    return this.http.get<FeaturedBrandsResponse>(`${this.API_URL}/v1/products/featured-brands`);
+  getFeaturedBrands(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/products/featured-brands`);
   }
 
-  // Get influencers
-  getInfluencers(page: number = 1, limit: number = 10): Observable<InfluencersResponse> {
-    return this.http.get<InfluencersResponse>(`${this.API_URL}/v1/users/influencers`, {
-      params: { page: page.toString(), limit: limit.toString() }
-    });
+  getInfluencers(page: number = 1, limit: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/v1/users/influencers?page=${page}&limit=${limit}`);
   }
 
   // Load and cache trending products
   async loadTrendingProducts(page: number = 1, limit: number = 12): Promise<void> {
+    console.log('🔵 TrendingService.loadTrendingProducts called');
     try {
       const response = await this.getTrendingProducts(page, limit).toPromise();
       if (response?.success && response?.products) {
@@ -119,6 +61,7 @@ export class TrendingService {
       }
     } catch (error) {
       console.error('Error loading trending products:', error);
+      this.trendingProductsSubject.next([]);
     }
   }
 
@@ -131,6 +74,7 @@ export class TrendingService {
       }
     } catch (error) {
       console.error('Error loading suggested products:', error);
+      this.suggestedProductsSubject.next([]);
     }
   }
 
@@ -143,6 +87,7 @@ export class TrendingService {
       }
     } catch (error) {
       console.error('Error loading new arrivals:', error);
+      this.newArrivalsSubject.next([]);
     }
   }
 
@@ -155,18 +100,20 @@ export class TrendingService {
       }
     } catch (error) {
       console.error('Error loading featured brands:', error);
+      this.featuredBrandsSubject.next([]);
     }
   }
 
-  // Load and cache influencers
-  async loadInfluencers(page: number = 1, limit: number = 10): Promise<void> {
+  // Load and cache top influencers
+  async loadTopInfluencers(): Promise<void> {
     try {
-      const response = await this.getInfluencers(page, limit).toPromise();
-      if (response?.success && response?.influencers) {
-        this.influencersSubject.next(response.influencers);
+      const response = await this.getInfluencers().toPromise();
+      if (response?.success && response?.data) {
+        this.influencersSubject.next(response.data);
       }
     } catch (error) {
       console.error('Error loading influencers:', error);
+      this.influencersSubject.next([]);
     }
   }
 

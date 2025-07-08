@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
-import { CarouselModule } from 'ngx-owl-carousel-o';
+import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 interface SuggestedUser {
   id: string;
@@ -12,55 +12,61 @@ interface SuggestedUser {
   avatar: string;
   followedBy: string;
   isFollowing: boolean;
-  isInfluencer: boolean;
-  followerCount: number;
-  category: string;
+  isInfluencer?: boolean;
+  followerCount?: number;
+  category?: string;
 }
 
 @Component({
   selector: 'app-suggested-for-you',
   standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './suggested-for-you.component.html',
   styleUrls: ['./suggested-for-you.component.scss']
 })
 export class SuggestedForYouComponent implements OnInit, OnDestroy {
   suggestedUsers: SuggestedUser[] = [];
-  isLoading = true;
+  isLoading = false;
   error: string | null = null;
-  private subscription: Subscription = new Subscription();
-
+  
   // Slider properties
   currentSlide = 0;
-  slideOffset = 0;
-  cardWidth = 200; // Width of each user card including margin
-  visibleCards = 4; // Number of cards visible at once
   maxSlide = 0;
+  slideOffset = 0;
+  cardWidth = 200;
+  visibleCards = 3;
   
-  // Auto-sliding properties
-  autoSlideInterval: any;
-  autoSlideDelay = 5000; // 5 seconds for users
+  // Auto-slide properties
+  autoSlideInterval: any = null;
   isAutoSliding = true;
+  autoSlideDelay = 4000;
   isPaused = false;
-
+  
   // Section interaction properties
   isSectionLiked = false;
   isSectionBookmarked = false;
-  sectionLikes = 198;
-  sectionComments = 67;
+  sectionLikes = 1247;
+  sectionComments = 89;
+  sectionShares = 23;
+  
+  // Mobile detection
   isMobile = false;
+  
+  private apiUrl = environment.apiUrl;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
-    this.loadSuggestedUsers();
+    this.checkMobileDevice();
     this.updateResponsiveSettings();
     this.setupResizeListener();
-    this.checkMobileDevice();
+    this.loadSuggestedUsers();
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
     this.stopAutoSlide();
   }
 
@@ -69,81 +75,20 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       this.error = null;
       
-      // Mock data for suggested users
-      this.suggestedUsers = [
-        {
-          id: '1',
-          username: 'fashionista_maya',
-          fullName: 'Maya Patel',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by john_doe and 12 others',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 45000,
-          category: 'Fashion'
-        },
-        {
-          id: '2',
-          username: 'style_guru_raj',
-          fullName: 'Raj Kumar',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by sarah_k and 8 others',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 32000,
-          category: 'Menswear'
-        },
-        {
-          id: '3',
-          username: 'trendy_sara',
-          fullName: 'Sara Johnson',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by alex_m and 15 others',
-          isFollowing: false,
-          isInfluencer: false,
-          followerCount: 8500,
-          category: 'Casual'
-        },
-        {
-          id: '4',
-          username: 'luxury_lover',
-          fullName: 'Emma Wilson',
-          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by mike_t and 20 others',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 67000,
-          category: 'Luxury'
-        },
-        {
-          id: '5',
-          username: 'street_style_alex',
-          fullName: 'Alex Chen',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by lisa_p and 5 others',
-          isFollowing: false,
-          isInfluencer: false,
-          followerCount: 12000,
-          category: 'Streetwear'
-        },
-        {
-          id: '6',
-          username: 'boho_bella',
-          fullName: 'Isabella Rodriguez',
-          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face',
-          followedBy: 'Followed by tom_h and 18 others',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 28000,
-          category: 'Boho'
-        }
-      ];
-      
-      this.isLoading = false;
-      this.updateSliderOnUsersLoad();
+      // Load from API
+      const response = await this.http.get<any>(`${this.apiUrl}/api/v1/users/suggested`).toPromise();
+      if (response?.success && response?.data) {
+        this.suggestedUsers = response.data;
+        this.updateSliderOnUsersLoad();
+      } else {
+        console.warn('No suggested users found');
+        this.suggestedUsers = [];
+      }
     } catch (error) {
       console.error('Error loading suggested users:', error);
+      this.suggestedUsers = [];
       this.error = 'Failed to load suggested users';
+    } finally {
       this.isLoading = false;
     }
   }
@@ -152,15 +97,14 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.router.navigate(['/profile', user.username]);
   }
 
-  onFollowUser(user: SuggestedUser, event: Event) {
+  onFollowClick(user: SuggestedUser, event: Event) {
     event.stopPropagation();
     user.isFollowing = !user.isFollowing;
-    
-    if (user.isFollowing) {
-      user.followerCount++;
-    } else {
-      user.followerCount--;
-    }
+    // TODO: Implement actual follow/unfollow API call
+  }
+
+  onFollowUser(user: SuggestedUser, event: Event) {
+    this.onFollowClick(user, event);
   }
 
   formatFollowerCount(count: number): string {
@@ -221,18 +165,27 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
+    const sidebarWidth = width * 0.21; // 21% of screen width
+
     if (width <= 480) {
       this.cardWidth = 180;
       this.visibleCards = 1;
     } else if (width <= 768) {
       this.cardWidth = 200;
       this.visibleCards = 2;
+    } else if (width <= 1024) {
+      // Calculate based on 21% sidebar width - 3 cards per row
+      const availableWidth = sidebarWidth - 40; // Minus padding
+      this.cardWidth = Math.floor(availableWidth / 3) - 3; // 3 cards with gap
+      this.visibleCards = 3;
     } else if (width <= 1200) {
-      this.cardWidth = 220;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = Math.floor(availableWidth / 3) - 3.5;
       this.visibleCards = 3;
     } else {
-      this.cardWidth = 220;
-      this.visibleCards = 4;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = Math.floor(availableWidth / 3) - 4;
+      this.visibleCards = 3;
     }
     this.updateSliderLimits();
     this.updateSlideOffset();

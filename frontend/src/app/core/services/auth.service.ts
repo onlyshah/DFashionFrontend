@@ -43,13 +43,13 @@ export class AuthService {
     console.log('🌐 API_URL:', this.API_URL);
     console.log('🌐 Using direct IP for mobile compatibility');
     console.log('🌐 API URL:', this.API_URL);
-    console.log('📱 Making HTTP POST request to:', `${this.API_URL}/auth/login`);
+    console.log('📱 Making HTTP POST request to:', `${this.API_URL}/api/auth/login`);
 
     return this.loginWithRetry(credentials, this.API_URL);
   }
 
   private loginWithRetry(credentials: LoginRequest, apiUrl: string): Observable<any> {
-    return this.http.post<any>(`${apiUrl}/auth/login`, credentials)
+    return this.http.post<any>(`${apiUrl}/api/auth/login`, credentials)
       .pipe(
         tap(response => {
           console.log('✅ Login response received:', response);
@@ -66,11 +66,7 @@ export class AuthService {
           console.error('❌ Login error:', error);
           console.error('❌ Error details:', JSON.stringify(error, null, 2));
 
-          // For testing: If login fails with invalid credentials, enable demo mode
-          if (error.status === 400 && error.error?.message === 'Invalid credentials') {
-            console.log('🎭 Enabling demo mode for testing...');
-            return this.enableDemoMode();
-          }
+          // No demo mode - use real authentication only
 
           // For mobile apps, try alternative URLs if available
           if (this.isMobileApp()) {
@@ -91,7 +87,7 @@ export class AuthService {
     const [firstUrl, ...remainingUrls] = fallbackUrls;
     console.log('🔄 Trying fallback URL:', firstUrl);
 
-    return this.http.post<any>(`${firstUrl}/auth/login`, credentials)
+    return this.http.post<any>(`${firstUrl}/api/auth/login`, credentials)
       .pipe(
         tap(response => {
           console.log('✅ Login successful with fallback URL:', firstUrl);
@@ -116,63 +112,14 @@ export class AuthService {
            window.location.protocol === 'ionic:' ||
            (window as any).Capacitor !== undefined;
   }
-  private enableDemoMode(): Observable<any> {
-    console.log('🎭 Creating demo user for testing...');
-
-    // Create a demo user for testing
-    const demoUser: User = {
-      _id: 'demo-user-123',
-      username: 'demo_user',
-      email: 'demo@dfashion.com',
-      fullName: 'Demo User',
-      avatar: 'assets/images/default-avatar.svg',
-      role: 'customer',
-      isVerified: true,
-      isActive: true,
-      followers: [],
-      following: [],
-      socialStats: {
-        postsCount: 0,
-        followersCount: 0,
-        followingCount: 0
-      },
-      preferences: {
-        categories: ['fashion', 'clothing'],
-        brands: [],
-        priceRange: {
-          min: 0,
-          max: 1000
-        }
-      },
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-
-    const demoToken = 'demo-token-for-testing-' + Date.now();
-
-    // Set demo authentication
-    this.setToken(demoToken);
-    this.currentUserSubject.next(demoUser);
-    this.isAuthenticatedSubject.next(true);
-
-    console.log('✅ Demo mode enabled successfully');
-
-    return of({
-      success: true,
-      message: 'Demo mode enabled',
-      data: {
-        token: demoToken,
-        user: demoUser
-      }
-    });
-  }
+  // Demo mode removed - use real authentication only
 
 
 
 
 
   register(userData: RegisterRequest): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/auth/register`, userData)
+    return this.http.post<any>(`${this.API_URL}/api/auth/register`, userData)
       .pipe(
         tap(response => {
           // Handle backend response format: { success: true, data: { token, user } }
@@ -242,7 +189,7 @@ export class AuthService {
   }
 
   getCurrentUser(): Observable<{ user: User }> {
-    return this.http.get<any>(`${this.API_URL}/auth/me`).pipe(
+    return this.http.get<any>(`${this.API_URL}/api/auth/me`).pipe(
       map(response => {
         // Handle backend response format: { success: true, data: { user } }
         return response.data || response;

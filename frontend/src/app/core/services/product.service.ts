@@ -2,7 +2,28 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { Product, ProductsResponse, ProductFilters } from '../models/product.model';
+import { Product } from '../models/product.interface';
+
+export interface ProductsResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ProductFilters {
+  category?: string;
+  subcategory?: string;
+  brand?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  size?: string;
+  color?: string;
+  rating?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -121,12 +142,12 @@ export class ProductService {
 
   // Get suggested users for sidebar
   getSuggestedUsers(): Observable<any> {
-    return this.http.get(`${this.API_URL}/v1/users/suggested`);
+    return this.http.get(`${this.API_URL}/api/v1/users/suggested`);
   }
 
   // Get top influencers for sidebar
   getTopInfluencers(): Observable<any> {
-    return this.http.get(`${this.API_URL}/v1/users/influencers`);
+    return this.http.get(`${this.API_URL}/api/v1/users/influencers`);
   }
 
   // Get product by ID

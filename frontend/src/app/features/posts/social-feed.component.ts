@@ -767,9 +767,6 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
     this.loadCurrentUser();
     this.loadStories();
     this.loadPosts();
-
-    // Add some mock stories for testing
-    this.addMockStories();
   }
 
   ngOnDestroy() {
@@ -1261,10 +1258,6 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
     return new Date(date).toLocaleDateString();
   }
 
-  addMockStories() {
-    // Removed mock stories - use real API data only
-    this.stories = [];
-    console.log('Mock stories removed - using real API data only');
-  }
+  // Mock stories removed - use real API data only
 
 }

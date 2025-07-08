@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Product } from '../../../core/models/product.model';
+import { Product } from '../../../core/models/product.interface';
 import { ProductService } from '../../../core/services/product.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
@@ -439,7 +439,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   getStars(): string[] {
-    const rating = this.product?.rating.average || 0;
+    const rating = this.product?.rating?.average || 0;
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (i <= rating) {

@@ -2,18 +2,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { IonicModule } from '@ionic/angular';
 import { TrendingService } from '../../../../core/services/trending.service';
-import { Product } from '../../../../core/models/product.model';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
-import { IonicModule } from '@ionic/angular';
-import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
+import { Product } from '../../../../core/models/product.interface';
 
 @Component({
   selector: 'app-trending-products',
   standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './trending-products.component.html',
   styleUrls: ['./trending-products.component.scss']
 })
@@ -24,77 +23,12 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   likedProducts = new Set<string>();
   private subscription: Subscription = new Subscription();
 
-  // Slider properties
-  currentSlide = 0;
-  slideOffset = 0;
-  cardWidth = 280; // Width of each product card including margin
-  visibleCards = 4; // Number of cards visible at once
-  maxSlide = 0;
-
-  // Auto-sliding properties
-  autoSlideInterval: any;
-  autoSlideDelay = 3000; // 3 seconds
-  isAutoSliding = true;
-  isPaused = false;
-
   // Section interaction properties
   isSectionLiked = false;
   isSectionBookmarked = false;
   sectionLikes = 365;
   sectionComments = 105;
   isMobile = false;
-
-  // Owl Carousel Options with Auto-sliding
-  carouselOptions: OwlOptions = {
-    loop: true,
-    mouseDrag: true,
-    touchDrag: true,
-    pullDrag: false,
-    dots: true,
-    navSpeed: 700,
-    navText: [
-      '<ion-icon name="chevron-back"></ion-icon>',
-      '<ion-icon name="chevron-forward"></ion-icon>'
-    ],
-    autoplay: true,
-    autoplayTimeout: 4000,        // 4 seconds between slides
-    autoplayHoverPause: true,     // Pause on hover
-    autoplaySpeed: 1000,          // Smooth 1 second transition
-    smartSpeed: 1000,             // Smart speed for better UX
-    fluidSpeed: true,             // Fluid speed calculation
-    responsive: {
-      0: {
-        items: 1,
-        margin: 10,
-        nav: false,               // Hide nav on mobile for cleaner look
-        dots: true
-      },
-      576: {
-        items: 2,
-        margin: 15,
-        nav: true,
-        dots: true
-      },
-      768: {
-        items: 3,
-        margin: 20,
-        nav: true,
-        dots: true
-      },
-      992: {
-        items: 4,
-        margin: 20,
-        nav: true,
-        dots: false               // Hide dots on desktop, show nav instead
-      }
-    },
-    nav: true,
-    margin: 20,
-    stagePadding: 0,
-    center: false,
-    animateOut: false,
-    animateIn: false
-  };
 
   constructor(
     private trendingService: TrendingService,
@@ -105,17 +39,15 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('🔵 TrendingProductsComponent ngOnInit called');
     this.loadTrendingProducts();
     this.subscribeTrendingProducts();
     this.subscribeLikedProducts();
-    this.updateResponsiveSettings();
-    this.setupResizeListener();
     this.checkMobileDevice();
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
-    this.stopAutoSlide();
   }
 
   private subscribeTrendingProducts() {
@@ -123,7 +55,6 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.trendingService.trendingProducts$.subscribe(products => {
         this.trendingProducts = products;
         this.isLoading = false;
-        this.updateSliderOnProductsLoad();
       })
     );
   }
@@ -131,7 +62,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   private subscribeLikedProducts() {
     this.subscription.add(
       this.socialService.likedProducts$.subscribe(likedProducts => {
-        this.likedProducts = likedProducts;
+        this.likedProducts = new Set(likedProducts);
       })
     );
   }
@@ -140,7 +71,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     try {
       this.isLoading = true;
       this.error = null;
-      await this.trendingService.loadTrendingProducts(1, 8);
+      await this.trendingService.loadTrendingProducts();
     } catch (error) {
       console.error('Error loading trending products:', error);
       this.error = 'Failed to load trending products';
@@ -157,9 +88,11 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     try {
       const result = await this.socialService.likeProduct(product._id);
       if (result.success) {
-        console.log(result.message);
-      } else {
-        console.error('Failed to like product:', result.message);
+        if (this.likedProducts.has(product._id)) {
+          this.likedProducts.delete(product._id);
+        } else {
+          this.likedProducts.add(product._id);
+        }
       }
     } catch (error) {
       console.error('Error liking product:', error);
@@ -169,17 +102,23 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   async onShareProduct(product: Product, event: Event) {
     event.stopPropagation();
     try {
-      // For now, copy link to clipboard
       const productUrl = `${window.location.origin}/product/${product._id}`;
-      await navigator.clipboard.writeText(productUrl);
-
-      // Track the share
+      
+      if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text: `Check out this amazing ${product.name} from ${product.brand}!`,
+          url: productUrl
+        });
+      } else {
+        await navigator.clipboard.writeText(productUrl);
+        console.log('Product URL copied to clipboard');
+      }
+      
       await this.socialService.shareProduct(product._id, {
         platform: 'copy_link',
         message: `Check out this amazing ${product.name} from ${product.brand}!`
       });
-
-      console.log('Product link copied to clipboard!');
     } catch (error) {
       console.error('Error sharing product:', error);
     }
@@ -189,7 +128,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     try {
       await this.cartService.addToCart(product._id, 1);
-      console.log('Product added to cart!');
+      console.log('Product added to cart');
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -199,7 +138,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     try {
       await this.wishlistService.addToWishlist(product._id);
-      console.log('Product added to wishlist!');
+      console.log('Product added to wishlist');
     } catch (error) {
       console.error('Error adding to wishlist:', error);
     }
@@ -213,10 +152,9 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   formatPrice(price: number): string {
-    return new Intl.NumberFormat('en-IN', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0
+      currency: 'USD'
     }).format(price);
   }
 
@@ -226,7 +164,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
 
   onViewAll() {
     this.router.navigate(['/products'], {
-      queryParams: { filter: 'trending' }
+      queryParams: { category: 'trending' }
     });
   }
 
@@ -236,113 +174,6 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
 
   trackByProductId(index: number, product: Product): string {
     return product._id;
-  }
-
-  // Auto-sliding methods
-  private startAutoSlide() {
-    if (!this.isAutoSliding || this.isPaused) return;
-
-    this.stopAutoSlide();
-    this.autoSlideInterval = setInterval(() => {
-      if (!this.isPaused && this.trendingProducts.length > this.visibleCards) {
-        this.autoSlideNext();
-      }
-    }, this.autoSlideDelay);
-  }
-
-  private stopAutoSlide() {
-    if (this.autoSlideInterval) {
-      clearInterval(this.autoSlideInterval);
-      this.autoSlideInterval = null;
-    }
-  }
-
-  private autoSlideNext() {
-    if (this.currentSlide >= this.maxSlide) {
-      // Reset to beginning for infinite loop
-      this.currentSlide = 0;
-    } else {
-      this.currentSlide++;
-    }
-    this.updateSlideOffset();
-  }
-
-  pauseAutoSlide() {
-    this.isPaused = true;
-    this.stopAutoSlide();
-  }
-
-  resumeAutoSlide() {
-    this.isPaused = false;
-    this.startAutoSlide();
-  }
-
-  // Responsive methods
-  private updateResponsiveSettings() {
-    const width = window.innerWidth;
-    if (width <= 480) {
-      this.cardWidth = 195; // 180px + 15px gap
-      this.visibleCards = 1;
-    } else if (width <= 768) {
-      this.cardWidth = 215; // 200px + 15px gap
-      this.visibleCards = 2;
-    } else if (width <= 1200) {
-      this.cardWidth = 260; // 240px + 20px gap
-      this.visibleCards = 3;
-    } else {
-      this.cardWidth = 280; // 260px + 20px gap
-      this.visibleCards = 4;
-    }
-    this.updateSliderLimits();
-    this.updateSlideOffset();
-  }
-
-  private setupResizeListener() {
-    window.addEventListener('resize', () => {
-      this.updateResponsiveSettings();
-    });
-  }
-
-  // Slider methods
-  updateSliderLimits() {
-    this.maxSlide = Math.max(0, this.trendingProducts.length - this.visibleCards);
-  }
-
-  slidePrev() {
-    if (this.currentSlide > 0) {
-      this.currentSlide--;
-      this.updateSlideOffset();
-      this.restartAutoSlideAfterInteraction();
-    }
-  }
-
-  slideNext() {
-    if (this.currentSlide < this.maxSlide) {
-      this.currentSlide++;
-      this.updateSlideOffset();
-      this.restartAutoSlideAfterInteraction();
-    }
-  }
-
-  private restartAutoSlideAfterInteraction() {
-    this.stopAutoSlide();
-    setTimeout(() => {
-      this.startAutoSlide();
-    }, 2000); // Wait 2 seconds before resuming auto-slide
-  }
-
-  private updateSlideOffset() {
-    this.slideOffset = -this.currentSlide * this.cardWidth;
-  }
-
-  // Update slider when products load
-  private updateSliderOnProductsLoad() {
-    setTimeout(() => {
-      this.updateSliderLimits();
-      this.currentSlide = 0;
-      this.slideOffset = 0;
-      this.startAutoSlide();
-    }, 100);
   }
 
   // Section interaction methods
@@ -360,12 +191,10 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   openComments() {
-    // Open comments modal/sheet
     console.log('Opening comments for trending products section');
   }
 
   shareSection() {
-    // Share section functionality
     if (navigator.share) {
       navigator.share({
         title: 'Trending Products',
@@ -373,15 +202,12 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
         url: window.location.href
       });
     } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
+      console.log('Sharing trending products section');
     }
   }
 
   openMusicPlayer() {
-    // Open music player for section
-    console.log('Opening music player for trending products');
+    console.log('Opening music player');
   }
 
   formatCount(count: number): string {

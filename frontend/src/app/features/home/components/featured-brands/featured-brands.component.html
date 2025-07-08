@@ -66,6 +66,8 @@
     </button>
   </div>
 
+
+
   <!-- Brands Slider -->
   <div *ngIf="!isLoading && !error && featuredBrands.length > 0" class="brands-slider-container">
     <!-- Navigation Buttons -->
@@ -87,19 +89,19 @@
       <!-- Brand Header -->
       <div class="brand-header">
         <div class="brand-info">
-          <h3 class="brand-name">{{ brand.brand }}</h3>
+          <h3 class="brand-name">{{ brand.name }}</h3>
           <div class="brand-stats">
             <div class="stat-item">
               <ion-icon name="bag-outline"></ion-icon>
-              <span>{{ brand.productCount }} Products</span>
+              <span>{{ brand.productCount || 0 }} Products</span>
             </div>
             <div class="stat-item">
               <ion-icon name="star"></ion-icon>
-              <span>{{ brand.avgRating }}/5</span>
+              <span>{{ brand.avgRating || 0 }}/5</span>
             </div>
             <div class="stat-item">
               <ion-icon name="eye-outline"></ion-icon>
-              <span>{{ formatNumber(brand.totalViews) }} Views</span>
+              <span>{{ formatNumber(brand.totalViews || 0) }} Views</span>
             </div>
           </div>
         </div>
@@ -114,7 +116,7 @@
         <h4 class="products-title">Top Products</h4>
         <div class="products-list">
           <div 
-            *ngFor="let product of brand.topProducts; trackBy: trackByProductId" 
+            *ngFor="let product of (brand.products || []); trackBy: trackByProductId"
             class="product-item"
             (click)="onProductClick(product, $event)"
           >
@@ -155,13 +157,13 @@
               </div>
               <div class="product-rating">
                 <div class="stars">
-                  <ion-icon 
-                    *ngFor="let star of [1,2,3,4,5]" 
-                    [name]="star <= product.rating.average ? 'star' : 'star-outline'"
-                    [class.filled]="star <= product.rating.average"
+                  <ion-icon
+                    *ngFor="let star of [1,2,3,4,5]"
+                    [name]="star <= (product.rating?.average || 0) ? 'star' : 'star-outline'"
+                    [class.filled]="star <= (product.rating?.average || 0)"
                   ></ion-icon>
                 </div>
-                <span class="rating-count">({{ product.rating.count }})</span>
+                <span class="rating-count">({{ product.rating?.count || 0 }})</span>
               </div>
             </div>
           </div>
@@ -171,7 +173,7 @@
       <!-- View More Button -->
       <div class="view-more-section">
         <button class="view-more-btn">
-          <span>View All {{ brand.brand }} Products</span>
+          <span>View All {{ brand.name }} Products</span>
           <ion-icon name="chevron-forward"></ion-icon>
         </button>
       </div>

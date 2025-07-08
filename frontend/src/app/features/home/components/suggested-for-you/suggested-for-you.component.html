@@ -65,6 +65,8 @@
     </button>
   </div>
 
+
+
   <!-- Users Slider -->
   <div *ngIf="!isLoading && !error && suggestedUsers.length > 0" class="users-slider-container">
     <!-- Navigation Buttons -->
@@ -85,9 +87,9 @@
         >
           <!-- User Avatar -->
           <div class="user-avatar-container">
-            <img 
-              [src]="user.avatar"
-              [alt]="user.fullName"
+            <img
+              [src]="user.avatar || '/assets/images/default-avatar.png'"
+              [alt]="user.fullName || 'User'"
               class="user-avatar"
               loading="lazy"
             />
@@ -98,11 +100,11 @@
 
           <!-- User Info -->
           <div class="user-info">
-            <h3 class="user-name">{{ user.fullName }}</h3>
-            <p class="username">&#64;{{ user.username }}</p>
-            <p class="follower-count">{{ formatFollowerCount(user.followerCount) }} followers</p>
-            <p class="category-tag">{{ user.category }}</p>
-            <p class="followed-by">{{ user.followedBy }}</p>
+            <h3 class="user-name">{{ user.fullName || 'Unknown User' }}</h3>
+            <p class="username">&#64;{{ user.username || 'unknown' }}</p>
+            <p class="follower-count">{{ formatFollowerCount(user.followerCount || 0) }} followers</p>
+            <p class="category-tag">{{ user.category || 'General' }}</p>
+            <p class="followed-by">{{ user.followedBy || '' }}</p>
           </div>
 
           <!-- Follow Button -->
@@ -111,8 +113,8 @@
             [class.following]="user.isFollowing"
             (click)="onFollowUser(user, $event)"
           >
-            <span>{{ user.isFollowing ? 'Following' : 'Follow' }}</span>
-            <ion-icon [name]="user.isFollowing ? 'checkmark' : 'add'"></ion-icon>
+            <span>{{ (user.isFollowing || false) ? 'Following' : 'Follow' }}</span>
+            <ion-icon [name]="(user.isFollowing || false) ? 'checkmark' : 'add'"></ion-icon>
           </button>
         </div>
       </div>

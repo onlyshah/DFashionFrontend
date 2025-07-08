@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
-import { Product } from '../../core/models/product.model';
+import { Product } from '../../core/models/product.interface';
 
 interface Category {
   id: string;

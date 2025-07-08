@@ -69,6 +69,8 @@
     </button>
   </div>
 
+
+
   <!-- Influencers Slider -->
   <div *ngIf="!isLoading && !error && topInfluencers.length > 0" class="influencers-slider-container">
     <!-- Navigation Buttons -->
@@ -109,11 +111,11 @@
             <!-- Stats -->
             <div class="stats-container">
               <div class="stat">
-                <span class="stat-value">{{ formatFollowerCount(influencer.followerCount) }}</span>
+                <span class="stat-value">{{ formatFollowerCount(influencer.followersCount) }}</span>
                 <span class="stat-label">Followers</span>
               </div>
               <div class="stat">
-                <span class="stat-value">{{ influencer.engagementRate }}%</span>
+                <span class="stat-value">{{ influencer.engagement || 0 }}%</span>
                 <span class="stat-label">Engagement</span>
               </div>
             </div>
@@ -122,11 +124,11 @@
             <div class="top-brands">
               <span class="brands-label">Works with:</span>
               <div class="brands-list">
-                <span *ngFor="let brand of influencer.topBrands.slice(0, 2)" class="brand-tag">
+                <span *ngFor="let brand of (influencer.category ? [influencer.category] : []).slice(0, 2)" class="brand-tag">
                   {{ brand }}
                 </span>
-                <span *ngIf="influencer.topBrands.length > 2" class="more-brands">
-                  +{{ influencer.topBrands.length - 2 }}
+                <span *ngIf="false" class="more-brands">
+                  +0
                 </span>
               </div>
             </div>

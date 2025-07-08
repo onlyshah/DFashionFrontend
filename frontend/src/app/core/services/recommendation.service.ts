@@ -84,7 +84,7 @@ export class RecommendationService {
       .set('userId', userId || '')
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/recommendations/suggested`, { params })
+    return this.http.get<any>(`${this.apiUrl}/api/v1/recommendations/suggested`, { params })
       .pipe(
         map(response => response.success ? response.data : []),
         tap(recommendations => {
@@ -105,7 +105,7 @@ export class RecommendationService {
     if (category) params.append('category', category);
     params.append('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/recommendations/trending?${params.toString()}`)
+    return this.http.get<any>(`${this.apiUrl}/api/v1/recommendations/trending?${params.toString()}`)
       .pipe(
         map(response => response.success ? response.data : []),
         catchError(error => {
@@ -213,7 +213,7 @@ export class RecommendationService {
 
     const headers = this.authService.getAuthHeaders();
 
-    return this.http.get<any>(`${this.apiUrl}/recommendations/user-analytics/${userId}`, { headers })
+    return this.http.get<any>(`${this.apiUrl}/api/v1/recommendations/user-analytics/${userId}`, { headers })
       .pipe(
         map(response => response.success ? response.data : null),
         tap(analytics => {

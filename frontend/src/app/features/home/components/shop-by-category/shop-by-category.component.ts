@@ -4,16 +4,21 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
-interface ShopCategory {
-  id: string;
+interface Category {
+  _id: string;
   name: string;
-  image: string;
-  productCount: number;
-  description: string;
-  trending: boolean;
-  discount?: number;
-  subcategories: string[];
+  description?: string;
+  image?: string;
+  productCount?: number;
+  isActive?: boolean;
+  isFeatured?: boolean;
+  parentCategory?: string;
+  subcategories?: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 @Component({
@@ -24,7 +29,7 @@ interface ShopCategory {
   styleUrls: ['./shop-by-category.component.scss']
 })
 export class ShopByCategoryComponent implements OnInit, OnDestroy {
-  categories: ShopCategory[] = [];
+  categories: Category[] = [];
   isLoading = true;
   error: string | null = null;
   private subscription: Subscription = new Subscription();
@@ -42,7 +47,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   isAutoSliding = true;
   isPaused = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit() {
     this.loadCategories();
@@ -59,102 +64,31 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     try {
       this.isLoading = true;
       this.error = null;
-      
-      // Mock data for shop categories
-      this.categories = [
-        {
-          id: '1',
-          name: 'Women\'s Fashion',
-          image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=300&h=200&fit=crop',
-          productCount: 15420,
-          description: 'Trendy outfits for every occasion',
-          trending: true,
-          discount: 30,
-          subcategories: ['Dresses', 'Tops', 'Bottoms', 'Accessories']
-        },
-        {
-          id: '2',
-          name: 'Men\'s Fashion',
-          image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=300&h=200&fit=crop',
-          productCount: 12850,
-          description: 'Stylish clothing for modern men',
-          trending: true,
-          discount: 25,
-          subcategories: ['Shirts', 'Pants', 'Jackets', 'Shoes']
-        },
-        {
-          id: '3',
-          name: 'Footwear',
-          image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=200&fit=crop',
-          productCount: 8960,
-          description: 'Step up your shoe game',
-          trending: false,
-          discount: 20,
-          subcategories: ['Sneakers', 'Formal', 'Casual', 'Sports']
-        },
-        {
-          id: '4',
-          name: 'Accessories',
-          image: 'https://images.unsplash.com/photo-1506629905607-d9c36e0a3f90?w=300&h=200&fit=crop',
-          productCount: 6750,
-          description: 'Complete your look',
-          trending: true,
-          subcategories: ['Bags', 'Jewelry', 'Watches', 'Belts']
-        },
-        {
-          id: '5',
-          name: 'Kids Fashion',
-          image: 'https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=300&h=200&fit=crop',
-          productCount: 4320,
-          description: 'Adorable styles for little ones',
-          trending: false,
-          discount: 35,
-          subcategories: ['Boys', 'Girls', 'Baby', 'Toys']
-        },
-        {
-          id: '6',
-          name: 'Sports & Fitness',
-          image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=200&fit=crop',
-          productCount: 5680,
-          description: 'Gear up for your workout',
-          trending: true,
-          subcategories: ['Activewear', 'Equipment', 'Shoes', 'Supplements']
-        },
-        {
-          id: '7',
-          name: 'Beauty & Personal Care',
-          image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=300&h=200&fit=crop',
-          productCount: 7890,
-          description: 'Look and feel your best',
-          trending: false,
-          discount: 15,
-          subcategories: ['Skincare', 'Makeup', 'Haircare', 'Fragrance']
-        },
-        {
-          id: '8',
-          name: 'Home & Living',
-          image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop',
-          productCount: 3450,
-          description: 'Style your space',
-          trending: false,
-          subcategories: ['Decor', 'Furniture', 'Kitchen', 'Bedding']
-        }
-      ];
-      
-      this.isLoading = false;
-      this.updateSliderOnCategoriesLoad();
+
+      // Load from API
+      const response = await this.http.get<any>(`${environment.apiUrl}/api/v1/categories`).toPromise();
+      if (response?.success && response?.data) {
+        this.categories = response.data.slice(0, 8); // Limit to 8 categories for display
+        this.updateSliderOnCategoriesLoad();
+      } else {
+        console.warn('No categories found');
+        this.categories = [];
+      }
     } catch (error) {
       console.error('Error loading categories:', error);
+      this.categories = [];
       this.error = 'Failed to load categories';
+    } finally {
       this.isLoading = false;
     }
   }
 
-  onCategoryClick(category: ShopCategory) {
-    this.router.navigate(['/category', category.id]);
+  onCategoryClick(category: Category) {
+    this.router.navigate(['/category', category._id]);
   }
 
-  formatProductCount(count: number): string {
+  formatProductCount(count?: number): string {
+    if (!count) return '0';
     if (count >= 1000) {
       return (count / 1000).toFixed(1) + 'K';
     }
@@ -165,8 +99,8 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.loadCategories();
   }
 
-  trackByCategoryId(index: number, category: ShopCategory): string {
-    return category.id;
+  trackByCategoryId(index: number, category: Category): string {
+    return category._id;
   }
 
   // Auto-sliding methods
@@ -210,18 +144,27 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
+    const sidebarWidth = width * 0.21; // 21% of screen width
+
     if (width <= 480) {
       this.cardWidth = 160;
       this.visibleCards = 1;
     } else if (width <= 768) {
       this.cardWidth = 180;
       this.visibleCards = 2;
+    } else if (width <= 1024) {
+      // Calculate based on 21% sidebar width - 3 cards per row
+      const availableWidth = sidebarWidth - 40; // Minus padding
+      this.cardWidth = Math.floor(availableWidth / 3) - 3; // 3 cards with gap
+      this.visibleCards = 3;
     } else if (width <= 1200) {
-      this.cardWidth = 200;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = Math.floor(availableWidth / 3) - 3.5;
       this.visibleCards = 3;
     } else {
-      this.cardWidth = 220;
-      this.visibleCards = 4;
+      const availableWidth = sidebarWidth - 40;
+      this.cardWidth = Math.floor(availableWidth / 3) - 4;
+      this.visibleCards = 3;
     }
     this.updateSliderLimits();
     this.updateSlideOffset();

@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 import { ViewAddStoriesComponent } from '../../components/view-add-stories/view-add-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
@@ -10,6 +12,7 @@ import { FeaturedBrandsComponent } from '../../components/featured-brands/featur
 import { NewArrivalsComponent } from '../../components/new-arrivals/new-arrivals.component';
 import { SuggestedForYouComponent } from '../../components/suggested-for-you/suggested-for-you.component';
 import { TopFashionInfluencersComponent } from '../../components/top-fashion-influencers/top-fashion-influencers.component';
+import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
 @Component({
   selector: 'app-home',
@@ -24,7 +27,8 @@ import { TopFashionInfluencersComponent } from '../../components/top-fashion-inf
     FeaturedBrandsComponent,
     NewArrivalsComponent,
     SuggestedForYouComponent,
-    TopFashionInfluencersComponent
+    TopFashionInfluencersComponent,
+    ShopByCategoryComponent
   ],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
@@ -42,90 +46,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   // TikTok-style interaction states
   isLiked = false;
 
-  // Instagram Stories Data - Enhanced for responsive design and mobile app
-  instagramStories = [
-    {
-      id: 1,
-      username: 'zara',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    },
-    {
-      id: 2,
-      username: 'nike',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    },
-    {
-      id: 3,
-      username: 'adidas',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: true,
-      touching: false
-    },
-    {
-      id: 4,
-      username: 'h&m',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    },
-    {
-      id: 5,
-      username: 'uniqlo',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    },
-    {
-      id: 6,
-      username: 'gucci',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: true,
-      touching: false
-    },
-    {
-      id: 7,
-      username: 'prada',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    },
-    {
-      id: 8,
-      username: 'versace',
-      avatar: '/assets/images/default-avatar.svg',
-      hasStory: true,
-      viewed: false,
-      touching: false
-    }
-  ];
+  // Instagram Stories Data - Will be loaded from API
+  instagramStories: any[] = [];
 
-  // Categories Data
-  categories = [
-    { name: 'Women', icon: 'woman' },
-    { name: 'Men', icon: 'man' },
-    { name: 'Kids', icon: 'happy' },
-    { name: 'Shoes', icon: 'footsteps' },
-    { name: 'Bags', icon: 'bag' },
-    { name: 'Accessories', icon: 'watch' },
-    { name: 'Beauty', icon: 'flower' },
-    { name: 'Sports', icon: 'fitness' }
-  ];
+  // Categories Data - Will be loaded from API
+  categories: any[] = [];
 
-  constructor() {}
+  private apiUrl = environment.apiUrl;
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.checkScreenSize();
+    this.loadStories();
+    this.loadCategories();
     console.log('Home component initialized:', {
       isMobile: this.isMobile,
       instagramStories: this.instagramStories.length
@@ -332,5 +266,92 @@ export class HomeComponent implements OnInit, OnDestroy {
   navigateToCart() {
     console.log('Navigate to cart');
     // TODO: Implement navigation to cart page
+  }
+
+  // Load stories from API
+  private loadStories() {
+    this.http.get<any>(`${this.apiUrl}/api/v1/stories`).subscribe({
+      next: (response) => {
+        if (response?.success && response?.storyGroups) {
+          this.instagramStories = response.storyGroups.map((storyGroup: any) => ({
+            id: storyGroup.user?._id,
+            username: storyGroup.user?.username || 'unknown',
+            avatar: storyGroup.user?.avatar || '/assets/images/default-avatar.svg',
+            hasStory: true,
+            viewed: false,
+            touching: false
+          }));
+        } else if (response?.success && response?.stories) {
+          // Fallback to individual stories if storyGroups not available
+          const uniqueUsers = new Map();
+          response.stories.forEach((story: any) => {
+            if (story.user && !uniqueUsers.has(story.user._id)) {
+              uniqueUsers.set(story.user._id, {
+                id: story.user._id,
+                username: story.user.username || 'unknown',
+                avatar: story.user.avatar || '/assets/images/default-avatar.svg',
+                hasStory: true,
+                viewed: false,
+                touching: false
+              });
+            }
+          });
+          this.instagramStories = Array.from(uniqueUsers.values());
+        } else {
+          console.warn('No stories found');
+          this.instagramStories = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error loading stories:', error);
+        this.instagramStories = [];
+      }
+    });
+  }
+
+  // Load categories from API
+  private loadCategories() {
+    this.http.get<any>(`${this.apiUrl}/api/v1/categories`).subscribe({
+      next: (response) => {
+        if (response?.success && response?.data) {
+          this.categories = response.data.slice(0, 8).map((category: any) => ({
+            name: category.name,
+            icon: this.getCategoryIcon(category.name)
+          }));
+        } else {
+          console.warn('No categories found');
+          this.categories = [];
+        }
+      },
+      error: (error) => {
+        console.error('Error loading categories:', error);
+        this.categories = [];
+      }
+    });
+  }
+
+  // Map category names to icons
+  private getCategoryIcon(categoryName: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Women': 'woman',
+      'Men': 'man',
+      'Kids': 'happy',
+      'Footwear': 'footsteps',
+      'Accessories': 'watch',
+      'Beauty': 'flower',
+      'Sports': 'fitness',
+      'Ethnic': 'flower',
+      'Winter': 'snow',
+      'Summer': 'sunny',
+      'Formal': 'business',
+      'Vintage': 'time',
+      'Sustainable': 'leaf',
+      'Designer': 'diamond',
+      'Street': 'walk',
+      'Work': 'briefcase',
+      'Party': 'wine',
+      'Travel': 'airplane'
+    };
+    return iconMap[categoryName] || 'shirt';
   }
 }

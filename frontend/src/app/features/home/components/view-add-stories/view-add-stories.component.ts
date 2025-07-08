@@ -198,112 +198,84 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   loadStories() {
     this.isLoadingStories = true;
 
-    // Use mock stories data for now since stories API is not implemented
-    this.stories = [
-      {
-        _id: '1',
-        user: {
-          _id: 'user1',
-          username: 'zara',
-          fullName: 'Zara Official',
-          avatar: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=100&h=100&fit=crop&crop=face',
-          isBrand: true,
-          isVerified: true
-        },
-        mediaUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        caption: 'New Summer Collection 🌞',
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-        expiresAt: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString(), // 22 hours from now
-        views: 1250,
-        hasNewProducts: true,
-        products: [
-          {
-            _id: 'prod1',
-            name: 'Summer Dress',
-            price: 89.99,
-            image: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=200&h=200&fit=crop'
-          }
-        ],
-        isActive: true,
-        isViewed: false
+    // Load stories from real API
+    this.http.get<any>(`${environment.apiUrl}/api/v1/stories`).subscribe({
+      next: (response) => {
+        console.log('✅ Stories loaded successfully:', response);
+        if (response?.success && response?.storyGroups) {
+          // Use storyGroups for better organization
+          this.stories = response.storyGroups.map((storyGroup: any) => ({
+            _id: storyGroup.user?._id,
+            user: {
+              _id: storyGroup.user?._id,
+              username: storyGroup.user?.username || 'unknown',
+              fullName: storyGroup.user?.fullName || 'Unknown User',
+              avatar: storyGroup.user?.avatar || '/assets/images/default-avatar.svg',
+              isBrand: false,
+              isVerified: false
+            },
+            mediaUrl: storyGroup.stories?.[0]?.media?.url || '',
+            mediaType: storyGroup.stories?.[0]?.media?.type === 'video' ? 'video' : 'image',
+            caption: storyGroup.stories?.[0]?.caption || '',
+            createdAt: storyGroup.stories?.[0]?.createdAt || new Date().toISOString(),
+            expiresAt: storyGroup.stories?.[0]?.expiresAt || new Date().toISOString(),
+            views: storyGroup.stories?.[0]?.analytics?.views || 0,
+            isActive: true,
+            isViewed: false,
+            hasNewProducts: storyGroup.stories?.[0]?.products?.length > 0,
+            products: storyGroup.stories?.[0]?.products?.map((p: any) => ({
+              _id: p.product?._id,
+              name: p.product?.name,
+              price: p.product?.price,
+              image: p.product?.images?.[0]?.url
+            })) || []
+          }));
+        } else if (response?.success && response?.stories) {
+          // Fallback to individual stories if storyGroups not available
+          const uniqueUsers = new Map();
+          response.stories.forEach((story: any) => {
+            if (story.user && !uniqueUsers.has(story.user._id)) {
+              uniqueUsers.set(story.user._id, {
+                _id: story._id,
+                user: {
+                  _id: story.user._id,
+                  username: story.user.username || 'unknown',
+                  fullName: story.user.fullName || 'Unknown User',
+                  avatar: story.user.avatar || '/assets/images/default-avatar.svg',
+                  isBrand: false,
+                  isVerified: false
+                },
+                mediaUrl: story.media?.url || '',
+                mediaType: story.media?.type === 'video' ? 'video' : 'image',
+                caption: story.caption || '',
+                createdAt: story.createdAt || new Date().toISOString(),
+                expiresAt: story.expiresAt || new Date().toISOString(),
+                views: story.analytics?.views || 0,
+                isActive: true,
+                isViewed: false,
+                hasNewProducts: story.products?.length > 0,
+                products: story.products?.map((p: any) => ({
+                  _id: p.product?._id,
+                  name: p.product?.name,
+                  price: p.product?.price,
+                  image: p.product?.images?.[0]?.url
+                })) || []
+              });
+            }
+          });
+          this.stories = Array.from(uniqueUsers.values());
+        } else {
+          console.warn('No stories found in response');
+          this.stories = [];
+        }
+        this.isLoadingStories = false;
       },
-      {
-        _id: '2',
-        user: {
-          _id: 'user2',
-          username: 'nike',
-          fullName: 'Nike',
-          avatar: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100&h=100&fit=crop&crop=center',
-          isBrand: true,
-          isVerified: true
-        },
-        mediaUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        caption: 'Just Do It ✨',
-        createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-        expiresAt: new Date(Date.now() + 20 * 60 * 60 * 1000).toISOString(), // 20 hours from now
-        views: 2340,
-        hasNewProducts: false,
-        products: [
-          {
-            _id: 'prod2',
-            name: 'Air Max Sneakers',
-            price: 129.99,
-            image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&h=200&fit=crop'
-          }
-        ],
-        isActive: true,
-        isViewed: false
-      },
-      {
-        _id: '3',
-        user: {
-          _id: 'user3',
-          username: 'adidas',
-          fullName: 'Adidas',
-          avatar: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=100&h=100&fit=crop&crop=center',
-          isBrand: true,
-          isVerified: true
-        },
-        mediaUrl: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        caption: 'Impossible is Nothing 🔥',
-        createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-        expiresAt: new Date(Date.now() + 18 * 60 * 60 * 1000).toISOString(), // 18 hours from now
-        views: 1890,
-        hasNewProducts: true,
-        products: [
-          {
-            _id: 'prod3',
-            name: 'Ultraboost Shoes',
-            price: 159.99,
-            image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop'
-          }
-        ],
-        isActive: true,
-        isViewed: false
-      },
-      {
-        _id: '4',
-        user: {
-          _id: 'user4',
-          username: 'hm',
-          fullName: 'H&M',
-          avatar: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=100&h=100&fit=crop&crop=center'
-        },
-        mediaUrl: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        caption: 'Fashion for Everyone 💫',
-        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(), // 8 hours ago
-        expiresAt: new Date(Date.now() + 16 * 60 * 60 * 1000).toISOString(), // 16 hours from now
-        views: 3420,
-        isActive: true,
-        isViewed: false
+      error: (error) => {
+        console.error('Error loading stories:', error);
+        this.stories = [];
+        this.isLoadingStories = false;
       }
-    ];
-
-    this.isLoadingStories = false;
+    });
   }
 
   // Removed fallback stories - only use database data

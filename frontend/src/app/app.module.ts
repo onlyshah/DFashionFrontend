@@ -15,6 +15,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { AuthService } from './core/services/auth.service';
 import { ApiService } from './core/services/api.service';
 import { StorageService } from './core/services/storage.service';
+import { TrendingService } from './core/services/trending.service';
+import { SocialInteractionsService } from './core/services/social-interactions.service';
+import { CartService } from './core/services/cart.service';
+import { WishlistService } from './core/services/wishlist.service';
 
 // Shared Components
 import { SharedModule } from './shared/shared.module';
@@ -42,7 +46,11 @@ import { SharedModule } from './shared/shared.module';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     AuthService,
     ApiService,
-    StorageService
+    StorageService,
+    TrendingService,
+    SocialInteractionsService,
+    CartService,
+    WishlistService
   ],
   bootstrap: [AppComponent]
 })

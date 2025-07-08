@@ -4,6 +4,21 @@
   border-radius: 16px;
   margin-bottom: 24px;
   position: relative;
+  width: 100%;
+
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 18px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 20px;
+  }
 }
 
 // Mobile Action Buttons (TikTok/Instagram Style)
@@ -242,6 +257,19 @@
   position: relative;
   overflow: hidden;
 
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    margin: 0 -16px;
+  }
+
+  @media (min-width: 1024px) {
+    margin: 0 -18px;
+  }
+
+  @media (min-width: 1200px) {
+    margin: 0 -20px;
+  }
+
   .nav-btn {
     position: absolute;
     top: 50%;
@@ -286,6 +314,19 @@
 .products-slider-wrapper {
   overflow: hidden;
   padding: 0 10px;
+
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    padding: 0 16px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 18px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 0 20px;
+  }
 }
 
 .products-slider {
@@ -293,6 +334,20 @@
   gap: 16px;
   transition: transform 0.3s ease;
   will-change: transform;
+  width: fit-content; // Fixed width to prevent overflow
+
+  // Desktop/laptop aggressive space optimization
+  @media (min-width: 769px) {
+    gap: 8px;
+  }
+
+  @media (min-width: 1024px) {
+    gap: 10px;
+  }
+
+  @media (min-width: 1200px) {
+    gap: 12px;
+  }
 }
 
 .product-card {
@@ -305,12 +360,35 @@
   cursor: pointer;
   flex-shrink: 0;
   min-width: 280px;
-  
+  height: 420px; // Fixed height
+
+  // Desktop/laptop optimization for 21% sidebar width
+  @media (min-width: 769px) {
+    min-width: calc(50% - 2px);
+    width: calc(50% - 2px);
+    height: 320px;
+    max-width: 180px;
+  }
+
+  @media (min-width: 1024px) {
+    min-width: calc(50% - 2.5px);
+    width: calc(50% - 2.5px);
+    height: 340px;
+    max-width: 190px;
+  }
+
+  @media (min-width: 1200px) {
+    min-width: calc(50% - 3px);
+    width: calc(50% - 3px);
+    height: 360px;
+    max-width: 200px;
+  }
+
   &:hover {
     transform: translateY(-8px);
     background: rgba(255, 255, 255, 0.15);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-    
+
     .action-buttons {
       opacity: 1;
       transform: translateY(0);

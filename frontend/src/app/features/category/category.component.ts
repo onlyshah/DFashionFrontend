@@ -6,24 +6,7 @@ import { ProductService } from '../../core/services/product.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
-
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  images: { url: string; alt?: string }[];
-  brand: string;
-  rating: { average: number; count: number };
-  category: string;
-  subcategory: string;
-  tags: string[];
-  analytics?: {
-    views: number;
-    likes: number;
-    shares: number;
-  };
-}
+import { Product } from '../../core/models/product.interface';
 
 @Component({
   selector: 'app-category',

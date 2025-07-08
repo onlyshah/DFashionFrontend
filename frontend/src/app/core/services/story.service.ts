@@ -18,17 +18,17 @@ export class StoryService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<StoriesResponse>(`${this.API_URL}/stories`, { params });
+    return this.http.get<StoriesResponse>(`${this.API_URL}/api/v1/stories`, { params });
   }
 
   getUserStories(userId: string): Observable<{ stories: Story[] }> {
-    return this.http.get<{ stories: Story[] }>(`${this.API_URL}/stories/user/${userId}`);
+    return this.http.get<{ stories: Story[] }>(`${this.API_URL}/api/v1/stories/user/${userId}`);
   }
 
 
 
   createStory(storyData: CreateStoryRequest): Observable<{ message: string; story: Story }> {
-    return this.http.post<{ message: string; story: Story }>(`${this.API_URL}/stories`, storyData);
+    return this.http.post<{ message: string; story: Story }>(`${this.API_URL}/api/v1/stories`, storyData);
   }
 
   viewStory(storyId: string): Observable<{ message: string }> {

@@ -3,6 +3,24 @@
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 16px;
   margin-bottom: 24px;
+  width: 100%;
+
+  // Desktop/laptop aggressive space optimization
+  @media (min-width: 769px) {
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 10px 14px;
+    margin-bottom: 14px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
 }
 
 // Header Section
@@ -127,7 +145,20 @@
 .categories-slider-container {
   position: relative;
   margin: 0 -20px;
-  
+
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    margin: 0 -16px;
+  }
+
+  @media (min-width: 1024px) {
+    margin: 0 -18px;
+  }
+
+  @media (min-width: 1200px) {
+    margin: 0 -20px;
+  }
+
   .slider-nav {
     position: absolute;
     top: 50%;
@@ -144,25 +175,25 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    
+
     &:hover:not(:disabled) {
       background: rgba(0, 0, 0, 0.9);
       transform: translateY(-50%) scale(1.1);
     }
-    
+
     &:disabled {
       opacity: 0.3;
       cursor: not-allowed;
     }
-    
+
     ion-icon {
       font-size: 18px;
     }
-    
+
     &.prev-btn {
       left: -20px;
     }
-    
+
     &.next-btn {
       right: -20px;
     }
@@ -172,16 +203,62 @@
 .categories-slider-wrapper {
   overflow: hidden;
   padding: 0 20px;
+
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    padding: 0 16px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 0 18px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 0 20px;
+  }
 }
 
 .categories-slider {
   display: flex;
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   gap: 20px;
-  
+  width: 100%; // Full width within sidebar
+  max-width: 100%;
+
   .category-card {
     flex: 0 0 180px;
     width: 180px;
+  }
+
+  // Desktop/laptop optimization for 21% sidebar width
+  @media (min-width: 769px) {
+    gap: 3px;
+
+    .category-card {
+      flex: 0 0 calc(33.33% - 2px); // 3 cards per row in 21% sidebar
+      width: calc(33.33% - 2px);
+      max-width: 120px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    gap: 3.5px;
+
+    .category-card {
+      flex: 0 0 calc(33.33% - 2.33px);
+      width: calc(33.33% - 2.33px);
+      max-width: 130px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    gap: 4px;
+
+    .category-card {
+      flex: 0 0 calc(33.33% - 2.67px);
+      width: calc(33.33% - 2.67px);
+      max-width: 140px;
+    }
   }
 }
 

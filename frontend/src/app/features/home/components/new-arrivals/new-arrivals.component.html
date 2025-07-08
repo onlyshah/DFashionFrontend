@@ -69,6 +69,8 @@
     </button>
   </div>
 
+
+
   <!-- Products Slider -->
   <div *ngIf="!isLoading && !error && newArrivals.length > 0" class="products-slider-container"
        (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
@@ -99,9 +101,9 @@
         >
       <!-- Product Image -->
       <div class="product-image-container">
-        <img 
-          [src]="product.images[0].url"
-          [alt]="product.images[0].alt || product.name"
+        <img
+          [src]="product.images[0]?.url || '/assets/images/default-product.png'"
+          [alt]="product.images[0]?.alt || product.name || 'Product'"
           class="product-image"
           loading="lazy"
         />
@@ -144,8 +146,8 @@
 
       <!-- Product Info -->
       <div class="product-info">
-        <div class="product-brand">{{ product.brand }}</div>
-        <h3 class="product-name">{{ product.name }}</h3>
+        <div class="product-brand">{{ product.brand || 'Unknown Brand' }}</div>
+        <h3 class="product-name">{{ product.name || 'Unknown Product' }}</h3>
         
         <!-- Price Section -->
         <div class="price-section">
@@ -159,11 +161,11 @@
           <div class="stars">
             <ion-icon 
               *ngFor="let star of [1,2,3,4,5]" 
-              [name]="star <= product.rating.average ? 'star' : 'star-outline'"
-              [class.filled]="star <= product.rating.average"
+              [name]="star <= (product.rating?.average || 0) ? 'star' : 'star-outline'"
+              [class.filled]="star <= (product.rating?.average || 0)"
             ></ion-icon>
           </div>
-          <span class="rating-text">({{ product.rating.count }})</span>
+          <span class="rating-text">({{ product.rating?.count || 0 }})</span>
         </div>
 
         <!-- Action Buttons -->

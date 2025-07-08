@@ -74,7 +74,7 @@ export class WishlistService {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.get<WishlistResponse>(`${this.API_URL}/wishlist?page=${page}&limit=${limit}`, options).pipe(
+    return this.http.get<WishlistResponse>(`${this.API_URL}/api/v1/wishlist?page=${page}&limit=${limit}`, options).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistItemsSubject.next(response.data.items);

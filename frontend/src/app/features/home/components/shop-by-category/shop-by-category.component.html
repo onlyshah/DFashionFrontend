@@ -34,6 +34,8 @@
     </button>
   </div>
 
+
+
   <!-- Categories Slider -->
   <div *ngIf="!isLoading && !error && categories.length > 0" class="categories-slider-container">
     <!-- Navigation Buttons -->
@@ -50,7 +52,7 @@
         <div 
           *ngFor="let category of categories; trackBy: trackByCategoryId" 
           class="category-card"
-          [class.trending]="category.trending"
+          [class.trending]="false"
           (click)="onCategoryClick(category)"
         >
           <!-- Category Image -->
@@ -62,16 +64,7 @@
               loading="lazy"
             />
             
-            <!-- Trending Badge -->
-            <div *ngIf="category.trending" class="trending-badge">
-              <ion-icon name="trending-up"></ion-icon>
-              <span>Trending</span>
-            </div>
-            
-            <!-- Discount Badge -->
-            <div *ngIf="category.discount" class="discount-badge">
-              {{ category.discount }}% OFF
-            </div>
+            <!-- Trending and discount badges removed as not available in Category interface -->
             
             <!-- Overlay -->
             <div class="category-overlay">
@@ -85,18 +78,7 @@
             <p class="category-description">{{ category.description }}</p>
             <p class="product-count">{{ formatProductCount(category.productCount) }} Products</p>
             
-            <!-- Subcategories -->
-            <div class="subcategories">
-              <span 
-                *ngFor="let sub of category.subcategories.slice(0, 3)" 
-                class="subcategory-tag"
-              >
-                {{ sub }}
-              </span>
-              <span *ngIf="category.subcategories.length > 3" class="more-subcategories">
-                +{{ category.subcategories.length - 3 }}
-              </span>
-            </div>
+            <!-- Subcategories removed as not available in Category interface -->
           </div>
         </div>
       </div>
