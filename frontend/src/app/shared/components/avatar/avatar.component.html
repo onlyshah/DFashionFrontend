@@ -1,0 +1,28 @@
+<div class="avatar-container" [ngStyle]="getContainerStyles()">
+  <!-- Image Avatar -->
+  <img 
+    *ngIf="avatarData?.imageUrl"
+    [src]="getImageUrl()"
+    [alt]="avatarData?.name || 'Avatar'"
+    [ngStyle]="getImageStyles()"
+    (load)="onImageLoad()"
+    (error)="onImageError()"
+    [style.display]="shouldShowImage() ? 'block' : 'none'"
+  />
+  
+  <!-- Initials Fallback -->
+  <span 
+    *ngIf="shouldShowInitials()"
+    class="avatar-initials"
+  >
+    {{ getInitials() }}
+  </span>
+  
+  <!-- Online Status Indicator -->
+  <div 
+    *ngIf="showOnlineStatus"
+    class="online-status"
+    [ngStyle]="getOnlineStatusStyles()"
+    [title]="isOnline ? 'Online' : 'Offline'"
+  ></div>
+</div>

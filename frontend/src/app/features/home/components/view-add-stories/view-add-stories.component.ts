@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { environment } from '../../../../../environments/environment';
+import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 
 export interface Story {
   _id: string;
@@ -45,7 +46,7 @@ export interface CurrentUser {
 @Component({
   selector: 'app-view-add-stories',
   standalone: true,
-  imports: [CommonModule, CarouselModule],
+  imports: [CommonModule, CarouselModule, ImageFallbackDirective],
   templateUrl: './view-add-stories.component.html',
   styleUrls: ['./view-add-stories.component.scss']
 })

@@ -91,11 +91,13 @@
         >
           <!-- Influencer Avatar -->
           <div class="influencer-avatar-container">
-            <img 
+            <img
               [src]="influencer.avatar"
               [alt]="influencer.fullName"
               class="influencer-avatar"
               loading="lazy"
+              [appImageFallback]="influencer.fullName || influencer.username || 'Influencer'"
+              [fallbackSize]="100"
             />
             <div *ngIf="influencer.isVerified" class="verified-badge">
               <ion-icon name="checkmark"></ion-icon>

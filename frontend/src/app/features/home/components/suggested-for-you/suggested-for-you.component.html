@@ -92,6 +92,8 @@
               [alt]="user.fullName || 'User'"
               class="user-avatar"
               loading="lazy"
+              [appImageFallback]="user.fullName || user.username || 'User'"
+              [fallbackSize]="80"
             />
             <div *ngIf="user.isInfluencer" class="influencer-badge">
               <ion-icon name="star"></ion-icon>

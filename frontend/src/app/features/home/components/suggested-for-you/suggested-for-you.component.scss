@@ -314,43 +314,39 @@
 .users-slider {
   display: flex;
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  gap: 20px;
-  width: 100%; // Full width within sidebar
-  max-width: 100%;
+  gap: 16px; // Consistent gap between items
+  width: 100%;
 
   .user-card {
-    flex: 0 0 180px;
-    width: 180px;
+    flex: 0 0 220px; // Standardized width
+    width: 220px;
   }
 
-  // Desktop/laptop optimization for 21% sidebar width
+  // Desktop/laptop optimization for sidebar
   @media (min-width: 769px) {
-    gap: 3px;
+    gap: 12px;
 
     .user-card {
-      flex: 0 0 calc(33.33% - 2px); // 3 cards per row in 21% sidebar
-      width: calc(33.33% - 2px);
-      max-width: 120px;
+      flex: 0 0 150px; // Optimized for 500px sidebar
+      width: 150px;
     }
   }
 
   @media (min-width: 1024px) {
-    gap: 3.5px;
+    gap: 14px;
 
     .user-card {
-      flex: 0 0 calc(33.33% - 2.33px);
-      width: calc(33.33% - 2.33px);
-      max-width: 130px;
+      flex: 0 0 155px;
+      width: 155px;
     }
   }
 
   @media (min-width: 1200px) {
-    gap: 4px;
+    gap: 16px;
 
     .user-card {
-      flex: 0 0 calc(33.33% - 2.67px);
-      width: calc(33.33% - 2.67px);
-      max-width: 140px;
+      flex: 0 0 160px;
+      width: 160px;
     }
   }
 }
@@ -358,16 +354,39 @@
 // User Card Styles
 .user-card {
   background: white;
-  border-radius: 16px;
-  padding: 20px;
+  border-radius: 18px;
+  padding: 18px;
   text-align: center;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   cursor: pointer;
-  
+  height: 360px; // Standardized height
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
   &:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  // Desktop/laptop optimizations
+  @media (min-width: 769px) {
+    padding: 14px;
+    border-radius: 14px;
+    height: 320px;
+  }
+
+  @media (min-width: 1024px) {
+    padding: 16px;
+    border-radius: 16px;
+    height: 340px;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 18px;
+    border-radius: 18px;
+    height: 360px;
   }
 }
 

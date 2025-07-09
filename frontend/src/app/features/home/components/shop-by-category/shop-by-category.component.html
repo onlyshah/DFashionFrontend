@@ -45,27 +45,24 @@
     <button class="slider-nav next-btn" (click)="slideNext()" [disabled]="currentSlide >= maxSlide">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
-    
+
     <!-- Slider Wrapper -->
     <div class="categories-slider-wrapper" (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
       <div class="categories-slider" [style.transform]="'translateX(' + slideOffset + 'px)'">
-        <div 
-          *ngFor="let category of categories; trackBy: trackByCategoryId" 
+        <div
+          *ngFor="let category of categories; trackBy: trackByCategoryId"
           class="category-card"
-          [class.trending]="false"
           (click)="onCategoryClick(category)"
         >
           <!-- Category Image -->
           <div class="category-image-container">
-            <img 
-              [src]="category.image"
+            <img
+              [src]="category.image || getDefaultCategoryImage(category.name)"
               [alt]="category.name"
               class="category-image"
               loading="lazy"
             />
-            
-            <!-- Trending and discount badges removed as not available in Category interface -->
-            
+
             <!-- Overlay -->
             <div class="category-overlay">
               <ion-icon name="arrow-forward" class="explore-icon"></ion-icon>
@@ -75,10 +72,6 @@
           <!-- Category Info -->
           <div class="category-info">
             <h3 class="category-name">{{ category.name }}</h3>
-            <p class="category-description">{{ category.description }}</p>
-            <p class="product-count">{{ formatProductCount(category.productCount) }} Products</p>
-            
-            <!-- Subcategories removed as not available in Category interface -->
           </div>
         </div>
       </div>

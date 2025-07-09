@@ -1,35 +1,4 @@
 <div class="new-arrivals-container">
-  <!-- Mobile Action Buttons (TikTok/Instagram Style) -->
-  <div class="mobile-action-buttons" *ngIf="isMobile">
-    <button class="action-btn like-btn"
-            [class.active]="isSectionLiked"
-            (click)="toggleSectionLike()">
-      <ion-icon [name]="isSectionLiked ? 'heart' : 'heart-outline'"></ion-icon>
-      <span class="action-count">{{ formatCount(sectionLikes) }}</span>
-    </button>
-
-    <button class="action-btn comment-btn" (click)="openComments()">
-      <ion-icon name="chatbubble-outline"></ion-icon>
-      <span class="action-count">{{ formatCount(sectionComments) }}</span>
-    </button>
-
-    <button class="action-btn share-btn" (click)="shareSection()">
-      <ion-icon name="arrow-redo-outline"></ion-icon>
-      <span class="action-text">Share</span>
-    </button>
-
-    <button class="action-btn bookmark-btn"
-            [class.active]="isSectionBookmarked"
-            (click)="toggleSectionBookmark()">
-      <ion-icon [name]="isSectionBookmarked ? 'bookmark' : 'bookmark-outline'"></ion-icon>
-    </button>
-
-    <button class="action-btn music-btn" (click)="openMusicPlayer()">
-      <ion-icon name="musical-notes"></ion-icon>
-      <span class="action-text">Music</span>
-    </button>
-  </div>
-
   <!-- Header -->
   <div class="section-header">
     <div class="header-content">
@@ -69,41 +38,29 @@
     </button>
   </div>
 
-
-
   <!-- Products Slider -->
-  <div *ngIf="!isLoading && !error && newArrivals.length > 0" class="products-slider-container"
-       (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
-
+  <div *ngIf="!isLoading && !error && newArrivals.length > 0" class="products-slider-container">
     <!-- Navigation Buttons -->
-    <button class="nav-btn prev-btn"
-            [disabled]="!canGoPrev"
-            (click)="prevSlide()"
-            [attr.aria-label]="'Previous products'">
+    <button class="slider-nav prev-btn" (click)="slidePrev()" [disabled]="currentSlide === 0">
       <ion-icon name="chevron-back"></ion-icon>
     </button>
-
-    <button class="nav-btn next-btn"
-            [disabled]="!canGoNext"
-            (click)="nextSlide()"
-            [attr.aria-label]="'Next products'">
+    <button class="slider-nav next-btn" (click)="slideNext()" [disabled]="currentSlide >= maxSlide">
       <ion-icon name="chevron-forward"></ion-icon>
     </button>
 
-    <div class="products-slider-wrapper">
-      <div class="products-slider"
-           [style.transform]="'translateX(-' + slideOffset + 'px)'">
+    <!-- Slider Wrapper -->
+    <div class="products-slider-wrapper" (mouseenter)="pauseAutoSlide()" (mouseleave)="resumeAutoSlide()">
+      <div class="products-slider" [style.transform]="'translateX(' + slideOffset + 'px)'">
         <div
           *ngFor="let product of newArrivals; trackBy: trackByProductId"
           class="product-card"
-          [style.width.px]="cardWidth"
           (click)="onProductClick(product)"
         >
       <!-- Product Image -->
       <div class="product-image-container">
-        <img
-          [src]="product.images[0]?.url || '/assets/images/default-product.png'"
-          [alt]="product.images[0]?.alt || product.name || 'Product'"
+        <img 
+          [src]="product.images[0].url"
+          [alt]="product.images[0].alt || product.name"
           class="product-image"
           loading="lazy"
         />
@@ -146,8 +103,8 @@
 
       <!-- Product Info -->
       <div class="product-info">
-        <div class="product-brand">{{ product.brand || 'Unknown Brand' }}</div>
-        <h3 class="product-name">{{ product.name || 'Unknown Product' }}</h3>
+        <div class="product-brand">{{ product.brand }}</div>
+        <h3 class="product-name">{{ product.name }}</h3>
         
         <!-- Price Section -->
         <div class="price-section">
@@ -184,9 +141,10 @@
             <ion-icon name="heart-outline"></ion-icon>
           </button>
         </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </div> <!-- End products-slider-wrapper -->
+  </div> <!-- End products-slider-container -->
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && !error && newArrivals.length === 0" class="empty-container">

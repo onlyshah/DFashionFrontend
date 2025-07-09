@@ -16,7 +16,14 @@
     "cap:sync": "npx cap sync",
     "cap:open": "npx cap open",
     "cap:run": "npx cap run",
-    "cap:build": "npm run build:mobile && npx cap copy && npx cap sync"
+    "cap:build": "npm run build:mobile && npx cap copy && npx cap sync",
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    "test:coverage": "ng test --code-coverage",
+    "e2e": "cypress run",
+    "e2e:open": "cypress open",
+    "lint": "ng lint",
+    "analyze": "ng build --stats-json && npx webpack-bundle-analyzer dist/dfashion-frontend/stats.json"
   },
   "dependencies": {
     "@angular/animations": "^17.0.0",

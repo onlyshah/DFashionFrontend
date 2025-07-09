@@ -38,14 +38,22 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   currentSlide = 0;
   slideOffset = 0;
   cardWidth = 200; // Width of each category card including margin
-  visibleCards = 4; // Number of cards visible at once
+  visibleCards = 2; // Number of cards visible at once
   maxSlide = 0;
-  
+
   // Auto-sliding properties
   autoSlideInterval: any;
   autoSlideDelay = 4500; // 4.5 seconds for categories
   isAutoSliding = true;
   isPaused = false;
+
+  // Default category images mapping
+  private defaultCategoryImages = {
+    'Women': 'assets/images/fashion-post-1.jpg',
+    'Men': 'assets/images/fashion-post-2.jpg',
+    'Kids': 'assets/images/story-1.jpg',
+    'Ethnic': 'assets/images/story-2.jpg'
+  };
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -60,27 +68,31 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private async loadCategories() {
-    try {
-      this.isLoading = true;
-      this.error = null;
+  private loadCategories() {
+    this.isLoading = true;
+    this.error = null;
 
-      // Load from API
-      const response = await this.http.get<any>(`${environment.apiUrl}/api/v1/categories`).toPromise();
-      if (response?.success && response?.data) {
-        this.categories = response.data.slice(0, 8); // Limit to 8 categories for display
-        this.updateSliderOnCategoriesLoad();
-      } else {
-        console.warn('No categories found');
-        this.categories = [];
-      }
-    } catch (error) {
-      console.error('Error loading categories:', error);
-      this.categories = [];
-      this.error = 'Failed to load categories';
-    } finally {
-      this.isLoading = false;
-    }
+    // Load from API
+    this.subscription.add(
+      this.http.get<any>(`${environment.apiUrl}/api/v1/categories`).subscribe({
+        next: (response) => {
+          if (response?.success && response?.data) {
+            this.categories = response.data.slice(0, 8); // Limit to 8 categories for slider
+            this.updateSliderOnCategoriesLoad();
+          } else {
+            console.warn('No categories found');
+            this.categories = this.getDefaultCategories(); // Use default categories if none found
+          }
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading categories:', error);
+          this.categories = this.getDefaultCategories(); // Use default categories on error
+          this.error = 'Failed to load categories';
+          this.isLoading = false;
+        }
+      })
+    );
   }
 
   onCategoryClick(category: Category) {
@@ -99,14 +111,59 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.loadCategories();
   }
 
-  trackByCategoryId(index: number, category: Category): string {
+  trackByCategoryId(_index: number, category: Category): string {
     return category._id;
+  }
+
+  getDefaultCategoryImage(categoryName: string): string {
+    return this.defaultCategoryImages[categoryName as keyof typeof this.defaultCategoryImages] || 'assets/images/categories/default.jpg';
+  }
+
+  private getDefaultCategories(): Category[] {
+    return [
+      {
+        _id: 'women',
+        name: 'Women',
+        description: 'Fashion for Women',
+        image: this.getDefaultCategoryImage('Women'),
+        productCount: 150,
+        isActive: true,
+        isFeatured: true
+      },
+      {
+        _id: 'men',
+        name: 'Men',
+        description: 'Fashion for Men',
+        image: this.getDefaultCategoryImage('Men'),
+        productCount: 120,
+        isActive: true,
+        isFeatured: true
+      },
+      {
+        _id: 'kids',
+        name: 'Kids',
+        description: 'Fashion for Kids',
+        image: this.getDefaultCategoryImage('Kids'),
+        productCount: 80,
+        isActive: true,
+        isFeatured: true
+      },
+      {
+        _id: 'ethnic',
+        name: 'Ethnic',
+        description: 'Traditional Wear',
+        image: this.getDefaultCategoryImage('Ethnic'),
+        productCount: 90,
+        isActive: true,
+        isFeatured: true
+      }
+    ];
   }
 
   // Auto-sliding methods
   private startAutoSlide() {
     if (!this.isAutoSliding || this.isPaused) return;
-    
+
     this.stopAutoSlide();
     this.autoSlideInterval = setInterval(() => {
       if (!this.isPaused && this.categories.length > this.visibleCards) {
@@ -144,28 +201,21 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
-    const sidebarWidth = width * 0.21; // 21% of screen width
 
-    if (width <= 480) {
-      this.cardWidth = 160;
+    if (width <= 768) {
+      this.cardWidth = 236; // 220px card + 16px gap
       this.visibleCards = 1;
-    } else if (width <= 768) {
-      this.cardWidth = 180;
-      this.visibleCards = 2;
     } else if (width <= 1024) {
-      // Calculate based on 21% sidebar width - 3 cards per row
-      const availableWidth = sidebarWidth - 40; // Minus padding
-      this.cardWidth = Math.floor(availableWidth / 3) - 3; // 3 cards with gap
-      this.visibleCards = 3;
+      this.cardWidth = 242; // 230px card + 12px gap
+      this.visibleCards = 2;
     } else if (width <= 1200) {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = Math.floor(availableWidth / 3) - 3.5;
-      this.visibleCards = 3;
+      this.cardWidth = 249; // 235px card + 14px gap
+      this.visibleCards = 2;
     } else {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = Math.floor(availableWidth / 3) - 4;
-      this.visibleCards = 3;
+      this.cardWidth = 256; // 240px card + 16px gap
+      this.visibleCards = 2;
     }
+
     this.updateSliderLimits();
     this.updateSlideOffset();
   }

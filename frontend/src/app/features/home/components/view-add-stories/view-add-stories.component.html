@@ -44,16 +44,20 @@
             <ng-template carouselSlide>
               <div class="story-slide brand-story-slide" (click)="openStories(i)">
                 <div class="story-avatar-container">
-                  <div class="story-avatar"
-                       [style.background-image]="'url(' + story.user.avatar + ')'">
-                    <!-- E-commerce Badge for Brand Stories -->
-                    <div class="brand-badge" *ngIf="story.user.isBrand">
-                      <i class="fas fa-crown"></i>
-                    </div>
-                    <!-- New Product Badge -->
-                    <div class="new-product-badge" *ngIf="story.hasNewProducts">
-                      <span>NEW</span>
-                    </div>
+                  <img
+                    [src]="story.user.avatar"
+                    [alt]="story.user.fullName || story.user.username"
+                    class="story-avatar"
+                    [appImageFallback]="story.user.fullName || story.user.username || 'User'"
+                    [fallbackSize]="60"
+                  />
+                  <!-- E-commerce Badge for Brand Stories -->
+                  <div class="brand-badge" *ngIf="story.user.isBrand">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                  <!-- New Product Badge -->
+                  <div class="new-product-badge" *ngIf="story.hasNewProducts">
+                    <span>NEW</span>
                   </div>
                   <div class="story-ring"
                        [class.viewed]="story.isViewed"

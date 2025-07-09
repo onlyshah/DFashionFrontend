@@ -6,12 +6,11 @@ import { TrendingService, FeaturedBrand } from '../../../../core/services/trendi
 import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { IonicModule } from '@ionic/angular';
-import { CarouselModule } from 'ngx-owl-carousel-o';
 
 @Component({
   selector: 'app-featured-brands',
   standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './featured-brands.component.html',
   styleUrls: ['./featured-brands.component.scss']
 })
@@ -25,22 +24,15 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 320; // Width of each brand card including margin
-  visibleCards = 3; // Number of cards visible at once
+  cardWidth = 280; // Width of each brand card including margin
+  visibleCards = 1; // Number of cards visible at once
   maxSlide = 0;
 
   // Auto-sliding properties
   autoSlideInterval: any;
-  autoSlideDelay = 4000; // 4 seconds for brands
+  autoSlideDelay = 5000; // 5 seconds for brands
   isAutoSliding = true;
   isPaused = false;
-
-  // Section interaction properties
-  isSectionLiked = false;
-  isSectionBookmarked = false;
-  sectionLikes = 287;
-  sectionComments = 89;
-  isMobile = false;
 
   constructor(
     private trendingService: TrendingService,
@@ -49,13 +41,11 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    console.log('🟡 FeaturedBrandsComponent ngOnInit called');
     this.loadFeaturedBrands();
     this.subscribeFeaturedBrands();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
-    this.checkMobileDevice();
   }
 
   ngOnDestroy() {
@@ -94,8 +84,8 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   }
 
   onBrandClick(brand: FeaturedBrand) {
-    this.router.navigate(['/products'], {
-      queryParams: { brand: brand.name }
+    this.router.navigate(['/products'], { 
+      queryParams: { brand: brand.brand } 
     });
   }
 
@@ -157,14 +147,14 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   }
 
   trackByBrandName(index: number, brand: FeaturedBrand): string {
-    return brand.name;
+    return brand.brand || brand.name || `brand-${index}`;
   }
 
   isProductLiked(productId: string): boolean {
     return this.likedProducts.has(productId);
   }
 
-  trackByProductId(index: number, product: Product): string {
+  trackByProductId(_index: number, product: Product): string {
     return product._id;
   }
 
@@ -209,25 +199,21 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
-    const sidebarWidth = width * 0.21; // 21% of screen width
 
     if (width <= 768) {
-      this.cardWidth = 280;
+      this.cardWidth = 476; // 460px card + 16px gap
       this.visibleCards = 1;
     } else if (width <= 1024) {
-      // Calculate based on 21% sidebar width - 1 card per row
-      const availableWidth = sidebarWidth - 40; // Minus padding
-      this.cardWidth = availableWidth - 4; // Full width minus gap
+      this.cardWidth = 482; // 470px card + 12px gap
       this.visibleCards = 1;
     } else if (width <= 1200) {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = availableWidth - 5;
+      this.cardWidth = 489; // 475px card + 14px gap
       this.visibleCards = 1;
     } else {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = availableWidth - 6;
+      this.cardWidth = 496; // 480px card + 16px gap
       this.visibleCards = 1;
     }
+
     this.updateSliderLimits();
     this.updateSlideOffset();
   }
@@ -278,53 +264,5 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
       this.slideOffset = 0;
       this.startAutoSlide();
     }, 100);
-  }
-
-  // Section interaction methods
-  toggleSectionLike() {
-    this.isSectionLiked = !this.isSectionLiked;
-    if (this.isSectionLiked) {
-      this.sectionLikes++;
-    } else {
-      this.sectionLikes--;
-    }
-  }
-
-  toggleSectionBookmark() {
-    this.isSectionBookmarked = !this.isSectionBookmarked;
-  }
-
-  openComments() {
-    console.log('Opening comments for featured brands section');
-  }
-
-  shareSection() {
-    if (navigator.share) {
-      navigator.share({
-        title: 'Featured Brands',
-        text: 'Check out these amazing featured fashion brands!',
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
-    }
-  }
-
-  openMusicPlayer() {
-    console.log('Opening music player for featured brands');
-  }
-
-  formatCount(count: number): string {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
-  }
-
-  private checkMobileDevice() {
-    this.isMobile = window.innerWidth <= 768;
   }
 }

@@ -4,6 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 
 interface SuggestedUser {
   id: string;
@@ -20,7 +21,7 @@ interface SuggestedUser {
 @Component({
   selector: 'app-suggested-for-you',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, ImageFallbackDirective],
   templateUrl: './suggested-for-you.component.html',
   styleUrls: ['./suggested-for-you.component.scss']
 })
@@ -70,27 +71,29 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private async loadSuggestedUsers() {
-    try {
-      this.isLoading = true;
-      this.error = null;
-      
-      // Load from API
-      const response = await this.http.get<any>(`${this.apiUrl}/api/v1/users/suggested`).toPromise();
-      if (response?.success && response?.data) {
-        this.suggestedUsers = response.data;
-        this.updateSliderOnUsersLoad();
-      } else {
-        console.warn('No suggested users found');
+  private loadSuggestedUsers() {
+    this.isLoading = true;
+    this.error = null;
+
+    // Load from API
+    this.http.get<any>(`${this.apiUrl}/api/v1/users/suggested`).subscribe({
+      next: (response) => {
+        if (response?.success && response?.data) {
+          this.suggestedUsers = response.data;
+          this.updateSliderOnUsersLoad();
+        } else {
+          console.warn('No suggested users found');
+          this.suggestedUsers = [];
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading suggested users:', error);
         this.suggestedUsers = [];
+        this.error = 'Failed to load suggested users';
+        this.isLoading = false;
       }
-    } catch (error) {
-      console.error('Error loading suggested users:', error);
-      this.suggestedUsers = [];
-      this.error = 'Failed to load suggested users';
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
 
   onUserClick(user: SuggestedUser) {
@@ -120,7 +123,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.loadSuggestedUsers();
   }
 
-  trackByUserId(index: number, user: SuggestedUser): string {
+  trackByUserId(_index: number, user: SuggestedUser): string {
     return user.id;
   }
 
@@ -165,28 +168,21 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   // Responsive methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
-    const sidebarWidth = width * 0.21; // 21% of screen width
 
-    if (width <= 480) {
-      this.cardWidth = 180;
+    if (width <= 768) {
+      this.cardWidth = 236; // 220px card + 16px gap
       this.visibleCards = 1;
-    } else if (width <= 768) {
-      this.cardWidth = 200;
-      this.visibleCards = 2;
     } else if (width <= 1024) {
-      // Calculate based on 21% sidebar width - 3 cards per row
-      const availableWidth = sidebarWidth - 40; // Minus padding
-      this.cardWidth = Math.floor(availableWidth / 3) - 3; // 3 cards with gap
+      this.cardWidth = 162; // 150px card + 12px gap
       this.visibleCards = 3;
     } else if (width <= 1200) {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = Math.floor(availableWidth / 3) - 3.5;
+      this.cardWidth = 169; // 155px card + 14px gap
       this.visibleCards = 3;
     } else {
-      const availableWidth = sidebarWidth - 40;
-      this.cardWidth = Math.floor(availableWidth / 3) - 4;
+      this.cardWidth = 176; // 160px card + 16px gap
       this.visibleCards = 3;
     }
+
     this.updateSliderLimits();
     this.updateSlideOffset();
   }

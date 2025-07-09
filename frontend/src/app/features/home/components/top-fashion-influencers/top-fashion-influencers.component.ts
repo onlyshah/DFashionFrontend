@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 
 interface Influencer {
   _id: string;
@@ -35,7 +36,7 @@ interface Influencer {
 @Component({
   selector: 'app-top-fashion-influencers',
   standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
+  imports: [CommonModule, IonicModule, CarouselModule, ImageFallbackDirective],
   templateUrl: './top-fashion-influencers.component.html',
   styleUrls: ['./top-fashion-influencers.component.scss']
 })
@@ -79,26 +80,28 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private async loadInfluencers() {
-    try {
-      this.isLoading = true;
-      this.error = null;
+  private loadInfluencers() {
+    this.isLoading = true;
+    this.error = null;
 
-      const response = await this.http.get<any>(`${environment.apiUrl}/api/v1/users/influencers`).toPromise();
-      if (response?.success && response?.data) {
-        this.topInfluencers = response.data.slice(0, 8);
-        this.updateSliderOnInfluencersLoad();
-      } else {
-        console.warn('No influencers found');
+    this.http.get<any>(`${environment.apiUrl}/api/v1/users/influencers`).subscribe({
+      next: (response) => {
+        if (response?.success && response?.data) {
+          this.topInfluencers = response.data.slice(0, 8);
+          this.updateSliderOnInfluencersLoad();
+        } else {
+          console.warn('No influencers found');
+          this.topInfluencers = [];
+        }
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading influencers:', error);
         this.topInfluencers = [];
+        this.error = 'Failed to load influencers';
+        this.isLoading = false;
       }
-    } catch (error) {
-      console.error('Error loading influencers:', error);
-      this.topInfluencers = [];
-      this.error = 'Failed to load influencers';
-    } finally {
-      this.isLoading = false;
-    }
+    });
   }
 
   onInfluencerClick(influencer: Influencer) {
@@ -118,7 +121,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.loadInfluencers();
   }
 
-  trackByInfluencerId(index: number, influencer: Influencer): string {
+  trackByInfluencerId(_index: number, influencer: Influencer): string {
     return influencer._id;
   }
 
@@ -163,19 +166,21 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   // Responsive and slider methods
   private updateResponsiveSettings() {
     const width = window.innerWidth;
-    if (width <= 480) {
-      this.cardWidth = 200;
+
+    if (width <= 768) {
+      this.cardWidth = 246; // 230px card + 16px gap
       this.visibleCards = 1;
-    } else if (width <= 768) {
-      this.cardWidth = 220;
-      this.visibleCards = 2;
     } else if (width <= 1024) {
-      this.cardWidth = 240;
+      this.cardWidth = 247; // 235px card + 12px gap
+      this.visibleCards = 2;
+    } else if (width <= 1200) {
+      this.cardWidth = 252; // 238px card + 14px gap
       this.visibleCards = 2;
     } else {
-      this.cardWidth = 260;
-      this.visibleCards = 3;
+      this.cardWidth = 256; // 240px card + 16px gap
+      this.visibleCards = 2;
     }
+
     this.updateSliderLimits();
     this.updateSlideOffset();
   }

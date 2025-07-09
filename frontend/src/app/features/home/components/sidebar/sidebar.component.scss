@@ -8,6 +8,9 @@
   max-height: calc(100vh - 100px);
   overflow-y: auto;
   padding-right: 8px;
+  width: 613px;
+  max-height: 100%;
+
 
   // Desktop only - hide on mobile and tablet to not disturb responsive design
   @media (max-width: 768px) {

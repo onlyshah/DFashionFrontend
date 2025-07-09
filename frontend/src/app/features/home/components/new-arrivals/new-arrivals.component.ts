@@ -8,12 +8,11 @@ import { SocialInteractionsService } from '../../../../core/services/social-inte
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { IonicModule } from '@ionic/angular';
-import { CarouselModule } from 'ngx-owl-carousel-o';
 
 @Component({
   selector: 'app-new-arrivals',
   standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './new-arrivals.component.html',
   styleUrls: ['./new-arrivals.component.scss']
 })
@@ -27,18 +26,15 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 280;
-  visibleCards = 4;
+  cardWidth = 220; // Width of each product card including margin
+  visibleCards = 2; // Number of cards visible at once
   maxSlide = 0;
-  autoSlideInterval: any;
-  autoSlideDelay = 3500; // 3.5 seconds for new arrivals
 
-  // Section interaction properties
-  isSectionLiked = false;
-  isSectionBookmarked = false;
-  sectionLikes = 421;
-  sectionComments = 156;
-  isMobile = false;
+  // Auto-sliding properties
+  autoSlideInterval: any;
+  autoSlideDelay = 4000; // 4 seconds for products
+  isAutoSliding = true;
+  isPaused = false;
 
   constructor(
     private trendingService: TrendingService,
@@ -52,9 +48,8 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.loadNewArrivals();
     this.subscribeNewArrivals();
     this.subscribeLikedProducts();
-    this.initializeSlider();
-    this.startAutoSlide();
-    this.checkMobileDevice();
+    this.updateResponsiveSettings();
+    this.setupResizeListener();
   }
 
   ngOnDestroy() {
@@ -67,9 +62,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       this.trendingService.newArrivals$.subscribe(products => {
         this.newArrivals = products;
         this.isLoading = false;
-        this.calculateMaxSlide();
-        this.currentSlide = 0;
-        this.updateSlidePosition();
+        this.updateSliderOnProductsLoad();
       })
     );
   }
@@ -129,20 +122,20 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     }
   }
 
-  async onAddToCart(product: Product, event: Event) {
+  onAddToCart(product: Product, event: Event) {
     event.stopPropagation();
     try {
-      await this.cartService.addToCart(product._id, 1);
+      this.cartService.addToCart(product._id, 1);
       console.log('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
   }
 
-  async onAddToWishlist(product: Product, event: Event) {
+  onAddToWishlist(product: Product, event: Event) {
     event.stopPropagation();
     try {
-      await this.wishlistService.addToWishlist(product._id);
+      this.wishlistService.addToWishlist(product._id);
       console.log('Product added to wishlist!');
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -186,73 +179,19 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     return this.likedProducts.has(productId);
   }
 
-  trackByProductId(index: number, product: Product): string {
+  trackByProductId(_index: number, product: Product): string {
     return product._id;
   }
 
-  // Slider methods
-  private initializeSlider() {
-    this.updateResponsiveSettings();
-    this.calculateMaxSlide();
-    window.addEventListener('resize', () => this.updateResponsiveSettings());
-  }
-
-  private updateResponsiveSettings() {
-    const containerWidth = window.innerWidth;
-    const sidebarWidth = containerWidth * 0.21; // 21% of screen width
-
-    if (containerWidth >= 1200) {
-      // Calculate based on 21% sidebar width - 2 cards per row
-      const availableWidth = sidebarWidth - 40; // Minus padding
-      this.visibleCards = 2;
-      this.cardWidth = Math.floor(availableWidth / 2) - 3; // 2 cards with gap
-    } else if (containerWidth >= 1024) {
-      const availableWidth = sidebarWidth - 40;
-      this.visibleCards = 2;
-      this.cardWidth = Math.floor(availableWidth / 2) - 2.5;
-    } else if (containerWidth >= 768) {
-      const availableWidth = sidebarWidth - 40;
-      this.visibleCards = 2;
-      this.cardWidth = Math.floor(availableWidth / 2) - 2;
-    } else {
-      this.visibleCards = 1;
-      this.cardWidth = 220;
-    }
-
-    this.calculateMaxSlide();
-    this.updateSlidePosition();
-  }
-
-  private calculateMaxSlide() {
-    this.maxSlide = Math.max(0, this.newArrivals.length - this.visibleCards);
-  }
-
-  private updateSlidePosition() {
-    this.slideOffset = this.currentSlide * this.cardWidth; // Gap already included in cardWidth
-  }
-
-  nextSlide() {
-    if (this.currentSlide < this.maxSlide) {
-      this.currentSlide++;
-      this.updateSlidePosition();
-    }
-  }
-
-  prevSlide() {
-    if (this.currentSlide > 0) {
-      this.currentSlide--;
-      this.updateSlidePosition();
-    }
-  }
-
+  // Auto-sliding methods
   private startAutoSlide() {
+    if (!this.isAutoSliding || this.isPaused) return;
+
+    this.stopAutoSlide();
     this.autoSlideInterval = setInterval(() => {
-      if (this.currentSlide >= this.maxSlide) {
-        this.currentSlide = 0;
-      } else {
-        this.currentSlide++;
+      if (!this.isPaused && this.newArrivals.length > this.visibleCards) {
+        this.autoSlideNext();
       }
-      this.updateSlidePosition();
     }, this.autoSlideDelay);
   }
 
@@ -263,67 +202,92 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     }
   }
 
+  private autoSlideNext() {
+    if (this.currentSlide >= this.maxSlide) {
+      this.currentSlide = 0;
+    } else {
+      this.currentSlide++;
+    }
+    this.updateSlideOffset();
+  }
+
   pauseAutoSlide() {
+    this.isPaused = true;
     this.stopAutoSlide();
   }
 
   resumeAutoSlide() {
+    this.isPaused = false;
     this.startAutoSlide();
   }
 
-  get canGoPrev(): boolean {
-    return this.currentSlide > 0;
-  }
+  // Responsive methods
+  private updateResponsiveSettings() {
+    const width = window.innerWidth;
 
-  get canGoNext(): boolean {
-    return this.currentSlide < this.maxSlide;
-  }
-
-  // Section interaction methods
-  toggleSectionLike() {
-    this.isSectionLiked = !this.isSectionLiked;
-    if (this.isSectionLiked) {
-      this.sectionLikes++;
+    if (width <= 768) {
+      this.cardWidth = 246; // 230px card + 16px gap
+      this.visibleCards = 1;
+    } else if (width <= 1024) {
+      this.cardWidth = 247; // 235px card + 12px gap
+      this.visibleCards = 2;
+    } else if (width <= 1200) {
+      this.cardWidth = 252; // 238px card + 14px gap
+      this.visibleCards = 2;
     } else {
-      this.sectionLikes--;
+      this.cardWidth = 256; // 240px card + 16px gap
+      this.visibleCards = 2;
+    }
+
+    this.updateSliderLimits();
+    this.updateSlideOffset();
+  }
+
+  private setupResizeListener() {
+    window.addEventListener('resize', () => {
+      this.updateResponsiveSettings();
+    });
+  }
+
+  // Slider methods
+  updateSliderLimits() {
+    this.maxSlide = Math.max(0, this.newArrivals.length - this.visibleCards);
+  }
+
+  slidePrev() {
+    if (this.currentSlide > 0) {
+      this.currentSlide--;
+      this.updateSlideOffset();
+      this.restartAutoSlideAfterInteraction();
     }
   }
 
-  toggleSectionBookmark() {
-    this.isSectionBookmarked = !this.isSectionBookmarked;
-  }
-
-  openComments() {
-    console.log('Opening comments for new arrivals section');
-  }
-
-  shareSection() {
-    if (navigator.share) {
-      navigator.share({
-        title: 'New Arrivals',
-        text: 'Check out these fresh new fashion arrivals!',
-        url: window.location.href
-      });
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
+  slideNext() {
+    if (this.currentSlide < this.maxSlide) {
+      this.currentSlide++;
+      this.updateSlideOffset();
+      this.restartAutoSlideAfterInteraction();
     }
   }
 
-  openMusicPlayer() {
-    console.log('Opening music player for new arrivals');
+  private updateSlideOffset() {
+    this.slideOffset = -this.currentSlide * this.cardWidth;
   }
 
-  formatCount(count: number): string {
-    if (count >= 1000000) {
-      return (count / 1000000).toFixed(1) + 'M';
-    } else if (count >= 1000) {
-      return (count / 1000).toFixed(1) + 'K';
-    }
-    return count.toString();
+  private restartAutoSlideAfterInteraction() {
+    this.stopAutoSlide();
+    setTimeout(() => {
+      this.startAutoSlide();
+    }, 2000);
   }
 
-  private checkMobileDevice() {
-    this.isMobile = window.innerWidth <= 768;
+  // Update slider when products load
+  private updateSliderOnProductsLoad() {
+    setTimeout(() => {
+      this.updateSliderLimits();
+      this.currentSlide = 0;
+      this.slideOffset = 0;
+      this.startAutoSlide();
+    }, 100);
   }
 }
