@@ -178,6 +178,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     return product._id;
   }
 
+  onImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
+    // Set a fallback image using existing placeholder
+    img.src = 'assets/images/placeholder-product.svg';
+    // Add error class for styling
+    img.classList.add('image-error');
+  }
+
   // Auto-sliding methods
   private startAutoSlide() {
     if (!this.isAutoSliding || this.isPaused) return;
