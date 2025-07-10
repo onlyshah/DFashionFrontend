@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -70,24 +70,47 @@ export interface TrafficAnalytics {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://localhost:3001/api/admin'; // Updated to correct port
+  private apiUrl = 'http://localhost:3001/api/v1/admin'; // Updated to correct port and API version
 
   constructor(private http: HttpClient) {}
 
+  // Get authentication headers
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('admin_token') ||
+                  localStorage.getItem('token') ||
+                  sessionStorage.getItem('token');
+
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return headers;
+  }
+
   // Dashboard Statistics (Admin API)
   getDashboardStats(): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard`);
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
 
 
   // Sales Analytics
   getSalesData(period: string = '30d'): Observable<SalesData[]> {
-    return this.http.get<SalesData[]>(`${this.apiUrl}/sales?period=${period}`);
+    return this.http.get<SalesData[]>(`${this.apiUrl}/sales?period=${period}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   getSalesStats(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/sales/stats?period=${period}`);
+    return this.http.get<any>(`${this.apiUrl}/sales/stats?period=${period}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   // User Analytics

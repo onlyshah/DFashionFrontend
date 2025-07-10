@@ -13,7 +13,7 @@ interface CacheItem<T> {
   providedIn: 'root'
 })
 export class DashboardPerformanceService {
-  private apiUrl = 'http://localhost:3001/api';
+  private apiUrl = 'http://localhost:3001/api/v1';
   private cache = new Map<string, CacheItem<any>>();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly REQUEST_TIMEOUT = 10000; // 10 seconds

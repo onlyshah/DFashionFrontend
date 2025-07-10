@@ -86,7 +86,7 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class EcommerceService {
-  private apiUrl = 'http://localhost:3001/api/ecommerce'; // Updated to correct port
+  private apiUrl = 'http://localhost:3001/api/v1/ecommerce'; // Updated to correct port and API version
   
   // Subjects for real-time updates
   private wishlistSubject = new BehaviorSubject<WishlistItem[]>([]);

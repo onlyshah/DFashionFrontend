@@ -35,7 +35,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AdminAuthService {
-  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
+  private apiUrl = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
   private currentUserSubject = new BehaviorSubject<AdminUser | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
 
@@ -65,13 +65,17 @@ export class AdminAuthService {
     }).pipe(
       tap(response => {
         if (response.success) {
+          console.log('🔐 Admin login successful, storing token:', response.data.token.substring(0, 20) + '...');
+
           // Store token and user data
           localStorage.setItem('admin_token', response.data.token);
           localStorage.setItem('admin_user', JSON.stringify(response.data.user));
-          
+
           // Update subjects
           this.tokenSubject.next(response.data.token);
           this.currentUserSubject.next(response.data.user);
+
+          console.log('🔐 Token stored in localStorage:', !!localStorage.getItem('admin_token'));
         }
       }),
       catchError(error => {
@@ -200,7 +204,22 @@ export class AdminAuthService {
 
   // Get authorization headers
   getAuthHeaders(): HttpHeaders {
-    const token = this.getToken();
+    let token = this.getToken();
+
+    // If no admin token, check for regular auth token (for super admin users)
+    if (!token && this.authService.isAuthenticated) {
+      const regularUser = this.authService.currentUserValue;
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+        token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        console.log('🔐 Using regular auth token for admin API calls');
+      }
+    }
+
+    if (!token) {
+      console.warn('⚠️ No authentication token found for admin API calls');
+      return new HttpHeaders();
+    }
+
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 

@@ -31,6 +31,28 @@ export class LoginComponent {
     });
   }
 
+  // Quick fill methods for testing
+  fillCustomer() {
+    this.loginForm.patchValue({
+      email: 'priya@example.com',
+      password: 'password123'
+    });
+  }
+
+  fillAdmin() {
+    this.loginForm.patchValue({
+      email: 'admin@dfashion.com',
+      password: 'admin123'
+    });
+  }
+
+  fillVendor() {
+    this.loginForm.patchValue({
+      email: 'vendor@dfashion.com',
+      password: 'vendor123'
+    });
+  }
+
 
 
   onSubmit() {
@@ -71,10 +93,10 @@ export class LoginComponent {
         },
         error: (error) => {
           this.loading = false;
-          this.errorMessage = error.error?.message || 'Invalid credentials. Please check your email and password.';
+          this.errorMessage = error.error?.message || 'Invalid credentials. Please use the test credentials above or check your email and password.';
           this.notificationService.error(
             'Login Failed',
-            'Please check your credentials and try again.'
+            'Please use the test credentials above or check your credentials and try again.'
           );
         }
       });

@@ -32,9 +32,19 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/assets/pollux/vendors/typicons/typicons.css",
+              "src/assets/pollux/vendors/css/vendor.bundle.base.css",
+              "src/assets/pollux/css/style.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "src/assets/pollux/vendors/js/vendor.bundle.base.js",
+              "src/assets/pollux/js/off-canvas.js",
+              "src/assets/pollux/js/hoverable-collapse.js",
+              "src/assets/pollux/js/template.js",
+              "src/assets/pollux/js/settings.js",
+              "src/assets/pollux/js/todolist.js"
+            ],
             "allowedCommonJsDependencies": [
               "localforage"
             ]
@@ -95,7 +105,10 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/assets/pollux/vendors/typicons/typicons.css",
+              "src/assets/pollux/vendors/css/vendor.bundle.base.css",
+              "src/assets/pollux/css/style.css"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"

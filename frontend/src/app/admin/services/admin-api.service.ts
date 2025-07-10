@@ -67,7 +67,7 @@ export interface DashboardStats {
   providedIn: 'root'
 })
 export class AdminApiService {
-  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
+  private apiUrl = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
 
   constructor(
     private http: HttpClient,

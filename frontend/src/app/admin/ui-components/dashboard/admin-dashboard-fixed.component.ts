@@ -44,7 +44,7 @@ interface TopProduct {
 })
 export class AdminDashboardFixedComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private apiUrl = 'http://localhost:3001/api';
+  private apiUrl = 'http://localhost:3001/api/v1';
 
   // Loading states
   isLoading = true;

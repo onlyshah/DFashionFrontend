@@ -30,7 +30,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private readonly API_URL = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
 
   constructor(private http: HttpClient) {}
 

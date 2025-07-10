@@ -40,8 +40,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AdminRoutingModule } from './admin-routing.module';
 
 // Components
-import { AdminLayoutComponent } from './layout/admin-layout.component';
-import { AdminDashboardComponent } from './dashboard/admin-dashboard.component';
+import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { AdminLoginComponent } from './auth/admin-login.component';
 import { UserManagementComponent } from './users/user-management.component';
 import { UserDialogComponent } from './users/user-dialog.component';
@@ -74,16 +74,14 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
 
 @NgModule({
   declarations: [
-    // Layout Components
-    AdminLayoutComponent,
+    // Layout Components (old ones, keeping for compatibility)
     SidebarComponent,
     HeaderComponent,
-    
+
     // Auth Components
     AdminLoginComponent,
-    
-    // Dashboard Components
-    AdminDashboardComponent,
+
+    // Dashboard Components (old one, keeping for compatibility)
     
     // User Management
     UserManagementComponent,
@@ -147,7 +145,9 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     MatDividerModule,
 
     // Standalone Components
-    AdminLoadingComponent
+    AdminLoadingComponent,
+    AdminLayoutComponent,
+    AdminDashboardComponent
   ],
   providers: [
     AdminAuthService,

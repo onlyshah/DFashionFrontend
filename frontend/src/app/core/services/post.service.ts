@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class PostService {
-  private readonly API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private readonly API_URL = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
 
   constructor(private http: HttpClient) {}
 
@@ -18,15 +18,15 @@ export class PostService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<PostsResponse>(`${this.API_URL}/api/v1/posts`, { params });
+    return this.http.get<PostsResponse>(`${this.API_URL}/posts`, { params });
   }
 
   getPost(id: string): Observable<{ post: Post }> {
-    return this.http.get<{ post: Post }>(`${this.API_URL}/api/v1/posts/${id}`);
+    return this.http.get<{ post: Post }>(`${this.API_URL}/posts/${id}`);
   }
 
   createPost(postData: CreatePostRequest): Observable<{ message: string; post: Post }> {
-    return this.http.post<{ message: string; post: Post }>(`${this.API_URL}/api/v1/posts`, postData);
+    return this.http.post<{ message: string; post: Post }>(`${this.API_URL}/posts`, postData);
   }
 
   likePost(postId: string): Observable<{ message: string; likesCount: number }> {
@@ -46,7 +46,7 @@ export class PostService {
   }
 
   deletePost(postId: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.API_URL}/api/v1/posts/${postId}`);
+    return this.http.delete<{ message: string }>(`${this.API_URL}/posts/${postId}`);
   }
 
   getUserPosts(userId: string, page: number = 1, limit: number = 12): Observable<PostsResponse> {

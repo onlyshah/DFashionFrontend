@@ -1,0 +1,125 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+  <ul class="nav">
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/dashboard')">
+      <a class="nav-link" routerLink="/admin/dashboard">
+        <i class="typcn typcn-device-desktop menu-icon"></i>
+        <span class="menu-title">Dashboard</span>
+        <div class="badge badge-danger">new</div>
+      </a>
+    </li>
+
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/users')">
+      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/users') ? 'collapse' : null"
+         [href]="hasSubMenu('/admin/users') ? '#user-management' : null"
+         [routerLink]="!hasSubMenu('/admin/users') ? '/admin/users' : null"
+         [attr.aria-expanded]="isMenuExpanded('user-management')"
+         aria-controls="user-management">
+        <i class="typcn typcn-user-outline menu-icon"></i>
+        <span class="menu-title">User Management</span>
+        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/users')"></i>
+      </a>
+      <div class="collapse" id="user-management" *ngIf="hasSubMenu('/admin/users')">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users">All Users</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users/customers">Customers</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users/vendors">Vendors</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/products')">
+      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/products') ? 'collapse' : null"
+         [href]="hasSubMenu('/admin/products') ? '#product-management' : null"
+         [routerLink]="!hasSubMenu('/admin/products') ? '/admin/products' : null"
+         [attr.aria-expanded]="isMenuExpanded('product-management')"
+         aria-controls="product-management">
+        <i class="typcn typcn-shopping-bag menu-icon"></i>
+        <span class="menu-title">Product Management</span>
+        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/products')"></i>
+      </a>
+      <div class="collapse" id="product-management" *ngIf="hasSubMenu('/admin/products')">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/products">All Products</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/products/categories">Categories</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/products/inventory">Inventory</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/orders')">
+      <a class="nav-link" routerLink="/admin/orders">
+        <i class="typcn typcn-clipboard menu-icon"></i>
+        <span class="menu-title">Order Management</span>
+      </a>
+    </li>
+
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/analytics')">
+      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/analytics') ? 'collapse' : null"
+         [href]="hasSubMenu('/admin/analytics') ? '#analytics' : null"
+         [routerLink]="!hasSubMenu('/admin/analytics') ? '/admin/analytics' : null"
+         [attr.aria-expanded]="isMenuExpanded('analytics')"
+         aria-controls="analytics">
+        <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+        <span class="menu-title">Analytics</span>
+        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/analytics')"></i>
+      </a>
+      <div class="collapse" id="analytics" *ngIf="hasSubMenu('/admin/analytics')">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/analytics">Overview</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/analytics/sales">Sales Reports</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/analytics/users">User Analytics</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/settings')">
+      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/settings') ? 'collapse' : null"
+         [href]="hasSubMenu('/admin/settings') ? '#settings' : null"
+         [routerLink]="!hasSubMenu('/admin/settings') ? '/admin/settings' : null"
+         [attr.aria-expanded]="isMenuExpanded('settings')"
+         aria-controls="settings">
+        <i class="typcn typcn-cog-outline menu-icon"></i>
+        <span class="menu-title">Settings</span>
+        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/settings')"></i>
+      </a>
+      <div class="collapse" id="settings" *ngIf="hasSubMenu('/admin/settings')">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/settings/general">General</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/settings/payments">Payment Settings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/settings/notifications">Notifications</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:;" (click)="logout()">
+        <i class="typcn typcn-power-outline menu-icon"></i>
+        <span class="menu-title">Logout</span>
+      </a>
+    </li>
+  </ul>
+</nav>
