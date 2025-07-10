@@ -76,75 +76,14 @@ export class ReelsPage implements OnInit, OnDestroy {
       }
     } catch (error) {
       console.error('❌ Error loading reels:', error);
-      // Use mock data if API fails
-      this.loadMockReels();
+      // No mock data - only use database data
+      this.reels = [];
     } finally {
       this.isLoading = false;
     }
   }
 
   // Removed mock data - only use database data
-        hashtags: ['fashion', 'summer', 'trending', 'ootd'],
-        analytics: {
-          views: 15420,
-          likes: 1240,
-          comments: 89,
-          shares: 45,
-          saves: 156
-        },
-        isLiked: false,
-        isSaved: false
-      },
-      {
-        id: '2',
-        title: 'Styling Tips for Office Wear',
-        description: 'Professional yet stylish! 💼✨ #officewear #professional #style',
-        user: {
-          id: 'user2',
-          username: 'style_guru_raj',
-          fullName: 'Raj Style Guru',
-          avatar: '/assets/images/default-avatar.svg',
-          isVerified: false,
-          isFollowing: false
-        },
-        media: {
-          type: 'video',
-          url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-          thumbnail: '/assets/images/default-post.svg',
-          duration: 45
-        },
-        products: [
-          {
-            product: {
-              id: 'prod2',
-              name: 'Formal Blazer',
-              price: 4999,
-              image: '/assets/images/default-product.svg'
-            },
-            position: { x: 30, y: 60, timestamp: 10 }
-          }
-        ],
-        hashtags: ['officewear', 'professional', 'style', 'workwear'],
-        analytics: {
-          views: 8930,
-          likes: 567,
-          comments: 34,
-          shares: 23,
-          saves: 89
-        },
-        isLiked: false,
-        isSaved: false
-      }
-    ];
-    
-    this.isPlaying = new Array(this.reels.length).fill(false);
-    this.progress = new Array(this.reels.length).fill(0);
-    
-    // Auto-play first video
-    setTimeout(() => {
-      this.playVideoAtIndex(0);
-    }, 500);
-  }
 
   onSlideChange(event: any) {
     const newIndex = event.detail[0].activeIndex;

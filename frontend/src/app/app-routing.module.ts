@@ -79,14 +79,12 @@ const routes: Routes = [
   {
     path: 'mobile-vendor',
     loadChildren: () => import('./mobile/vendor/vendor.module').then(m => m.VendorPageModule)
-  }
-  // Admin routes (web-only) - Commented out until module is created
-  /*
+  },
+  // Admin routes (web-only)
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
-  */
   // Web routes (for desktop/tablet) - Commented out until module is created
   /*
   {

@@ -1,0 +1,32 @@
+<div class="container-scroller">
+  <!-- Top Header -->
+  <app-admin-header 
+    [currentUser]="currentUser"
+    (sidebarToggle)="onSidebarToggle()"
+    (logout)="onLogout()">
+  </app-admin-header>
+
+  <!-- Breadcrumb Navigation -->
+  <app-admin-breadcrumb 
+    [currentRoute]="currentRoute">
+  </app-admin-breadcrumb>
+
+  <div class="container-fluid page-body-wrapper">
+    <!-- Sidebar Navigation -->
+    <app-admin-sidebar 
+      [minimized]="sidebarMinimized"
+      [currentRoute]="currentRoute">
+    </app-admin-sidebar>
+
+    <!-- Main Content Panel -->
+    <div class="main-panel" [class.sidebar-minimized]="sidebarMinimized">
+      <div class="content-wrapper">
+        <!-- Router Outlet for Dynamic Content -->
+        <router-outlet></router-outlet>
+      </div>
+
+      <!-- Footer -->
+      <app-admin-footer></app-admin-footer>
+    </div>
+  </div>
+</div>

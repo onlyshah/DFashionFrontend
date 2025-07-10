@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { map, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface AdminUser {
   id: string;
@@ -43,7 +44,8 @@ export class AdminAuthService {
 
   constructor(
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     // Check for existing token on service initialization
     const token = localStorage.getItem('admin_token');
@@ -95,7 +97,31 @@ export class AdminAuthService {
 
   // Get current user
   getCurrentUser(): AdminUser | null {
-    return this.currentUserSubject.value;
+    // First check admin-specific user
+    const adminUser = this.currentUserSubject.value;
+    if (adminUser) {
+      return adminUser;
+    }
+
+    // Also check regular auth service for super admin users
+    if (this.authService.isAuthenticated) {
+      const regularUser = this.authService.currentUserValue;
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+        // Convert regular user to admin user format
+        return {
+          id: regularUser._id,
+          email: regularUser.email,
+          fullName: regularUser.username || regularUser.email,
+          role: regularUser.role,
+          department: 'Administration',
+          employeeId: regularUser._id,
+          permissions: [], // Super admin has all permissions
+          avatar: regularUser.avatar
+        };
+      }
+    }
+
+    return null;
   }
 
   // Get current token
@@ -105,9 +131,24 @@ export class AdminAuthService {
 
   // Check if user is authenticated
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    const user = this.getCurrentUser();
-    return !!(token && user);
+    // First check admin-specific authentication
+    const adminToken = this.getToken();
+    const adminUser = this.getCurrentUser();
+
+    if (adminToken && adminUser) {
+      return true;
+    }
+
+    // Also check regular auth service for super admin users
+    if (this.authService.isAuthenticated) {
+      const regularUser = this.authService.currentUserValue;
+
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // Check if user has specific permission
@@ -212,8 +253,22 @@ export class AdminAuthService {
       'account_manager', 'support_manager', 'sales_executive',
       'marketing_executive', 'account_executive', 'support_executive'
     ];
-    
-    return this.hasRole(adminRoles);
+
+    // First check admin-specific roles
+    if (this.hasRole(adminRoles)) {
+      return true;
+    }
+
+    // Also check regular auth service for super admin users
+    if (this.authService.isAuthenticated) {
+      const regularUser = this.authService.currentUserValue;
+
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   // Get user's department

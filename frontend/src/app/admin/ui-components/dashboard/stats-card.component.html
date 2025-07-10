@@ -1,0 +1,35 @@
+<div class="card stats-card" [ngClass]="cardColorClass">
+  <div class="card-body">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center" style="height: 120px;">
+      <div class="spinner-border spinner-border-sm" [ngClass]="iconColorClass" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+
+    <!-- Card Content -->
+    <div *ngIf="!isLoading" class="stats-content">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="stats-info">
+          <h6 class="card-title">{{ title }}</h6>
+          <h3 class="stats-value mb-0">{{ value }}</h3>
+          
+          <!-- Growth Indicator -->
+          <div class="growth-indicator mt-2" *ngIf="growth !== 0">
+            <span class="growth-text" [ngClass]="growthClass">
+              <i class="typcn" [ngClass]="growthIcon"></i>
+              {{ Math.abs(growth) }}%
+            </span>
+            <span class="growth-label text-muted ms-1">
+              {{ isPositiveGrowth ? 'increase' : 'decrease' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="stats-icon">
+          <i class="typcn" [ngClass]="[icon, iconColorClass]"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

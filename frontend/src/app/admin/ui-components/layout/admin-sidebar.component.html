@@ -1,0 +1,110 @@
+<nav class="sidebar sidebar-offcanvas" [class.sidebar-minimized]="minimized" id="sidebar">
+  <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+    <a class="sidebar-brand brand-logo" routerLink="/admin/dashboard">
+      <img src="assets/images/logo.svg" alt="DFashion Logo" />
+    </a>
+    <a class="sidebar-brand brand-logo-mini" routerLink="/admin/dashboard">
+      <img src="assets/images/logo-mini.svg" alt="DFashion Logo" />
+    </a>
+  </div>
+
+  <ul class="nav">
+    <!-- Navigation Items -->
+    <ng-container *ngFor="let item of navigationItems">
+      <li class="nav-item" 
+          [class.active]="isActive(item.route || '') || isParentActive(item)">
+        
+        <!-- Single Level Navigation Item -->
+        <a class="nav-link" 
+           *ngIf="!item.children"
+           [routerLink]="item.route"
+           routerLinkActive="active">
+          <i class="typcn" [ngClass]="item.icon" [attr.data-icon]="item.icon"></i>
+          <span class="menu-title">{{ item.title }}</span>
+          <span *ngIf="item.badge" 
+                class="badge" 
+                [ngClass]="item.badge.class">
+            {{ item.badge.text }}
+          </span>
+        </a>
+
+        <!-- Multi Level Navigation Item -->
+        <a class="nav-link" 
+           *ngIf="item.children"
+           href="javascript:void(0);"
+           (click)="toggleSubmenu(item)"
+           [class.collapsed]="!item.expanded"
+           [attr.aria-expanded]="item.expanded">
+          <i class="typcn" [ngClass]="item.icon" [attr.data-icon]="item.icon"></i>
+          <span class="menu-title">{{ item.title }}</span>
+          <i class="typcn typcn-chevron-right menu-arrow"></i>
+        </a>
+
+        <!-- Submenu -->
+        <div class="collapse" 
+             [class.show]="item.expanded"
+             *ngIf="item.children">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item" 
+                *ngFor="let child of item.children"
+                [class.active]="isActive(child.route || '')">
+              <a class="nav-link" 
+                 [routerLink]="child.route"
+                 routerLinkActive="active">
+                <i class="typcn" [ngClass]="child.icon"></i>
+                {{ child.title }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ng-container>
+
+    <!-- Divider -->
+    <li class="nav-item nav-category">
+      <span class="nav-link">Quick Actions</span>
+    </li>
+
+    <!-- Quick Action Items -->
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/products/add">
+        <i class="typcn typcn-plus" data-icon="typcn-plus"></i>
+        <span class="menu-title">Add Product</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/users/add">
+        <i class="typcn typcn-user-add" data-icon="typcn-user-add"></i>
+        <span class="menu-title">Add User</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/orders">
+        <i class="typcn typcn-clipboard" data-icon="typcn-clipboard"></i>
+        <span class="menu-title">View Orders</span>
+      </a>
+    </li>
+
+    <!-- Divider -->
+    <li class="nav-item nav-category">
+      <span class="nav-link">System</span>
+    </li>
+
+    <!-- System Items -->
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/system/logs">
+        <i class="typcn typcn-document-text" data-icon="typcn-document-text"></i>
+        <span class="menu-title">System Logs</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/admin/system/backup">
+        <i class="typcn typcn-download" data-icon="typcn-download"></i>
+        <span class="menu-title">Backup</span>
+      </a>
+    </li>
+  </ul>
+</nav>

@@ -1,0 +1,176 @@
+// Import Pollux UI theme
+@import '../shared/pollux-theme';
+
+.stats-card {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+    position: relative;
+    
+    .stats-content {
+      .stats-info {
+        .card-title {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #6c757d;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .stats-value {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #495057;
+          line-height: 1.2;
+        }
+        
+        .growth-indicator {
+          .growth-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+            
+            i {
+              font-size: 1rem;
+              margin-right: 0.25rem;
+            }
+          }
+          
+          .growth-label {
+            font-size: 0.75rem;
+          }
+        }
+      }
+      
+      .stats-icon {
+        i {
+          font-size: 2.5rem;
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+  
+  // Color variants
+  &.card-primary {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-left: 4px solid #667eea;
+  }
+  
+  &.card-success {
+    background: linear-gradient(135deg, rgba(0, 210, 91, 0.1) 0%, rgba(0, 166, 81, 0.1) 100%);
+    border-left: 4px solid #00d25b;
+  }
+  
+  &.card-info {
+    background: linear-gradient(135deg, rgba(136, 98, 224, 0.1) 0%, rgba(108, 92, 231, 0.1) 100%);
+    border-left: 4px solid #8862e0;
+  }
+  
+  &.card-warning {
+    background: linear-gradient(135deg, rgba(255, 171, 0, 0.1) 0%, rgba(255, 143, 0, 0.1) 100%);
+    border-left: 4px solid #ffab00;
+  }
+  
+  &.card-danger {
+    background: linear-gradient(135deg, rgba(255, 98, 88, 0.1) 0%, rgba(229, 62, 62, 0.1) 100%);
+    border-left: 4px solid #ff6258;
+  }
+  
+  // Text color variants
+  .text-primary {
+    color: #667eea !important;
+  }
+  
+  .text-success {
+    color: #00d25b !important;
+  }
+  
+  .text-info {
+    color: #8862e0 !important;
+  }
+  
+  .text-warning {
+    color: #ffab00 !important;
+  }
+  
+  .text-danger {
+    color: #ff6258 !important;
+  }
+  
+  // Loading spinner
+  .spinner-border-sm {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+// Mobile responsive
+@media (max-width: 768px) {
+  .stats-card {
+    .card-body {
+      padding: 1.25rem;
+      
+      .stats-content {
+        .stats-info {
+          .card-title {
+            font-size: 0.8125rem;
+          }
+          
+          .stats-value {
+            font-size: 1.75rem;
+          }
+          
+          .growth-indicator {
+            .growth-text {
+              font-size: 0.8125rem;
+            }
+            
+            .growth-label {
+              font-size: 0.6875rem;
+            }
+          }
+        }
+        
+        .stats-icon {
+          i {
+            font-size: 2rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .stats-card {
+    .card-body {
+      padding: 1rem;
+      
+      .stats-content {
+        .stats-info {
+          .stats-value {
+            font-size: 1.5rem;
+          }
+        }
+        
+        .stats-icon {
+          i {
+            font-size: 1.75rem;
+          }
+        }
+      }
+    }
+  }
+}

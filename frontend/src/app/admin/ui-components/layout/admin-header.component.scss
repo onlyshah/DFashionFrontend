@@ -1,0 +1,233 @@
+// Import Pollux UI theme
+@import '../shared/pollux-theme';
+
+// Additional header specific styles
+.navbar {
+  .navbar-brand-wrapper {
+    .navbar-brand-inner-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0 1rem;
+      
+      .brand-logo {
+        img {
+          max-height: 35px;
+          width: auto;
+        }
+      }
+      
+      .brand-logo-mini {
+        display: none;
+        
+        img {
+          max-height: 30px;
+          width: auto;
+        }
+      }
+    }
+  }
+  
+  .navbar-menu-wrapper {
+    .navbar-nav {
+      &.me-lg-2 {
+        .nav-profile {
+          .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            
+            img {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              margin-right: 0.5rem;
+            }
+            
+            .nav-profile-name {
+              font-weight: 500;
+              color: #495057;
+            }
+          }
+        }
+        
+        .nav-user-status {
+          p {
+            font-size: 0.75rem;
+            color: #6c757d;
+            margin: 0;
+            padding: 0.5rem 1rem;
+          }
+        }
+      }
+      
+      &.navbar-nav-right {
+        .nav-date {
+          .nav-link {
+            display: flex;
+            align-items: center;
+            
+            .date {
+              margin-right: 0.5rem;
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: #495057;
+            }
+            
+            i {
+              font-size: 1.25rem;
+              color: #6c757d;
+            }
+          }
+        }
+        
+        .count-indicator {
+          position: relative;
+          
+          .count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background: #ff6258;
+            border-radius: 50%;
+            font-size: 0.625rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+          }
+        }
+        
+        .dropdown-menu {
+          min-width: 280px;
+          max-height: 400px;
+          overflow-y: auto;
+          
+          .dropdown-header {
+            font-weight: 600;
+            color: #495057;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+          }
+          
+          .preview-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f8f9fa;
+            text-decoration: none;
+            color: inherit;
+            
+            &:hover {
+              background: #f8f9fa;
+            }
+            
+            .preview-thumbnail {
+              margin-right: 0.75rem;
+              
+              img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                
+                &.profile-pic {
+                  object-fit: cover;
+                }
+              }
+              
+              .preview-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                
+                i {
+                  font-size: 1.25rem;
+                }
+                
+                &.bg-success {
+                  background: #00d25b;
+                }
+                
+                &.bg-warning {
+                  background: #ffab00;
+                }
+                
+                &.bg-info {
+                  background: #8862e0;
+                }
+                
+                &.bg-danger {
+                  background: #ff6258;
+                }
+              }
+            }
+            
+            .preview-item-content {
+              flex-grow: 1;
+              
+              .preview-subject {
+                font-size: 0.875rem;
+                margin-bottom: 0.25rem;
+                
+                &.font-weight-bold {
+                  font-weight: 600;
+                }
+              }
+              
+              .fw-light {
+                font-weight: 400;
+                
+                &.small-text {
+                  font-size: 0.75rem;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 991px) {
+  .navbar {
+    .navbar-brand-wrapper {
+      width: auto;
+      
+      .navbar-brand-inner-wrapper {
+        .brand-logo {
+          display: none;
+        }
+        
+        .brand-logo-mini {
+          display: block;
+        }
+      }
+    }
+    
+    .navbar-menu-wrapper {
+      .navbar-nav {
+        &.me-lg-2 {
+          .nav-user-status {
+            display: none;
+          }
+        }
+        
+        &.navbar-nav-right {
+          .nav-date {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

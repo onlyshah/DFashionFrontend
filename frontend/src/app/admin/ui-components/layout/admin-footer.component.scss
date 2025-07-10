@@ -1,0 +1,55 @@
+// Import Pollux UI theme
+@import '../shared/pollux-theme';
+
+// Footer specific styles
+.footer {
+  background: #fff;
+  border-top: 1px solid #e8e8e8;
+  padding: 1rem 1.5rem;
+  margin-top: auto;
+  color: #6c757d;
+  font-size: 0.8125rem;
+  
+  .d-sm-flex {
+    .text-muted {
+      a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+        
+        &:hover {
+          color: #5a6fd8;
+          text-decoration: underline;
+        }
+      }
+    }
+    
+    .float-none {
+      a {
+        color: #6c757d;
+        text-decoration: none;
+        margin: 0 0.25rem;
+        
+        &:hover {
+          color: #667eea;
+        }
+      }
+    }
+  }
+}
+
+// Mobile responsive
+@media (max-width: 576px) {
+  .footer {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    
+    .d-sm-flex {
+      flex-direction: column;
+      
+      .text-center {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

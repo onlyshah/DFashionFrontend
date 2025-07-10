@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
 import { AdminAuthService } from '../services/admin-auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,8 @@ import { AdminAuthService } from '../services/admin-auth.service';
 export class AdminAuthGuard implements CanActivate, CanActivateChild {
 
   constructor(
-    private authService: AdminAuthService,
+    private adminAuthService: AdminAuthService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -29,42 +30,46 @@ export class AdminAuthGuard implements CanActivate, CanActivateChild {
   }
 
   private checkAuth(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    // Check if user is authenticated
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/admin/login'], {
-        queryParams: { returnUrl: state.url }
-      });
-      return of(false);
+    console.log('AdminAuthGuard.checkAuth - Checking route:', state.url);
+
+    // Simple and direct approach: Check if user is super admin through regular auth
+    if (this.authService.isAuthenticated && this.authService.isAdmin()) {
+      console.log('AdminAuthGuard.checkAuth - Super admin access granted via regular auth');
+      return of(true);
     }
 
-    // Check if user can access admin panel
-    if (!this.authService.canAccessAdmin()) {
-      this.router.navigate(['/admin/login']);
-      return of(false);
-    }
+    // Check admin-specific authentication
+    if (this.adminAuthService.isAuthenticated()) {
+      console.log('AdminAuthGuard.checkAuth - Admin access granted via admin auth');
 
-    // Check specific permission if required
-    const requiredPermission = route.data?.['permission'];
-    if (requiredPermission) {
-      const [module, action] = requiredPermission.split(':');
-      if (!this.authService.hasPermission(module, action)) {
-        // Redirect to dashboard with error message
-        this.router.navigate(['/admin/dashboard'], {
-          queryParams: { error: 'insufficient_permissions' }
-        });
+      // Check if user can access admin panel
+      if (!this.adminAuthService.canAccessAdmin()) {
+        console.log('AdminAuthGuard.checkAuth - Cannot access admin, redirecting to admin login');
+        this.router.navigate(['/admin/login']);
         return of(false);
       }
+
+      // Check specific permission if required
+      const requiredPermission = route.data?.['permission'];
+      if (requiredPermission) {
+        const [module, action] = requiredPermission.split(':');
+        if (!this.adminAuthService.hasPermission(module, action)) {
+          console.log('AdminAuthGuard.checkAuth - Insufficient permissions:', requiredPermission);
+          this.router.navigate(['/admin/dashboard'], {
+            queryParams: { error: 'insufficient_permissions' }
+          });
+          return of(false);
+        }
+      }
+
+      return of(true);
     }
 
-    // Verify token with server
-    return this.authService.verifyToken().pipe(
-      map(() => true),
-      catchError(() => {
-        this.router.navigate(['/admin/login'], {
-          queryParams: { returnUrl: state.url, error: 'session_expired' }
-        });
-        return of(false);
-      })
-    );
+    // No valid authentication found
+    console.log('AdminAuthGuard.checkAuth - No valid authentication, redirecting to admin login');
+    this.router.navigate(['/admin/login'], {
+      queryParams: { returnUrl: state.url }
+    });
+    return of(false);
   }
 }

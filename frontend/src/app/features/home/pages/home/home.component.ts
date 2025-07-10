@@ -315,95 +315,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Load sample stories for demonstration
+  // Load stories from database only - no mock data
   private loadSampleStories() {
-    this.instagramStories = [
-      {
-        _id: 'story_1',
-        user: {
-          _id: 'user_1',
-          username: 'fashionista_maya',
-          fullName: 'Maya Sharma',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616c9c0e6e0?w=150&h=150&fit=crop&crop=face'
-        },
-        media: [
-          {
-            type: 'image' as const,
-            url: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=600&fit=crop'
-          }
-        ],
-        viewed: false,
-        createdAt: new Date()
-      },
-      {
-        _id: 'story_2',
-        user: {
-          _id: 'user_2',
-          username: 'style_guru_raj',
-          fullName: 'Raj Patel',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
-        },
-        media: [
-          {
-            type: 'image' as const,
-            url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=600&fit=crop'
-          }
-        ],
-        viewed: false,
-        createdAt: new Date()
-      },
-      {
-        _id: 'story_3',
-        user: {
-          _id: 'user_3',
-          username: 'trendy_priya',
-          fullName: 'Priya Singh',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
-        },
-        media: [
-          {
-            type: 'image' as const,
-            url: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&h=600&fit=crop'
-          }
-        ],
-        viewed: true,
-        createdAt: new Date()
-      },
-      {
-        _id: 'story_4',
-        user: {
-          _id: 'user_4',
-          username: 'fashion_forward',
-          fullName: 'Arjun Kumar',
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
-        },
-        media: [
-          {
-            type: 'image' as const,
-            url: 'https://images.unsplash.com/photo-1622470953794-aa9c70b0fb9d?w=400&h=600&fit=crop'
-          }
-        ],
-        viewed: false,
-        createdAt: new Date()
-      },
-      {
-        _id: 'story_5',
-        user: {
-          _id: 'user_5',
-          username: 'chic_neha',
-          fullName: 'Neha Gupta',
-          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
-        },
-        media: [
-          {
-            type: 'image' as const,
-            url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop'
-          }
-        ],
-        viewed: false,
-        createdAt: new Date()
-      }
-    ];
+    // Removed mock data - using real database data only
+    this.instagramStories = [];
   }
 
   // Load categories from API

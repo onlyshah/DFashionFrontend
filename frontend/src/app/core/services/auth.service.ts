@@ -307,16 +307,17 @@ export class AuthService {
   }
 
   private showLoginPrompt(action: string): void {
-    const message = `Please login to ${action}`;
-    if (confirm(`${message}. Would you like to login now?`)) {
-      this.router.navigate(['/auth/login'], {
-        queryParams: { returnUrl: this.router.url }
-      });
-    }
+    // Silently handle login requirement - no popup
+    console.log(`Login required to ${action}`);
+    // Optionally redirect to login page without confirmation
+    // this.router.navigate(['/auth/login'], {
+    //   queryParams: { returnUrl: this.router.url }
+    // });
   }
 
   private showRoleError(requiredRole: string, action: string): void {
-    alert(`Only ${requiredRole}s can ${action}. Please login with a ${requiredRole} account.`);
+    // Removed popup alert - silently handle role restrictions
+    console.log(`Access denied: Only ${requiredRole}s can ${action}`);
   }
 
   // Social interaction methods with authentication checks

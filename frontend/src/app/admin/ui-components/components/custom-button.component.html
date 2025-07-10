@@ -1,0 +1,28 @@
+<button 
+  [type]="type"
+  [class]="buttonClasses"
+  [disabled]="disabled || loading"
+  (click)="onClick($event)">
+  
+  <!-- Loading Spinner -->
+  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </span>
+  
+  <!-- Left Icon -->
+  <i *ngIf="icon && iconPosition === 'left' && !loading" 
+     class="typcn" 
+     [ngClass]="icon"
+     [class.me-2]="true"></i>
+  
+  <!-- Button Content -->
+  <span class="button-content">
+    <ng-content></ng-content>
+  </span>
+  
+  <!-- Right Icon -->
+  <i *ngIf="icon && iconPosition === 'right' && !loading" 
+     class="typcn" 
+     [ngClass]="icon"
+     [class.ms-2]="true"></i>
+</button>

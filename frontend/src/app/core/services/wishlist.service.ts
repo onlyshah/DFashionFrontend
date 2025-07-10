@@ -113,7 +113,12 @@ export class WishlistService {
   }
 
   clearWishlist(): Observable<any> {
-    return this.http.delete(`${this.API_URL}/api/wishlist`).pipe(
+    const token = localStorage.getItem('token');
+    const options = token ? {
+      headers: { 'Authorization': `Bearer ${token}` }
+    } : {};
+
+    return this.http.delete(`${this.API_URL}/api/wishlist`, options).pipe(
       tap(() => {
         this.wishlistItemsSubject.next([]);
         this.wishlistCountSubject.next(0);
@@ -129,11 +134,16 @@ export class WishlistService {
   }
 
   moveToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    const options = token ? {
+      headers: { 'Authorization': `Bearer ${token}` }
+    } : {};
+
     return this.http.post(`${this.API_URL}/api/wishlist/move-to-cart/${productId}`, {
       quantity,
       size,
       color
-    }).pipe(
+    }, options).pipe(
       tap(() => {
         this.loadWishlist(); // Refresh wishlist after moving
       })
