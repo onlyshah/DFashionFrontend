@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 
-import { ViewAddStoriesComponent } from '../../components/view-add-stories/view-add-stories.component';
+import { ViewAddStoriesComponent } from '../../../../shared/components/view-add-stories/view-add-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TrendingProductsComponent } from '../../components/trending-products/trending-products.component';
@@ -60,10 +60,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.checkScreenSize();
     this.loadStories();
     this.loadCategories();
-    console.log('Home component initialized:', {
-      isMobile: this.isMobile,
-      instagramStories: this.instagramStories.length
-    });
     // Prevent body scroll when sidebar is open
     document.addEventListener('touchmove', this.preventScroll, { passive: false });
   }
@@ -270,16 +266,24 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Load stories from API
   private loadStories() {
-    this.http.get<any>(`${this.apiUrl}/api/v1/stories`).subscribe({
+    // Load sample stories immediately as fallback
+    this.loadSampleStories();
+
+    // Try to load from API (this will override sample stories if successful)
+    this.http.get<any>(`${this.apiUrl}/api/stories`).subscribe({
       next: (response) => {
         if (response?.success && response?.storyGroups) {
           this.instagramStories = response.storyGroups.map((storyGroup: any) => ({
-            id: storyGroup.user?._id,
-            username: storyGroup.user?.username || 'unknown',
-            avatar: storyGroup.user?.avatar || '/assets/images/default-avatar.svg',
-            hasStory: true,
+            _id: storyGroup.user?._id || `story_${Date.now()}_${Math.random()}`,
+            user: {
+              _id: storyGroup.user?._id || `user_${Date.now()}_${Math.random()}`,
+              username: storyGroup.user?.username || 'unknown',
+              fullName: storyGroup.user?.fullName || storyGroup.user?.username || 'Unknown User',
+              avatar: storyGroup.user?.avatar || '/assets/images/default-avatar.svg'
+            },
+            media: storyGroup.media || [],
             viewed: false,
-            touching: false
+            createdAt: storyGroup.createdAt || new Date()
           }));
         } else if (response?.success && response?.stories) {
           // Fallback to individual stories if storyGroups not available
@@ -287,26 +291,119 @@ export class HomeComponent implements OnInit, OnDestroy {
           response.stories.forEach((story: any) => {
             if (story.user && !uniqueUsers.has(story.user._id)) {
               uniqueUsers.set(story.user._id, {
-                id: story.user._id,
-                username: story.user.username || 'unknown',
-                avatar: story.user.avatar || '/assets/images/default-avatar.svg',
-                hasStory: true,
+                _id: story._id || `story_${Date.now()}_${Math.random()}`,
+                user: {
+                  _id: story.user._id,
+                  username: story.user.username || 'unknown',
+                  fullName: story.user.fullName || story.user.username || 'Unknown User',
+                  avatar: story.user.avatar || '/assets/images/default-avatar.svg'
+                },
+                media: story.media || [],
                 viewed: false,
-                touching: false
+                createdAt: story.createdAt || new Date()
               });
             }
           });
           this.instagramStories = Array.from(uniqueUsers.values());
-        } else {
-          console.warn('No stories found');
-          this.instagramStories = [];
         }
+        // If no stories from API, sample stories are already loaded
       },
       error: (error) => {
-        console.error('Error loading stories:', error);
-        this.instagramStories = [];
+        // API error - sample stories already loaded as fallback
+        console.error('Error loading stories from API:', error);
       }
     });
+  }
+
+  // Load sample stories for demonstration
+  private loadSampleStories() {
+    this.instagramStories = [
+      {
+        _id: 'story_1',
+        user: {
+          _id: 'user_1',
+          username: 'fashionista_maya',
+          fullName: 'Maya Sharma',
+          avatar: 'https://images.unsplash.com/photo-1494790108755-2616c9c0e6e0?w=150&h=150&fit=crop&crop=face'
+        },
+        media: [
+          {
+            type: 'image' as const,
+            url: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=600&fit=crop'
+          }
+        ],
+        viewed: false,
+        createdAt: new Date()
+      },
+      {
+        _id: 'story_2',
+        user: {
+          _id: 'user_2',
+          username: 'style_guru_raj',
+          fullName: 'Raj Patel',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+        },
+        media: [
+          {
+            type: 'image' as const,
+            url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=600&fit=crop'
+          }
+        ],
+        viewed: false,
+        createdAt: new Date()
+      },
+      {
+        _id: 'story_3',
+        user: {
+          _id: 'user_3',
+          username: 'trendy_priya',
+          fullName: 'Priya Singh',
+          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face'
+        },
+        media: [
+          {
+            type: 'image' as const,
+            url: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400&h=600&fit=crop'
+          }
+        ],
+        viewed: true,
+        createdAt: new Date()
+      },
+      {
+        _id: 'story_4',
+        user: {
+          _id: 'user_4',
+          username: 'fashion_forward',
+          fullName: 'Arjun Kumar',
+          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+        },
+        media: [
+          {
+            type: 'image' as const,
+            url: 'https://images.unsplash.com/photo-1622470953794-aa9c70b0fb9d?w=400&h=600&fit=crop'
+          }
+        ],
+        viewed: false,
+        createdAt: new Date()
+      },
+      {
+        _id: 'story_5',
+        user: {
+          _id: 'user_5',
+          username: 'chic_neha',
+          fullName: 'Neha Gupta',
+          avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face'
+        },
+        media: [
+          {
+            type: 'image' as const,
+            url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400&h=600&fit=crop'
+          }
+        ],
+        viewed: false,
+        createdAt: new Date()
+      }
+    ];
   }
 
   // Load categories from API

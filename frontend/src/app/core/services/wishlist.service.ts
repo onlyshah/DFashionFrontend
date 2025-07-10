@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface WishlistItem {
@@ -74,7 +74,7 @@ export class WishlistService {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.get<WishlistResponse>(`${this.API_URL}/api/v1/wishlist?page=${page}&limit=${limit}`, options).pipe(
+    return this.http.get<WishlistResponse>(`${this.API_URL}/api/wishlist?page=${page}&limit=${limit}`, options).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistItemsSubject.next(response.data.items);
@@ -90,7 +90,7 @@ export class WishlistService {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.post(`${this.API_URL}/wishlist`, {
+    return this.http.post(`${this.API_URL}/api/wishlist`, {
       productId
     }, options).pipe(
       tap(() => {
@@ -105,7 +105,7 @@ export class WishlistService {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.delete(`${this.API_URL}/wishlist/${productId}`, options).pipe(
+    return this.http.delete(`${this.API_URL}/api/wishlist/${productId}`, options).pipe(
       tap(() => {
         this.loadWishlist(); // Refresh wishlist after removing
       })
@@ -113,16 +113,23 @@ export class WishlistService {
   }
 
   clearWishlist(): Observable<any> {
-    return this.http.delete(`${this.API_URL}/wishlist`).pipe(
+    return this.http.delete(`${this.API_URL}/api/wishlist`).pipe(
       tap(() => {
         this.wishlistItemsSubject.next([]);
         this.wishlistCountSubject.next(0);
+      }),
+      catchError(error => {
+        console.error('Error clearing wishlist:', error);
+        // Still clear local data even if API call fails
+        this.wishlistItemsSubject.next([]);
+        this.wishlistCountSubject.next(0);
+        return of({ success: true, message: 'Wishlist cleared locally' });
       })
     );
   }
 
   moveToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<any> {
-    return this.http.post(`${this.API_URL}/wishlist/move-to-cart/${productId}`, {
+    return this.http.post(`${this.API_URL}/api/wishlist/move-to-cart/${productId}`, {
       quantity,
       size,
       color

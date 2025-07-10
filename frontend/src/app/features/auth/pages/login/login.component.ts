@@ -61,8 +61,8 @@ export class LoginComponent {
           );
 
           // Role-based redirect
-          if (userData.role === 'admin') {
-            this.router.navigate(['/admin']);
+          if (userData.role === 'admin' || userData.role === 'super_admin') {
+            this.router.navigate(['/admin/dashboard']);
           } else if (userData.role === 'vendor') {
             this.router.navigate(['/vendor/dashboard']);
           } else {

@@ -9,7 +9,7 @@ export interface User {
   email: string;
   fullName: string;
   phone?: string;
-  role: 'customer' | 'vendor' | 'admin' | 'sales' | 'marketing' | 'support';
+  role: 'customer' | 'vendor' | 'admin' | 'super_admin' | 'sales' | 'marketing' | 'support';
   department?: string;
   isActive: boolean;
   isVerified: boolean;

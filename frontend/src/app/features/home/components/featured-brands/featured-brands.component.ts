@@ -24,8 +24,8 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 280; // Width of each brand card including margin
-  visibleCards = 1; // Number of cards visible at once
+  cardWidth = 256; // Width of each brand card including margin (240px + 16px gap)
+  visibleCards = 2; // Number of cards visible at once in sidebar
   maxSlide = 0;
 
   // Auto-sliding properties
@@ -201,17 +201,17 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     const width = window.innerWidth;
 
     if (width <= 768) {
-      this.cardWidth = 476; // 460px card + 16px gap
+      this.cardWidth = 256; // 240px card + 16px gap
       this.visibleCards = 1;
     } else if (width <= 1024) {
-      this.cardWidth = 482; // 470px card + 12px gap
-      this.visibleCards = 1;
+      this.cardWidth = 252; // 240px card + 12px gap
+      this.visibleCards = 2;
     } else if (width <= 1200) {
-      this.cardWidth = 489; // 475px card + 14px gap
-      this.visibleCards = 1;
+      this.cardWidth = 254; // 240px card + 14px gap
+      this.visibleCards = 2;
     } else {
-      this.cardWidth = 496; // 480px card + 16px gap
-      this.visibleCards = 1;
+      this.cardWidth = 256; // 240px card + 16px gap
+      this.visibleCards = 2;
     }
 
     this.updateSliderLimits();

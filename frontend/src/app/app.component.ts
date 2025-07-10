@@ -92,16 +92,27 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private initializeDataFlow() {
-    // Load initial data
-    this.dataFlowService.loadAnalytics().subscribe({
-      next: () => console.log('Analytics loaded'),
-      error: (error) => console.error('Failed to load analytics:', error)
-    });
+    // Only load data if user is authenticated
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      if (isAuth) {
+        // Load analytics for authenticated users
+        this.dataFlowService.loadAnalytics().subscribe({
+          next: () => console.log('Analytics loaded for authenticated user'),
+          error: (error) => console.error('Failed to load analytics:', error)
+        });
 
-    // Load recommendations for anonymous users
-    this.dataFlowService.loadRecommendations().subscribe({
-      next: () => console.log('Recommendations loaded'),
-      error: (error) => console.error('Failed to load recommendations:', error)
+        // Load personalized recommendations for authenticated users
+        this.dataFlowService.loadRecommendations().subscribe({
+          next: () => console.log('Personalized recommendations loaded'),
+          error: (error) => console.error('Failed to load recommendations:', error)
+        });
+      } else {
+        // For unauthenticated users, only load basic public data
+        console.log('User not authenticated, skipping personalized data loading');
+
+        // You can load public/general recommendations here if needed
+        // this.loadPublicRecommendations();
+      }
     });
   }
 }

@@ -218,7 +218,10 @@ export class AuthService {
 
         import('./wishlist.service').then(({ WishlistService }) => {
           const wishlistService = new WishlistService(this.http);
-          wishlistService.clearWishlist().subscribe();
+          wishlistService.clearWishlist().subscribe({
+            next: () => console.log('✅ Wishlist cleared on logout'),
+            error: (error) => console.warn('⚠️ Could not clear wishlist on logout:', error)
+          });
         });
       } catch (error) {
         console.error('Error clearing user data on logout:', error);
@@ -253,7 +256,7 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user?.role === 'admin';
+    return user?.role === 'admin' || user?.role === 'super_admin';
   }
 
   isVendor(): boolean {

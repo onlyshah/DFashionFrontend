@@ -1,9 +1,11 @@
 <div class="dashboard-container">
-  <!-- Loading Spinner -->
-  <div *ngIf="isLoading" class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading dashboard data...</p>
-  </div>
+  <!-- Modern Loading State -->
+  <app-admin-loading
+    *ngIf="isLoading"
+    title="Loading Dashboard"
+    message="Preparing your admin dashboard with the latest data..."
+    [fullscreen]="false">
+  </app-admin-loading>
 
   <!-- Dashboard Content -->
   <div *ngIf="!isLoading" class="dashboard-content">

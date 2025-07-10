@@ -220,19 +220,19 @@
   width: 100%;
 
   .brand-card {
-    flex: 0 0 460px; // Optimized for 500px sidebar
-    width: 460px;
-    height: 520px; // Standardized height
+    flex: 0 0 240px; // Standard size matching other sliders
+    width: 240px;
+    height: 420px; // Standard height matching other sliders
   }
 
   // Desktop/laptop optimization for sidebar
   @media (min-width: 769px) {
-    gap: 12px;
+    gap: 12px; // Smaller gap for desktop
 
     .brand-card {
-      flex: 0 0 470px; // Optimized for 500px sidebar
-      width: 470px;
-      height: 540px;
+      flex: 0 0 240px; // Fixed width for consistent sliding
+      width: 240px;
+      height: 380px;
     }
   }
 
@@ -240,9 +240,9 @@
     gap: 14px;
 
     .brand-card {
-      flex: 0 0 475px;
-      width: 475px;
-      height: 550px;
+      flex: 0 0 240px;
+      width: 240px;
+      height: 400px;
     }
   }
 
@@ -250,9 +250,9 @@
     gap: 16px;
 
     .brand-card {
-      flex: 0 0 480px;
-      width: 480px;
-      height: 560px;
+      flex: 0 0 240px;
+      width: 240px;
+      height: 420px;
     }
   }
 }
@@ -278,19 +278,18 @@
 
 .brand-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   margin-bottom: 20px;
-  
+
   .brand-info {
-    flex: 1;
+    width: 100%;
   }
-  
+
   .brand-name {
     font-size: 20px;
     font-weight: 700;
     color: white;
-    margin: 0 0 12px 0;
+    margin: 0 0 8px 0; // Reduced margin since badge is now below
   }
   
   .brand-stats {
@@ -315,16 +314,20 @@
   .brand-badge {
     background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
     color: #333;
-    padding: 8px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 16px;
+    font-size: 11px;
     font-weight: 600;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 6px;
-    
+    gap: 4px;
+    margin: 6px 0 8px 0; // Add margin for spacing below brand name
+    width: fit-content; // Ensure badge doesn't stretch full width
+    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+
     ion-icon {
-      font-size: 14px;
+      font-size: 12px;
+      color: #333;
     }
   }
 }
@@ -564,11 +567,21 @@
 
   
   .brand-header {
-    flex-direction: column;
-    gap: 12px;
-    
+    margin-bottom: 16px; // Reduced margin for mobile
+
+    .brand-name {
+      font-size: 18px; // Slightly smaller on mobile
+      margin-bottom: 6px;
+    }
+
     .brand-badge {
-      align-self: flex-start;
+      margin: 4px 0 6px 0; // Reduced margins for mobile
+      padding: 4px 8px; // Smaller padding on mobile
+      font-size: 10px; // Smaller text on mobile
+
+      ion-icon {
+        font-size: 11px;
+      }
     }
   }
   

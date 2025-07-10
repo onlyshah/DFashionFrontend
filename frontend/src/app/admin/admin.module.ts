@@ -53,6 +53,7 @@ import { AnalyticsComponent } from './analytics/analytics.component';
 import { SettingsComponent } from './settings/settings.component';
 import { SidebarComponent } from './layout/sidebar.component';
 import { HeaderComponent } from './layout/header.component';
+import { AdminLoadingComponent } from './shared/components/loading/loading.component';
 
 // Services
 import { AdminAuthService } from './services/admin-auth.service';
@@ -101,7 +102,7 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     
     // Settings
     SettingsComponent,
-    
+
     // Pipes
     RolePipe,
     StatusPipe,
@@ -143,7 +144,10 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     MatExpansionModule,
     MatStepperModule,
     MatTooltipModule,
-    MatDividerModule
+    MatDividerModule,
+
+    // Standalone Components
+    AdminLoadingComponent
   ],
   providers: [
     AdminAuthService,

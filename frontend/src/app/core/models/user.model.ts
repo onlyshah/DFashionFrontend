@@ -5,7 +5,7 @@ export interface User {
   fullName: string;
   avatar: string;
   bio?: string;
-  role: 'customer' | 'vendor' | 'admin';
+  role: 'customer' | 'vendor' | 'admin' | 'super_admin';
   isVerified: boolean;
   isActive: boolean;
   followers: string[];

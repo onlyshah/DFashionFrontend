@@ -332,17 +332,17 @@
   gap: 16px; // Consistent gap between items
 
   .influencer-card {
-    flex: 0 0 230px; // Standardized width
-    width: 230px;
+    flex: 0 0 240px; // Standard size matching other sliders
+    width: 240px;
   }
 
   // Desktop/laptop optimization for sidebar
   @media (min-width: 769px) {
-    gap: 12px;
+    gap: 12px; // Smaller gap for desktop
 
     .influencer-card {
-      flex: 0 0 235px; // Optimized for 500px sidebar
-      width: 235px;
+      flex: 0 0 240px; // Fixed width for consistent sliding
+      width: 240px;
     }
   }
 
@@ -350,8 +350,8 @@
     gap: 14px;
 
     .influencer-card {
-      flex: 0 0 238px;
-      width: 238px;
+      flex: 0 0 240px;
+      width: 240px;
     }
   }
 

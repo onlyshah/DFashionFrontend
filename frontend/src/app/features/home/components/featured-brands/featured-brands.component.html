@@ -57,6 +57,11 @@
       <div class="brand-header">
         <div class="brand-info">
           <h3 class="brand-name">{{ brand.brand }}</h3>
+          <!-- Featured Badge - Positioned below brand name -->
+          <div class="brand-badge">
+            <ion-icon name="diamond"></ion-icon>
+            Featured
+          </div>
           <div class="brand-stats">
             <div class="stat-item">
               <ion-icon name="bag-outline"></ion-icon>
@@ -71,10 +76,6 @@
               <span>{{ formatNumber(brand.totalViews || 0) }} Views</span>
             </div>
           </div>
-        </div>
-        <div class="brand-badge">
-          <ion-icon name="diamond"></ion-icon>
-          Featured
         </div>
       </div>
 

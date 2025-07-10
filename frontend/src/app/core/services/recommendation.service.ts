@@ -254,35 +254,42 @@ export class RecommendationService {
 
   // Start real-time updates
   private startRealTimeUpdates(): void {
-    // Update recommendations every 5 minutes if user is active
-    timer(0, 5 * 60 * 1000).pipe(
-      switchMap(() => {
-        return this.authService.getCurrentUser().pipe(
-          switchMap(response => {
-            if (response?.user?._id) {
-              return this.getSuggestedProducts(response.user._id, 10);
-            }
-            return of([]);
-          }),
-          catchError(() => of([]))
-        );
-      })
-    ).subscribe();
+    // Only start real-time updates if user is authenticated
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      if (!isAuth) {
+        return; // Don't start updates for unauthenticated users
+      }
 
-    // Update user analytics every 10 minutes
-    timer(0, 10 * 60 * 1000).pipe(
-      switchMap(() => {
-        return this.authService.getCurrentUser().pipe(
-          switchMap(response => {
-            if (response?.user?._id) {
-              return this.getUserAnalytics(response.user._id);
-            }
-            return of(null);
-          }),
-          catchError(() => of(null))
-        );
-      })
-    ).subscribe();
+      // Update recommendations every 5 minutes if user is active
+      timer(0, 5 * 60 * 1000).pipe(
+        switchMap(() => {
+          return this.authService.getCurrentUser().pipe(
+            switchMap(response => {
+              if (response?.user?._id) {
+                return this.getSuggestedProducts(response.user._id, 10);
+              }
+              return of([]);
+            }),
+            catchError(() => of([]))
+          );
+        })
+      ).subscribe();
+
+      // Update user analytics every 10 minutes
+      timer(0, 10 * 60 * 1000).pipe(
+        switchMap(() => {
+          return this.authService.getCurrentUser().pipe(
+            switchMap(response => {
+              if (response?.user?._id) {
+                return this.getUserAnalytics(response.user._id);
+              }
+              return of(null);
+            }),
+            catchError(() => of(null))
+          );
+        })
+      ).subscribe();
+    });
   }
 
   // Update user behavior data

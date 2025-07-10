@@ -237,19 +237,19 @@
   width: 100%;
 
   .product-card {
-    flex: 0 0 230px; // Standardized width
-    width: 230px;
-    height: 380px; // Standardized height
+    flex: 0 0 240px; // Standard size matching other sliders
+    width: 240px;
+    height: 420px; // Standard height matching other sliders
   }
 
   // Desktop/laptop optimization for sidebar
   @media (min-width: 769px) {
-    gap: 12px;
+    gap: 12px; // Smaller gap for desktop
 
     .product-card {
-      flex: 0 0 235px; // Optimized for 500px sidebar
-      width: 235px;
-      height: 400px;
+      flex: 0 0 240px; // Fixed width for consistent sliding
+      width: 240px;
+      height: 380px;
     }
   }
 
@@ -257,9 +257,9 @@
     gap: 14px;
 
     .product-card {
-      flex: 0 0 238px;
-      width: 238px;
-      height: 410px;
+      flex: 0 0 240px;
+      width: 240px;
+      height: 400px;
     }
   }
 

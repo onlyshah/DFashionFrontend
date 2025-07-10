@@ -42,9 +42,7 @@ export class ViewAddStoriesComponent implements OnInit {
   @Output() createStory = new EventEmitter<void>();
 
   ngOnInit() {
-    console.log('View Add Stories - Current User:', this.currentUser);
-    console.log('View Add Stories - Show Add Story:', this.showAddStory);
-    console.log('View Add Stories - Default Avatar:', this.defaultAvatar);
+    // Component initialization
   }
 
   onStoryClick(story: Story, index: number) {
