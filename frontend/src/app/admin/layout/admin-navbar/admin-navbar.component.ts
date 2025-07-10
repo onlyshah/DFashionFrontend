@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminAuthService } from '../../services/admin-auth.service';
+import { UiAnimationService } from '../../services/ui-animation.service';
 import { Router } from '@angular/router';
 
 interface Message {
@@ -24,7 +25,7 @@ interface Notification {
   templateUrl: './admin-navbar.component.html',
   styleUrl: './admin-navbar.component.scss'
 })
-export class AdminNavbarComponent implements OnInit {
+export class AdminNavbarComponent implements OnInit, AfterViewInit {
   currentUser: any = null;
   messageCount: number = 0;
   notificationCount: number = 0;
@@ -33,6 +34,7 @@ export class AdminNavbarComponent implements OnInit {
 
   constructor(
     private adminAuthService: AdminAuthService,
+    private uiAnimationService: UiAnimationService,
     private router: Router
   ) {}
 
@@ -42,8 +44,13 @@ export class AdminNavbarComponent implements OnInit {
       this.currentUser = user;
     });
 
-    // Load mock data for messages and notifications
-    this.loadMockData();
+    // Load real data for messages and notifications
+    this.loadData();
+  }
+
+  ngAfterViewInit() {
+    // Initialize animations after view is ready
+    this.uiAnimationService.initializeAllAnimations();
   }
 
   getCurrentDate(): string {
@@ -61,13 +68,11 @@ export class AdminNavbarComponent implements OnInit {
   }
 
   toggleSidebar() {
-    // Implement sidebar toggle functionality
-    document.body.classList.toggle('sidebar-icon-only');
+    this.uiAnimationService.toggleSidebar();
   }
 
   toggleOffcanvas() {
-    // Implement offcanvas toggle for mobile
-    document.body.classList.toggle('sidebar-offcanvas-active');
+    this.uiAnimationService.toggleMobileSidebar();
   }
 
   logout() {
@@ -75,49 +80,33 @@ export class AdminNavbarComponent implements OnInit {
     this.router.navigate(['/admin/login']);
   }
 
-  private loadMockData() {
-    // Mock messages
-    this.recentMessages = [
-      {
-        sender: 'David Grey',
-        content: 'The meeting is cancelled',
-        avatar: 'assets/pollux/images/faces/face4.jpg'
-      },
-      {
-        sender: 'Tim Cook',
-        content: 'New product launch',
-        avatar: 'assets/pollux/images/faces/face2.jpg'
-      },
-      {
-        sender: 'Johnson',
-        content: 'Upcoming board meeting',
-        avatar: 'assets/pollux/images/faces/face3.jpg'
-      }
-    ];
+  private loadData() {
+    // Load real messages and notifications from API
+    this.loadMessages();
+    this.loadNotifications();
+  }
 
-    // Mock notifications
-    this.recentNotifications = [
-      {
-        title: 'Application Error',
-        time: 'Just now',
-        icon: 'typcn typcn-info mx-0',
-        iconClass: 'bg-success'
-      },
-      {
-        title: 'Settings',
-        time: 'Private message',
-        icon: 'typcn typcn-cog-outline mx-0',
-        iconClass: 'bg-warning'
-      },
-      {
-        title: 'New user registration',
-        time: '2 days ago',
-        icon: 'typcn typcn-user mx-0',
-        iconClass: 'bg-info'
-      }
-    ];
+  private loadMessages() {
+    // TODO: Replace with actual API call
+    // this.adminApiService.getMessages().subscribe(messages => {
+    //   this.recentMessages = messages;
+    //   this.messageCount = messages.length;
+    // });
 
-    this.messageCount = this.recentMessages.length;
-    this.notificationCount = this.recentNotifications.length;
+    // Temporary empty state until API is implemented
+    this.recentMessages = [];
+    this.messageCount = 0;
+  }
+
+  private loadNotifications() {
+    // TODO: Replace with actual API call
+    // this.adminApiService.getNotifications().subscribe(notifications => {
+    //   this.recentNotifications = notifications;
+    //   this.notificationCount = notifications.length;
+    // });
+
+    // Temporary empty state until API is implemented
+    this.recentNotifications = [];
+    this.notificationCount = 0;
   }
 }

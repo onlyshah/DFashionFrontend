@@ -1,0 +1,185 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">System Logs</h5>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm" [(ngModel)]="selectedLogLevel" (change)="filterLogs()">
+            <option value="">All Levels</option>
+            <option value="error">Error</option>
+            <option value="warning">Warning</option>
+            <option value="info">Info</option>
+            <option value="debug">Debug</option>
+          </select>
+          <select class="form-select form-select-sm" [(ngModel)]="selectedModule" (change)="filterLogs()">
+            <option value="">All Modules</option>
+            <option value="auth">Authentication</option>
+            <option value="user">User Management</option>
+            <option value="product">Product Management</option>
+            <option value="order">Order Management</option>
+            <option value="system">System</option>
+          </select>
+          <button class="btn btn-outline-primary btn-sm" (click)="refreshLogs()">
+            <i class="typcn typcn-refresh"></i> Refresh
+          </button>
+          <button class="btn btn-outline-success btn-sm" (click)="exportLogs()">
+            <i class="typcn typcn-download"></i> Export
+          </button>
+        </div>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead class="table-light">
+              <tr>
+                <th width="150">Timestamp</th>
+                <th width="80">Level</th>
+                <th width="120">Module</th>
+                <th width="150">User</th>
+                <th>Message</th>
+                <th width="100">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of filteredLogs" [ngClass]="getLogRowClass(log.level)">
+                <td>
+                  <small>{{ log.timestamp | date:'short' }}</small>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getLogLevelBadge(log.level)">
+                    {{ log.level | uppercase }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge badge-outline-secondary">{{ log.module }}</span>
+                </td>
+                <td>
+                  <small>{{ log.user || 'System' }}</small>
+                </td>
+                <td>
+                  <div class="log-message">
+                    {{ log.message }}
+                    <div *ngIf="log.details" class="log-details mt-1">
+                      <small class="text-muted">{{ log.details }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <button class="btn btn-outline-info btn-sm" (click)="viewLogDetails(log)">
+                    <i class="typcn typcn-eye"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredLogs.length === 0">
+                <td colspan="6" class="text-center py-4">
+                  <div class="text-muted">
+                    <i class="typcn typcn-document-text" style="font-size: 48px;"></i>
+                    <p class="mt-2">No logs found</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer d-flex justify-content-between align-items-center">
+        <div>
+          <small class="text-muted">
+            Showing {{ filteredLogs.length }} of {{ logs.length }} logs
+          </small>
+        </div>
+        <nav>
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <a class="page-link" href="javascript:;" (click)="changePage(currentPage - 1)">Previous</a>
+            </li>
+            <li class="page-item" *ngFor="let page of getPageNumbers()" [class.active]="page === currentPage">
+              <a class="page-link" href="javascript:;" (click)="changePage(page)">{{ page }}</a>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === totalPages">
+              <a class="page-link" href="javascript:;" (click)="changePage(currentPage + 1)">Next</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Log Details Modal -->
+<div class="modal fade" id="logDetailsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Log Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedLog">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Basic Information</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Timestamp:</strong></td>
+                <td>{{ selectedLog.timestamp | date:'full' }}</td>
+              </tr>
+              <tr>
+                <td><strong>Level:</strong></td>
+                <td>
+                  <span class="badge" [ngClass]="getLogLevelBadge(selectedLog.level)">
+                    {{ selectedLog.level | uppercase }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Module:</strong></td>
+                <td>{{ selectedLog.module }}</td>
+              </tr>
+              <tr>
+                <td><strong>User:</strong></td>
+                <td>{{ selectedLog.user || 'System' }}</td>
+              </tr>
+              <tr *ngIf="selectedLog.ip">
+                <td><strong>IP Address:</strong></td>
+                <td>{{ selectedLog.ip }}</td>
+              </tr>
+              <tr *ngIf="selectedLog.userAgent">
+                <td><strong>User Agent:</strong></td>
+                <td><small>{{ selectedLog.userAgent }}</small></td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6>Additional Data</h6>
+            <div *ngIf="selectedLog.stackTrace" class="mb-3">
+              <strong>Stack Trace:</strong>
+              <pre class="bg-light p-2 mt-1"><small>{{ selectedLog.stackTrace }}</small></pre>
+            </div>
+            <div *ngIf="selectedLog.metadata" class="mb-3">
+              <strong>Metadata:</strong>
+              <pre class="bg-light p-2 mt-1"><small>{{ selectedLog.metadata | json }}</small></pre>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <h6>Message</h6>
+            <div class="alert" [ngClass]="getLogAlertClass(selectedLog.level)">
+              {{ selectedLog.message }}
+            </div>
+            <div *ngIf="selectedLog.details">
+              <h6>Details</h6>
+              <p>{{ selectedLog.details }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="exportSingleLog()">
+          <i class="typcn typcn-download"></i> Export This Log
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

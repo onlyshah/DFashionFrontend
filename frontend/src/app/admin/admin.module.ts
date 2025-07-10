@@ -21,20 +21,14 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatDividerModule } from '@angular/material/divider';
 
-// Chart.js (commented out until ng2-charts is properly installed)
-// import { NgChartsModule } from 'ng2-charts';
+
 
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
@@ -42,6 +36,7 @@ import { AdminRoutingModule } from './admin-routing.module';
 // Components
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { RoleManagementComponent } from './pages/role-management/role-management.component';
 import { AdminLoginComponent } from './auth/admin-login.component';
 import { UserManagementComponent } from './users/user-management.component';
 import { UserDialogComponent } from './users/user-dialog.component';
@@ -112,8 +107,7 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     ReactiveFormsModule,
     HttpClientModule,
     AdminRoutingModule,
-    // NgChartsModule, // Commented out until ng2-charts is properly installed
-    
+
     // Angular Material Modules
     MatToolbarModule,
     MatSidenavModule,
@@ -132,22 +126,18 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatChipsModule,
-    MatTabsModule,
+    MatCheckboxModule,
+    MatTooltipModule,
     MatMenuModule,
     MatBadgeModule,
-    MatSlideToggleModule,
-    MatCheckboxModule,
-    MatRadioModule,
-    MatExpansionModule,
-    MatStepperModule,
-    MatTooltipModule,
+    MatTabsModule,
     MatDividerModule,
 
     // Standalone Components
     AdminLoadingComponent,
     AdminLayoutComponent,
-    AdminDashboardComponent
+    AdminDashboardComponent,
+    RoleManagementComponent
   ],
   providers: [
     AdminAuthService,

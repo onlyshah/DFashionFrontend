@@ -1,0 +1,222 @@
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Role Management</h5>
+        <button class="btn btn-primary btn-sm" (click)="openCreateRoleModal()" *ngIf="canManageRoles">
+          <i class="typcn typcn-plus"></i> Create Role
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Role Name</th>
+                <th>Display Name</th>
+                <th>Description</th>
+                <th>Level</th>
+                <th>Permissions</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let role of roles">
+                <td>
+                  <span class="badge" [ngClass]="getRoleBadgeClass(role.level)">
+                    {{ role.name }}
+                  </span>
+                </td>
+                <td>{{ role.displayName }}</td>
+                <td>{{ role.description }}</td>
+                <td>
+                  <span class="badge badge-outline-secondary">
+                    Level {{ role.level }}
+                  </span>
+                </td>
+                <td>
+                  <span class="text-muted">{{ role.permissions.length }} permissions</span>
+                  <button class="btn btn-link btn-sm p-0 ms-2" (click)="viewPermissions(role)">
+                    <i class="typcn typcn-eye"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="role.isActive ? 'badge-success' : 'badge-danger'">
+                    {{ role.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+                <td>
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-outline-primary btn-sm" (click)="editRole(role)"
+                            *ngIf="canManageRoles && role.name !== 'super_admin'">
+                      <i class="typcn typcn-edit"></i>
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" (click)="deleteRole(role)"
+                            *ngIf="canManageRoles && role.name !== 'super_admin' && role.name !== 'admin'">
+                      <i class="typcn typcn-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Permissions Modal -->
+<div class="modal fade" id="permissionsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ selectedRole?.displayName }} Permissions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row" *ngIf="selectedRole">
+          <div class="col-12 mb-3">
+            <h6>Role Information</h6>
+            <p><strong>Name:</strong> {{ selectedRole.name }}</p>
+            <p><strong>Description:</strong> {{ selectedRole.description }}</p>
+            <p><strong>Level:</strong> {{ selectedRole.level }}</p>
+          </div>
+          <div class="col-12">
+            <h6>Permissions by Module</h6>
+            <div class="accordion" id="permissionsAccordion">
+              <div class="accordion-item" *ngFor="let module of getModules()">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button"
+                          [attr.data-bs-target]="'#collapse-' + module"
+                          data-bs-toggle="collapse">
+                    {{ module | titlecase }} Module
+                    <span class="badge badge-primary ms-2">
+                      {{ getModulePermissionCount(module) }}
+                    </span>
+                  </button>
+                </h2>
+                <div [id]="'collapse-' + module" class="accordion-collapse collapse"
+                     data-bs-parent="#permissionsAccordion">
+                  <div class="accordion-body">
+                    <div class="row">
+                      <div class="col-md-6" *ngFor="let permission of getModulePermissions(module)">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox"
+                                 [checked]="hasPermission(permission.id)" disabled>
+                          <label class="form-check-label">
+                            {{ permission.name }}
+                            <small class="text-muted d-block">{{ permission.description }}</small>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Role Modal -->
+<div class="modal fade" id="roleModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Role' : 'Create Role' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form [formGroup]="roleForm" (ngSubmit)="saveRole()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Role Name *</label>
+                <input type="text" class="form-control" formControlName="name"
+                       placeholder="e.g., manager">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Display Name *</label>
+                <input type="text" class="form-control" formControlName="displayName"
+                       placeholder="e.g., Manager">
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" formControlName="description" rows="2"
+                          placeholder="Role description"></textarea>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Level *</label>
+                <select class="form-select" formControlName="level">
+                  <option value="2">2 - Administrator</option>
+                  <option value="3">3 - Manager</option>
+                  <option value="4">4 - User</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" formControlName="isActive">
+                  <label class="form-check-label">Active</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <h6>Permissions</h6>
+              <div class="accordion" id="editPermissionsAccordion">
+                <div class="accordion-item" *ngFor="let module of getModules()">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button"
+                            [attr.data-bs-target]="'#edit-collapse-' + module"
+                            data-bs-toggle="collapse">
+                      {{ module | titlecase }} Module
+                    </button>
+                  </h2>
+                  <div [id]="'edit-collapse-' + module" class="accordion-collapse collapse"
+                       data-bs-parent="#editPermissionsAccordion">
+                    <div class="accordion-body">
+                      <div class="row">
+                        <div class="col-md-6" *ngFor="let permission of getModulePermissions(module)">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   [value]="permission.id"
+                                   (change)="onPermissionChange($event, permission.id)">
+                            <label class="form-check-label">
+                              {{ permission.name }}
+                              <small class="text-muted d-block">{{ permission.description }}</small>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!roleForm.valid">
+            {{ isEditMode ? 'Update Role' : 'Create Role' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,150 @@
+<div class="file-upload-container">
+  <!-- Upload Area -->
+  <div class="upload-area"
+       [class.dragover]="isDragOver"
+       [class.uploading]="isUploading"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave($event)"
+       (drop)="onDrop($event)"
+       (click)="fileInput.click()">
+
+    <!-- Upload Icon and Text -->
+    <div class="upload-content" *ngIf="!isUploading && selectedFiles.length === 0">
+      <i class="upload-icon" [ngClass]="getUploadIcon()"></i>
+      <h5 class="upload-title">{{ uploadTitle }}</h5>
+      <p class="upload-description">{{ uploadDescription }}</p>
+      <div class="upload-info">
+        <small class="text-muted">
+          Allowed: {{ getAllowedTypesText() }} |
+          Max size: {{ getMaxSizeText() }}
+          <span *ngIf="multiple"> | Max files: {{ maxFiles }}</span>
+        </small>
+      </div>
+      <button type="button" class="btn btn-primary btn-upload">
+        <i class="typcn typcn-upload"></i>
+        Choose {{ multiple ? 'Files' : 'File' }}
+      </button>
+    </div>
+
+    <!-- Upload Progress -->
+    <div class="upload-progress" *ngIf="isUploading">
+      <div class="progress-content">
+        <i class="typcn typcn-upload upload-progress-icon"></i>
+        <h6>Uploading...</h6>
+        <div class="progress mb-2">
+          <div class="progress-bar"
+               [style.width.%]="uploadProgress?.percentage || 0"
+               [ngClass]="getProgressBarClass()">
+            {{ uploadProgress?.percentage || 0 }}%
+          </div>
+        </div>
+        <small class="text-muted">
+          {{ formatFileSize(uploadProgress?.loaded || 0) }} /
+          {{ formatFileSize(uploadProgress?.total || 0) }}
+        </small>
+      </div>
+    </div>
+
+    <!-- Selected Files Preview -->
+    <div class="selected-files" *ngIf="selectedFiles.length > 0 && !isUploading">
+      <h6>Selected Files ({{ selectedFiles.length }})</h6>
+      <div class="file-list">
+        <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
+          <div class="file-preview">
+            <img *ngIf="isImageFile(file)"
+                 [src]="getFilePreview(file)"
+                 alt="Preview"
+                 class="file-thumbnail">
+            <i *ngIf="!isImageFile(file)"
+               class="file-icon"
+               [ngClass]="getFileIcon(file)"></i>
+          </div>
+          <div class="file-info">
+            <div class="file-name">{{ file.name }}</div>
+            <div class="file-size">{{ formatFileSize(file.size) }}</div>
+          </div>
+          <button type="button"
+                  class="btn btn-sm btn-outline-danger file-remove"
+                  (click)="removeFile(i)">
+            <i class="typcn typcn-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="upload-actions">
+        <button type="button"
+                class="btn btn-success"
+                (click)="startUpload()"
+                [disabled]="selectedFiles.length === 0">
+          <i class="typcn typcn-upload"></i>
+          Upload {{ selectedFiles.length }} {{ selectedFiles.length === 1 ? 'File' : 'Files' }}
+        </button>
+        <button type="button"
+                class="btn btn-outline-secondary ms-2"
+                (click)="clearFiles()">
+          <i class="typcn typcn-trash"></i>
+          Clear All
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Success -->
+    <div class="upload-success" *ngIf="uploadComplete && uploadedFiles.length > 0">
+      <div class="success-content">
+        <i class="typcn typcn-tick success-icon"></i>
+        <h6>Upload Complete!</h6>
+        <p>{{ uploadedFiles.length }} {{ uploadedFiles.length === 1 ? 'file' : 'files' }} uploaded successfully</p>
+        <div class="uploaded-files">
+          <div class="uploaded-file" *ngFor="let file of uploadedFiles">
+            <img *ngIf="file.type?.startsWith('image')"
+                 [src]="file.url"
+                 alt="Uploaded"
+                 class="uploaded-thumbnail">
+            <div class="uploaded-info">
+              <div class="uploaded-name">{{ file.originalName }}</div>
+              <div class="uploaded-size">{{ formatFileSize(file.size) }}</div>
+            </div>
+          </div>
+        </div>
+        <button type="button"
+                class="btn btn-primary"
+                (click)="resetUpload()">
+          <i class="typcn typcn-plus"></i>
+          Upload More
+        </button>
+      </div>
+    </div>
+
+    <!-- Upload Error -->
+    <div class="upload-error" *ngIf="uploadError">
+      <div class="error-content">
+        <i class="typcn typcn-warning error-icon"></i>
+        <h6>Upload Failed</h6>
+        <p>{{ uploadError }}</p>
+        <button type="button"
+                class="btn btn-outline-primary"
+                (click)="resetUpload()">
+          <i class="typcn typcn-refresh"></i>
+          Try Again
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden File Input -->
+  <input #fileInput
+         type="file"
+         [accept]="acceptedTypes"
+         [multiple]="multiple"
+         (change)="onFileSelected($event)"
+         style="display: none;">
+
+  <!-- Validation Messages -->
+  <div class="validation-messages" *ngIf="validationErrors.length > 0">
+    <div class="alert alert-warning">
+      <h6><i class="typcn typcn-warning"></i> Validation Errors:</h6>
+      <ul class="mb-0">
+        <li *ngFor="let error of validationErrors">{{ error }}</li>
+      </ul>
+    </div>
+  </div>
+</div>

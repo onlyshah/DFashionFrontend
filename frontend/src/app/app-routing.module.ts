@@ -85,13 +85,7 @@ const routes: Routes = [
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
-  // Web routes (for desktop/tablet) - Commented out until module is created
-  /*
-  {
-    path: 'web',
-    loadChildren: () => import('./web/web.module').then(m => m.WebModule)
-  },
-  */
+
   {
     path: '**',
     redirectTo: '/home'

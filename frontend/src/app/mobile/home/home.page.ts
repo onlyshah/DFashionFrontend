@@ -210,14 +210,9 @@ export class HomePage implements OnInit {
 
   async loadFeaturedBrands() {
     try {
-      // Mock data for featured brands
-      this.featuredBrands = [
-        { id: '1', name: 'Nike', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Nike-Logo.png', productCount: 150 },
-        { id: '2', name: 'Adidas', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png', productCount: 120 },
-        { id: '3', name: 'Puma', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Puma-Logo.png', productCount: 95 },
-        { id: '4', name: 'Zara', logo: 'https://logos-world.net/wp-content/uploads/2020/07/Zara-Logo.png', productCount: 200 },
-        { id: '5', name: 'H&M', logo: 'https://logos-world.net/wp-content/uploads/2020/04/HM-Logo.png', productCount: 180 }
-      ];
+      // Load featured brands from API
+      const brands = await this.ecommerceService.getFeaturedBrands().toPromise();
+      this.featuredBrands = brands || [];
     } catch (error) {
       console.error('Error loading featured brands:', error);
       this.featuredBrands = [];

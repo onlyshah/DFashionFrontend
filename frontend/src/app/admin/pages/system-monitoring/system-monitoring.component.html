@@ -1,0 +1,280 @@
+<div class="row">
+  <!-- System Overview Cards -->
+  <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-muted">Server Status</h6>
+            <h3 class="mb-0" [ngClass]="systemStatus.server === 'online' ? 'text-success' : 'text-danger'">
+              {{ systemStatus.server | titlecase }}
+            </h3>
+          </div>
+          <div class="icon-lg" [ngClass]="systemStatus.server === 'online' ? 'bg-success' : 'bg-danger'">
+            <i class="typcn typcn-device-desktop text-white"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <small class="text-muted">Uptime: {{ systemStatus.uptime }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-muted">Database</h6>
+            <h3 class="mb-0" [ngClass]="systemStatus.database === 'connected' ? 'text-success' : 'text-danger'">
+              {{ systemStatus.database | titlecase }}
+            </h3>
+          </div>
+          <div class="icon-lg" [ngClass]="systemStatus.database === 'connected' ? 'bg-success' : 'bg-danger'">
+            <i class="typcn typcn-database text-white"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <small class="text-muted">Response: {{ systemStatus.dbResponseTime }}ms</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-muted">Active Users</h6>
+            <h3 class="mb-0 text-info">{{ systemStatus.activeUsers }}</h3>
+          </div>
+          <div class="icon-lg bg-info">
+            <i class="typcn typcn-user text-white"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <small class="text-muted">Peak today: {{ systemStatus.peakUsers }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-md-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="text-muted">API Health</h6>
+            <h3 class="mb-0" [ngClass]="getHealthStatusClass(systemStatus.apiHealth)">
+              {{ systemStatus.apiHealth | titlecase }}
+            </h3>
+          </div>
+          <div class="icon-lg" [ngClass]="getHealthIconClass(systemStatus.apiHealth)">
+            <i class="typcn typcn-wi-fi text-white"></i>
+          </div>
+        </div>
+        <div class="mt-3">
+          <small class="text-muted">Avg response: {{ systemStatus.avgResponseTime }}ms</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- System Performance Charts -->
+  <div class="col-xl-8 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">System Performance</h5>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <div class="text-center">
+              <h6 class="text-muted">CPU Usage</h6>
+              <div class="progress-circle" [attr.data-percentage]="performanceMetrics.cpu">
+                <span>{{ performanceMetrics.cpu }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-center">
+              <h6 class="text-muted">Memory</h6>
+              <div class="progress-circle" [attr.data-percentage]="performanceMetrics.memory">
+                <span>{{ performanceMetrics.memory }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-center">
+              <h6 class="text-muted">Disk Usage</h6>
+              <div class="progress-circle" [attr.data-percentage]="performanceMetrics.disk">
+                <span>{{ performanceMetrics.disk }}%</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-center">
+              <h6 class="text-muted">Network</h6>
+              <div class="progress-circle" [attr.data-percentage]="performanceMetrics.network">
+                <span>{{ performanceMetrics.network }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <canvas #performanceChart height="300"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Alerts -->
+  <div class="col-xl-4 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Recent Alerts</h5>
+        <button class="btn btn-outline-primary btn-sm" (click)="refreshAlerts()">
+          <i class="typcn typcn-refresh"></i>
+        </button>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          <div *ngFor="let alert of recentAlerts"
+               class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 me-auto">
+              <div class="fw-bold d-flex align-items-center">
+                <i class="typcn" [ngClass]="getAlertIcon(alert.type)"
+                   [style.color]="getAlertColor(alert.type)"></i>
+                <span class="ms-2">{{ alert.title }}</span>
+              </div>
+              <small class="text-muted">{{ alert.message }}</small>
+              <div class="mt-1">
+                <small class="text-muted">{{ alert.timestamp | date:'short' }}</small>
+              </div>
+            </div>
+            <span class="badge" [ngClass]="getAlertBadgeClass(alert.type)">
+              {{ alert.type }}
+            </span>
+          </div>
+          <div *ngIf="recentAlerts.length === 0" class="list-group-item text-center py-4">
+            <div class="text-muted">
+              <i class="typcn typcn-info-large" style="font-size: 48px;"></i>
+              <p class="mt-2">No recent alerts</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <!-- Service Status -->
+  <div class="col-xl-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Service Status</h5>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>Response Time</th>
+                <th>Last Check</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let service of services">
+                <td>
+                  <div class="d-flex align-items-center">
+                    <i class="typcn" [ngClass]="service.icon" style="font-size: 20px; margin-right: 10px;"></i>
+                    {{ service.name }}
+                  </div>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getServiceStatusBadge(service.status)">
+                    {{ service.status }}
+                  </span>
+                </td>
+                <td>{{ service.responseTime }}ms</td>
+                <td>
+                  <small>{{ service.lastCheck | date:'short' }}</small>
+                </td>
+                <td>
+                  <button class="btn btn-outline-primary btn-sm" (click)="checkService(service)">
+                    <i class="typcn typcn-refresh"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Information -->
+  <div class="col-xl-6 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">System Information</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-6">
+            <h6>Server Details</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>OS:</strong></td>
+                <td>{{ systemInfo.os }}</td>
+              </tr>
+              <tr>
+                <td><strong>Node.js:</strong></td>
+                <td>{{ systemInfo.nodeVersion }}</td>
+              </tr>
+              <tr>
+                <td><strong>Memory:</strong></td>
+                <td>{{ systemInfo.totalMemory }}</td>
+              </tr>
+              <tr>
+                <td><strong>CPU Cores:</strong></td>
+                <td>{{ systemInfo.cpuCores }}</td>
+              </tr>
+            </table>
+          </div>
+          <div class="col-6">
+            <h6>Application</h6>
+            <table class="table table-sm">
+              <tr>
+                <td><strong>Version:</strong></td>
+                <td>{{ systemInfo.appVersion }}</td>
+              </tr>
+              <tr>
+                <td><strong>Environment:</strong></td>
+                <td>
+                  <span class="badge" [ngClass]="getEnvironmentBadge(systemInfo.environment)">
+                    {{ systemInfo.environment }}
+                  </span>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Build:</strong></td>
+                <td>{{ systemInfo.buildNumber }}</td>
+              </tr>
+              <tr>
+                <td><strong>Started:</strong></td>
+                <td>{{ systemInfo.startTime | date:'short' }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -15,20 +15,22 @@
   <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
     <ul class="navbar-nav me-lg-2">
       <li class="nav-item nav-profile dropdown">
-        <a class="nav-link" href="#" data-bs-toggle="dropdown" id="profileDropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+           data-bs-toggle="dropdown" aria-expanded="false">
           <img [src]="currentUser?.avatar || 'assets/pollux/images/faces/face5.jpg'" alt="profile"/>
           <span class="nav-profile-name">{{ currentUser?.fullName || 'Admin User' }}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-          <a class="dropdown-item" routerLink="/admin/profile">
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown" aria-labelledby="profileDropdown">
+          <li><a class="dropdown-item" routerLink="/admin/profile">
             <i class="typcn typcn-cog-outline text-primary"></i>
             Settings
-          </a>
-          <a class="dropdown-item" (click)="logout()">
+          </a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="javascript:;" (click)="logout()">
             <i class="typcn typcn-eject text-primary"></i>
             Logout
-          </a>
-        </div>
+          </a></li>
+        </ul>
       </li>
       <li class="nav-item nav-user-status dropdown">
         <p class="mb-0">Last login was {{ getLastLoginTime() }}.</p>
@@ -43,43 +45,47 @@
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
-           id="messageDropdown" href="#" data-bs-toggle="dropdown">
+           id="messageDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="typcn typcn-mail mx-0"></i>
           <span class="count" *ngIf="messageCount > 0">{{ messageCount }}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-          <p class="mb-0 fw-normal float-start dropdown-header">Messages</p>
-          <div *ngFor="let message of recentMessages" class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <img [src]="message.avatar" alt="image" class="profile-pic">
-            </div>
-            <div class="preview-item-content flex-grow">
-              <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
-              <p class="fw-light small-text text-muted mb-0">{{ message.content }}</p>
-            </div>
-          </div>
-        </div>
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+          <li><h6 class="dropdown-header">Messages</h6></li>
+          <li *ngFor="let message of recentMessages">
+            <a class="dropdown-item preview-item" href="javascript:;">
+              <div class="preview-thumbnail">
+                <img [src]="message.avatar" alt="image" class="profile-pic">
+              </div>
+              <div class="preview-item-content flex-grow">
+                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
+                <p class="fw-light small-text text-muted mb-0">{{ message.content }}</p>
+              </div>
+            </a>
+          </li>
+        </ul>
       </li>
       <li class="nav-item dropdown me-0">
         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center"
-           id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+           id="notificationDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="typcn typcn-bell mx-0"></i>
           <span class="count" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-          <p class="mb-0 fw-normal float-start dropdown-header">Notifications</p>
-          <div *ngFor="let notification of recentNotifications" class="dropdown-item preview-item">
-            <div class="preview-thumbnail">
-              <div class="preview-icon" [ngClass]="notification.iconClass">
-                <i [class]="notification.icon"></i>
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+          <li><h6 class="dropdown-header">Notifications</h6></li>
+          <li *ngFor="let notification of recentNotifications">
+            <a class="dropdown-item preview-item" href="javascript:;">
+              <div class="preview-thumbnail">
+                <div class="preview-icon" [ngClass]="notification.iconClass">
+                  <i [class]="notification.icon"></i>
+                </div>
               </div>
-            </div>
-            <div class="preview-item-content">
-              <h6 class="preview-subject fw-normal">{{ notification.title }}</h6>
-              <p class="fw-light small-text mb-0 text-muted">{{ notification.time }}</p>
-            </div>
-          </div>
-        </div>
+              <div class="preview-item-content">
+                <h6 class="preview-subject fw-normal">{{ notification.title }}</h6>
+                <p class="fw-light small-text mb-0 text-muted">{{ notification.time }}</p>
+              </div>
+            </a>
+          </li>
+        </ul>
       </li>
     </ul>
     <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleOffcanvas()">

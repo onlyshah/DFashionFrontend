@@ -14,13 +14,15 @@ import { filter } from 'rxjs/operators';
 export class AdminSidebarComponent implements OnInit {
   currentRoute: string = '';
   expandedMenus: Set<string> = new Set();
+  currentUser: any = null;
 
   // Define which routes have submenus
   private subMenuRoutes = new Map([
     ['/admin/users', true],
     ['/admin/products', true],
     ['/admin/analytics', true],
-    ['/admin/settings', true]
+    ['/admin/settings', true],
+    ['/admin/system', true]
   ]);
 
   constructor(
@@ -29,6 +31,11 @@ export class AdminSidebarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    // Subscribe to current user
+    this.adminAuthService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+
     // Track current route
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
@@ -64,6 +71,10 @@ export class AdminSidebarComponent implements OnInit {
     }
   }
 
+  isSuperAdmin(): boolean {
+    return this.currentUser?.role === 'super_admin' || this.currentUser?.role === 'admin';
+  }
+
   logout() {
     this.adminAuthService.logout();
     this.router.navigate(['/admin/login']);
@@ -82,6 +93,9 @@ export class AdminSidebarComponent implements OnInit {
     }
     if (this.currentRoute.startsWith('/admin/settings')) {
       this.expandedMenus.add('settings');
+    }
+    if (this.currentRoute.startsWith('/admin/system')) {
+      this.expandedMenus.add('system-management');
     }
   }
 }

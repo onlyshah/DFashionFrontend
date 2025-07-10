@@ -9,16 +9,14 @@
     </li>
 
     <li class="nav-item" [class.active]="isActiveRoute('/admin/users')">
-      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/users') ? 'collapse' : null"
-         [href]="hasSubMenu('/admin/users') ? '#user-management' : null"
-         [routerLink]="!hasSubMenu('/admin/users') ? '/admin/users' : null"
-         [attr.aria-expanded]="isMenuExpanded('user-management')"
-         aria-controls="user-management">
+      <a class="nav-link" data-bs-toggle="collapse" href="#user-management"
+         role="button" [attr.aria-expanded]="isMenuExpanded('user-management')"
+         aria-controls="user-management" (click)="toggleMenu('user-management')">
         <i class="typcn typcn-user-outline menu-icon"></i>
         <span class="menu-title">User Management</span>
-        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/users')"></i>
+        <i class="menu-arrow"></i>
       </a>
-      <div class="collapse" id="user-management" *ngIf="hasSubMenu('/admin/users')">
+      <div class="collapse" id="user-management" [class.show]="isMenuExpanded('user-management')">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/users">All Users</a>
@@ -29,21 +27,22 @@
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/users/vendors">Vendors</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/users/roles">Role Management</a>
+          </li>
         </ul>
       </div>
     </li>
 
     <li class="nav-item" [class.active]="isActiveRoute('/admin/products')">
-      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/products') ? 'collapse' : null"
-         [href]="hasSubMenu('/admin/products') ? '#product-management' : null"
-         [routerLink]="!hasSubMenu('/admin/products') ? '/admin/products' : null"
-         [attr.aria-expanded]="isMenuExpanded('product-management')"
-         aria-controls="product-management">
+      <a class="nav-link" data-bs-toggle="collapse" href="#product-management"
+         role="button" [attr.aria-expanded]="isMenuExpanded('product-management')"
+         aria-controls="product-management" (click)="toggleMenu('product-management')">
         <i class="typcn typcn-shopping-bag menu-icon"></i>
         <span class="menu-title">Product Management</span>
-        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/products')"></i>
+        <i class="menu-arrow"></i>
       </a>
-      <div class="collapse" id="product-management" *ngIf="hasSubMenu('/admin/products')">
+      <div class="collapse" id="product-management" [class.show]="isMenuExpanded('product-management')">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/products">All Products</a>
@@ -66,16 +65,14 @@
     </li>
 
     <li class="nav-item" [class.active]="isActiveRoute('/admin/analytics')">
-      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/analytics') ? 'collapse' : null"
-         [href]="hasSubMenu('/admin/analytics') ? '#analytics' : null"
-         [routerLink]="!hasSubMenu('/admin/analytics') ? '/admin/analytics' : null"
-         [attr.aria-expanded]="isMenuExpanded('analytics')"
-         aria-controls="analytics">
+      <a class="nav-link" data-bs-toggle="collapse" href="#analytics"
+         role="button" [attr.aria-expanded]="isMenuExpanded('analytics')"
+         aria-controls="analytics" (click)="toggleMenu('analytics')">
         <i class="typcn typcn-chart-pie-outline menu-icon"></i>
         <span class="menu-title">Analytics</span>
-        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/analytics')"></i>
+        <i class="menu-arrow"></i>
       </a>
-      <div class="collapse" id="analytics" *ngIf="hasSubMenu('/admin/analytics')">
+      <div class="collapse" id="analytics" [class.show]="isMenuExpanded('analytics')">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/analytics">Overview</a>
@@ -90,17 +87,42 @@
       </div>
     </li>
 
+    <!-- Super Admin Only Features -->
+    <li class="nav-item" [class.active]="isActiveRoute('/admin/system')" *ngIf="isSuperAdmin()">
+      <a class="nav-link" data-bs-toggle="collapse" href="#system-management"
+         role="button" [attr.aria-expanded]="isMenuExpanded('system-management')"
+         aria-controls="system-management" (click)="toggleMenu('system-management')">
+        <i class="typcn typcn-cog menu-icon"></i>
+        <span class="menu-title">System Management</span>
+        <i class="menu-arrow"></i>
+      </a>
+      <div class="collapse" id="system-management" [class.show]="isMenuExpanded('system-management')">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/system/logs">System Logs</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/system/monitoring">Monitoring</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/system/backup">Backup & Restore</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/system/maintenance">Maintenance</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
     <li class="nav-item" [class.active]="isActiveRoute('/admin/settings')">
-      <a class="nav-link" [attr.data-bs-toggle]="hasSubMenu('/admin/settings') ? 'collapse' : null"
-         [href]="hasSubMenu('/admin/settings') ? '#settings' : null"
-         [routerLink]="!hasSubMenu('/admin/settings') ? '/admin/settings' : null"
-         [attr.aria-expanded]="isMenuExpanded('settings')"
-         aria-controls="settings">
+      <a class="nav-link" data-bs-toggle="collapse" href="#settings"
+         role="button" [attr.aria-expanded]="isMenuExpanded('settings')"
+         aria-controls="settings" (click)="toggleMenu('settings')">
         <i class="typcn typcn-cog-outline menu-icon"></i>
         <span class="menu-title">Settings</span>
-        <i class="menu-arrow" *ngIf="hasSubMenu('/admin/settings')"></i>
+        <i class="menu-arrow"></i>
       </a>
-      <div class="collapse" id="settings" *ngIf="hasSubMenu('/admin/settings')">
+      <div class="collapse" id="settings" [class.show]="isMenuExpanded('settings')">
         <ul class="nav flex-column sub-menu">
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/settings/general">General</a>
@@ -110,6 +132,9 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" routerLink="/admin/settings/notifications">Notifications</a>
+          </li>
+          <li class="nav-item" *ngIf="isSuperAdmin()">
+            <a class="nav-link" routerLink="/admin/settings/application">Application Config</a>
           </li>
         </ul>
       </div>
