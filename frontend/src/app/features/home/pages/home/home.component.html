@@ -1,8 +1,8 @@
-<div class="home-container" [class.mobile-instagram]="isMobile" [class.sidebar-open]="isSidebarOpen" [class.mobile]="isMobile">
-  <!-- Mobile Header with Instagram-like styling -->
-  <div class="mobile-header instagram-style" *ngIf="isMobile">
+<div class="home-container" [class.mobile-social]="isMobile" [class.sidebar-open]="isSidebarOpen" [class.mobile]="isMobile">
+  <!-- Mobile Header with social media styling -->
+  <div class="mobile-header social-style" *ngIf="isMobile">
     <div class="header-left">
-      <h1 class="app-logo">DFashion</h1>
+      <h1 class="app-logo">TrendSpace</h1>
       <ion-icon name="chevron-down" class="logo-dropdown"></ion-icon>
     </div>
     <div class="header-right">
@@ -25,7 +25,7 @@
     <!-- Stories Section (Full Width) -->
     <div class="stories-section-container">
       <app-view-add-stories
-        [stories]="instagramStories"
+        [stories]="socialStories"
         [showAddStory]="true"
         [addStoryText]="'Your Story'"
         (storyClick)="viewStory($event)"
@@ -54,13 +54,13 @@
       <div class="main-content">
         <!-- Responsive Stories Component (Works on all screen sizes) -->
         <app-view-add-stories
-          [stories]="instagramStories"
+          [stories]="socialStories"
           [showAddStory]="true"
           [addStoryText]="'Your Story'"
           (storyClick)="viewStory($event)"
           (createStory)="createStory()">
         </app-view-add-stories>
-        <!-- Instagram-style Feed with Posts and Reels -->
+        <!-- Social Feed with Posts and Reels -->
         <app-feed></app-feed>
       </div>
 
@@ -166,6 +166,36 @@
       <ion-icon name="close-outline" class="close-icon" (click)="closeSidebar()"></ion-icon>
     </div>
 
+    <!-- Instagram-style Profile Menu -->
+    <div class="profile-menu" *ngIf="isEndUser()">
+      <div class="menu-item dashboard-link" (click)="navigateToDashboard()">
+        <div class="menu-icon">
+          <ion-icon name="analytics-outline"></ion-icon>
+        </div>
+        <span class="menu-label">Dashboard</span>
+        <div class="menu-description">Your activity & rewards</div>
+        <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item" (click)="navigateToProfile()">
+        <div class="menu-icon">
+          <ion-icon name="person-outline"></ion-icon>
+        </div>
+        <span class="menu-label">Edit Profile</span>
+        <div class="menu-description">Manage your account</div>
+        <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+      </div>
+
+      <div class="menu-item" (click)="navigateToSettings()">
+        <div class="menu-icon">
+          <ion-icon name="settings-outline"></ion-icon>
+        </div>
+        <span class="menu-label">Settings</span>
+        <div class="menu-description">Privacy & preferences</div>
+        <ion-icon name="chevron-forward-outline" class="menu-arrow"></ion-icon>
+      </div>
+    </div>
+
     <div class="sidebar-content">
       <app-sidebar></app-sidebar>
     </div>
@@ -220,8 +250,8 @@
     </div>
   </div>
 
-  <!-- Instagram Bottom Navigation (Mobile Only) -->
-  <div class="instagram-bottom-nav" *ngIf="isMobile">
+  <!-- Social Bottom Navigation (Mobile Only) -->
+  <div class="social-bottom-nav" *ngIf="isMobile">
     <div class="nav-item active">
       <ion-icon name="home"></ion-icon>
     </div>

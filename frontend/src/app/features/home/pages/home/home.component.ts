@@ -2,7 +2,9 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from '../../../../../environments/environment';
+import { AuthService } from '../../../../core/services/auth.service';
 
 import { ViewAddStoriesComponent } from '../../../../shared/components/view-add-stories/view-add-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
@@ -46,15 +48,19 @@ export class HomeComponent implements OnInit, OnDestroy {
   // TikTok-style interaction states
   isLiked = false;
 
-  // Instagram Stories Data - Will be loaded from API
-  instagramStories: any[] = [];
+  // Social Stories Data - Will be loaded from API
+  socialStories: any[] = [];
 
   // Categories Data - Will be loaded from API
   categories: any[] = [];
 
   private apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     this.checkScreenSize();
@@ -62,6 +68,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.loadCategories();
     // Prevent body scroll when sidebar is open
     document.addEventListener('touchmove', this.preventScroll, { passive: false });
+
+    console.log('🏠 Home component initialized:', { isMobile: this.isMobile, storiesCount: this.socialStories.length });
   }
 
   ngOnDestroy() {
@@ -69,7 +77,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  onResize(_event: any) {
     this.checkScreenSize();
     if (!this.isMobile && this.isSidebarOpen) {
       this.closeSidebar();
@@ -85,13 +93,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     // Consider it mobile if width <= 768px OR if it's a mobile user agent
     this.isMobile = width <= 768 || isMobileUserAgent;
 
-    console.log('Screen size check:', {
-      width: width,
-      height: window.innerHeight,
-      isMobile: this.isMobile,
-      isMobileUserAgent: isMobileUserAgent,
-      userAgent: userAgent
-    });
+    console.log('📱 Screen size check:', { width, isMobile: this.isMobile, userAgent: userAgent.substring(0, 50) });
   }
 
   toggleSidebar() {
@@ -158,17 +160,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   toggleLike() {
     this.isLiked = !this.isLiked;
     // TODO: Implement like functionality with backend
-    console.log('Like toggled:', this.isLiked);
   }
 
   openComments() {
     // TODO: Implement comments modal/page
-    console.log('Opening comments...');
   }
 
   shareContent() {
     // TODO: Implement share functionality
-    console.log('Sharing content...');
     if (navigator.share) {
       navigator.share({
         title: 'DFashion',
@@ -180,17 +179,14 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   openMusic() {
     // TODO: Implement music/audio functionality
-    console.log('Opening music...');
   }
 
   // Stories functionality
   createStory() {
-    console.log('Create story clicked');
     // TODO: Implement story creation
   }
 
-  viewStory(story: any) {
-    console.log('View story:', story);
+  viewStory(_story: any) {
     // TODO: Implement story viewer
   }
 
@@ -199,7 +195,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   // Enhanced touch interactions for mobile app
-  onStoryTouchStart(event: TouchEvent, story: any) {
+  onStoryTouchStart(_event: TouchEvent, story: any) {
     story.touching = true;
     // Add haptic feedback if available
     if ('vibrate' in navigator) {
@@ -207,60 +203,50 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
   }
 
-  onStoryTouchEnd(event: TouchEvent, story: any) {
+  onStoryTouchEnd(_event: TouchEvent, story: any) {
     story.touching = false;
   }
 
   // TikTok-style interaction methods
   onLikeClick() {
     this.isLiked = !this.isLiked;
-    console.log('Like clicked:', this.isLiked);
     // TODO: Implement like functionality with backend
   }
 
   onCommentClick() {
-    console.log('Comment clicked');
     // TODO: Implement comment functionality
   }
 
   onShareClick() {
-    console.log('Share clicked');
     // TODO: Implement share functionality
   }
 
   onBookmarkClick() {
-    console.log('Bookmark clicked');
     // TODO: Implement bookmark functionality
   }
 
   // Mobile quick actions navigation methods
   navigateToTrending() {
-    console.log('Navigate to trending');
     // TODO: Implement navigation to trending page
   }
 
   navigateToNewArrivals() {
-    console.log('Navigate to new arrivals');
     // TODO: Implement navigation to new arrivals page
   }
 
   navigateToOffers() {
-    console.log('Navigate to offers');
     // TODO: Implement navigation to offers page
   }
 
   navigateToCategories() {
-    console.log('Navigate to categories');
     // TODO: Implement navigation to categories page
   }
 
   navigateToWishlist() {
-    console.log('Navigate to wishlist');
     // TODO: Implement navigation to wishlist page
   }
 
   navigateToCart() {
-    console.log('Navigate to cart');
     // TODO: Implement navigation to cart page
   }
 
@@ -268,12 +254,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   private loadStories() {
     // Load sample stories immediately as fallback
     this.loadSampleStories();
+    console.log('📖 Sample stories loaded:', this.socialStories.length);
 
     // Try to load from API (this will override sample stories if successful)
     this.http.get<any>(`${this.apiUrl}/api/stories`).subscribe({
       next: (response) => {
         if (response?.success && response?.storyGroups) {
-          this.instagramStories = response.storyGroups.map((storyGroup: any) => ({
+          this.socialStories = response.storyGroups.map((storyGroup: any) => ({
             _id: storyGroup.user?._id || `story_${Date.now()}_${Math.random()}`,
             user: {
               _id: storyGroup.user?._id || `user_${Date.now()}_${Math.random()}`,
@@ -304,7 +291,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               });
             }
           });
-          this.instagramStories = Array.from(uniqueUsers.values());
+          this.socialStories = Array.from(uniqueUsers.values());
         }
         // If no stories from API, sample stories are already loaded
       },
@@ -315,10 +302,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Load stories from database only - no mock data
+  // Load stories from database only - NO MOCK DATA
   private loadSampleStories() {
-    // Removed mock data - using real database data only
-    this.instagramStories = [];
+    // Initialize empty array - only real database data will be loaded
+    this.socialStories = [];
   }
 
   // Load categories from API
@@ -331,7 +318,6 @@ export class HomeComponent implements OnInit, OnDestroy {
             icon: this.getCategoryIcon(category.name)
           }));
         } else {
-          console.warn('No categories found');
           this.categories = [];
         }
       },
@@ -365,5 +351,26 @@ export class HomeComponent implements OnInit, OnDestroy {
       'Travel': 'airplane'
     };
     return iconMap[categoryName] || 'shirt';
+  }
+
+  // Navigation methods for end user dashboard
+  isEndUser(): boolean {
+    const userRole = this.authService.getCurrentUserRole();
+    return userRole === 'end_user' || userRole === 'customer';
+  }
+
+  navigateToDashboard(): void {
+    this.router.navigate(['/user-dashboard']);
+    this.closeSidebar();
+  }
+
+  navigateToProfile(): void {
+    this.router.navigate(['/profile']);
+    this.closeSidebar();
+  }
+
+  navigateToSettings(): void {
+    this.router.navigate(['/profile/settings']);
+    this.closeSidebar();
   }
 }

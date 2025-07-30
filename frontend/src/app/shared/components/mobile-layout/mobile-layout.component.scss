@@ -15,7 +15,7 @@
   right: 0;
   background: white;
   border-bottom: 1px solid #e0e0e0;
-  z-index: 1000;
+  z-index: 998;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   
   // Safe area support for iOS
@@ -504,7 +504,7 @@
   display: flex;
   align-items: center; // Center items vertically
   justify-content: space-around; // Better spacing distribution
-  z-index: 1000;
+  z-index: 998;
   height: 70px; // Fixed height for consistency
 
   // Safe area support

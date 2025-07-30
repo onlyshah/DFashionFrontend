@@ -33,6 +33,9 @@ import { MatDividerModule } from '@angular/material/divider';
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
 
+// Pollux UI Module
+import { PolluxUiModule } from './pollux-ui/pollux-ui.module';
+
 // Components
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
@@ -107,6 +110,9 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     ReactiveFormsModule,
     HttpClientModule,
     AdminRoutingModule,
+
+    // Pollux UI Module
+    PolluxUiModule,
 
     // Angular Material Modules
     MatToolbarModule,

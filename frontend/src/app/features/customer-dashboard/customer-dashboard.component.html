@@ -1,0 +1,206 @@
+<!-- Customer Dashboard - Responsive Design -->
+<div class="customer-dashboard" [class.mobile]="isMobile" [class.tablet]="isTablet">
+  
+  <!-- Header Section -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <!-- Mobile Header -->
+      <div class="mobile-header" *ngIf="isMobile">
+        <button class="back-btn" (click)="router.navigate(['/home'])">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Dashboard</h1>
+        <button class="settings-btn" (click)="goToSettings()">
+          <mat-icon>settings</mat-icon>
+        </button>
+      </div>
+      
+      <!-- Web Header -->
+      <div class="web-header" *ngIf="!isMobile">
+        <div class="header-left">
+          <h1>Customer Dashboard</h1>
+          <p class="welcome-text">{{ getGreeting() }}, {{ currentUser?.fullName || 'Customer' }}!</p>
+        </div>
+        <div class="header-right">
+          <button mat-icon-button (click)="goToProfile()" class="profile-btn">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <button mat-icon-button (click)="goToSettings()" class="settings-btn">
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+    
+    <!-- User Profile Card (Mobile Only) -->
+    <mat-card class="profile-card" *ngIf="isMobile">
+      <div class="profile-content">
+        <div class="profile-avatar">
+          <img [src]="currentUser?.avatar || '/assets/images/default-avatar.svg'" 
+               [alt]="currentUser?.fullName">
+          <div class="status-indicator online"></div>
+        </div>
+        <div class="profile-info">
+          <h2>{{ currentUser?.fullName || 'Fashion Enthusiast' }}</h2>
+          <p>{{ '@' + (currentUser?.username || 'customer') }}</p>
+          <div class="user-badge">
+            <mat-icon>star</mat-icon>
+            <span>Valued Customer</span>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Stats Grid -->
+    <div class="stats-section">
+      <h3 *ngIf="!isMobile">Your Activity</h3>
+      <mat-grid-list [cols]="getStatsGridCols()" rowHeight="120px" gutterSize="16px">
+        
+        <!-- Orders Stat -->
+        <mat-grid-tile>
+          <mat-card class="stat-card orders">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>shopping_bag</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number">{{ customerStats.ordersCount }}</div>
+                <div class="stat-label">Orders</div>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+
+        <!-- Wishlist Stat -->
+        <mat-grid-tile>
+          <mat-card class="stat-card wishlist">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>favorite</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number">{{ customerStats.wishlistCount }}</div>
+                <div class="stat-label">Wishlist</div>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+
+        <!-- Cart Stat -->
+        <mat-grid-tile>
+          <mat-card class="stat-card cart">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>shopping_cart</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number">{{ customerStats.cartCount }}</div>
+                <div class="stat-label">Cart Items</div>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+
+        <!-- Rewards Stat -->
+        <mat-grid-tile>
+          <mat-card class="stat-card rewards">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <mat-icon>card_giftcard</mat-icon>
+              </div>
+              <div class="stat-info">
+                <div class="stat-number">{{ customerStats.rewardsCount }}</div>
+                <div class="stat-label">Rewards</div>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+
+      </mat-grid-list>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+      <h3>Quick Actions</h3>
+      <mat-grid-list [cols]="getGridCols()" rowHeight="140px" gutterSize="16px">
+        <mat-grid-tile *ngFor="let action of quickActions">
+          <mat-card class="action-card" (click)="navigateToAction(action)">
+            <div class="action-content">
+              <div class="action-icon" [style.background-color]="action.color">
+                <mat-icon>{{ action.icon }}</mat-icon>
+              </div>
+              <div class="action-info">
+                <h4>{{ action.title }}</h4>
+                <p>{{ action.description }}</p>
+              </div>
+            </div>
+          </mat-card>
+        </mat-grid-tile>
+      </mat-grid-list>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="recent-orders-section">
+      <div class="section-header">
+        <h3>Recent Orders</h3>
+        <button mat-button color="primary" (click)="viewAllOrders()">
+          View All
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+      
+      <div class="orders-list">
+        <mat-card class="order-card" *ngFor="let order of recentOrders" (click)="viewOrderDetails(order)">
+          <div class="order-content">
+            <div class="order-image">
+              <img [src]="order.productImage" [alt]="order.productName"
+                   (error)="onImageError($event)">
+            </div>
+            <div class="order-info">
+              <h4>{{ order.productName }}</h4>
+              <p class="order-id">Order #{{ order.id }}</p>
+              <p class="order-date">{{ getTimeAgo(order.orderDate) }}</p>
+            </div>
+            <div class="order-status">
+              <div class="status-badge" [style.background-color]="getStatusColor(order.status)">
+                <mat-icon>{{ getStatusIcon(order.status) }}</mat-icon>
+                <span>{{ order.status | titlecase }}</span>
+              </div>
+              <div class="order-amount">{{ formatCurrency(order.amount) }}</div>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+    </div>
+
+    <!-- Spending Summary (Web Only) -->
+    <div class="spending-summary" *ngIf="!isMobile">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Spending Summary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="spending-stats">
+            <div class="spending-item">
+              <span class="label">Total Spent</span>
+              <span class="amount spent">{{ formatCurrency(customerStats.totalSpent) }}</span>
+            </div>
+            <div class="spending-item">
+              <span class="label">Amount Saved</span>
+              <span class="amount saved">{{ formatCurrency(customerStats.savedAmount) }}</span>
+            </div>
+            <div class="spending-item">
+              <span class="label">Average Order</span>
+              <span class="amount average">{{ formatCurrency(customerStats.totalSpent / customerStats.ordersCount) }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+</div>

@@ -275,25 +275,25 @@
         <h2>Third-Party Data Scraping</h2>
         <p class="scraping-description">Integrate real-time data from social media platforms and search engines</p>
         
-        <!-- Instagram Scraping -->
+        <!-- Social Media Analytics -->
         <div class="scraping-tool">
           <div class="tool-header">
-            <h3><i class="fab fa-instagram"></i> Instagram Data Scraper</h3>
-            <p>Extract follower count, engagement metrics, and post performance</p>
+            <h3><i class="fas fa-chart-line"></i> Social Media Analytics</h3>
+            <p>Track engagement metrics, follower growth, and content performance</p>
           </div>
           <div class="tool-form">
-            <input 
-              type="text" 
-              [(ngModel)]="instagramUsername" 
-              placeholder="Enter Instagram username"
+            <input
+              type="text"
+              [(ngModel)]="socialUsername"
+              placeholder="Enter social media username"
               class="scraping-input">
-            <button 
-              (click)="scrapeInstagramData()" 
-              [disabled]="isScrapingInstagram || !instagramUsername.trim()"
+            <button
+              (click)="analyzeSocialData()"
+              [disabled]="isAnalyzingSocial || !socialUsername.trim()"
               class="scraping-btn">
-              <i *ngIf="isScrapingInstagram" class="fas fa-spinner fa-spin"></i>
-              <i *ngIf="!isScrapingInstagram" class="fas fa-download"></i>
-              {{ isScrapingInstagram ? 'Scraping...' : 'Scrape Data' }}
+              <i *ngIf="isAnalyzingSocial" class="fas fa-spinner fa-spin"></i>
+              <i *ngIf="!isAnalyzingSocial" class="fas fa-chart-bar"></i>
+              {{ isAnalyzingSocial ? 'Analyzing...' : 'Analyze Data' }}
             </button>
           </div>
         </div>

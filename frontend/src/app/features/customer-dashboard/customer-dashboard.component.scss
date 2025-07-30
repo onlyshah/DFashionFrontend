@@ -1,0 +1,460 @@
+// Customer Dashboard - Responsive Design
+.customer-dashboard {
+  min-height: 100vh;
+  background: #fafafa;
+  
+  // Mobile Design (Preserve existing mobile layout)
+  &.mobile {
+    background: #ffffff;
+    
+    .dashboard-header {
+      background: #ffffff;
+      border-bottom: 1px solid #dbdbdb;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      
+      .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        height: 56px;
+        
+        h1 {
+          font-size: 18px;
+          font-weight: 600;
+          margin: 0;
+          color: #262626;
+        }
+        
+        .back-btn, .settings-btn {
+          background: none;
+          border: none;
+          padding: 8px;
+          border-radius: 50%;
+          cursor: pointer;
+          
+          mat-icon {
+            font-size: 24px;
+            color: #262626;
+          }
+          
+          &:hover {
+            background: #f5f5f5;
+          }
+        }
+      }
+    }
+    
+    .dashboard-content {
+      padding: 16px;
+      
+      .profile-card {
+        margin-bottom: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        
+        .profile-content {
+          display: flex;
+          align-items: center;
+          padding: 20px;
+          
+          .profile-avatar {
+            position: relative;
+            margin-right: 16px;
+            
+            img {
+              width: 64px;
+              height: 64px;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+            
+            .status-indicator {
+              position: absolute;
+              bottom: 2px;
+              right: 2px;
+              width: 16px;
+              height: 16px;
+              border-radius: 50%;
+              border: 2px solid white;
+              
+              &.online {
+                background: #4CAF50;
+              }
+            }
+          }
+          
+          .profile-info {
+            flex: 1;
+            
+            h2 {
+              margin: 0 0 4px 0;
+              font-size: 18px;
+              font-weight: 600;
+              color: #262626;
+            }
+            
+            p {
+              margin: 0 0 8px 0;
+              color: #8e8e8e;
+              font-size: 14px;
+            }
+            
+            .user-badge {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              color: #0095f6;
+              font-size: 12px;
+              font-weight: 500;
+              
+              mat-icon {
+                font-size: 16px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  // Web Design (New responsive layout)
+  &:not(.mobile) {
+    .dashboard-header {
+      background: #ffffff;
+      border-bottom: 1px solid #dbdbdb;
+      padding: 24px 32px;
+      
+      .web-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        
+        .header-left {
+          h1 {
+            margin: 0 0 4px 0;
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+          }
+          
+          .welcome-text {
+            margin: 0;
+            color: #8e8e8e;
+            font-size: 16px;
+          }
+        }
+        
+        .header-right {
+          display: flex;
+          gap: 8px;
+          
+          button {
+            width: 44px;
+            height: 44px;
+            
+            mat-icon {
+              font-size: 24px;
+              color: #262626;
+            }
+            
+            &:hover {
+              background: #f5f5f5;
+            }
+          }
+        }
+      }
+    }
+    
+    .dashboard-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+  }
+  
+  // Common Styles
+  .stats-section {
+    margin-bottom: 32px;
+    
+    h3 {
+      margin: 0 0 20px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #262626;
+    }
+    
+    .stat-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 12px;
+      height: 100%;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      }
+      
+      .stat-content {
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        height: 100%;
+        
+        .stat-icon {
+          margin-right: 16px;
+          
+          mat-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+          }
+        }
+        
+        .stat-info {
+          .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #262626;
+            line-height: 1;
+          }
+          
+          .stat-label {
+            font-size: 14px;
+            color: #8e8e8e;
+            margin-top: 4px;
+          }
+        }
+      }
+      
+      &.orders .stat-icon mat-icon { color: #2196F3; }
+      &.wishlist .stat-icon mat-icon { color: #E91E63; }
+      &.cart .stat-icon mat-icon { color: #FF9800; }
+      &.rewards .stat-icon mat-icon { color: #4CAF50; }
+    }
+  }
+  
+  .quick-actions-section {
+    margin-bottom: 32px;
+    
+    h3 {
+      margin: 0 0 20px 0;
+      font-size: 20px;
+      font-weight: 600;
+      color: #262626;
+    }
+    
+    .action-card {
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 12px;
+      height: 100%;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      }
+      
+      .action-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        height: 100%;
+        
+        .action-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 12px;
+          
+          mat-icon {
+            color: white;
+            font-size: 24px;
+          }
+        }
+        
+        .action-info {
+          h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #262626;
+          }
+          
+          p {
+            margin: 0;
+            font-size: 12px;
+            color: #8e8e8e;
+            line-height: 1.3;
+          }
+        }
+      }
+    }
+  }
+  
+  .recent-orders-section {
+    margin-bottom: 32px;
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      
+      h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #262626;
+      }
+      
+      button {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+    }
+    
+    .orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      
+      .order-card {
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 12px;
+        
+        &:hover {
+          box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        
+        .order-content {
+          display: flex;
+          align-items: center;
+          padding: 16px;
+          
+          .order-image {
+            margin-right: 16px;
+            
+            img {
+              width: 60px;
+              height: 60px;
+              border-radius: 8px;
+              object-fit: cover;
+            }
+          }
+          
+          .order-info {
+            flex: 1;
+            
+            h4 {
+              margin: 0 0 4px 0;
+              font-size: 16px;
+              font-weight: 500;
+              color: #262626;
+            }
+            
+            .order-id, .order-date {
+              margin: 0;
+              font-size: 14px;
+              color: #8e8e8e;
+            }
+          }
+          
+          .order-status {
+            text-align: right;
+            
+            .status-badge {
+              display: inline-flex;
+              align-items: center;
+              gap: 4px;
+              padding: 4px 8px;
+              border-radius: 16px;
+              color: white;
+              font-size: 12px;
+              font-weight: 500;
+              margin-bottom: 4px;
+              
+              mat-icon {
+                font-size: 16px;
+              }
+            }
+            
+            .order-amount {
+              font-size: 16px;
+              font-weight: 600;
+              color: #262626;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .spending-summary {
+    .spending-stats {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      
+      .spending-item {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+        
+        .label {
+          font-size: 14px;
+          color: #8e8e8e;
+          margin-bottom: 8px;
+        }
+        
+        .amount {
+          font-size: 20px;
+          font-weight: 600;
+          
+          &.spent { color: #2196F3; }
+          &.saved { color: #4CAF50; }
+          &.average { color: #FF9800; }
+        }
+      }
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .customer-dashboard:not(.mobile) {
+    .dashboard-content {
+      padding: 16px;
+    }
+    
+    .stats-section .stat-card .stat-content {
+      padding: 16px;
+      
+      .stat-icon mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+      
+      .stat-info .stat-number {
+        font-size: 20px;
+      }
+    }
+    
+    .spending-summary .spending-stats {
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+}

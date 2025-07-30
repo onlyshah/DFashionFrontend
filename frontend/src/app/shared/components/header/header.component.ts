@@ -21,7 +21,7 @@ import { User } from '../../../core/models/user.model';
       top: 0;
       left: 0;
       right: 0;
-      z-index: 1000;
+      z-index: 999;
       height: 60px;
     }
 

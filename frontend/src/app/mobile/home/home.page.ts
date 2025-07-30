@@ -231,36 +231,10 @@ export class HomePage implements OnInit {
 
   async loadSuggestedUsers() {
     try {
-      // Mock data for suggested users
-      this.suggestedUsers = [
-        {
-          id: '1',
-          username: 'fashionista_maya',
-          fullName: 'Maya Patel',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 45000
-        },
-        {
-          id: '2',
-          username: 'style_guru_raj',
-          fullName: 'Raj Kumar',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          isFollowing: false,
-          isInfluencer: true,
-          followerCount: 32000
-        },
-        {
-          id: '3',
-          username: 'trendy_sara',
-          fullName: 'Sara Johnson',
-          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
-          isFollowing: false,
-          isInfluencer: false,
-          followerCount: 8500
-        }
-      ];
+      // Load real suggested users from API
+      const response = await this.productService.getSuggestedUsers().toPromise();
+      this.suggestedUsers = response?.data || [];
+      console.log('📱 Mobile Home: Loaded suggested users:', this.suggestedUsers.length);
     } catch (error) {
       console.error('Error loading suggested users:', error);
       this.suggestedUsers = [];
@@ -269,29 +243,10 @@ export class HomePage implements OnInit {
 
   async loadTopInfluencers() {
     try {
-      // Mock data for top influencers
-      this.topInfluencers = [
-        {
-          id: '1',
-          username: 'fashionista_queen',
-          fullName: 'Priya Sharma',
-          avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=150&h=150&fit=crop&crop=face',
-          followerCount: 2500000,
-          category: 'High Fashion',
-          isVerified: true,
-          isFollowing: false
-        },
-        {
-          id: '2',
-          username: 'street_style_king',
-          fullName: 'Arjun Kapoor',
-          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-          followerCount: 1800000,
-          category: 'Streetwear',
-          isVerified: true,
-          isFollowing: false
-        }
-      ];
+      // Load real top influencers from API
+      const response = await this.productService.getTopInfluencers().toPromise();
+      this.topInfluencers = response?.data || [];
+      console.log('📱 Mobile Home: Loaded top influencers:', this.topInfluencers.length);
     } catch (error) {
       console.error('Error loading top influencers:', error);
       this.topInfluencers = [];

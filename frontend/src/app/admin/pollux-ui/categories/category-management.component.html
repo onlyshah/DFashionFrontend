@@ -1,0 +1,152 @@
+<!-- Category Management Component -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="card-title mb-0">Category Management</h4>
+          <button class="btn btn-primary" (click)="openCategoryModal()">
+            <i class="typcn typcn-plus"></i>
+            Add New Category
+          </button>
+        </div>
+
+        <!-- Categories Table -->
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Parent Category</th>
+                <th>Products Count</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let category of categories; trackBy: trackByCategoryId">
+                <td>
+                  <div class="category-info">
+                    <h6 class="mb-1">{{ category.name }}</h6>
+                    <p class="text-muted mb-0">{{ category.slug }}</p>
+                  </div>
+                </td>
+                <td>{{ category.description || 'No description' }}</td>
+                <td>
+                  <span class="badge badge-light" *ngIf="category.parent">
+                    {{ category.parent.name }}
+                  </span>
+                  <span class="text-muted" *ngIf="!category.parent">Root Category</span>
+                </td>
+                <td>
+                  <span class="badge badge-info">{{ category.productCount || 0 }}</span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusClass(category.status)">
+                    {{ category.status | titlecase }}
+                  </span>
+                </td>
+                <td>
+                  <div class="action-buttons">
+                    <button class="btn btn-sm btn-primary" 
+                            (click)="editCategory(category)"
+                            title="Edit">
+                      <i class="typcn typcn-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger" 
+                            (click)="deleteCategory(category)"
+                            title="Delete">
+                      <i class="typcn typcn-trash"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Category Modal -->
+<div class="modal fade" 
+     [class.show]="showCategoryModal"
+     [style.display]="showCategoryModal ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ isEditMode ? 'Edit Category' : 'Add New Category' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeCategoryModal()">
+          <i class="typcn typcn-times"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+          <!-- Category Name -->
+          <div class="form-group floating-label">
+            <input type="text" 
+                   class="form-control" 
+                   formControlName="name"
+                   placeholder=" "
+                   [class.is-invalid]="isFieldInvalid('name')">
+            <label>Category Name *</label>
+            <div class="invalid-feedback" *ngIf="isFieldInvalid('name')">
+              Category name is required
+            </div>
+          </div>
+          
+          <!-- Description -->
+          <div class="form-group floating-label">
+            <textarea class="form-control" 
+                      formControlName="description"
+                      placeholder=" "
+                      rows="3"></textarea>
+            <label>Description</label>
+          </div>
+          
+          <!-- Parent Category -->
+          <div class="form-group floating-label">
+            <select class="form-control" formControlName="parent">
+              <option value="">No Parent (Root Category)</option>
+              <option *ngFor="let cat of parentCategories" [value]="cat._id">
+                {{ cat.name }}
+              </option>
+            </select>
+            <label>Parent Category</label>
+          </div>
+          
+          <!-- Status -->
+          <div class="form-group floating-label">
+            <select class="form-control" formControlName="status">
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <label>Status</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeCategoryModal()">
+          Cancel
+        </button>
+        <button type="button" 
+                class="btn btn-primary" 
+                (click)="saveCategory()"
+                [disabled]="categoryForm.invalid || isSaving">
+          <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-2"></span>
+          {{ isEditMode ? 'Update Category' : 'Create Category' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade" 
+     [class.show]="showCategoryModal" 
+     *ngIf="showCategoryModal"
+     (click)="closeCategoryModal()"></div>

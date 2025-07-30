@@ -117,7 +117,7 @@ export interface VendorOrdersResponse {
   providedIn: 'root'
 })
 export class VendorService {
-  private apiUrl = 'http://localhost:3001/api/v1/vendor'; // Updated to correct port and API version
+  private apiUrl = environment.apiUrl + '/api/v1/vendor'; // Use environment configuration
   private statsSubject = new BehaviorSubject<VendorStats | null>(null);
   public stats$ = this.statsSubject.asObservable();
 

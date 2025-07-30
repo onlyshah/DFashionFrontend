@@ -93,6 +93,11 @@
               Settings
             </a>
             <div class="dropdown-divider"></div>
+            <!-- Customer Dashboard Link -->
+            <a *ngIf="currentUser.role === 'end_user' || currentUser.role === 'customer'" routerLink="/customer/dashboard" class="dropdown-item">
+              <i class="fas fa-tachometer-alt"></i>
+              Customer Dashboard
+            </a>
             <a *ngIf="currentUser.role === 'vendor'" routerLink="/vendor/dashboard" class="dropdown-item">
               <i class="fas fa-store"></i>
               Vendor Dashboard
@@ -101,7 +106,7 @@
               <i class="fas fa-shield-alt"></i>
               Admin Panel
             </a>
-            <div class="dropdown-divider" *ngIf="currentUser.role !== 'customer'"></div>
+            <div class="dropdown-divider"></div>
             <button (click)="logout()" class="dropdown-item logout">
               <i class="fas fa-sign-out-alt"></i>
               Logout

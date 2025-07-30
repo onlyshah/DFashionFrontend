@@ -10,6 +10,7 @@ import { MobileLayoutComponent } from './shared/components/mobile-layout/mobile-
 import { AuthService } from './core/services/auth.service';
 import { DataFlowService } from './core/services/data-flow.service';
 import { MobileOptimizationService } from './core/services/mobile-optimization.service';
+import { LayoutService } from './core/services/layout.service';
 
 @Component({
   selector: 'app-root',
@@ -30,7 +31,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private dataFlowService: DataFlowService,
-    private mobileService: MobileOptimizationService
+    private mobileService: MobileOptimizationService,
+    private layoutService: LayoutService
   ) {}
 
   ngOnInit() {
@@ -51,36 +53,24 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Hide header on auth pages and admin login
+    // Use layout service to manage header visibility and prevent overlapping
     this.subscriptions.push(
-      this.router.events
-        .pipe(filter(event => event instanceof NavigationEnd))
-        .subscribe((event) => {
-          const navigationEnd = event as NavigationEnd;
-          const url = navigationEnd.url;
-
-          // Hide header on auth pages, admin login, stories, and post details for full-screen experience
-          const shouldHideHeader = url.includes('/auth') ||
-                                  url.includes('/admin/login') ||
-                                  url.includes('/admin/auth') ||
-                                  url.startsWith('/admin/login') ||
-                                  url.startsWith('/stories') ||
-                                  url.startsWith('/post/');
-
-          this.showHeader = !shouldHideHeader;
-        })
+      this.layoutService.layoutState$.subscribe(layoutState => {
+        this.showHeader = layoutState.showHeader;
+      })
     );
 
-    // Set initial header visibility
-    const currentUrl = this.router.url;
-    const shouldHideHeader = currentUrl.includes('/auth') ||
-                            currentUrl.includes('/admin/login') ||
-                            currentUrl.includes('/admin/auth') ||
-                            currentUrl.startsWith('/admin/login') ||
-                            currentUrl.startsWith('/stories') ||
-                            currentUrl.startsWith('/post/');
+    // Initialize layout service (it will handle header visibility automatically)
+    this.layoutService.refreshLayout();
 
-    this.showHeader = !shouldHideHeader;
+    // Add debug helper for overlapping issues in development mode
+    if (window.location.hostname === 'localhost') {
+      import('./test-overlapping-fix').then(module => {
+        const OverlappingTestHelper = module.OverlappingTestHelper;
+        // Run tests and add debug overlay
+        OverlappingTestHelper.runAllTests(this.layoutService);
+      }).catch(err => console.error('Failed to load overlapping test helper:', err));
+    }
 
     // Initialize auth state
     this.authService.initializeAuth();

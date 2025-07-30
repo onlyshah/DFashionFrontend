@@ -22,10 +22,10 @@ export class AnalyticsDashboardComponent implements OnInit, OnDestroy {
   selectedTab = 'overview';
   selectedDateRange = '30d';
   
-  // Scraping inputs
-  instagramUsername = '';
+  // Analytics inputs
+  socialUsername = '';
   googleTrendsKeyword = '';
-  isScrapingInstagram = false;
+  isAnalyzingSocial = false;
   isScrapingTrends = false;
   
   private subscriptions: Subscription[] = [];
@@ -103,22 +103,22 @@ export class AnalyticsDashboardComponent implements OnInit, OnDestroy {
     this.loadAllAnalytics();
   }
 
-  // Social Media Scraping
-  scrapeInstagramData() {
-    if (!this.instagramUsername.trim()) return;
-    
-    this.isScrapingInstagram = true;
+  // Social Media Analytics
+  analyzeSocialData() {
+    if (!this.socialUsername.trim()) return;
+
+    this.isAnalyzingSocial = true;
     this.subscriptions.push(
-      this.analyticsService.scrapeInstagramData(this.instagramUsername).subscribe({
+      this.analyticsService.analyzeSocialData(this.socialUsername).subscribe({
         next: (data) => {
-          console.log('Instagram data scraped:', data);
-          this.isScrapingInstagram = false;
-          // Update social metrics with scraped data
+          console.log('Social media data analyzed:', data);
+          this.isAnalyzingSocial = false;
+          // Update social metrics with analyzed data
           this.loadAllAnalytics();
         },
         error: (error) => {
-          console.error('Error scraping Instagram:', error);
-          this.isScrapingInstagram = false;
+          console.error('Error analyzing social media:', error);
+          this.isAnalyzingSocial = false;
         }
       })
     );

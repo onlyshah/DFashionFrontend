@@ -254,19 +254,66 @@ export class AuthService {
     return this.isAuthenticatedSubject.value;
   }
 
+  /**
+   * Enhanced role checking methods for unified login system
+   */
   isAdmin(): boolean {
     const user = this.currentUserValue;
-    return user?.role === 'admin' || user?.role === 'super_admin';
+    const role = user?.role?.toLowerCase();
+    return ['admin', 'super_admin', 'manager'].includes(role || '');
+  }
+
+  isSuperAdmin(): boolean {
+    const user = this.currentUserValue;
+    return user?.role?.toLowerCase() === 'super_admin';
+  }
+
+  isManager(): boolean {
+    const user = this.currentUserValue;
+    return user?.role?.toLowerCase() === 'manager';
   }
 
   isVendor(): boolean {
     const user = this.currentUserValue;
-    return user?.role === 'vendor';
+    return user?.role?.toLowerCase() === 'vendor';
   }
 
   isCustomer(): boolean {
     const user = this.currentUserValue;
-    return user?.role === 'customer';
+    const role = user?.role?.toLowerCase();
+    return ['customer', 'user', 'end_user'].includes(role || '');
+  }
+
+  /**
+   * Get current user's role
+   */
+  getCurrentUserRole(): string | null {
+    return this.currentUserValue?.role || null;
+  }
+
+  /**
+   * Check if user has specific role
+   */
+  hasRole(role: string): boolean {
+    const userRole = this.getCurrentUserRole();
+    return userRole?.toLowerCase() === role.toLowerCase();
+  }
+
+  /**
+   * Get user's role level for hierarchy comparison
+   */
+  getUserRoleLevel(): number {
+    const role = this.getCurrentUserRole()?.toLowerCase();
+    const roleLevels: { [key: string]: number } = {
+      'super_admin': 1,
+      'admin': 2,
+      'manager': 2,
+      'vendor': 3,
+      'customer': 4,
+      'user': 4,
+      'end_user': 4
+    };
+    return roleLevels[role || ''] || 5;
   }
 
   // Helper methods for checking authentication before actions
@@ -412,9 +459,36 @@ export class AuthService {
     if (response.user) {
       this.currentUserSubject.next(response.user);
       this.isAuthenticatedSubject.next(true);
+
+      // Redirect based on user role to prevent overlapping
+      this.redirectAfterLogin(response.user);
     }
 
     this.resetSessionTimeout();
+  }
+
+  private redirectAfterLogin(user: any): void {
+    // Clear any existing navigation to prevent overlapping
+    setTimeout(() => {
+      const role = user.role;
+
+      switch (role) {
+        case 'super_admin':
+        case 'admin':
+          this.router.navigate(['/dashboard'], { replaceUrl: true });
+          break;
+        case 'vendor':
+          this.router.navigate(['/vendor'], { replaceUrl: true });
+          break;
+        case 'end_user':
+        case 'customer':
+          this.router.navigate(['/home'], { replaceUrl: true });
+          break;
+        default:
+          this.router.navigate(['/home'], { replaceUrl: true });
+          break;
+      }
+    }, 100); // Small delay to ensure proper navigation
   }
 
   // Token Management

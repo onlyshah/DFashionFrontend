@@ -22,6 +22,22 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
 
+  // User Dashboard (Instagram-like for end users)
+  {
+    path: 'user-dashboard',
+    loadComponent: () => import('./features/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent),
+    canActivate: [AuthGuard],
+    title: 'Dashboard - TrendSpace'
+  },
+
+  // Customer Dashboard (responsive - web optimized)
+  {
+    path: 'customer/dashboard',
+    loadComponent: () => import('./features/customer-dashboard/customer-dashboard.component').then(m => m.CustomerDashboardComponent),
+    canActivate: [AuthGuard],
+    title: 'Customer Dashboard - TrendSpace'
+  },
+
   // Explore Routes
   {
     path: 'explore',
@@ -121,6 +137,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/checkout/checkout.component').then(m => m.CheckoutComponent),
     canActivate: [AuthGuard],
     title: 'Checkout - DFashion'
+  },
+
+  // User Management Dashboard (Role-based)
+  {
+    path: 'user-management',
+    loadComponent: () => import('./features/user-management/user-management.component').then(m => m.UserManagementComponent),
+    canActivate: [AuthGuard],
+    title: 'User Management - DFashion'
   },
 
   // User Account Management

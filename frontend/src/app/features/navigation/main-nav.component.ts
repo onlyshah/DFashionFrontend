@@ -273,8 +273,9 @@ export class MainNavComponent implements OnInit {
     // Track current route
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.currentRoute = event.url;
+      .subscribe((event) => {
+        const navigationEnd = event as NavigationEnd;
+        this.currentRoute = navigationEnd.url;
       });
 
     // Set initial route

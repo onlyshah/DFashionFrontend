@@ -21,7 +21,8 @@ export class RolePipe implements PipeTransform {
       'content_manager': 'Content Manager',
       'vendor_manager': 'Vendor Manager',
       'customer': 'Customer',
-      'vendor': 'Vendor'
+      'vendor': 'Vendor',
+      'end_user': 'Customer'
     };
     
     return roleMap[value] || value.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());

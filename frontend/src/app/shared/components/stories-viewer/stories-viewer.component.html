@@ -58,7 +58,7 @@
                class="story-video"
                [muted]="true"
                [loop]="false"
-               [playsinline]="true"
+               playsinline
                (loadedmetadata)="onMediaLoaded()"
                (ended)="onVideoEnded()">
         </video>
@@ -126,7 +126,7 @@
           [(ngModel)]="replyMessage"
           (keyup.enter)="onSendReply()">
         </ion-input>
-        <ion-button fill="clear" (click)="onSendReply()" [disabled]="!replyMessage?.trim()">
+        <ion-button fill="clear" (click)="onSendReply()" [disabled]="!replyMessage || !replyMessage.trim()">
           <ion-icon name="paper-plane" color="light"></ion-icon>
         </ion-button>
       </div>

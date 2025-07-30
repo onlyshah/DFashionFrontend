@@ -1,0 +1,383 @@
+<div class="user-management-container">
+  <!-- Unified Dashboard for All Roles -->
+  <div class="unified-dashboard">
+    <!-- Header Section -->
+    <div class="header-section">
+    <div class="header-content">
+      <h1 class="page-title">
+        <mat-icon>dashboard</mat-icon>
+        {{ getDashboardTitle() }}
+      </h1>
+      <p class="page-subtitle" *ngIf="currentUser">
+        Welcome, {{ currentUser.fullName }}
+        <span class="role-badge" [style.background-color]="getRoleColor(currentUser.role)">
+          {{ currentUser.role | titlecase }}
+        </span>
+      </p>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="header-actions" *ngIf="canEditUsers">
+      <button mat-raised-button color="primary" (click)="addNewUser()">
+        <mat-icon>person_add</mat-icon>
+        Add User
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-section" *ngIf="!loading">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats.totalUsers }}</h3>
+            <p>Total Users</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon active">
+            <mat-icon>verified_user</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats.activeUsers }}</h3>
+            <p>Active Users</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon new">
+            <mat-icon>person_add</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats.newUsersThisMonth }}</h3>
+            <p>New This Month</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Role Distribution (for admins) -->
+    <mat-card class="stat-card" *ngIf="canViewAllUsers">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-icon roles">
+            <mat-icon>admin_panel_settings</mat-icon>
+          </div>
+          <div class="stat-details">
+            <h3>{{ Object.keys(userStats.usersByRole).length }}</h3>
+            <p>User Roles</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Role-Based Content Sections -->
+  <div class="role-content-section" *ngIf="currentUser">
+
+    <!-- Super Admin Content -->
+    <app-super-admin-panel
+      *ngIf="currentUser.role === 'super_admin'"
+      [currentUser]="currentUser"
+      [userStats]="userStats">
+    </app-super-admin-panel>
+
+    <!-- Customer Content -->
+    <app-customer-data-table
+      *ngIf="currentUser.role === 'customer'"
+      [customerData]="currentUser"
+      [currentUser]="currentUser">
+    </app-customer-data-table>
+
+    <!-- Admin/Manager Content -->
+    <div *ngIf="isAdminRole()" class="admin-content">
+      <mat-card class="admin-operations">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>admin_panel_settings</mat-icon>
+            {{ getRoleOperationsTitle() }}
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="operation-buttons">
+            <button mat-raised-button color="primary" *ngIf="canManageUsers()" (click)="navigateToUserManagement()">
+              <mat-icon>people</mat-icon>
+              Manage Users
+            </button>
+            <button mat-raised-button color="accent" *ngIf="canManageProducts()" (click)="navigateToProductManagement()">
+              <mat-icon>inventory</mat-icon>
+              Manage Products
+            </button>
+            <button mat-raised-button *ngIf="canViewOrders()" (click)="navigateToOrderManagement()">
+              <mat-icon>shopping_cart</mat-icon>
+              View Orders
+            </button>
+            <button mat-raised-button *ngIf="canViewAnalytics()" (click)="navigateToAnalytics()">
+              <mat-icon>analytics</mat-icon>
+              Analytics
+            </button>
+            <button mat-raised-button *ngIf="canManageContent()" (click)="navigateToContentManagement()">
+              <mat-icon>article</mat-icon>
+              Content Management
+            </button>
+            <button mat-raised-button *ngIf="canViewReports()" (click)="navigateToReports()">
+              <mat-icon>assessment</mat-icon>
+              Reports
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Vendor Content -->
+    <div *ngIf="currentUser.role === 'vendor'" class="vendor-content">
+      <mat-card class="vendor-operations">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>store</mat-icon>
+            Vendor Dashboard
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="operation-buttons">
+            <button mat-raised-button color="primary" (click)="navigateToMyProducts()">
+              <mat-icon>inventory</mat-icon>
+              My Products
+            </button>
+            <button mat-raised-button color="accent" (click)="navigateToMyOrders()">
+              <mat-icon>shopping_cart</mat-icon>
+              My Orders
+            </button>
+            <button mat-raised-button (click)="navigateToVendorAnalytics()">
+              <mat-icon>analytics</mat-icon>
+              Sales Analytics
+            </button>
+            <button mat-raised-button (click)="navigateToVendorProfile()">
+              <mat-icon>account_circle</mat-icon>
+              Vendor Profile
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+  </div>
+
+  <!-- Filters Section -->
+  <mat-card class="filters-card">
+    <mat-card-content>
+      <div class="filters-section">
+        <div class="filter-group">
+          <mat-form-field appearance="outline">
+            <mat-label>Search Users</mat-label>
+            <input matInput 
+                   [(ngModel)]="searchTerm" 
+                   (input)="applyFilters()"
+                   placeholder="Search by name, email, or username">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-group" *ngIf="canViewAllUsers">
+          <mat-form-field appearance="outline">
+            <mat-label>Filter by Role</mat-label>
+            <mat-select [(ngModel)]="selectedRole" (selectionChange)="applyFilters()">
+              <mat-option value="">All Roles</mat-option>
+              <mat-option *ngFor="let role of availableRoles" [value]="role">
+                {{ role | titlecase }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-group">
+          <mat-form-field appearance="outline">
+            <mat-label>Filter by Status</mat-label>
+            <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilters()">
+              <mat-option value="">All Status</mat-option>
+              <mat-option value="active">Active</mat-option>
+              <mat-option value="inactive">Inactive</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-stroked-button (click)="clearFilters()">
+            <mat-icon>clear</mat-icon>
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="loading">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading user data...</p>
+  </div>
+
+  <!-- Users Table -->
+  <mat-card class="table-card" *ngIf="!loading">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>table_view</mat-icon>
+        Users ({{ filteredUsers.length }})
+      </mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="table-container">
+        <table mat-table [dataSource]="filteredUsers" class="users-table">
+          
+          <!-- Avatar Column -->
+          <ng-container matColumnDef="avatar">
+            <th mat-header-cell *matHeaderCellDef>Avatar</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-avatar">
+                <img *ngIf="user.avatar" [src]="user.avatar" [alt]="user.fullName">
+                <div *ngIf="!user.avatar" class="avatar-placeholder">
+                  {{ user.fullName.charAt(0).toUpperCase() }}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Full Name Column -->
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef>Name</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-name">
+                <strong>{{ user.fullName }}</strong>
+                <small>{{ '@' + user.username }}</small>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Email Column -->
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="user-email">
+                {{ user.email }}
+                <mat-icon *ngIf="user.isVerified" class="verified-icon" color="primary">verified</mat-icon>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Role Column -->
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip [style.background-color]="getRoleColor(user.role)" class="role-chip">
+                {{ user.role | titlecase }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let user">
+              <mat-chip [style.background-color]="getStatusColor(user.isActive)" class="status-chip">
+                {{ user.isActive ? 'Active' : 'Inactive' }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Last Login Column -->
+          <ng-container matColumnDef="lastLogin">
+            <th mat-header-cell *matHeaderCellDef>Last Login</th>
+            <td mat-cell *matCellDef="let user">
+              {{ formatDate(user.lastLogin) }}
+            </td>
+          </ng-container>
+
+          <!-- Created At Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef>Joined</th>
+            <td mat-cell *matCellDef="let user">
+              {{ formatDate(user.createdAt) }}
+            </td>
+          </ng-container>
+
+          <!-- Customer-specific columns -->
+          <ng-container matColumnDef="joinDate">
+            <th mat-header-cell *matHeaderCellDef>Join Date</th>
+            <td mat-cell *matCellDef="let user">
+              {{ formatDate(user.createdAt) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="orders">
+            <th mat-header-cell *matHeaderCellDef>Orders</th>
+            <td mat-cell *matCellDef="let user">
+              {{ user.totalOrders || 0 }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="totalSpent">
+            <th mat-header-cell *matHeaderCellDef>Total Spent</th>
+            <td mat-cell *matCellDef="let user">
+              ${{ user.totalSpent || 0 }}
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let user">
+              <div class="action-buttons">
+                <button mat-icon-button
+                        *ngIf="canEditUsers"
+                        (click)="editUser(user)"
+                        matTooltip="Edit User">
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button mat-icon-button
+                        *ngIf="canEditUsers"
+                        (click)="toggleUserStatus(user)"
+                        matTooltip="Toggle Status">
+                  <mat-icon>{{ user.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                </button>
+
+                <button mat-icon-button
+                        *ngIf="canDeleteUsers"
+                        (click)="deleteUser(user)"
+                        matTooltip="Delete User"
+                        color="warn">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- No Data Message -->
+        <div class="no-data" *ngIf="filteredUsers.length === 0 && !loading">
+          <mat-icon>people_outline</mat-icon>
+          <h3>No users found</h3>
+          <p>Try adjusting your search criteria or filters.</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  </div> <!-- End unified-dashboard -->
+</div>

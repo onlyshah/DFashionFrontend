@@ -36,7 +36,7 @@ export interface ShareData {
   providedIn: 'root'
 })
 export class SocialInteractionsService {
-  private API_URL = 'http://localhost:3001/api'; // Updated to correct port
+  private API_URL = environment.apiUrl + '/api'; // Use environment configuration
   
   // Track liked items to update UI immediately
   private likedProductsSubject = new BehaviorSubject<Set<string>>(new Set());

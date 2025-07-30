@@ -182,11 +182,12 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     // Check screen size for mobile detection
     this.checkScreenSize();
 
+    // Always show stories section, even if empty
+    this.isLoadingStories = false;
+
     // Only load stories if none are provided as input
     if (!this.stories || this.stories.length === 0) {
       this.loadStories();
-    } else {
-      this.isLoadingStories = false;
     }
     this.setupEventListeners();
   }
@@ -197,7 +198,8 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   }
 
   loadStories() {
-    this.isLoadingStories = true;
+    // Don't show loading state - show stories section immediately
+    this.isLoadingStories = false;
 
     // Load stories from real API
     this.http.get<any>(`${environment.apiUrl}/api/v1/stories`).subscribe({

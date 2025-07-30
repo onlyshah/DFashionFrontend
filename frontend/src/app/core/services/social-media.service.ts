@@ -102,7 +102,7 @@ export interface SocialStory {
   providedIn: 'root'
 })
 export class SocialMediaService {
-  private apiUrl = 'http://localhost:3001/api'; // Updated to correct port
+  private apiUrl = environment.apiUrl + '/api'; // Use environment configuration
   private postsSubject = new BehaviorSubject<SocialPost[]>([]);
   private storiesSubject = new BehaviorSubject<SocialStory[]>([]);
 

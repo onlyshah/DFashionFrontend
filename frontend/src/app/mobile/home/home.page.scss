@@ -1,5 +1,5 @@
-// Instagram-style Header
-.instagram-header {
+// Social Media Header
+.social-header {
   ion-toolbar {
     --background: #ffffff;
     --border-color: #dbdbdb;
@@ -7,7 +7,7 @@
     --min-height: 44px;
   }
   
-  .instagram-logo {
+  .social-logo {
     h1 {
       font-family: 'Billabong', cursive, sans-serif;
       font-size: 24px;
@@ -29,8 +29,8 @@
   }
 }
 
-// Instagram-style Main Content
-.instagram-feed {
+// Social Media Main Content
+.social-feed {
   background: #ffffff;
   width: 100%;
   min-height: 100vh;

@@ -17,7 +17,6 @@ export class StoriesViewerComponent implements OnInit, OnDestroy {
   @ViewChild('storyVideo') storyVideo!: ElementRef<HTMLVideoElement>;
 
   currentIndex = 0;
-  currentStory: any = null;
   isPaused = false;
   isLoading = false;
   replyMessage = '';

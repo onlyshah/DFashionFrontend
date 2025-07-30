@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class PostService {
-  private readonly API_URL = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
+  private readonly API_URL = environment.apiUrl + '/api/v1'; // Use environment configuration
 
   constructor(private http: HttpClient) {}
 
