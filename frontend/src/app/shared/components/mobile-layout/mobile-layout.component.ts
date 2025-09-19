@@ -1,3 +1,4 @@
+// ...existing code...
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -7,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { MobileOptimizationService, DeviceInfo, ViewportBreakpoints } from '../../../core/services/mobile-optimization.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
-import { WishlistService } from '../../../core/services/wishlist.service';
+import { WishlistNewService } from '../../../core/services/wishlist-new.service';
 
 @Component({
   selector: 'app-mobile-layout',
@@ -17,6 +18,20 @@ import { WishlistService } from '../../../core/services/wishlist.service';
   styleUrls: ['./mobile-layout.component.scss']
 })
 export class MobileLayoutComponent implements OnInit, OnDestroy {
+  isSidebarMenuOpen = false;
+
+  toggleSidebarMenu() {
+    this.isSidebarMenuOpen = !this.isSidebarMenuOpen;
+    if (this.isSidebarMenuOpen) {
+      this.isCreateMenuOpen = false;
+      this.isMenuOpen = false;
+      this.isSearchOpen = false;
+    }
+  }
+
+  closeSidebarMenu() {
+    this.isSidebarMenuOpen = false;
+  }
   @Input() showHeader = true;
   @Input() showFooter = true;
   @Input() showBottomNav = true;
@@ -41,7 +56,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
     private mobileService: MobileOptimizationService,
     private authService: AuthService,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    // private wishlistService: WishlistNewService
   ) {}
 
   ngOnInit() {
@@ -77,7 +92,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
           this.loadUserCounts();
         } else {
           this.cartCount = 0;
-          this.wishlistCount = 0;
+          // this.wishlistCount = 0;
         }
       })
     );

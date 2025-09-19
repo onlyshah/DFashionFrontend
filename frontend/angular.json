@@ -119,7 +119,9 @@
               "src/assets/pollux/vendors/typicons/typicons.css",
               "src/assets/pollux/vendors/css/vendor.bundle.base.css"
             ],
-            "scripts": [],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ],
             "karmaConfig": "karma.conf.js"
           }
         },

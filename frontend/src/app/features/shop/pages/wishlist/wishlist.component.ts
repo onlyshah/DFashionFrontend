@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { WishlistService, WishlistItem } from '../../../../core/services/wishlist.service';
+import { WishlistNewService, WishlistItem } from '../../../../core/services/wishlist-new.service';
 import { CartService } from '../../../../core/services/cart.service';
 
 @Component({
@@ -31,7 +31,7 @@ import { CartService } from '../../../../core/services/cart.service';
               <div class="price">
                 <span class="current-price">₹{{ item.product.price | number }}</span>
                 <span class="original-price" *ngIf="item.product.originalPrice">₹{{ item.product.originalPrice | number }}</span>
-                <span class="discount" *ngIf="item.product.discount > 0">{{ item.product.discount }}% OFF</span>
+                <span class="discount" *ngIf="getDiscount(item.product) > 0">{{ getDiscount(item.product) }}% OFF</span>
               </div>
               <div class="rating" *ngIf="item.product.rating">
                 <div class="stars">
@@ -357,11 +357,16 @@ import { CartService } from '../../../../core/services/cart.service';
   `]
 })
 export class WishlistComponent implements OnInit {
+  // Calculate discount percentage for a product
+  getDiscount(product: any): number {
+    if (!product.originalPrice || product.originalPrice <= product.price) return 0;
+    return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  }
   wishlistItems: WishlistItem[] = [];
   isLoading = true;
 
   constructor(
-    private wishlistService: WishlistService,
+  private wishlistService: WishlistNewService,
     private cartService: CartService,
     private router: Router
   ) {}
@@ -372,12 +377,13 @@ export class WishlistComponent implements OnInit {
   }
 
   loadWishlist() {
-    this.wishlistService.getWishlist().subscribe({
-      next: (response) => {
-        this.wishlistItems = response.data.items;
+    this.isLoading = true;
+    this.wishlistService.loadWishlist().subscribe({
+      next: () => {
         this.isLoading = false;
+        // Items will be updated via subscription
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Failed to load wishlist:', error);
         this.isLoading = false;
         this.wishlistItems = [];
@@ -386,8 +392,8 @@ export class WishlistComponent implements OnInit {
   }
 
   subscribeToWishlistUpdates() {
-    this.wishlistService.wishlistItems$.subscribe(items => {
-      this.wishlistItems = items;
+    this.wishlistService.wishlist$.subscribe(wishlist => {
+      this.wishlistItems = wishlist?.items || [];
     });
   }
 
@@ -420,14 +426,12 @@ export class WishlistComponent implements OnInit {
 
   clearWishlist() {
     if (confirm('Are you sure you want to clear your entire wishlist?')) {
-      this.wishlistService.clearWishlist().subscribe({
-        next: () => {
-          this.wishlistItems = [];
-        },
-        error: (error) => {
-          console.error('Failed to clear wishlist:', error);
-        }
+      // Remove all items one by one (WishlistNewService does not have clearWishlist)
+      const ids = this.wishlistItems.map(item => item.product._id);
+      ids.forEach(id => {
+        this.removeFromWishlist(id);
       });
+      this.wishlistItems = [];
     }
   }
 

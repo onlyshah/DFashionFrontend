@@ -120,7 +120,8 @@
 
 /* Sidebar Fixes */
 .sidebar {
-  background: linear-gradient(180deg, #9b59b6 0%, #8e44ad 100%);
+  background: transparent ;
+  //linear-gradient(180deg, #9b59b6 0%, #8e44ad 100%);
   width: 260px;
   position: fixed;
   height: 100vh;

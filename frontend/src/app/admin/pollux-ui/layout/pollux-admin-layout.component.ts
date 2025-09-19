@@ -41,6 +41,7 @@ export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
   searchQuery = '';
   sidebarOpen = false;
   isMobile = false;
+  showMobileOverlay = false;
   currentYear = new Date().getFullYear();
   
   unreadMessages = 0;
@@ -163,6 +164,19 @@ export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
     this.loadNotifications();
     this.loadMessages();
     this.setupRouterEvents();
+    this.initializeDropdowns();
+  }
+
+  private initializeDropdowns(): void {
+    // Initialize Bootstrap dropdowns after view is ready
+    setTimeout(() => {
+      if (typeof (window as any).bootstrap !== 'undefined') {
+        const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+        dropdownElementList.forEach(dropdownToggleEl => {
+          new (window as any).bootstrap.Dropdown(dropdownToggleEl);
+        });
+      }
+    }, 1000);
   }
 
   ngOnDestroy(): void {
@@ -267,10 +281,40 @@ export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
 
   toggleSidebar(): void {
     this.sidebarOpen = !this.sidebarOpen;
+
+    // Add/remove classes to body for sidebar state
+    const body = document.body;
+    const sidebar = document.querySelector('.sidebar');
+
+    if (this.isMobile) {
+      // Mobile behavior
+      this.showMobileOverlay = this.sidebarOpen;
+      if (sidebar) {
+        if (this.sidebarOpen) {
+          sidebar.classList.add('show');
+        } else {
+          sidebar.classList.remove('show');
+        }
+      }
+    } else {
+      // Desktop behavior - minimize sidebar
+      if (this.sidebarOpen) {
+        body.classList.remove('sidebar-icon-only');
+      } else {
+        body.classList.add('sidebar-icon-only');
+      }
+    }
   }
 
   closeSidebar(): void {
     this.sidebarOpen = false;
+    this.showMobileOverlay = false;
+
+    // Remove classes from sidebar
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('show');
+    }
   }
 
   toggleSubmenu(item: NavigationItem): void {

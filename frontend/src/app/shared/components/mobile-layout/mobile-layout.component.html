@@ -199,25 +199,28 @@
       <i class="fas fa-home"></i>
       <span>Home</span>
     </a>
-    
     <a routerLink="/categories" class="nav-item" [class.active]="isCurrentRoute('/categories')">
       <i class="fas fa-th-large"></i>
       <span>Shop</span>
     </a>
-    
+    <!-- Sidebar Menu Icon -->
+    <button class="nav-item sidebar-menu-nav" (click)="toggleSidebarMenu()" [class.active]="isSidebarMenuOpen">
+      <div class="sidebar-menu-btn">
+        <i class="fas fa-bars"></i>
+      </div>
+      <span>Menu</span>
+    </button>
     <button class="nav-item create-nav" (click)="toggleCreateMenu()" [class.active]="isCreateMenuOpen">
       <div class="create-btn">
         <i class="fas fa-plus"></i>
       </div>
       <span>Create</span>
     </button>
-    
     <a routerLink="/wishlist" class="nav-item" [class.active]="isCurrentRoute('/wishlist')">
       <i class="fas fa-heart"></i>
       <span>Wishlist</span>
       <span *ngIf="wishlistCount > 0" class="nav-badge">{{ formatCount(wishlistCount) }}</span>
     </a>
-    
     <a routerLink="/profile" class="nav-item profile-nav" [class.active]="isCurrentRoute('/profile')">
       <div class="profile-avatar" [style.background-image]="'url(' + getCurrentUserAvatar() + ')'">
         <i class="fas fa-user" *ngIf="!getCurrentUserAvatar()"></i>
@@ -225,6 +228,40 @@
       <span>Profile</span>
     </a>
   </nav>
+
+  <!-- Sidebar Sections Modal -->
+  <div class="sidebar-sections-modal" [class.active]="isSidebarMenuOpen" (click)="closeSidebarMenu()">
+    <div class="sidebar-sections-content" (click)="$event.stopPropagation()">
+      <div class="sidebar-sections-header">
+        <h3>Explore</h3>
+        <button class="close-btn" (click)="closeSidebarMenu()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <nav class="sidebar-sections-list">
+        <a routerLink="/trending-now" (click)="closeSidebarMenu()" class="sidebar-section-item">
+          <i class="fas fa-fire"></i>
+          <span>Trending Now</span>
+        </a>
+        <a routerLink="/new-arrivals" (click)="closeSidebarMenu()" class="sidebar-section-item">
+          <i class="fas fa-star"></i>
+          <span>New Arrivals</span>
+        </a>
+        <a routerLink="/suggested-for-you" (click)="closeSidebarMenu()" class="sidebar-section-item">
+          <i class="fas fa-magic"></i>
+          <span>Suggested for You</span>
+        </a>
+        <a routerLink="/top-influencers" (click)="closeSidebarMenu()" class="sidebar-section-item">
+          <i class="fas fa-user-friends"></i>
+          <span>Top Fashion Influencers</span>
+        </a>
+        <a routerLink="/shop-by-category" (click)="closeSidebarMenu()" class="sidebar-section-item">
+          <i class="fas fa-th-list"></i>
+          <span>Shop by Category</span>
+        </a>
+      </nav>
+    </div>
+  </div>
 
   <!-- Create Menu Popup -->
   <div class="create-menu-overlay" [class.active]="isCreateMenuOpen" (click)="closeCreateMenu()">

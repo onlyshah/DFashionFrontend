@@ -15,13 +15,13 @@
   background: var(--story-bg);
   border: 1px solid var(--story-border-color);
   border-radius: 8px;
-  padding: 16px;
-  margin: 0 0 16px 0;
+  padding: 8px 0 0 0;
+  margin: 0 0 8px 0;
   width: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
   @media (max-width: 768px) {
-    padding: 8px;
+    padding: 8px 0 0 0;
     border: none;
     border-radius: 0;
     border-bottom: 1px solid #efefef;
@@ -32,28 +32,30 @@
   }
 
   @media (min-width: 769px) {
-    padding: 20px;
-    margin: 0 0 20px 0;
+    padding: 0 0 0 0;
+    margin: 0 0 8px 0;
+    min-height: unset;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    border-radius: 12px;
+    border: 1px solid #ececec;
     position: relative;
     z-index: 10;
-    min-height: 140px;
   }
 }
 
 // Stories header
 .stories-header {
-  margin: 0 0 16px 0;
+  margin: 0 0 8px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-
+  justify-content: flex-start;
+  gap: 16px;
   h3 {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: #262626;
-    margin: 0;
+    margin: 0 8px 0 0;
   }
-
   @media (max-width: 768px) {
     display: none;
   }
@@ -67,11 +69,11 @@
 
 .stories-wrapper {
   display: flex;
-  gap: 16px;
+  gap: 8px;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding: 4px 0;
+  padding: 2px 0 8px 0;
 
   &::-webkit-scrollbar {
     display: none;
@@ -80,6 +82,10 @@
   @media (max-width: 768px) {
     gap: 12px;
     padding: 8px 0;
+  }
+  @media (min-width: 769px) {
+    gap: 6px;
+    padding: 2px 0 8px 0;
   }
 }
 
@@ -90,6 +96,36 @@
   align-items: center;
   cursor: pointer;
   flex-shrink: 0;
+    .post-options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+
+      i {
+        font-size: 1.2rem;
+        color: #555;
+        transition: color 0.2s;
+      }
+
+      &:hover, &:focus {
+        background: #f0f0f0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        i {
+          color: #222;
+        }
+      }
+
+      &:active {
+        background: #e0e0e0;
+      }
+    }
   transition: transform 0.2s ease;
 
   &:hover {
@@ -114,9 +150,11 @@
   height: var(--story-size);
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   background: var(--story-gradient);
   padding: 2px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
 
   @media (max-width: 768px) {
     width: var(--story-size-mobile);
@@ -125,10 +163,23 @@
 
   &.viewed {
     background: #c7c7c7;
+    border: 2px solid #dbdbdb;
+  }
+
+  &.unviewed {
+    background: var(--story-gradient);
+    border: 3px solid #f09433;
+    box-shadow: 0 4px 16px rgba(240,148,51,0.15);
   }
 
   &.own-story {
     background: #c7c7c7;
+    border: 2px dashed #dbdbdb;
+  }
+
+  &:hover {
+    transform: scale(1.07);
+    box-shadow: 0 4px 16px rgba(220,39,67,0.18);
   }
 }
 
@@ -148,13 +199,14 @@
     width: var(--story-size);
     height: var(--story-size);
     border-radius: 50%;
-    border: 2px dashed var(--story-border-color);
-    background: #fafafa;
+    border: 2.5px dashed #f09433;
+    background: linear-gradient(135deg, #fff 60%, #f09433 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(240,148,51,0.10);
 
     @media (max-width: 768px) {
       width: var(--story-size-mobile);
@@ -162,16 +214,16 @@
     }
 
     &:hover {
-      background: #f0f0f0;
-      border-color: #999;
+      background: #fff7e6;
+      border-color: #e6683c;
+      box-shadow: 0 4px 16px rgba(240,148,51,0.18);
     }
 
     i {
-      font-size: 24px;
-      color: #999;
-
+      font-size: 28px;
+      color: #e6683c;
       @media (max-width: 768px) {
-        font-size: 20px;
+        font-size: 22px;
       }
     }
   }

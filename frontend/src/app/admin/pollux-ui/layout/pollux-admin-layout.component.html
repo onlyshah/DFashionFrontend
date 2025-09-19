@@ -11,30 +11,32 @@
         <a class="navbar-brand brand-logo-mini" routerLink="/dashboard">
           <i class="typcn typcn-shopping-bag"></i>
         </a>
-        <button class="navbar-toggler navbar-toggler align-self-center" type="button" (click)="toggleSidebar()">
-          <i class="typcn typcn-th-menu"></i>
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button"
+                (click)="toggleSidebar()" data-toggle="minimize">
+          <span class="typcn typcn-th-menu"></span>
         </button>
       </div>
     </div>
     <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
       <ul class="navbar-nav me-lg-2">
         <li class="nav-item nav-profile dropdown" *ngIf="currentUser">
-          <a class="nav-link" href="#" [matMenuTriggerFor]="profileMenu" id="profileDropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown"
+             aria-expanded="false">
             <div class="user-avatar" [style.background-color]="getRoleColor()">
               <span class="user-initials">{{ getUserInitials() }}</span>
             </div>
             <span class="nav-profile-name">{{ currentUser.fullName }}</span>
           </a>
-          <mat-menu #profileMenu="matMenu" class="dropdown-menu">
-            <button mat-menu-item>
+          <div class="dropdown-menu dropdown-menu-end navbar-dropdown" aria-labelledby="profileDropdown">
+            <a class="dropdown-item" href="#">
               <i class="typcn typcn-cog-outline text-primary"></i>
               Settings
-            </button>
-            <button mat-menu-item (click)="onLogout()">
+            </a>
+            <a class="dropdown-item" href="#" (click)="onLogout()">
               <i class="typcn typcn-eject text-primary"></i>
               Logout
-            </button>
-          </mat-menu>
+            </a>
+          </div>
         </li>
         <li class="nav-item nav-user-status">
           <p class="mb-0">Last login: {{ getLastLoginTime() }}</p>
@@ -48,44 +50,44 @@
           </a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" 
-             [matMenuTriggerFor]="messageMenu">
+          <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+             href="#" data-bs-toggle="dropdown" id="messageDropdown" aria-expanded="false">
             <i class="typcn typcn-mail mx-0"></i>
             <span class="count" *ngIf="unreadMessages > 0">{{ unreadMessages }}</span>
           </a>
-          <mat-menu #messageMenu="matMenu" class="dropdown-menu">
-            <div class="dropdown-header">Messages</div>
-            <button mat-menu-item *ngFor="let message of recentMessages" class="preview-item">
+          <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+            <p class="mb-0 fw-normal float-start dropdown-header">Messages</p>
+            <a class="dropdown-item preview-item" *ngFor="let message of recentMessages" href="#">
               <div class="preview-thumbnail">
                 <div class="user-avatar small">{{ message.senderInitials }}</div>
               </div>
-              <div class="preview-item-content">
-                <h6 class="preview-subject">{{ message.sender }}</h6>
-                <p class="preview-text">{{ message.preview }}</p>
+              <div class="preview-item-content flex-grow">
+                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
+                <p class="fw-light small-text text-muted mb-0">{{ message.preview }}</p>
               </div>
-            </button>
-          </mat-menu>
+            </a>
+          </div>
         </li>
         <li class="nav-item dropdown me-0">
-          <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" 
-             [matMenuTriggerFor]="notificationMenu">
+          <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center"
+             href="#" data-bs-toggle="dropdown" id="notificationDropdown" aria-expanded="false">
             <i class="typcn typcn-bell mx-0"></i>
             <span class="count" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</span>
           </a>
-          <mat-menu #notificationMenu="matMenu" class="dropdown-menu">
-            <div class="dropdown-header">Notifications</div>
-            <button mat-menu-item *ngFor="let notification of recentNotifications" class="preview-item">
+          <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+            <p class="mb-0 fw-normal float-start dropdown-header">Notifications</p>
+            <a class="dropdown-item preview-item" *ngFor="let notification of recentNotifications" href="#">
               <div class="preview-thumbnail">
                 <div class="preview-icon" [ngClass]="'bg-' + notification.type">
-                  <i class="typcn" [ngClass]="notification.icon"></i>
+                  <i class="typcn" [ngClass]="notification.icon + ' mx-0'"></i>
                 </div>
               </div>
               <div class="preview-item-content">
-                <h6 class="preview-subject">{{ notification.title }}</h6>
-                <p class="preview-text">{{ notification.time }}</p>
+                <h6 class="preview-subject fw-normal">{{ notification.title }}</h6>
+                <p class="fw-light small-text mb-0 text-muted">{{ notification.time }}</p>
               </div>
-            </button>
-          </mat-menu>
+            </a>
+          </div>
         </li>
       </ul>
       <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" 
@@ -139,6 +141,9 @@
       </ul>
     </div>
   </nav>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" [class.show]="showMobileOverlay" (click)="closeSidebar()"></div>
 
   <!-- Page Body Wrapper -->
   <div class="container-fluid page-body-wrapper">

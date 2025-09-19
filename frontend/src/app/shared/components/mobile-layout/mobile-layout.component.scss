@@ -1,3 +1,82 @@
+// Sidebar Sections Modal
+.sidebar-sections-modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.35);
+  z-index: 1200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.sidebar-sections-modal.active {
+  display: flex;
+}
+.sidebar-sections-content {
+  background: #fff;
+  width: 100vw;
+  max-width: 420px;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 0 24px rgba(0,0,0,0.08);
+  padding: 1.2rem 1.2rem 2rem 1.2rem;
+  margin-bottom: 0;
+  animation: slideUpModal 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.sidebar-sections-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.sidebar-sections-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+.sidebar-sections-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  color: #888;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+}
+.sidebar-sections-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.sidebar-section-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.1rem;
+  color: #333;
+  text-decoration: none;
+  padding: 0.7rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.sidebar-section-item i {
+  font-size: 1.2rem;
+  color: #667eea;
+}
+.sidebar-section-item:hover {
+  background: #f5f6fa;
+}
+@keyframes slideUpModal {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
 // Mobile Layout Container
 .mobile-layout {
   display: flex;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { WishlistService, WishlistItem } from '../../core/services/wishlist.service';
+import { WishlistNewService, WishlistItem } from '../../core/services/wishlist-new.service';
 import { CartService } from '../../core/services/cart.service';
 
 @Component({
@@ -16,7 +16,7 @@ export class WishlistPage implements OnInit {
   wishlistCount = 0;
 
   constructor(
-    private wishlistService: WishlistService,
+  private wishlistService: WishlistNewService,
     private cartService: CartService,
     private router: Router,
     private alertController: AlertController,
@@ -35,17 +35,12 @@ export class WishlistPage implements OnInit {
 
   loadWishlist() {
     this.isLoading = true;
-    this.wishlistService.getWishlist().subscribe({
-      next: (response) => {
-        this.wishlistItems = response.data?.items || [];
+    this.wishlistService.loadWishlist().subscribe({
+      next: () => {
         this.isLoading = false;
-
-        // Select all items by default
-        this.selectedItems = this.wishlistItems.map(item => item._id);
-
-        console.log('🛒 Mobile wishlist loaded:', this.wishlistItems.length, 'items');
+        // Items will be updated via subscription
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('❌ Failed to load mobile wishlist:', error);
         this.isLoading = false;
       }
@@ -53,19 +48,17 @@ export class WishlistPage implements OnInit {
   }
 
   subscribeToWishlistUpdates() {
-    this.wishlistService.wishlistItems$.subscribe(items => {
-      this.wishlistItems = items;
+    this.wishlistService.wishlist$.subscribe(wishlist => {
+      this.wishlistItems = wishlist?.items || [];
       this.isLoading = false;
-      console.log('🔄 Mobile wishlist items updated via subscription:', items.length, 'items');
+      console.log('🔄 Mobile wishlist items updated via subscription:', this.wishlistItems.length, 'items');
       // Clear selections when wishlist updates
-      this.selectedItems = this.selectedItems.filter(id =>
-        items.some(item => item._id === id)
-      );
+      this.selectedItems = this.wishlistItems.map(item => item._id);
     });
   }
 
   subscribeToWishlistCount() {
-    this.wishlistService.wishlistItemCount$.subscribe(count => {
+    this.wishlistService.wishlistItemCount$.subscribe((count: number) => {
       this.wishlistCount = count;
     });
   }

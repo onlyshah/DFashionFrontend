@@ -433,24 +433,28 @@ export class WishlistComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.loadWishlist();
+  this.loadWishlist();
+  this.subscribeToWishlistUpdates();
   }
 
   loadWishlist() {
     this.loading = true;
-
     this.wishlistService.loadWishlist().subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.wishlistItems = response.wishlist.items;
-          this.sortWishlist();
-        }
+      next: () => {
         this.loading = false;
+        // Items will be updated via subscription
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error loading wishlist:', error);
         this.loading = false;
       }
+    });
+  }
+
+  subscribeToWishlistUpdates() {
+    this.wishlistService.wishlist$.subscribe(wishlist => {
+      this.wishlistItems = wishlist?.items || [];
+      this.sortWishlist();
     });
   }
 

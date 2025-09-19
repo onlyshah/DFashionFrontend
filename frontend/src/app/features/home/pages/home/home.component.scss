@@ -125,6 +125,49 @@
   }
 }
 
+// Two column layout for web (desktop)
+.two-column-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 28px;
+  max-width: 935px;
+  margin: 0 auto;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 0;
+    max-width: 100%;
+    margin: 0;
+  }
+}
+
+// Post section (left column)
+.post-section {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 470px;
+  margin-top: 20px; /* Align with sidebar-section top */
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin-top: 0;
+  }
+}
+
+// Sidebar section (right column)
+.sidebar-section {
+  width: 293px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
 // Feed section
 .feed-section {
   flex: 1;

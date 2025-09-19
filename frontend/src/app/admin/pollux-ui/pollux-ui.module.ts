@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 // Pollux UI Components
 import { PolluxAdminLayoutComponent } from './layout/pollux-admin-layout.component';
 import { PolluxDashboardComponent } from './dashboard/pollux-dashboard.component';
+import { UnifiedDashboardComponent } from '../components/unified-dashboard/unified-dashboard.component';
 import { ProductManagementComponent } from './products/product-management.component';
 import { CategoryManagementComponent } from './categories/category-management.component';
 
@@ -19,6 +20,7 @@ import { SharedModule } from '../../shared/shared.module';
   declarations: [
     PolluxAdminLayoutComponent,
     PolluxDashboardComponent,
+    UnifiedDashboardComponent,
     ProductManagementComponent,
     CategoryManagementComponent
   ],
@@ -35,6 +37,7 @@ import { SharedModule } from '../../shared/shared.module';
   exports: [
     PolluxAdminLayoutComponent,
     PolluxDashboardComponent,
+    UnifiedDashboardComponent,
     ProductManagementComponent,
     CategoryManagementComponent
   ]

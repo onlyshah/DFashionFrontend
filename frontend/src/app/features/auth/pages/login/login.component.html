@@ -71,9 +71,7 @@
           <span *ngIf="loginForm.get('password')?.errors?.['required']">Password is required</span>
           <span *ngIf="loginForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
         </div>
-      </div>
-
-      <!-- Submit Button -->
+          <!-- Submit Button -->
       <button
         type="submit"
         class="btn-primary auth-btn"
@@ -91,13 +89,13 @@
       <div *ngIf="errorMessage" class="error-message">
         {{ errorMessage }}
       </div>
+      <div class="auth-link">
+        <p>Don't have an account? <a routerLink="/auth/register">Sign up</a></p>
+      </div>
+      </div>
+
+    
     </form>
-
-
-
-    <!-- Register Link -->
-    <div class="auth-link">
-      <p>Don't have an account? <a routerLink="/auth/register">Sign up</a></p>
-    </div>
   </div>
 </div>
+

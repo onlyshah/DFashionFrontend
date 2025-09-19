@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
-import { WishlistService } from '../../core/services/wishlist.service';
+import { WishlistNewService } from '../../core/services/wishlist-new.service';
 
 @Component({
   selector: 'app-tabs',
@@ -42,7 +42,7 @@ export class TabsPage implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private cartService: CartService,
-    private wishlistService: WishlistService,
+  private wishlistService: WishlistNewService,
     private elementRef: ElementRef
   ) {}
 

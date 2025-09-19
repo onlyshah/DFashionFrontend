@@ -8,39 +8,43 @@
     </button>
   </div>
 
-  <!-- Stories List -->
-  <div class="stories-list" [class.loading]="loading">
-    <!-- Add Story Button -->
-    <div class="story-item add-story" (click)="createStory()">
-      <div class="story-avatar add-avatar">
-        <i class="fas fa-plus"></i>
-      </div>
-      <span class="story-username">Your Story</span>
-    </div>
-
-    <!-- Story Items -->
-    <div class="story-item" 
-         *ngFor="let story of stories; let i = index"
-         (click)="openStory(story, i)"
-         [class.viewed]="story.isViewed">
-      
-      <div class="story-avatar" [class.has-story]="!story.isViewed">
-        <img [src]="story.user.avatar || 'assets/images/default-avatar.svg'" 
-             [alt]="story.user.fullName"
-             class="avatar-image">
-        
-        <!-- Story Ring -->
-        <div class="story-ring" *ngIf="!story.isViewed"></div>
-        
-        <!-- Video Indicator -->
-        <div class="video-indicator" *ngIf="story.media.type === 'video'">
-          <i class="fas fa-play"></i>
+  <!-- Stories List with Arrows and Auto-Slide -->
+  <div class="stories-slider-wrapper">
+    <button class="slider-arrow left" (click)="scrollStories('left')" *ngIf="!isMobile">&#8592;</button>
+    <div class="stories-list" #storiesList [class.loading]="loading">
+      <!-- Add Story Button -->
+      <div class="story-item add-story" (click)="createStory()">
+        <div class="story-avatar add-avatar">
+          <i class="fas fa-plus"></i>
         </div>
+        <span class="story-username">Your Story</span>
       </div>
-      
-      <span class="story-username">{{ story.user.username }}</span>
-      <span class="story-time">{{ getTimeAgo(story.createdAt) }}</span>
+
+      <!-- Story Items -->
+      <div class="story-item" 
+           *ngFor="let story of stories; let i = index"
+           (click)="openStory(story, i)"
+           [class.viewed]="story.isViewed">
+        <div class="story-avatar" [class.has-story]="!story.isViewed">
+          <img [src]="story.user.avatar || 'assets/images/default-avatar.svg'" 
+               [alt]="story.user.fullName"
+               class="avatar-image">
+          <!-- Story Ring -->
+          <div class="story-ring" *ngIf="!story.isViewed"></div>
+          <!-- Video Indicator -->
+          <div class="video-indicator" *ngIf="story.media.type === 'video'">
+            <i class="fas fa-play"></i>
+          </div>
+          <!-- Product Bag Button -->
+          <button *ngIf="story.products?.length > 0" class="product-tag-btn" (click)="openProduct($event, story.products[0])">
+            <i class="fas fa-shopping-bag"></i>
+          </button>
+        </div>
+        <span class="story-username">{{ story.user.username }}</span>
+        <span class="story-time">{{ getTimeAgo(story.createdAt) }}</span>
+      </div>
     </div>
+    <button class="slider-arrow right" (click)="scrollStories('right')" *ngIf="!isMobile">&#8594;</button>
   </div>
 
   <!-- Loading State -->

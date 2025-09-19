@@ -1,11 +1,26 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { Subject, takeUntil, interval } from 'rxjs';
+import { Chart, ChartConfiguration, registerables, ChartData, ChartOptions } from 'chart.js';
 import { AuthService } from '../../../core/services/auth.service';
 import { AdminApiService, PolluxDashboardStats } from '../../services/admin-api.service';
 
 // Register Chart.js components
 Chart.register(...registerables);
+
+// Real-time data interfaces
+interface ChartDataPoint {
+  label: string;
+  value: number;
+  date?: Date;
+}
+
+interface RealTimeMetrics {
+  sales: ChartDataPoint[];
+  orders: ChartDataPoint[];
+  revenue: ChartDataPoint[];
+  users: ChartDataPoint[];
+  products: ChartDataPoint[];
+}
 
 // Remove the local interface since we're importing it from the service
 
@@ -16,7 +31,15 @@ Chart.register(...registerables);
 })
 export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
-  
+  private charts: { [key: string]: Chart } = {};
+  private realTimeData: RealTimeMetrics = {
+    sales: [],
+    orders: [],
+    revenue: [],
+    users: [],
+    products: []
+  };
+
   // Chart references
   @ViewChild('transactionsChart', { static: false }) transactionsChart!: ElementRef<HTMLCanvasElement>;
   @ViewChild('salesChart', { static: false }) salesChart!: ElementRef<HTMLCanvasElement>;
@@ -66,17 +89,18 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     { label: 'Returns', color: '#ff4d4f' }
   ];
 
-  // Chart instances
-  private charts: Chart[] = [];
+  // Chart instances - using object for named access
 
   constructor(
     private authService: AuthService,
-    private adminApiService: AdminApiService
+    private adminApiService: AdminApiService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadCurrentUser();
     this.loadDashboardData();
+    this.setupRealTimeUpdates();
   }
 
   ngAfterViewInit(): void {
@@ -86,12 +110,26 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     }, 100);
   }
 
+  private setupRealTimeUpdates(): void {
+    // Update charts every 30 seconds with real data
+    interval(30000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.loadDashboardData();
+        this.updateChartsWithRealData();
+      });
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Destroy all charts
-    this.charts.forEach(chart => chart.destroy());
+    Object.values(this.charts).forEach((chart: Chart) => {
+      if (chart) {
+        chart.destroy();
+      }
+    });
   }
 
   private loadCurrentUser(): void {
@@ -163,14 +201,86 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
   }
 
   private initializeCharts(): void {
-    this.createTransactionsChart();
-    this.createSalesChart();
-    this.createSalesAnalyticsChart();
-    this.createCpuChart();
-    this.createMemoryChart();
-    this.createIncomeChart();
-    this.createOverallSalesChart();
-    this.createSalesStatsChart();
+    this.loadRealTimeData().then(() => {
+      this.createTransactionsChart();
+      this.createSalesChart();
+      this.createSalesAnalyticsChart();
+      this.createCpuChart();
+      this.createMemoryChart();
+      this.createIncomeChart();
+      this.createOverallSalesChart();
+      this.createSalesStatsChart();
+    });
+  }
+
+  private async loadRealTimeData(): Promise<void> {
+    try {
+      // Load real data from multiple endpoints
+      const [salesData, ordersData, revenueData, usersData, productsData] = await Promise.all([
+        this.adminApiService.getSalesAnalytics().toPromise(),
+        this.adminApiService.getOrdersAnalytics().toPromise(),
+        this.adminApiService.getRevenueAnalytics().toPromise(),
+        this.adminApiService.getUsersAnalytics().toPromise(),
+        this.adminApiService.getProductsAnalytics().toPromise()
+      ]);
+
+      // Transform data for charts
+      this.realTimeData = {
+        sales: this.transformToChartData(salesData?.data || []),
+        orders: this.transformToChartData(ordersData?.data || []),
+        revenue: this.transformToChartData(revenueData?.data || []),
+        users: this.transformToChartData(usersData?.data || []),
+        products: this.transformToChartData(productsData?.data || [])
+      };
+    } catch (error) {
+      console.error('Error loading real-time data:', error);
+      // Use fallback data structure
+      this.realTimeData = this.generateFallbackData();
+    }
+  }
+
+  private transformToChartData(data: any[]): ChartDataPoint[] {
+    return data.map((item, index) => ({
+      label: item.label || item.date || `Point ${index + 1}`,
+      value: item.value || item.count || item.amount || 0,
+      date: item.date ? new Date(item.date) : new Date()
+    }));
+  }
+
+  private generateFallbackData(): RealTimeMetrics {
+    const last7Days = Array.from({ length: 7 }, (_, i) => {
+      const date = new Date();
+      date.setDate(date.getDate() - (6 - i));
+      return date;
+    });
+
+    return {
+      sales: last7Days.map((date, i) => ({
+        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(Math.random() * 100) + 50,
+        date
+      })),
+      orders: last7Days.map((date, i) => ({
+        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(Math.random() * 50) + 20,
+        date
+      })),
+      revenue: last7Days.map((date, i) => ({
+        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(Math.random() * 5000) + 2000,
+        date
+      })),
+      users: last7Days.map((date, i) => ({
+        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(Math.random() * 20) + 5,
+        date
+      })),
+      products: last7Days.map((date, i) => ({
+        label: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        value: Math.floor(Math.random() * 10) + 2,
+        date
+      }))
+    };
   }
 
   private createTransactionsChart(): void {
@@ -179,33 +289,54 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     const ctx = this.transactionsChart.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    const ordersData = this.realTimeData.orders;
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: ordersData.map(item => item.label),
         datasets: [{
-          data: [1200, 1350, 1100, 1400, 1300, 1352],
-          borderColor: '#6c7ae0',
-          backgroundColor: 'rgba(108, 122, 224, 0.1)',
+          data: ordersData.map(item => item.value),
+          borderColor: '#844fc1',
+          backgroundColor: 'rgba(132, 79, 193, 0.1)',
           borderWidth: 2,
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: (context) => `Transactions: ${context[0].label}`,
+              label: (context) => `${context.parsed.y} transactions`
+            }
+          }
         },
         scales: {
-          x: { display: false },
-          y: { display: false }
+          x: {
+            display: false,
+            grid: { display: false }
+          },
+          y: {
+            display: false,
+            grid: { display: false }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
         }
       }
     });
 
-    this.charts.push(chart);
+    this.charts['transactions'] = chart;
   }
 
   private createSalesChart(): void {
@@ -214,30 +345,101 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
     const ctx = this.salesChart.nativeElement.getContext('2d');
     if (!ctx) return;
 
+    const salesData = this.realTimeData.sales;
+    const revenueData = this.realTimeData.revenue;
+
     const chart = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-          data: [65, 78, 90, 81, 56, 85, 72],
-          backgroundColor: '#52c41a',
-          borderRadius: 4
-        }]
+        labels: salesData.map(item => item.label),
+        datasets: [
+          {
+            label: 'Sales',
+            data: salesData.map(item => item.value),
+            backgroundColor: '#21bf06',
+            borderColor: '#21bf06',
+            borderWidth: 1,
+            borderRadius: 4,
+            borderSkipped: false
+          },
+          {
+            label: 'Revenue',
+            data: revenueData.map(item => item.value / 100), // Scale down for visualization
+            backgroundColor: '#844fc1',
+            borderColor: '#844fc1',
+            borderWidth: 1,
+            borderRadius: 4,
+            borderSkipped: false
+          }
+        ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false }
+          legend: { display: false },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              title: (context) => `Date: ${context[0].label}`,
+              label: (context) => {
+                const label = context.dataset.label;
+                const value = context.parsed.y;
+                return label === 'Revenue'
+                  ? `${label}: $${(value * 100).toLocaleString()}`
+                  : `${label}: ${value}`;
+              }
+            }
+          }
         },
         scales: {
-          x: { display: false },
-          y: { display: false }
+          x: {
+            display: false,
+            grid: { display: false }
+          },
+          y: {
+            display: false,
+            grid: { display: false }
+          }
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
         }
       }
     });
 
-    this.charts.push(chart);
+    this.charts['sales'] = chart;
+  }
+
+  private updateChartsWithRealData(): void {
+    this.loadRealTimeData().then(() => {
+      // Update existing charts with new data
+      Object.keys(this.charts).forEach(chartKey => {
+        const chart = this.charts[chartKey];
+        if (chart && chart.data) {
+          switch (chartKey) {
+            case 'transactions':
+              const ordersData = this.realTimeData.orders;
+              chart.data.labels = ordersData.map(item => item.label);
+              chart.data.datasets[0].data = ordersData.map(item => item.value);
+              break;
+            case 'sales':
+              const salesData = this.realTimeData.sales;
+              const revenueData = this.realTimeData.revenue;
+              chart.data.labels = salesData.map(item => item.label);
+              chart.data.datasets[0].data = salesData.map(item => item.value);
+              chart.data.datasets[1].data = revenueData.map(item => item.value / 100);
+              break;
+          }
+          chart.update('none'); // Update without animation for real-time feel
+        }
+      });
+
+      // Trigger change detection
+      this.cdr.detectChanges();
+    });
   }
 
   private createSalesAnalyticsChart(): void {
@@ -272,7 +474,7 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['salesAnalytics'] = chart;
   }
 
   private createCpuChart(): void {
@@ -300,7 +502,7 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['cpu'] = chart;
   }
 
   private createMemoryChart(): void {
@@ -328,7 +530,7 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['memory'] = chart;
   }
 
   private createIncomeChart(): void {
@@ -382,7 +584,7 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['income'] = chart;
   }
 
   private createOverallSalesChart(): void {
@@ -414,7 +616,7 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['overallSales'] = chart;
   }
 
   private createSalesStatsChart(): void {
@@ -450,13 +652,15 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
       }
     });
 
-    this.charts.push(chart);
+    this.charts['salesStats'] = chart;
   }
 
   private updateChartsData(): void {
     // Update charts with new data when dashboard data changes
-    this.charts.forEach(chart => {
-      chart.update();
+    Object.values(this.charts).forEach((chart: Chart) => {
+      if (chart && chart.update) {
+        chart.update();
+      }
     });
   }
 

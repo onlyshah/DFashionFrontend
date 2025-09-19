@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -318,7 +318,50 @@ interface StoryPreview {
     }
   `]
 })
-export class StoriesListComponent implements OnInit {
+export class StoriesListComponent implements OnInit, AfterViewInit {
+  @ViewChild('storiesList', { static: false }) storiesListRef!: ElementRef;
+  isMobile = false;
+  autoSlideInterval: any;
+  ngAfterViewInit() {
+    this.isMobile = window.innerWidth <= 768;
+    if (this.isMobile) {
+      this.startAutoSlide();
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize() {
+    this.isMobile = window.innerWidth <= 768;
+  }
+
+  scrollStories(direction: 'left' | 'right') {
+    const el = this.storiesListRef?.nativeElement;
+    if (!el) return;
+    const scrollAmount = 200;
+    if (direction === 'left') {
+      el.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+  }
+
+  startAutoSlide() {
+    if (this.autoSlideInterval) clearInterval(this.autoSlideInterval);
+    this.autoSlideInterval = setInterval(() => {
+      const el = this.storiesListRef?.nativeElement;
+      if (!el) return;
+      if (el.scrollLeft + el.offsetWidth >= el.scrollWidth) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        el.scrollBy({ left: 200, behavior: 'smooth' });
+      }
+    }, 3500);
+  }
+
+  openProduct(event: Event, productId: string) {
+    event.stopPropagation();
+    this.router.navigate(['/products', productId]);
+  }
   @Input() stories: StoryPreview[] = [];
   @Input() loading = false;
   @Output() storySelected = new EventEmitter<{story: StoryPreview, index: number}>();
