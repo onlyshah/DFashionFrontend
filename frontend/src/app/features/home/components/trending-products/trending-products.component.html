@@ -4,7 +4,7 @@
     <div class="header-content">
       <h2 class="section-title">
         <ion-icon name="trending-up" class="title-icon"></ion-icon>
-        Trending Now
+        Trending Now...
       </h2>
       <p class="section-subtitle">Most popular products this week</p>
     </div>
@@ -56,11 +56,12 @@
           class="product-card"
           (click)="onProductClick(product)"
         >
+        
       <!-- Product Image -->
       <div class="product-image-container">
         <img
-          [src]="product.images[0].url"
-          [alt]="product.images[0].alt || product.name"
+          [src]="imageUrl +product.images"
+          
           class="product-image"
           loading="lazy"
           (error)="onImageError($event)"

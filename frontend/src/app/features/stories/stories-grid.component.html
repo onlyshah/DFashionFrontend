@@ -47,7 +47,7 @@
         </div>
         
         <div class="user-info">
-          <img [src]="group.user.avatar || 'assets/images/default-avatar.svg'" 
+          <img [src]="group.user.avatar || '/api/images/placeholder-avatar.png'" 
                [alt]="group.user.fullName"
                class="user-avatar">
           <div class="user-details">
@@ -61,7 +61,7 @@
       <div class="list-item" *ngIf="viewMode === 'list'">
         <div class="user-section">
           <div class="user-avatar-container">
-            <img [src]="group.user.avatar || 'assets/images/default-avatar.svg'" 
+            <img [src]="group.user.avatar || '/api/images/placeholder-avatar.png'" 
                  [alt]="group.user.fullName"
                  class="user-avatar">
             <div class="story-ring" *ngIf="group.hasUnviewed"></div>

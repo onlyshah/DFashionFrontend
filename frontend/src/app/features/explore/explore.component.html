@@ -1,0 +1,83 @@
+<div class="explore-container">
+  <!-- Hero Section -->
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1>Discover Fashion</h1>
+      <p>Explore trending styles, discover new brands, and find your perfect look</p>
+      <div class="search-bar">
+        <input type="text" 
+               placeholder="Search for styles, brands, or trends..." 
+               [(ngModel)]="searchQuery"
+               (keyup.enter)="onSearch()">
+        <button (click)="onSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Grid -->
+  <div class="categories-section">
+    <h2>Shop by Category</h2>
+    <div class="categories-grid">
+      <div class="category-card" 
+           *ngFor="let category of categories"
+           (click)="navigateToCategory(category.slug)"
+           [style.background-image]="'url(' + category.image + ')'">
+        <div class="category-overlay">
+          <h3>{{ category.name }}</h3>
+          <p>{{ category.itemCount }} items</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trending Section -->
+  <div class="trending-section">
+    <h2>Trending Now</h2>
+    <div class="trending-grid">
+      <div class="trend-item" *ngFor="let trend of trendingItems">
+        <img [src]="trend.image" [alt]="trend.title">
+        <div class="trend-content">
+          <h4>{{ trend.title }}</h4>
+          <p>{{ trend.description }}</p>
+          <span class="trend-tag">{{ trend.tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Featured Brands -->
+  <div class="brands-section">
+    <h2>Featured Brands</h2>
+    <div class="brands-grid">
+      <div class="brand-card" *ngFor="let brand of featuredBrands">
+        <img [src]="brand.logo" [alt]="brand.name">
+        <h4>{{ brand.name }}</h4>
+        <p>{{ brand.description }}</p>
+        <button class="btn-explore" (click)="exploreBrand(brand.slug)">
+          Explore
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Style Inspiration -->
+  <div class="inspiration-section">
+    <h2>Style Inspiration</h2>
+    <div class="inspiration-grid">
+      <div class="inspiration-item" 
+           *ngFor="let inspiration of styleInspiration"
+           (click)="viewInspiration(inspiration.id)">
+        <img [src]="inspiration.image" [alt]="inspiration.title">
+        <div class="inspiration-overlay">
+          <h4>{{ inspiration.title }}</h4>
+          <p>{{ inspiration.subtitle }}</p>
+          <div class="inspiration-tags">
+            <span *ngFor="let tag of inspiration.tags" class="tag">{{ tag }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -88,8 +88,8 @@
           <!-- User Avatar -->
           <div class="user-avatar-container">
             <img
-              [src]="user.avatar || '/assets/images/default-avatar.png'"
-              [alt]="user.fullName || 'User'"
+              [src]="imageUrl+user.avatar || '/api/images/placeholder-avatar.png'"
+            
               class="user-avatar"
               loading="lazy"
               [appImageFallback]="user.fullName || user.username || 'User'"

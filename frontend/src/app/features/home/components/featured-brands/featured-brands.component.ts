@@ -6,6 +6,7 @@ import { TrendingService, FeaturedBrand } from '../../../../core/services/trendi
 import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { IonicModule } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-featured-brands',
@@ -33,7 +34,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 5000; // 5 seconds for brands
   isAutoSliding = true;
   isPaused = false;
-
+   imageUrl = environment.apiUrl
   constructor(
     private trendingService: TrendingService,
     private socialService: SocialInteractionsService,

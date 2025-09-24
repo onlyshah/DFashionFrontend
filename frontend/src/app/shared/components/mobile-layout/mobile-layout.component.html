@@ -6,7 +6,7 @@
   <!-- Mobile Header -->
   <header *ngIf="showHeader" class="mobile-header">
     <div class="header-content">
-      <!-- Menu Button -->
+      <!-- Menu Button (remains in header) -->
       <button class="header-btn menu-btn" (click)="toggleMenu()">
         <i class="fas fa-bars" *ngIf="!isMenuOpen"></i>
         <i class="fas fa-times" *ngIf="isMenuOpen"></i>
@@ -65,7 +65,7 @@
       <!-- User Profile Section -->
       <div class="menu-profile" *ngIf="currentUser">
         <div class="profile-avatar">
-          <img [src]="currentUser.avatar || 'assets/images/default-avatar.svg'"
+          <img [src]="currentUser.avatar || '/api/images/placeholder-avatar.png'"
                [alt]="currentUser.fullName"
                (error)="onAvatarError($event)">
         </div>
@@ -203,13 +203,25 @@
       <i class="fas fa-th-large"></i>
       <span>Shop</span>
     </a>
-    <!-- Sidebar Menu Icon -->
-    <button class="nav-item sidebar-menu-nav" (click)="toggleSidebarMenu()" [class.active]="isSidebarMenuOpen">
-      <div class="sidebar-menu-btn">
-        <i class="fas fa-bars"></i>
+    <!-- Trending Button (Mobile) -->
+    <button class="nav-item trending-nav" (click)="openTrending()" [class.active]="isTrendingOpen">
+      <div class="trending-btn">
+        <i class="fas fa-fire"></i>
       </div>
-      <span>Menu</span>
+      <span>Trending</span>
     </button>
+    <!-- Trending Modal (Mobile) -->
+    <div class="trending-modal" [class.active]="isTrendingOpen" (click)="closeTrending()">
+      <div class="trending-modal-content" (click)="$event.stopPropagation()">
+        <div class="trending-modal-header">
+          <h3>Trending</h3>
+          <button class="close-btn" (click)="closeTrending()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <app-trending-products></app-trending-products>
+      </div>
+    </div>
     <button class="nav-item create-nav" (click)="toggleCreateMenu()" [class.active]="isCreateMenuOpen">
       <div class="create-btn">
         <i class="fas fa-plus"></i>

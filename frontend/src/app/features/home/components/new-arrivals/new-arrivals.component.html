@@ -58,9 +58,10 @@
         >
       <!-- Product Image -->
       <div class="product-image-container">
+        <!-- {{imageUrl +product.images[0].url}} -->
         <img 
-          [src]="product.images[0].url"
-          [alt]="product.images[0].alt || product.name"
+           [src]=" this.imageUrl +product.images"
+        
           class="product-image"
           loading="lazy"
         />

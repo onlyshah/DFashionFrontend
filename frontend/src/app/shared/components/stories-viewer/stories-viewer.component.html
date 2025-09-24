@@ -15,7 +15,7 @@
     <div class="story-header">
       <div class="user-info">
         <div class="user-avatar">
-          <img [src]="currentStory.user?.avatar || '/assets/images/default-avatar.svg'" 
+          <img [src]="currentStory.user?.avatar || '/api/images/placeholder-avatar.png'" 
                [alt]="currentStory.user?.fullName">
         </div>
         <div class="user-details">
@@ -74,7 +74,7 @@
           (click)="onProductClick(productTag.product, $event)">
           <div class="product-tag-pulse"></div>
           <div class="product-tag-info">
-            <img [src]="productTag.product.image || '/assets/images/default-product.svg'" 
+            <img [src]="productTag.product.image || '/api/images/placeholder-product.png'" 
                  [alt]="productTag.product.name">
             <div class="product-details">
               <span class="product-name">{{ productTag.product.name }}</span>

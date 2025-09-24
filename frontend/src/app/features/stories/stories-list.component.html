@@ -26,7 +26,7 @@
            (click)="openStory(story, i)"
            [class.viewed]="story.isViewed">
         <div class="story-avatar" [class.has-story]="!story.isViewed">
-          <img [src]="story.user.avatar || 'assets/images/default-avatar.svg'" 
+          <img [src]="story.user.avatar || '/api/images/placeholder-avatar.png'" 
                [alt]="story.user.fullName"
                class="avatar-image">
           <!-- Story Ring -->

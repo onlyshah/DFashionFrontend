@@ -65,7 +65,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   sectionLikes = 1247;
   sectionComments = 89;
   isMobile = false;
-
+  imageUrl = environment.apiUrl
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit() {
@@ -88,6 +88,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response?.success && response?.data) {
           this.topInfluencers = response.data.slice(0, 8);
+          console.log('TopFashionInfluencers API data:', response.data);
           this.updateSliderOnInfluencersLoad();
         } else {
           console.warn('No influencers found');

@@ -55,6 +55,9 @@
         >
       <!-- Brand Header -->
       <div class="brand-header">
+        <div class="brand-logo-container">
+          <img *ngIf="brand.logo" [src]="imageUrl + brand.logo" [alt]="brand.brand + ' logo'" class="brand-logo" loading="lazy" />
+        </div>
         <div class="brand-info">
           <h3 class="brand-name">{{ brand.brand }}</h3>
           <!-- Featured Badge - Positioned below brand name -->
@@ -90,8 +93,8 @@
           >
             <div class="product-image-container">
               <img 
-                [src]="product.images[0].url"
-                [alt]="product.images[0].alt || product.name"
+                [src]="imageUrl + (product.images && product.images.length > 0 ? product.images[0].url : '')"
+                [alt]="(product.images && product.images.length > 0 ? product.images[0].alt : product.name)"
                 class="product-image"
                 loading="lazy"
               />

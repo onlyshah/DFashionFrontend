@@ -42,7 +42,8 @@ export class ViewAddStoriesComponent implements OnInit {
   @Output() createStory = new EventEmitter<void>();
 
   ngOnInit() {
-    // Component initialization
+  // Component initialization
+  console.log('ViewAddStories API data:', this.stories);
   }
 
   onStoryClick(story: Story, index: number) {

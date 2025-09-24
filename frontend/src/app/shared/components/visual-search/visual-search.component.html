@@ -1,0 +1,61 @@
+<div class="visual-search-container">
+  <!-- Camera/Upload Options -->
+  <div class="search-options">
+    <ion-button 
+      fill="outline" 
+      size="small"
+      (click)="openCamera()"
+      [disabled]="isProcessing">
+      <ion-icon name="camera" slot="start"></ion-icon>
+      Take Photo
+    </ion-button>
+    <ion-button 
+      fill="outline" 
+      size="small"
+      (click)="selectImage()"
+      [disabled]="isProcessing">
+      <ion-icon name="image" slot="start"></ion-icon>
+      Upload Image
+    </ion-button>
+    <ion-button 
+      *ngIf="supportsBarcodeScanner"
+      fill="outline" 
+      size="small"
+      (click)="scanBarcode()"
+      [disabled]="isProcessing">
+      <ion-icon name="qr-code" slot="start"></ion-icon>
+      Scan Code
+    </ion-button>
+  </div>
+  <!-- Hidden file input -->
+  <input 
+    #fileInput 
+    type="file" 
+    accept="image/*" 
+    capture="environment"
+    style="display: none"
+    (change)="onFileSelected($event)">
+  <!-- Processing indicator -->
+  <div *ngIf="isProcessing" class="processing-indicator">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>{{ processingMessage }}</p>
+  </div>
+  <!-- Preview image -->
+  <div *ngIf="previewImage && !isProcessing" class="image-preview">
+    <img [src]="previewImage" alt="Search preview" class="preview-img">
+    <div class="preview-actions">
+      <ion-button size="small" fill="clear" (click)="clearPreview()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button size="small" (click)="searchWithImage()">
+        <ion-icon name="search" slot="start"></ion-icon>
+        Search
+      </ion-button>
+    </div>
+  </div>
+  <!-- Error message -->
+  <div *ngIf="errorMessage" class="error-message">
+    <ion-icon name="alert-circle" color="danger"></ion-icon>
+    <span>{{ errorMessage }}</span>
+  </div>
+</div>

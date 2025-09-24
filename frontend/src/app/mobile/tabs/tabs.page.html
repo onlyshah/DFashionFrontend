@@ -26,7 +26,7 @@
         <!-- User Profile Section -->
         <div class="sidebar-profile" *ngIf="isAuthenticated">
           <div class="profile-avatar">
-            <img [src]="userAvatar || '/assets/images/default-avatar.svg'" [alt]="userName">
+            <img [src]="userAvatar || '/api/images/placeholder-avatar.png'" [alt]="userName">
           </div>
           <div class="profile-info">
             <h3>{{ userName || 'User' }}</h3>
@@ -133,7 +133,7 @@
     <ion-tab-button tab="profile" class="tab-button">
       <div class="tab-content">
         <div class="profile-tab-avatar">
-          <img [src]="userAvatar || '/assets/images/default-avatar.svg'" [alt]="userName">
+          <img [src]="userAvatar || '/api/images/placeholder-avatar.png'" [alt]="userName">
         </div>
         <ion-label>Profile</ion-label>
       </div>

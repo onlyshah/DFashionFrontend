@@ -28,9 +28,9 @@
       <header class="post-header">
         <div class="user-info">
           <div class="user-avatar-container">
-            <img [src]="post.user?.avatar || 'assets/images/default-avatar.png'"
-                 [alt]="post.user?.fullName || 'User'"
-                 class="user-avatar">
+      <img [src]="post.user?.avatar || '/api/images/placeholder-avatar.png'"
+        [alt]="post.user?.fullName || 'User'"
+        class="user-avatar">
           </div>
           <div class="user-details">
             <h3 class="username">{{ post.user?.username || 'Unknown User' }}</h3>

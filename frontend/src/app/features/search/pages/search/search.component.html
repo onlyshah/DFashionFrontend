@@ -81,7 +81,7 @@
         <div *ngIf="searchResults.length > 0" class="results-grid">
           <div *ngFor="let product of searchResults" class="product-card" (click)="viewProduct(product._id)">
             <div class="product-image">
-              <img [src]="product.images?.[0] || '/assets/images/placeholder-product.jpg'" [alt]="product.name">
+              <img [src]="product.images?.[0] || '/api/images/placeholder-product.png'" [alt]="product.name">
               <div class="product-badge" *ngIf="product.discountPrice">
                 <span>{{ getDiscountPercentage(product) }}% OFF</span>
               </div>

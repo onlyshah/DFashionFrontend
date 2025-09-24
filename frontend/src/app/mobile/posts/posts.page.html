@@ -43,7 +43,7 @@
       <div class="post-header">
         <div class="user-info" (click)="viewProfile(post.user)">
           <ion-avatar class="user-avatar">
-            <img [src]="post.user.avatar || '/assets/images/default-avatar.png'" 
+            <img [src]="post.user.avatar || '/api/images/placeholder-avatar.png'" 
                  [alt]="post.user.fullName">
           </ion-avatar>
           <div class="user-details">
@@ -210,7 +210,7 @@
         <div class="comments-list">
           <div class="comment-item">
             <ion-avatar class="comment-avatar">
-              <img src="/assets/images/default-avatar.png" alt="User">
+              <img src="/api/images/placeholder-avatar.png" alt="User">
             </ion-avatar>
             <div class="comment-content">
               <span class="comment-username">user123</span>

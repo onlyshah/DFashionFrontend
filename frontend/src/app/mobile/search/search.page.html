@@ -46,7 +46,7 @@
     <div *ngIf="searchResults.length > 0" class="results-grid">
       <div *ngFor="let product of searchResults" class="product-card" (click)="onProductClick(product)">
         <div class="product-image">
-          <img [src]="product.images?.[0] || '/assets/images/placeholder-product.jpg'" [alt]="product.name">
+          <img [src]="product.images?.[0] || '/api/images/placeholder-product.png'" [alt]="product.name">
           <div class="product-badge" *ngIf="product.discountPrice">
             <span>{{ ((product.price - product.discountPrice) / product.price * 100) | number:'1.0-0' }}% OFF</span>
           </div>

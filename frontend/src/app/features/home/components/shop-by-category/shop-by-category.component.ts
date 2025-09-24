@@ -46,21 +46,15 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   autoSlideDelay = 4500; // 4.5 seconds for categories
   isAutoSliding = true;
   isPaused = false;
-
-  // Default category images mapping
-  private defaultCategoryImages = {
-    'Women': 'assets/images/fashion-post-1.jpg',
-    'Men': 'assets/images/fashion-post-2.jpg',
-    'Kids': 'assets/images/story-1.jpg',
-    'Ethnic': 'assets/images/story-2.jpg'
-  };
+  imageUrl = environment.apiUrl
+  // No static fallback. All category images and data must come from backend.
 
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadCategories();
-    this.updateResponsiveSettings();
-    this.setupResizeListener();
+  this.loadCategories();
+  this.updateResponsiveSettings();
+  this.setupResizeListener();
   }
 
   ngOnDestroy() {
@@ -72,22 +66,23 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    // Load from API
+    // Load from API only, do not fallback to static data
     this.subscription.add(
       this.http.get<any>(`${environment.apiUrl}/api/v1/categories`).subscribe({
         next: (response) => {
           if (response?.success && response?.data) {
             this.categories = response.data.slice(0, 8); // Limit to 8 categories for slider
+            console.log('cat',this.categories)
             this.updateSliderOnCategoriesLoad();
           } else {
             console.warn('No categories found');
-            this.categories = this.getDefaultCategories(); // Use default categories if none found
+            this.categories = [];
           }
           this.isLoading = false;
         },
         error: (error) => {
           console.error('Error loading categories:', error);
-          this.categories = this.getDefaultCategories(); // Use default categories on error
+          this.categories = [];
           this.error = 'Failed to load categories';
           this.isLoading = false;
         }
@@ -115,50 +110,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     return category._id;
   }
 
-  getDefaultCategoryImage(categoryName: string): string {
-    return this.defaultCategoryImages[categoryName as keyof typeof this.defaultCategoryImages] || 'assets/images/categories/default.jpg';
-  }
-
-  private getDefaultCategories(): Category[] {
-    return [
-      {
-        _id: 'women',
-        name: 'Women',
-        description: 'Fashion for Women',
-        image: this.getDefaultCategoryImage('Women'),
-        productCount: 150,
-        isActive: true,
-        isFeatured: true
-      },
-      {
-        _id: 'men',
-        name: 'Men',
-        description: 'Fashion for Men',
-        image: this.getDefaultCategoryImage('Men'),
-        productCount: 120,
-        isActive: true,
-        isFeatured: true
-      },
-      {
-        _id: 'kids',
-        name: 'Kids',
-        description: 'Fashion for Kids',
-        image: this.getDefaultCategoryImage('Kids'),
-        productCount: 80,
-        isActive: true,
-        isFeatured: true
-      },
-      {
-        _id: 'ethnic',
-        name: 'Ethnic',
-        description: 'Traditional Wear',
-        image: this.getDefaultCategoryImage('Ethnic'),
-        productCount: 90,
-        isActive: true,
-        isFeatured: true
-      }
-    ];
-  }
+  // No static fallback. All images and categories must come from backend.
 
   // Auto-sliding methods
   private startAutoSlide() {

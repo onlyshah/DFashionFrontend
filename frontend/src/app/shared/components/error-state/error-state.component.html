@@ -1,0 +1,34 @@
+<div [class]="containerClasses">
+  <div class="error-icon" [class.shake]="showAnimation">
+    <ion-icon [name]="icon" color="danger"></ion-icon>
+  </div>
+  <h3 class="error-title">{{ title }}</h3>
+  <p class="error-message">{{ message }}</p>
+  <div class="error-details" *ngIf="details && showDetails">
+    <button class="details-toggle" (click)="toggleDetails()">
+      <ion-icon [name]="showDetailsExpanded ? 'chevron-up' : 'chevron-down'"></ion-icon>
+      {{ showDetailsExpanded ? 'Hide' : 'Show' }} Details
+    </button>
+    <div class="details-content" *ngIf="showDetailsExpanded">
+      <pre>{{ details }}</pre>
+    </div>
+  </div>
+  <div class="error-actions">
+    <ion-button 
+      *ngIf="retryText" 
+      color="primary"
+      fill="solid"
+      (click)="onRetry()">
+      <ion-icon name="refresh" slot="start"></ion-icon>
+      {{ retryText }}
+    </ion-button>
+    <ion-button 
+      *ngIf="secondaryText" 
+      color="medium"
+      fill="outline"
+      (click)="onSecondaryAction()">
+      <ion-icon [name]="secondaryIcon" slot="start" *ngIf="secondaryIcon"></ion-icon>
+      {{ secondaryText }}
+    </ion-button>
+  </div>
+</div>

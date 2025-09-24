@@ -8,6 +8,7 @@ import { SocialInteractionsService } from '../../../../core/services/social-inte
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { IonicModule } from '@ionic/angular';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-new-arrivals',
@@ -35,7 +36,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 4000; // 4 seconds for products
   isAutoSliding = true;
   isPaused = false;
-
+   imageUrl = environment.apiUrl
   constructor(
     private trendingService: TrendingService,
     private socialService: SocialInteractionsService,
@@ -61,6 +62,9 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.trendingService.newArrivals$.subscribe(products => {
         this.newArrivals = products;
+        console.log('New Arrivals API data:', this.newArrivals,
+          this.imageUrl +products[0].images[0].url
+        );
         this.isLoading = false;
         this.updateSliderOnProductsLoad();
       })

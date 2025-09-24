@@ -52,10 +52,11 @@ export class PostCardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.likesCount = this.post.analytics.likes;
-    this.loadWishlistItems();
-    this.loadCartItems();
-    this.initializeMedia();
+  this.likesCount = this.post.analytics.likes;
+  console.log('PostCard API data:', this.post);
+  this.loadWishlistItems();
+  this.loadCartItems();
+  this.initializeMedia();
   }
 
   initializeMedia() {
@@ -156,8 +157,8 @@ export class PostCardComponent implements OnInit {
       },
       error: (error) => {
         console.error('Wishlist error:', error);
-        // Fallback to offline mode
-        this.wishlistService.toggleWishlistOffline(this.getProductById(productId));
+        // Fallback to toggling wishlist again
+        this.wishlistService.toggleWishlist(productId).subscribe();
         this.showNotification(this.isInWishlist(productId) ? 'Removed from wishlist' : 'Added to wishlist ❤️', 'success');
       }
     });

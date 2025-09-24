@@ -54,7 +54,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   isMobile = false;
   
   private apiUrl = environment.apiUrl;
-
+  imageUrl = environment.apiUrl
   constructor(
     private router: Router,
     private http: HttpClient
@@ -80,6 +80,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response?.success && response?.data) {
           this.suggestedUsers = response.data;
+          console.log('SuggestedForYou API data:', response.data);
           this.updateSliderOnUsersLoad();
         } else {
           console.warn('No suggested users found');

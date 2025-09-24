@@ -18,7 +18,7 @@
   <!-- Header -->
   <div class="story-header">
     <div class="user-info">
-      <img [src]="currentStory.user.avatar || '/assets/images/default-avatar.png'"
+  <img [src]="currentStory.user.avatar || '/api/images/placeholder-avatar.png'"
            [alt]="currentStory.user.fullName" class="user-avatar">
       <div class="user-details">
         <span class="username">{{ currentStory.user.username }}</span>
@@ -141,7 +141,7 @@
                [alt]="story.user.username"
                class="thumbnail-image">
           <div class="thumbnail-overlay">
-            <img [src]="story.user.avatar || '/assets/images/default-avatar.png'"
+            <img [src]="story.user.avatar || '/api/images/placeholder-avatar.png'"
                  [alt]="story.user.fullName"
                  class="user-thumbnail-avatar">
           </div>
@@ -316,7 +316,7 @@
     
     <div class="comments-list">
       <div class="comment" *ngFor="let comment of comments">
-        <img [src]="comment.user.avatar || '/assets/images/default-avatar.png'" 
+  <img [src]="comment.user.avatar || '/api/images/placeholder-avatar.png'" 
              [alt]="comment.user.fullName" class="comment-avatar">
         <div class="comment-content">
           <span class="comment-username">{{ comment.user.username }}</span>

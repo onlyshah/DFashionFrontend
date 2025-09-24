@@ -170,7 +170,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   };
 
   private subscriptions: Subscription[] = [];
-
+  imageUrl = environment.apiUrl
   constructor(
     private router: Router,
     private http: HttpClient,

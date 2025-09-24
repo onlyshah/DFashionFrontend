@@ -17,7 +17,7 @@
   <div class="story-header">
     <div class="user-info" (click)="viewProfile(currentStory.user)">
       <ion-avatar class="user-avatar">
-        <img [src]="currentStory.user.avatar || '/assets/images/default-avatar.png'" 
+  <img [src]="currentStory.user.avatar || '/api/images/placeholder-avatar.png'" 
              [alt]="currentStory.user.fullName">
       </ion-avatar>
       <div class="user-details">

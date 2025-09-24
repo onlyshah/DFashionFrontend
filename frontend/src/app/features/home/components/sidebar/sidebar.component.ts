@@ -1,3 +1,5 @@
+  // ...existing imports...
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
@@ -30,6 +32,9 @@ import { ShopByCategoryComponent } from '../shop-by-category/shop-by-category.co
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
+  isMobile(): boolean {
+    return window.innerWidth <= 768;
+  }
   // Remove unused properties - components handle their own data
   constructor(
     private productService: ProductService,
@@ -41,6 +46,7 @@ export class SidebarComponent implements OnInit {
     // No need to load data here as each component manages its own state
   }
 
+  // Removed duplicate isMobile method
   // Removed all data loading methods as components handle their own data
   // This keeps the sidebar clean and ensures no mock data is used
 }

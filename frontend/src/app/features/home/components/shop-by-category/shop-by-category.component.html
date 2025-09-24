@@ -56,8 +56,9 @@
         >
           <!-- Category Image -->
           <div class="category-image-container">
+           
             <img
-              [src]="category.image || getDefaultCategoryImage(category.name)"
+              [src]="imageUrl + category.image"
               [alt]="category.name"
               class="category-image"
               loading="lazy"

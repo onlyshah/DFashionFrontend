@@ -193,6 +193,10 @@ export class ShopComponent implements OnInit {
   }
 
   navigateToCategory(category: any) {
+    if (!category || !category.slug) {
+      console.error('Invalid category navigation:', category);
+      return;
+    }
     this.router.navigate(['/category', category.slug]);
   }
 

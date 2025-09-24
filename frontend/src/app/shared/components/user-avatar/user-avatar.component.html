@@ -1,14 +1,15 @@
 <div class="user-avatar" [class]="size" [style.background-color]="backgroundColor">
   <img 
-    *ngIf="avatarUrl" 
-    [src]="avatarUrl" 
+    *ngIf="fullAvatarUrl && !imageError" 
+    [src]="fullAvatarUrl" 
     [alt]="displayName"
-    (error)="onImageError()"
-    [class.hidden]="imageError">
-  
-  <div class="initials" *ngIf="!avatarUrl || imageError">
-    {{ initials }}
-  </div>
+    (error)="onImageError()">
+  <img 
+    *ngIf="(!fullAvatarUrl || imageError)" 
+    [src]="fallbackAvatarUrl" 
+    [alt]="displayName">
+
+  <div class="initials" *ngIf="false"><!-- initials fallback disabled, always show image --></div>
   
   <!-- Online status indicator -->
   <div class="status-indicator" 

@@ -30,7 +30,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root'
 })
 export class ProductService {
-  private readonly API_URL = environment.apiUrl + '/api/v1'; // Use environment configuration
+  private readonly API_URL = environment.apiUrl + '/api'; // Use environment configuration
 
   constructor(private http: HttpClient) {}
 
@@ -123,7 +123,7 @@ export class ProductService {
   }
 
   getCategories(): Observable<{ success: boolean; data: any[] }> {
-    return this.http.get<{ success: boolean; data: any[] }>(`${this.API_URL}/v1/categories`);
+    return this.http.get<{ success: boolean; data: any[] }>(`${this.API_URL}/categories`);
   }
 
   getBrands(): Observable<{ brands: string[] }> {

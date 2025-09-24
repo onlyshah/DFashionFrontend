@@ -9,6 +9,7 @@ import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { IonicModule } from '@ionic/angular';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-trending-products',
@@ -36,6 +37,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 3500; // 3.5 seconds for trending products
   isAutoSliding = true;
   isPaused = false;
+   imageUrl = environment.apiUrl
 
   constructor(
     private trendingService: TrendingService,
@@ -43,7 +45,9 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     private cartService: CartService,
     private wishlistService: WishlistService,
     private router: Router
-  ) {}
+  ) {
+   
+  }
 
   ngOnInit() {
     this.loadTrendingProducts();
@@ -51,6 +55,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
+    
   }
 
   ngOnDestroy() {
@@ -62,6 +67,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.trendingService.trendingProducts$.subscribe(products => {
         this.trendingProducts = products;
+        console.log('TrendingProducts API data:', products);
         this.isLoading = false;
         this.updateSliderOnProductsLoad();
       })
@@ -81,6 +87,8 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.isLoading = true;
       this.error = null;
       await this.trendingService.loadTrendingProducts(1, 8);
+      let data =  this.trendingService.loadTrendingProducts(1, 8)
+      console.log(data)
     } catch (error) {
       console.error('Error loading trending products:', error);
       this.error = 'Failed to load trending products';

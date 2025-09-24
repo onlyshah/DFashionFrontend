@@ -9,15 +9,25 @@ import { MobileOptimizationService, DeviceInfo, ViewportBreakpoints } from '../.
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistNewService } from '../../../core/services/wishlist-new.service';
+import { TrendingProductsComponent } from '../../../features/home/components/trending-products/trending-products.component';
 
 @Component({
   selector: 'app-mobile-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TrendingProductsComponent],
   templateUrl: './mobile-layout.component.html',
   styleUrls: ['./mobile-layout.component.scss']
 })
 export class MobileLayoutComponent implements OnInit, OnDestroy {
+  isTrendingOpen = false;
+
+  openTrending() {
+    this.isTrendingOpen = true;
+  }
+
+  closeTrending() {
+    this.isTrendingOpen = false;
+  }
   isSidebarMenuOpen = false;
 
   toggleSidebarMenu() {

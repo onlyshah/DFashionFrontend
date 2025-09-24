@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
+import { environment } from 'src/environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-feed',
@@ -22,86 +24,33 @@ export class FeedComponent implements OnInit {
   constructor(
     private router: Router,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private http: HttpClient
+
   ) {}
 
   ngOnInit() {
-    this.loadPosts();
+  this.loadPosts();
   }
 
   loadPosts() {
     this.loading = true;
-
-    // Simulate loading with realistic Instagram-style posts
-    setTimeout(() => {
-      this.posts = this.getFallbackPosts();
-      this.loading = false;
-    }, 1000);
-  }
-
-  getFallbackPosts() {
-    return [
-      {
-        _id: 'post-1',
-        user: {
-          _id: 'user-1',
-          username: 'ai_fashionista_maya',
-          fullName: 'Maya Chen',
-          avatar: 'assets/images/default-avatar.svg'
-        },
-        content: 'Sustainable fashion is the future! 🌱✨ This eco-friendly dress is made from recycled materials and looks absolutely stunning. #SustainableFashion #EcoFriendly #OOTD',
-        mediaUrl: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        location: 'Mumbai, India',
-        likes: 1247,
-        comments: 89,
-        shares: 34,
-        isLiked: false,
-        isSaved: false,
-        isReel: false,
-        hashtags: ['SustainableFashion', 'EcoFriendly', 'OOTD'],
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        products: [
-          {
-            _id: 'prod-1',
-            name: 'Eco-Friendly Summer Dress',
-            price: 2499,
-            image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=600&fit=crop'
-          }
-        ]
+    // TODO: Replace with real API call to backend for posts
+    // Example:
+    this.http.get<any[]>(`${environment.apiUrl}/api/v1/posts`).subscribe({
+      next: (data:any) => {
+        this.posts = data;
+        this.loading = false;
       },
-
-      {
-        _id: 'post-3',
-        user: {
-          _id: 'user-3',
-          username: 'ai_trendsetter_zara',
-          fullName: 'Zara Patel',
-          avatar: 'assets/images/default-avatar.svg'
-        },
-        content: 'Ethnic fusion at its finest! Traditional meets modern ✨ This kurti is perfect for any occasion.',
-        mediaUrl: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop',
-        mediaType: 'image',
-        location: 'Bangalore, India',
-        likes: 2156,
-        comments: 134,
-        shares: 67,
-        isLiked: false,
-        isSaved: true,
-        isReel: false,
-        hashtags: ['EthnicWear', 'Fusion', 'Traditional'],
-        createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-        products: [
-          {
-            _id: 'prod-3',
-            name: 'Designer Ethnic Kurti',
-            price: 1899,
-            image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=600&fit=crop'
-          }
-        ]
+      error: (err:any) => {
+        this.posts = [];
+        this.loading = false;
       }
-    ];
+    });
+    this.posts = [];
+    this.loading = false;
   }
+
 
 
 

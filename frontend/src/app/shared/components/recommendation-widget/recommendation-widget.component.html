@@ -41,7 +41,7 @@
       
       <!-- Product Image -->
       <div class="product-image">
-        <img [src]="product.images?.[0] || '/assets/images/placeholder-product.jpg'" 
+  <img [src]="product.images?.[0] || '/api/images/placeholder-product.png'" 
              [alt]="product.name"
              loading="lazy">
         
@@ -95,7 +95,7 @@
 
         <!-- Vendor Info -->
         <div class="vendor-info" *ngIf="product.vendor">
-          <img [src]="product.vendor.avatar || '/assets/images/default-avatar.png'" 
+          <img [src]="product.vendor.avatar || '/api/images/placeholder-avatar.png'" 
                [alt]="product.vendor.fullName"
                class="vendor-avatar">
           <span class="vendor-name">{{ product.vendor.fullName || product.vendor.username }}</span>
