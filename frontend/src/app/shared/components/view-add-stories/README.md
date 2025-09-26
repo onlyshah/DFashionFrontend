@@ -85,7 +85,7 @@ export class MyComponent {
 | `showAddStory` | `boolean` | `true` | Whether to show the "Add Story" button |
 | `addStoryText` | `string` | `'Your Story'` | Text to display under the add story button |
 | `currentUser` | `CurrentUser \| null` | `null` | Current user object for the add story button |
-| `defaultAvatar` | `string` | `'/assets/images/default-avatar.svg'` | Default avatar image path |
+| `defaultAvatar` | `string` | `'/uploadsdefault-avatar.svg'` | Default avatar image path |
 | `slidesPerView` | `string` | `'auto'` | Number of slides to show per view |
 | `spaceBetween` | `number` | `16` | Space between slides in pixels |
 

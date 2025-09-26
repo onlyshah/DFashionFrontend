@@ -202,7 +202,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     this.isLoadingStories = false;
 
     // Load stories from real API
-    this.http.get<any>(`${environment.apiUrl}/api/v1/stories`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/api/stories`).subscribe({
       next: (response) => {
         console.log('✅ Stories loaded successfully:', response);
         if (response?.success && response?.storyGroups) {

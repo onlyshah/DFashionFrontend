@@ -1,0 +1,47 @@
+.super-admin-panel {
+  padding: 32px;
+}
+.panel-header {
+  margin-bottom: 24px;
+}
+.admin-tabs {
+  margin-top: 16px;
+}
+.health-grid {
+  display: flex;
+  gap: 24px;
+}
+.health-card {
+  flex: 1;
+}
+.health-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.health-icon {
+  font-size: 2rem;
+  color: #007bff;
+}
+.health-details h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.health-bar {
+  background: #eee;
+  border-radius: 8px;
+  height: 8px;
+  width: 100px;
+  margin-top: 8px;
+}
+.health-progress {
+  background: #007bff;
+  height: 8px;
+  border-radius: 8px;
+}
+.health-progress.warning {
+  background: #ffa726;
+}
+.health-progress.danger {
+  background: #ff6b6b;
+}

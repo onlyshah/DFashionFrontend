@@ -301,7 +301,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   }
 
   getProductImage(product: Product): string {
-    return product.images?.[0]?.url || '/assets/images/placeholder-product.jpg';
+    return product.images?.[0]?.url || '/uploadsplaceholder-product.jpg';
   }
 
   getStatusColor(product: Product): string {

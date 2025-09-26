@@ -62,7 +62,7 @@ import { FormsModule } from '@angular/forms';
             </button>
             
             <div class="user-menu" *ngIf="currentUser; else loginButton">
-              <img [src]="currentUser.avatar || '/assets/images/default-avatar.png'" 
+              <img [src]="currentUser.avatar || '/uploadsdefault-avatar.png'" 
                    [alt]="currentUser.fullName" 
                    class="user-avatar"
                    (click)="toggleUserMenu()">

@@ -68,7 +68,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
 
     // Load from API only, do not fallback to static data
     this.subscription.add(
-      this.http.get<any>(`${environment.apiUrl}/api/v1/categories`).subscribe({
+      this.http.get<any>(`${environment.apiUrl}/api/categories`).subscribe({
         next: (response) => {
           if (response?.success && response?.data) {
             this.categories = response.data.slice(0, 8); // Limit to 8 categories for slider

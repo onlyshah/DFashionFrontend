@@ -84,7 +84,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.http.get<any>(`${environment.apiUrl}/api/v1/users/influencers`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/api/users/influencers`).subscribe({
       next: (response) => {
         if (response?.success && response?.data) {
           this.topInfluencers = response.data.slice(0, 8);

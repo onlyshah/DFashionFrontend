@@ -295,7 +295,7 @@ export class StoryViewerComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Wishlist error:', error);
           // Fallback to offline mode
-          this.wishlistService.addToWishlistOffline(this.selectedProduct.product);
+        //  this.wishlistService.addToWishlistOffline(this.selectedProduct.product);
           this.showNotification('Added to wishlist ❤️');
           this.closeProductModal();
         }
@@ -380,7 +380,7 @@ export class StoryViewerComponent implements OnInit, OnDestroy {
 
   // Story action button methods
   buyNowFromStory() {
-    if (this.currentStory.products.length > 0) {
+    if (this.currentStory && this.currentStory.products && this.currentStory.products.length > 0) {
       const firstProduct = this.currentStory.products[0].product;
       this.pauseStory();
       this.cartService.addToCart(firstProduct._id, 1).subscribe({
@@ -398,7 +398,7 @@ export class StoryViewerComponent implements OnInit, OnDestroy {
   }
 
   addToWishlistFromStory() {
-    if (this.currentStory.products.length > 0) {
+    if (this.currentStory && this.currentStory.products && this.currentStory.products.length > 0) {
       const firstProduct = this.currentStory.products[0].product;
       this.wishlistService.addToWishlist(firstProduct._id).subscribe({
         next: () => {

@@ -329,7 +329,7 @@ export class VendorPostsComponent implements OnInit {
     if (typeof media === 'string') {
       return media;
     }
-    return media?.url || '/assets/images/placeholder.jpg';
+    return media?.url || '/uploadsplaceholder.jpg';
   }
 
   editPost(post: any) {

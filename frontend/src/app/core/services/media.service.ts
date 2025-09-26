@@ -29,9 +29,9 @@ export class MediaService {
   // Fallback images for different scenarios
   private readonly fallbackImages = {
   user: 'http://localhost:9000/upload/avatars/default-avatar.png',
-    product: '/assets/images/default-product.svg',
-    post: '/assets/images/default-post.svg',
-    story: '/assets/images/default-story.svg'
+    product: '/uploadsdefault-product.svg',
+    post: '/uploadsdefault-post.svg',
+    story: '/uploadsdefault-story.svg'
   };
 
   // Backup fallback images (simple colored placeholders)
@@ -143,11 +143,11 @@ export class MediaService {
   private getReplacementMediaUrl(originalUrl: string, type: 'user' | 'product' | 'post' | 'story'): string {
     // Map broken local URLs to working local assets based on content
     const urlMappings: { [key: string]: string } = {
-      'summer-collection': '/assets/images/placeholder-product.svg',
-      'behind-scenes': '/assets/images/placeholder.svg',
+      'summer-collection': '/uploadsplaceholder-product.svg',
+      'behind-scenes': '/uploadsplaceholder.svg',
   'customer-spotlight': 'http://localhost:9000/upload/avatars/default-avatar.png',
-      'styling-tips': '/assets/images/placeholder.svg',
-      'design': '/assets/images/placeholder.svg'
+      'styling-tips': '/uploadsplaceholder.svg',
+      'design': '/uploadsplaceholder.svg'
     };
 
     // Try to match content from filename

@@ -96,7 +96,7 @@ export interface WishlistSummary {
   providedIn: 'root'
 })
 export class WishlistNewService {
-  private apiUrl = `${environment.apiUrl}/api/v1/wishlist-new`;
+  private apiUrl = `${environment.apiUrl}/api/wishlist-new`;
   private wishlistSubject = new BehaviorSubject<Wishlist | null>(null);
   private wishlistSummarySubject = new BehaviorSubject<WishlistSummary>({
     totalItems: 0,

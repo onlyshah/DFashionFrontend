@@ -482,7 +482,7 @@ export class WishlistComponent implements OnInit {
   }
 
   getProductImage(product: any): string {
-    return product.images[0]?.url || '/assets/images/placeholder.jpg';
+    return product.images[0]?.url || '/uploadsplaceholder.jpg';
   }
 
   getDiscountPercentage(product: any): number {

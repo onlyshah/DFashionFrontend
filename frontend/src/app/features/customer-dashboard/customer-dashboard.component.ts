@@ -186,7 +186,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       {
         id: 'ORD-001',
         productName: 'Summer Floral Dress',
-        productImage: '/assets/images/products/dress-1.jpg',
+        productImage: '/uploadsproducts/dress-1.jpg',
         amount: 89.99,
         status: 'delivered',
         orderDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
@@ -194,7 +194,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       {
         id: 'ORD-002',
         productName: 'Casual Sneakers',
-        productImage: '/assets/images/products/shoes-1.jpg',
+        productImage: '/uploadsproducts/shoes-1.jpg',
         amount: 129.99,
         status: 'shipped',
         orderDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
@@ -202,7 +202,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
       {
         id: 'ORD-003',
         productName: 'Denim Jacket',
-        productImage: '/assets/images/products/jacket-1.jpg',
+        productImage: '/uploadsproducts/jacket-1.jpg',
         amount: 79.99,
         status: 'processing',
         orderDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -286,7 +286,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   onImageError(event: Event): void {
     const target = event.target as HTMLImageElement;
     if (target) {
-      target.src = '/assets/images/placeholder-product.svg';
+      target.src = '/uploadsplaceholder-product.svg';
     }
   }
 

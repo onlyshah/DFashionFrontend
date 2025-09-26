@@ -182,7 +182,7 @@ export class WishlistPage implements OnInit {
     if (typeof image === 'string') {
       return image;
     }
-    return image?.url || '/assets/images/placeholder.jpg';
+    return image?.url || '/uploadsplaceholder.jpg';
   }
 
   getDiscountPercentage(originalPrice: number, currentPrice: number): number {

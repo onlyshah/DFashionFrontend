@@ -310,7 +310,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Load categories from API
   private loadCategories() {
-    this.http.get<any>(`${this.apiUrl}/api/v1/categories`).subscribe({
+    this.http.get<any>(`${this.apiUrl}/api/categories`).subscribe({
       next: (response) => {
         if (response?.success && response?.data) {
           this.categories = response.data.slice(0, 8).map((category: any) => ({

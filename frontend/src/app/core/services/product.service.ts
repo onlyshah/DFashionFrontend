@@ -142,12 +142,12 @@ export class ProductService {
 
   // Get suggested users for sidebar
   getSuggestedUsers(): Observable<any> {
-    return this.http.get(`${this.API_URL}/api/v1/users/suggested`);
+    return this.http.get(`${this.API_URL}/api/users/suggested`);
   }
 
   // Get top influencers for sidebar
   getTopInfluencers(): Observable<any> {
-    return this.http.get(`${this.API_URL}/api/v1/users/influencers`);
+    return this.http.get(`${this.API_URL}/api/users/influencers`);
   }
 
   // Get product by ID

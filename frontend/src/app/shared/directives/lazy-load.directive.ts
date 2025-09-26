@@ -5,7 +5,7 @@ import { Directive, ElementRef, Input, OnInit, OnDestroy } from '@angular/core';
 })
 export class LazyLoadDirective implements OnInit, OnDestroy {
   @Input() appLazyLoad: string = '';
-  @Input() placeholder: string = '/assets/images/placeholder.svg';
+  @Input() placeholder: string = '/uploadsplaceholder.svg';
 
   private observer?: IntersectionObserver;
 

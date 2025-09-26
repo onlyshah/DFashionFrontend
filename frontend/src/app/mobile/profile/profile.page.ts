@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { UserService } from '../../core/services/user.service';
+import //{ UserService } from '../../core/services/user.service';
 
 @Component({
   selector: 'app-profile',
@@ -132,7 +132,7 @@ export class ProfilePage implements OnInit {
   }
 
   getUserAvatar(): string {
-    return this.user?.avatar || '/assets/images/default-avatar.png';
+    return this.user?.avatar || '/uploadsdefault-avatar.png';
   }
 
   getUserDisplayName(): string {

@@ -1,0 +1,45 @@
+<!-- Show new responsive customer dashboard for web, keep mobile design for mobile -->
+<app-customer-dashboard *ngIf="!isMobile"></app-customer-dashboard>
+<!-- Original mobile-optimized dashboard -->
+<div class="user-dashboard" *ngIf="isMobile">
+  <!-- Instagram-style Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <button class="back-btn" (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h1>Your Dashboard</h1>
+      <button class="settings-btn" (click)="openSettings()">
+        <ion-icon name="settings-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+  <!-- User Profile Summary -->
+  <div class="profile-summary">
+    <div class="profile-avatar">
+      <img src="http://localhost:9000/uploads/avatars/default-avatar.png" alt="Profile">
+      <div class="status-indicator online"></div>
+    </div>
+    <div class="profile-info">
+      <h2>{{ currentUser?.fullName || 'Fashion Enthusiast' }}</h2>
+      <p>{{ '@' + (currentUser?.username || 'user') }}</p>
+      <div class="user-badge">
+        <ion-icon name="star"></ion-icon>
+        <span>Fashion Explorer</span>
+      </div>
+    </div>
+  </div>
+  <!-- Stats Grid -->
+  <div class="stats-grid">
+    <div class="stat-card posts">
+      <div class="stat-icon">
+        <ion-icon name="images-outline"></ion-icon>
+      </div>
+      <div class="stat-content">
+        <div class="stat-number">{{ userStats.postsCount }}</div>
+        <div class="stat-label">Posts</div>
+      </div>
+    </div>
+    <!-- Add more stat cards as needed -->
+  </div>
+</div>

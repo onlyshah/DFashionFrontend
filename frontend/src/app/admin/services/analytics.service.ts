@@ -70,7 +70,7 @@ export interface TrafficAnalytics {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = 'http://localhost:3001/api/v1/admin'; // Updated to correct port and API version
+  private apiUrl = 'http://localhost:3001/api/admin'; // Updated to correct port and API version
 
   constructor(private http: HttpClient) {}
 

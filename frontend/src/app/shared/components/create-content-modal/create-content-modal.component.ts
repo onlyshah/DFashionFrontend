@@ -31,14 +31,14 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
       id: '1',
       type: 'post',
       title: 'Summer Collection Preview',
-      thumbnail: '/assets/images/default-post.svg',
+      thumbnail: '/uploadsdefault-post.svg',
       updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
     },
     {
       id: '2',
       type: 'story',
       title: 'Behind the Scenes',
-      thumbnail: '/assets/images/default-post.svg',
+      thumbnail: '/uploadsdefault-post.svg',
       updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 hours ago
     }
   ];

@@ -62,7 +62,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/ecommerce/products/${productId}/like`,
+        `${this.API_URL}/ecommerce/products/${productId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -96,7 +96,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/ecommerce/products/${productId}/share`,
+  `${this.API_URL}/ecommerce/products/${productId}/share`,
         shareData,
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -119,7 +119,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/product-comments`,
+  `${this.API_URL}/product-comments`,
         { product: productId, text, rating },
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -137,7 +137,7 @@ export class SocialInteractionsService {
   async getProductComments(productId: string, page: number = 1, limit: number = 10): Promise<{ comments: Comment[], total: number }> {
     try {
       const response = await this.http.get<any>(
-        `${this.API_URL}/v1/product-comments?product=${productId}&page=${page}&limit=${limit}`
+  `${this.API_URL}/product-comments?product=${productId}&page=${page}&limit=${limit}`
       ).toPromise();
 
       return {
@@ -163,7 +163,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/posts/${postId}/like`,
+  `${this.API_URL}/posts/${postId}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -197,7 +197,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/posts/${postId}/share`,
+  `${this.API_URL}/posts/${postId}/share`,
         shareData,
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -220,7 +220,7 @@ export class SocialInteractionsService {
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-        `${this.API_URL}/v1/posts/${postId}/comment`,
+  `${this.API_URL}/posts/${postId}/comment`,
         { text },
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
@@ -258,7 +258,7 @@ export class SocialInteractionsService {
 
       // Load liked products
       const productsResponse = await this.http.get<any>(
-        `${this.API_URL}/v1/user/liked-products`,
+  `${this.API_URL}/user/liked-products`,
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
 
@@ -269,7 +269,7 @@ export class SocialInteractionsService {
 
       // Load liked posts
       const postsResponse = await this.http.get<any>(
-        `${this.API_URL}/v1/user/liked-posts`,
+  `${this.API_URL}/user/liked-posts`,
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
 

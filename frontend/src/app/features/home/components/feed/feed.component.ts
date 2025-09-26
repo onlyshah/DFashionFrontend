@@ -34,21 +34,37 @@ export class FeedComponent implements OnInit {
   }
 
   loadPosts() {
-    this.loading = true;
-    // TODO: Replace with real API call to backend for posts
-    // Example:
-    this.http.get<any[]>(`${environment.apiUrl}/api/posts`).subscribe({
-      next: (data:any) => {
-        this.posts = data;
-        this.loading = false;
-      },
-      error: (err:any) => {
-        this.posts = [];
-        this.loading = false;
-      }
-    });
+   this.loading = true;
+
+this.http.get<any>(`${environment.apiUrl}/api/posts`).subscribe({
+  next: (res: any) => {
+    // API returns { success: true, posts: [...], pagination: {...} }
+    this.posts = res.posts.map((p: any) => ({
+      id: p._id,
+      caption: p.caption,
+      mediaType: p.media?.[0]?.type || 'image',
+      mediaUrl: p.media?.[0]?.url ? `${environment.apiUrl}${p.media[0].url}` : '',
+      hashtags: p.hashtags || [],
+      user: p.user || null,
+      products: p.products || [],
+      likes: Array.isArray(p.likes) ? p.likes.length : 0,
+      comments: p.comments || [],
+      commentsCount: Array.isArray(p.comments) ? p.comments.length : 0,
+      createdAt: p.createdAt,
+      isLiked: false,   // default UI state
+      isSaved: false,   // default UI state
+      isReel: p.media?.[0]?.type === 'video'
+    }));
+
+    this.loading = false;
+  },
+  error: (err: any) => {
+    console.error('Error loading posts:', err);
     this.posts = [];
     this.loading = false;
+  }
+});
+
   }
 
 

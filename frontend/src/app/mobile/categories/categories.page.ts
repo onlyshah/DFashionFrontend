@@ -216,7 +216,7 @@ export class CategoriesPage implements OnInit {
   }
 
   getProductImage(product: any): string {
-    return product.images?.[0]?.url || '/assets/images/placeholder-product.png';
+    return product.images?.[0]?.url || '/uploadsplaceholder-product.png';
   }
 
   getDiscountPercentage(product: any): number {

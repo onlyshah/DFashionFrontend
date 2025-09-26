@@ -54,7 +54,7 @@ export class PostService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<PostsResponse>(`${this.API_URL}/api/v1/posts/user/${userId}`, { params });
+    return this.http.get<PostsResponse>(`${this.API_URL}/api/posts/user/${userId}`, { params });
   }
 
   getPostsByHashtag(hashtag: string, page: number = 1, limit: number = 12): Observable<PostsResponse> {
@@ -62,6 +62,6 @@ export class PostService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<PostsResponse>(`${this.API_URL}/api/v1/posts/hashtag/${hashtag}`, { params });
+    return this.http.get<PostsResponse>(`${this.API_URL}/api/posts/hashtag/${hashtag}`, { params });
   }
 }

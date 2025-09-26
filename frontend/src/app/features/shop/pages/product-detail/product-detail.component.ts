@@ -187,7 +187,7 @@ export class ProductDetailComponent implements OnInit {
   }
 
   getProductImage(product: any): string {
-    return product?.images?.[0]?.url || '/assets/images/default-product.svg';
+    return product?.images?.[0]?.url || '/uploadsdefault-product.svg';
   }
 
   goBack() {

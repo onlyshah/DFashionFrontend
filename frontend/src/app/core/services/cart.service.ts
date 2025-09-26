@@ -356,7 +356,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/v1/cart-new/add`, payload, options).pipe(
+  return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/add`, payload, options).pipe(
       tap(response => {
         if (response.success) {
           // Immediately refresh cart to get updated count
@@ -602,7 +602,7 @@ export class CartService {
         return;
       }
 
-      const response = await this.http.get<any>(`${this.API_URL}/api/v1/cart-new`, {
+      const response = await this.http.get<any>(`${this.API_URL}/api/cart-new`, {
         headers: { Authorization: `Bearer ${token}` }
       }).toPromise();
 

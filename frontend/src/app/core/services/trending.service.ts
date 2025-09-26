@@ -32,23 +32,23 @@ export class TrendingService {
 
   // API methods
   getTrendingProducts(page: number = 1, limit: number = 12): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/products/trending?page=${page}&limit=${limit}`);
+  return this.http.get<any>(`${this.apiUrl}/api/products/trending?page=${page}&limit=${limit}`);
   }
 
   getSuggestedProducts(page: number = 1, limit: number = 12): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/products/suggested?page=${page}&limit=${limit}`);
+  return this.http.get<any>(`${this.apiUrl}/api/products/suggested?page=${page}&limit=${limit}`);
   }
 
   getNewArrivals(page: number = 1, limit: number = 12): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/products/new-arrivals?page=${page}&limit=${limit}`);
+  return this.http.get<any>(`${this.apiUrl}/api/products/new-arrivals?page=${page}&limit=${limit}`);
   }
 
   getFeaturedBrands(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/products/featured-brands`);
+  return this.http.get<any>(`${this.apiUrl}/api/products/featured-brands`);
   }
 
   getInfluencers(page: number = 1, limit: number = 10): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/users/influencers?page=${page}&limit=${limit}`);
+  return this.http.get<any>(`${this.apiUrl}/api/users/influencers?page=${page}&limit=${limit}`);
   }
 
   // Load and cache trending products

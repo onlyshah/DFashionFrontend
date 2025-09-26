@@ -41,6 +41,7 @@ export interface Story {
     comments: number;
     shares: number;
   };
+  isLiked?: boolean;
 }
 
 export interface StoryGroup {

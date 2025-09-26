@@ -70,13 +70,13 @@ export class StoriesGridComponent implements OnInit {
   getPreviewImage(group: StoryGroup): string {
     const latestStory = group.stories[0];
     return latestStory.media.type === 'video' 
-      ? latestStory.media.thumbnail || 'assets/images/default-story.svg'
+      ? latestStory.media.thumbnail || 'uploadsdefault-story.svg'
       : latestStory.media.url;
   }
 
   getStoryThumbnail(story: any): string {
     return story.media.type === 'video'
-      ? story.media.thumbnail || 'assets/images/default-story.svg'
+      ? story.media.thumbnail || 'uploadsdefault-story.svg'
       : story.media.url;
   }
 

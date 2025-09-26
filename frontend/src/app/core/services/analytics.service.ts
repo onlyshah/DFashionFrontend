@@ -89,7 +89,7 @@ export class AnalyticsService {
 
   // Core Analytics
   getAnalyticsOverview(): Observable<AnalyticsData> {
-    return this.http.get<any>(`${this.apiUrl}/api/v1/analytics/overview`)
+    return this.http.get<any>(`${this.apiUrl}/api/analytics/overview`)
       .pipe(
         map(response => response.success ? response.data : this.getFallbackAnalytics()),
         catchError(error => {

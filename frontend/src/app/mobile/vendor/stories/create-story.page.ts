@@ -97,13 +97,13 @@ export class CreateStoryPage implements OnInit {
           _id: '1',
           name: 'Summer Dress',
           price: 2999,
-          images: [{ url: '/assets/images/product1.jpg' }]
+          images: [{ url: '/uploadsproduct1.jpg' }]
         },
         {
           _id: '2',
           name: 'Casual Shirt',
           price: 1599,
-          images: [{ url: '/assets/images/product2.jpg' }]
+          images: [{ url: '/uploadsproduct2.jpg' }]
         }
       ].filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
     } else {

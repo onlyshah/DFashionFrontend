@@ -424,11 +424,11 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
   getProductImage(product: Product): string {
     return product.images && product.images.length > 0 
       ? product.images[0] 
-      : '/assets/images/placeholder-product.jpg';
+      : '/uploadsplaceholder-product.jpg';
   }
 
   onImageError(event: any): void {
-    event.target.src = '/assets/images/placeholder-product.jpg';
+    event.target.src = '/uploadsplaceholder-product.jpg';
   }
 
   getStockClass(stock: number): string {

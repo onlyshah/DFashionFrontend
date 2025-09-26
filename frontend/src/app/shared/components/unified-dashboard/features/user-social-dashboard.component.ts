@@ -59,7 +59,7 @@ export interface TrendingProduct {
           <!-- Add Story Button -->
           <div class="story-item add-story" (click)="createStory()">
             <div class="story-avatar">
-              <img [src]="currentUser?.avatar || '/assets/images/default-avatar.png'" 
+              <img [src]="currentUser?.avatar || '/uploadsdefault-avatar.png'" 
                    [alt]="currentUser?.fullName">
               <div class="add-icon">
                 <ion-icon name="add"></ion-icon>
@@ -88,7 +88,7 @@ export interface TrendingProduct {
           <!-- User Profile Card -->
           <div class="profile-card">
             <div class="profile-header">
-              <img [src]="currentUser?.avatar || '/assets/images/default-avatar.png'" 
+              <img [src]="currentUser?.avatar || '/uploadsdefault-avatar.png'" 
                    [alt]="currentUser?.fullName"
                    class="profile-avatar">
               <div class="profile-info">
@@ -147,7 +147,7 @@ export interface TrendingProduct {
           <div class="create-post-section" *ngIf="hasFeature('posts')">
             <div class="create-post-card">
               <div class="create-post-header">
-                <img [src]="currentUser?.avatar || '/assets/images/default-avatar.png'" 
+                <img [src]="currentUser?.avatar || '/uploadsdefault-avatar.png'" 
                      [alt]="currentUser?.fullName"
                      class="user-avatar">
                 <input type="text" 

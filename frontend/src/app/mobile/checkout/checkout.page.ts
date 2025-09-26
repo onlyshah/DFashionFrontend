@@ -140,7 +140,7 @@ export class CheckoutPage implements OnInit {
     if (typeof image === 'string') {
       return image;
     }
-    return image?.url || '/assets/images/placeholder.jpg';
+    return image?.url || '/uploadsplaceholder.jpg';
   }
 
   async placeOrder() {
@@ -170,7 +170,7 @@ export class CheckoutPage implements OnInit {
     };
 
     // Create order and process payment
-    this.http.post('/api/v1/orders', orderData).subscribe({
+    this.http.post('/api/orders', orderData).subscribe({
       next: (response: any) => {
         if (response.success) {
           const orderId = response.data.order._id;
@@ -182,7 +182,7 @@ export class CheckoutPage implements OnInit {
             returnUrl: window.location.origin + '/order-confirmation'
           };
           
-          this.http.post('/api/v1/payments/initiate', paymentData).subscribe({
+          this.http.post('/api/payments/initiate', paymentData).subscribe({
             next: async (paymentResponse: any) => {
               await loading.dismiss();
               this.processing = false;

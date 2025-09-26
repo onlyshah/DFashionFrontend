@@ -1,0 +1,199 @@
+<div class="shop-container">
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-content">
+      <h1>Discover Fashion That Defines You</h1>
+      <p>Explore thousands of products from top brands</p>
+      <div class="hero-search">
+        <input type="text" placeholder="Search for products, brands, categories..." [(ngModel)]="searchQuery">
+        <button (click)="search()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number">10K+</span>
+        <span class="stat-label">Products</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">500+</span>
+        <span class="stat-label">Brands</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number">50K+</span>
+        <span class="stat-label">Happy Customers</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Section -->
+  <section class="categories-section">
+    <div class="section-header">
+      <h2>Shop by Category</h2>
+      <p>Find exactly what you're looking for</p>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories" (click)="navigateToCategory(category.id)">
+        <div class="category-image">
+          <img [src]="imageUrl +category.image" [alt]="category.name" loading="lazy">
+          <div class="category-overlay">
+            <span class="product-count">{{ category.productCount }}+ Products</span>
+          </div>
+        </div>
+        <div class="category-info">
+          <h3>{{ category.name }}</h3>
+          <div class="subcategories">
+            <span *ngFor="let sub of category.subcategories.slice(0, 3)">{{ sub }}</span>
+            <span *ngIf="category.subcategories.length > 3" class="more">+{{ category.subcategories.length - 3 }} more</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Brands -->
+  <section class="brands-section">
+    <div class="section-header">
+      <h2>Featured Brands</h2>
+      <p>Shop from your favorite brands</p>
+    </div>
+    <div class="brands-grid">
+      <div class="brand-card" *ngFor="let brand of featuredBrands" (click)="navigateToBrand(brand.id)">
+        <div class="brand-logo">
+          <img [src]="imageUrl +brand.logo" [alt]="brand.name" loading="lazy">
+        </div>
+        <h4>{{ brand.name }}</h4>
+        <span class="popular-badge" *ngIf="brand.isPopular">Popular</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trending Products -->
+  <section class="trending-section">
+    <div class="section-header">
+      <h2>Trending Now</h2>
+      <p>What everyone's buying</p>
+      <button class="view-all-btn" (click)="viewAllTrending()">View All</button>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let product of trendingProducts" (click)="viewProduct(product)">
+        <div class="product-image">
+          <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
+          <div class="product-badges">
+            <span class="badge trending" *ngIf="product.isTrending">Trending</span>
+            <span class="badge new" *ngIf="product.isNew">New</span>
+            <span class="badge discount" *ngIf="product.originalPrice && product.originalPrice > product.price">
+              {{ getDiscountPercentage(product) }}% OFF
+            </span>
+          </div>
+          <div class="product-actions">
+            <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
+              <i class="far fa-heart"></i>
+            </button>
+            <button class="btn-quick-add" (click)="quickAddToCart(product, $event)">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <h4 class="product-name">{{ product.name }}</h4>
+          <p class="product-brand">{{ product.brand }}</p>
+          <div class="product-rating" *ngIf="product.rating">
+            <div class="stars">
+              <i class="fas fa-star" *ngFor="let star of getStars(product.rating.average)"></i>
+              <i class="far fa-star" *ngFor="let star of getEmptyStars(product.rating.average)"></i>
+            </div>
+            <span class="rating-text">{{ product.rating.average }} ({{ product.rating.count }})</span>
+          </div>
+          <div class="product-price">
+            <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
+            <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
+              ₹{{ product.originalPrice | number:'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrivals -->
+  <section class="new-arrivals-section">
+    <div class="section-header">
+      <h2>New Arrivals</h2>
+      <p>Fresh styles just dropped</p>
+      <button class="view-all-btn" (click)="viewAllNew()">View All</button>
+    </div>
+    <div class="products-grid">
+      <div class="product-card" *ngFor="let product of newArrivals" (click)="viewProduct(product)">
+        <div class="product-image">
+          <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
+          <div class="product-badges">
+            <span class="badge new">New</span>
+            <span class="badge discount" *ngIf="product.originalPrice && product.originalPrice > product.price">
+              {{ getDiscountPercentage(product) }}% OFF
+            </span>
+          </div>
+          <div class="product-actions">
+            <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
+              <i class="far fa-heart"></i>
+            </button>
+            <button class="btn-quick-add" (click)="quickAddToCart(product, $event)">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+          </div>
+        </div>
+        <div class="product-info">
+          <h4 class="product-name">{{ product.name }}</h4>
+          <p class="product-brand">{{ product.brand }}</p>
+          <div class="product-rating" *ngIf="product.rating">
+            <div class="stars">
+              <i class="fas fa-star" *ngFor="let star of getStars(product.rating.average)"></i>
+              <i class="far fa-star" *ngFor="let star of getEmptyStars(product.rating.average)"></i>
+            </div>
+            <span class="rating-text">{{ product.rating.average }} ({{ product.rating.count }})</span>
+          </div>
+          <div class="product-price">
+            <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
+            <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
+              ₹{{ product.originalPrice | number:'1.0-0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Links -->
+  <section class="quick-links-section">
+    <div class="section-header">
+      <h2>Quick Links</h2>
+    </div>
+    <div class="quick-links-grid">
+      <div class="quick-link" (click)="navigateToCategory('women')">
+        <i class="fas fa-female"></i>
+        <span>Women's Fashion</span>
+      </div>
+      <div class="quick-link" (click)="navigateToCategory('men')">
+        <i class="fas fa-male"></i>
+        <span>Men's Fashion</span>
+      </div>
+      <div class="quick-link" (click)="navigateToCategory('kids')">
+        <i class="fas fa-child"></i>
+        <span>Kids' Fashion</span>
+      </div>
+      <div class="quick-link" (click)="navigateToCategory('ethnic')">
+        <i class="fas fa-star-and-crescent"></i>
+        <span>Ethnic Wear</span>
+      </div>
+      <div class="quick-link" (click)="navigateToCategory('accessories')">
+        <i class="fas fa-gem"></i>
+        <span>Accessories</span>
+      </div>
+      <div class="quick-link" (click)="navigateToCategory('shoes')">
+        <i class="fas fa-shoe-prints"></i>
+        <span>Footwear</span>
+      </div>
+    </div>
+  </section>
+</div>

@@ -510,7 +510,7 @@ export class VendorAnalyticsComponent implements OnInit {
   topProducts = [
     {
       name: 'Summer Dress',
-      image: '/assets/images/product1.jpg',
+      image: '/uploadsproduct1.jpg',
       views: 2500,
       orders: 45,
       revenue: 134550,
@@ -518,7 +518,7 @@ export class VendorAnalyticsComponent implements OnInit {
     },
     {
       name: 'Casual Shirt',
-      image: '/assets/images/product2.jpg',
+      image: '/uploadsproduct2.jpg',
       views: 1800,
       orders: 32,
       revenue: 51168,
@@ -526,7 +526,7 @@ export class VendorAnalyticsComponent implements OnInit {
     },
     {
       name: 'Sneakers',
-      image: '/assets/images/product3.jpg',
+      image: '/uploadsproduct3.jpg',
       views: 1200,
       orders: 28,
       revenue: 139720,

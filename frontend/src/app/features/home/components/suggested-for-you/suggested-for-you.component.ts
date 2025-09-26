@@ -76,7 +76,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.error = null;
 
     // Load from API
-    this.http.get<any>(`${this.apiUrl}/api/v1/users/suggested`).subscribe({
+    this.http.get<any>(`${this.apiUrl}/api/users/suggested`).subscribe({
       next: (response) => {
         if (response?.success && response?.data) {
           this.suggestedUsers = response.data;

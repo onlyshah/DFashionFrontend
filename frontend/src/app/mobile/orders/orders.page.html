@@ -89,7 +89,7 @@
             <div class="items-images">
               <img 
                 *ngFor="let item of order.items?.slice(0, 3)" 
-                [src]="item.product?.images?.[0]?.url || '/assets/images/placeholder-product.png'" 
+                [src]="item.product?.images?.[0]?.url || '/uploadsplaceholder-product.png'" 
                 [alt]="item.product?.name"
                 class="item-image">
               <div *ngIf="order.items?.length > 3" class="more-items">

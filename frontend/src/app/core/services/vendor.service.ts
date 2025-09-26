@@ -117,7 +117,7 @@ export interface VendorOrdersResponse {
   providedIn: 'root'
 })
 export class VendorService {
-  private apiUrl = environment.apiUrl + '/api/v1/vendor'; // Use environment configuration
+  private apiUrl = environment.apiUrl + '/api/vendor'; // Use environment configuration
   private statsSubject = new BehaviorSubject<VendorStats | null>(null);
   public stats$ = this.statsSubject.asObservable();
 

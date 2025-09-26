@@ -1,0 +1,37 @@
+<div class="super-admin-panel" *ngIf="isSuperAdmin">
+  <div class="panel-header">
+    <h2>
+      <mat-icon>admin_panel_settings</mat-icon>
+      Super Admin Control Panel
+    </h2>
+    <p>Complete system overview and management tools</p>
+  </div>
+  <mat-tab-group class="admin-tabs">
+    <!-- System Overview Tab -->
+    <mat-tab label="System Overview">
+      <div class="tab-content">
+        <!-- System Health Cards -->
+        <div class="health-grid">
+          <mat-card class="health-card">
+            <mat-card-content>
+              <div class="health-item">
+                <div class="health-icon cpu">
+                  <mat-icon>memory</mat-icon>
+                </div>
+                <div class="health-details">
+                  <h3>{{ systemStats.systemHealth.cpu }}%</h3>
+                  <p>CPU Usage</p>
+                  <div class="health-bar">
+                    <div class="health-progress" [style.width.%]="systemStats.systemHealth.cpu" [class.warning]="systemStats.systemHealth.cpu > 70" [class.danger]="systemStats.systemHealth.cpu > 90"></div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+          <!-- Add more health cards as needed -->
+        </div>
+      </div>
+    </mat-tab>
+    <!-- Add more tabs as needed -->
+  </mat-tab-group>
+</div>

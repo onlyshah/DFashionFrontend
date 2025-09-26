@@ -181,7 +181,7 @@ export class CartPage implements OnInit {
     if (typeof image === 'string') {
       return image;
     }
-    return image?.url || '/assets/images/placeholder.jpg';
+    return image?.url || '/uploadsplaceholder.jpg';
   }
 
   proceedToCheckout() {
