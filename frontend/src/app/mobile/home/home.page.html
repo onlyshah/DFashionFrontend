@@ -50,7 +50,7 @@
         <ng-template swiperSlide *ngFor="let story of recentStories; let i = index; trackBy: trackByStoryId">
           <div class="story-item" (click)="onStoryClick(story, i)">
             <div class="story-avatar" [class.has-story]="true">
-              <img [src]="story.user?.avatar || 'assets/images/default-avatar.svg'" [alt]="story.user?.fullName">
+              <img [src]="story.user?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png'" [alt]="story.user?.fullName">
             </div>
             <span class="story-username">{{ story.user?.username || 'User' }}</span>
           </div>
@@ -65,7 +65,7 @@
         <!-- Post Header -->
         <div class="post-header">
           <div class="user-info">
-            <img [src]="post.user?.avatar || 'assets/images/default-avatar.svg'"
+            <img [src]="post.user?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png'"
                  [alt]="post.user?.fullName" class="user-avatar">
             <div class="user-details">
               <span class="username">{{ post.user?.username || 'User' }}</span>

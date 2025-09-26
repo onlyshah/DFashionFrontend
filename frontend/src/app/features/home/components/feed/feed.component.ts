@@ -37,7 +37,7 @@ export class FeedComponent implements OnInit {
     this.loading = true;
     // TODO: Replace with real API call to backend for posts
     // Example:
-    this.http.get<any[]>(`${environment.apiUrl}/api/v1/posts`).subscribe({
+    this.http.get<any[]>(`${environment.apiUrl}/api/posts`).subscribe({
       next: (data:any) => {
         this.posts = data;
         this.loading = false;

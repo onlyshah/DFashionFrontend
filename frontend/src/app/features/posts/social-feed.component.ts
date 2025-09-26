@@ -781,7 +781,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
         _id: 'guest-user',
         username: 'guest',
         fullName: 'Guest User',
-        avatar: '/assets/images/default-avatar.svg'
+  avatar: 'http://localhost:9000/uploads/avatars/default-avatar.png'
       };
     }
     console.log('Social Feed - Current User loaded:', this.currentUser);

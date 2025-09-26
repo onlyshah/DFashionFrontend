@@ -35,7 +35,7 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   get userAvatar(): string {
-    return this.currentUser?.avatar || '/assets/images/default-avatar.svg';
+  return this.currentUser?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png';
   }
 
   constructor(

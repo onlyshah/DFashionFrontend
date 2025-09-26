@@ -62,7 +62,7 @@ interface RecentActivity {
       <!-- User Profile Summary -->
       <div class="profile-summary">
         <div class="profile-avatar">
-          <img src="assets/images/default-avatar.svg" alt="Profile">
+          <img src="http://localhost:9000/uploads/avatars/default-avatar.png" alt="Profile">
           <div class="status-indicator online"></div>
         </div>
         <div class="profile-info">

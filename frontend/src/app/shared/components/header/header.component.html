@@ -78,7 +78,7 @@
 
         <!-- User Menu for logged in users -->
         <div *ngIf="currentUser" class="user-menu" (click)="toggleUserMenu()">
-          <img [src]="currentUser.avatar || 'assets/images/default-avatar.svg'" [alt]="currentUser.fullName" class="user-avatar" (error)="onAvatarError($event)">
+          <img [src]="currentUser.avatar || backendDefaultAvatar" [alt]="currentUser.fullName" class="user-avatar" (error)="onAvatarError($event)">
           <span class="username">{{ currentUser.username }}</span>
           <i class="fas fa-chevron-down"></i>
           

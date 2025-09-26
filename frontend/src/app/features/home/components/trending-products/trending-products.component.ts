@@ -39,6 +39,16 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   isPaused = false;
    imageUrl = environment.apiUrl
 
+  backendProductPlaceholder = environment.apiUrl + '/uploads/products/placeholder-product.png';
+
+  getProductImageUrl(product: Product): string {
+    if (product.images && product.images.length > 0) {
+      const url = product.images[0].url;
+      return url.startsWith('http') ? url : environment.apiUrl + url;
+    }
+    return this.backendProductPlaceholder;
+  }
+
   constructor(
     private trendingService: TrendingService,
     private socialService: SocialInteractionsService,
@@ -188,9 +198,8 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
 
   onImageError(event: Event) {
     const img = event.target as HTMLImageElement;
-    // Set a fallback image using existing placeholder
-    img.src = 'assets/images/placeholder-product.svg';
-    // Add error class for styling
+    // Set a fallback image using backend placeholder
+    img.src = this.backendProductPlaceholder;
     img.classList.add('image-error');
   }
 

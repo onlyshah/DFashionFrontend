@@ -40,7 +40,7 @@
     <mat-card class="profile-card" *ngIf="isMobile">
       <div class="profile-content">
         <div class="profile-avatar">
-          <img [src]="currentUser?.avatar || '/assets/images/default-avatar.svg'" 
+          <img [src]="currentUser?.avatar || 'http://localhost:9000/upload/avatars/default-avatar.png'" 
                [alt]="currentUser?.fullName">
           <div class="status-indicator online"></div>
         </div>

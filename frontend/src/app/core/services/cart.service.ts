@@ -79,7 +79,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<{ success: boolean; cart: any; summary: any }>(`${this.API_URL}/api/v1/cart-new`, options);
+    return this.http.get<{ success: boolean; cart: any; summary: any }>(`${this.API_URL}/api/cart-new`, options);
   }
 
   // Get cart count only (lightweight endpoint) - returns total quantities
@@ -97,7 +97,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<any>(`${this.API_URL}/api/v1/cart-new/total-count`, options);
+    return this.http.get<any>(`${this.API_URL}/api/cart-new/total-count`, options);
   }
 
   // Debug cart data

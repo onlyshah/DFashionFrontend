@@ -28,7 +28,7 @@ export class MediaService {
 
   // Fallback images for different scenarios
   private readonly fallbackImages = {
-    user: '/assets/images/default-avatar.svg',
+  user: 'http://localhost:9000/upload/avatars/default-avatar.png',
     product: '/assets/images/default-product.svg',
     post: '/assets/images/default-post.svg',
     story: '/assets/images/default-story.svg'
@@ -145,7 +145,7 @@ export class MediaService {
     const urlMappings: { [key: string]: string } = {
       'summer-collection': '/assets/images/placeholder-product.svg',
       'behind-scenes': '/assets/images/placeholder.svg',
-      'customer-spotlight': '/assets/images/default-avatar.svg',
+  'customer-spotlight': 'http://localhost:9000/upload/avatars/default-avatar.png',
       'styling-tips': '/assets/images/placeholder.svg',
       'design': '/assets/images/placeholder.svg'
     };

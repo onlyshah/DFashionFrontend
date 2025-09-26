@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -455,6 +456,8 @@ export class HeaderComponent implements OnInit {
   cartTotalAmount = 0;
   showCartTotalPrice = false;
 
+  backendDefaultAvatar = environment.apiUrl + '/uploads/avatars/default-avatar.png';
+
   // Search functionality
   showSuggestions = false;
   searchSuggestions: any[] = [];
@@ -647,7 +650,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onAvatarError(event: any) {
-    // Fallback to default avatar if the current one fails to load
-    event.target.src = 'assets/images/default-avatar.svg';
+    // Fallback to backend-served default avatar if the current one fails to load
+    event.target.src = this.backendDefaultAvatar;
   }
 }

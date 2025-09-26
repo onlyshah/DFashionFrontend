@@ -63,7 +63,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       this.trendingService.newArrivals$.subscribe(products => {
         this.newArrivals = products;
         console.log('New Arrivals API data:', this.newArrivals,
-          this.imageUrl +products[0].images[0].url
+         
         );
         this.isLoading = false;
         this.updateSliderOnProductsLoad();

@@ -60,8 +60,7 @@
       <!-- Product Image -->
       <div class="product-image-container">
         <img
-          [src]="imageUrl +product.images"
-          
+          [src]="getProductImageUrl(product)"
           class="product-image"
           loading="lazy"
           (error)="onImageError($event)"

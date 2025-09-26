@@ -1,4 +1,3 @@
-// ...existing code...
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -324,7 +323,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   // Get current user avatar
   getCurrentUserAvatar(): string {
-    return this.currentUser?.avatar || '/assets/images/default-avatar.svg';
+  return this.currentUser?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png';
   }
 
   // Performance Optimization
@@ -334,6 +333,6 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   onAvatarError(event: any) {
     // Fallback to default avatar if the current one fails to load
-    event.target.src = 'assets/images/default-avatar.svg';
+  event.target.src = 'http://localhost:9000/uploads/avatars/default-avatar.png';
   }
 }

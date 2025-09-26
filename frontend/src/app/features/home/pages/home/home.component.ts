@@ -266,7 +266,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               _id: storyGroup.user?._id || `user_${Date.now()}_${Math.random()}`,
               username: storyGroup.user?.username || 'unknown',
               fullName: storyGroup.user?.fullName || storyGroup.user?.username || 'Unknown User',
-              avatar: storyGroup.user?.avatar || '/assets/images/default-avatar.svg'
+              avatar: storyGroup.user?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png'
             },
             media: storyGroup.media || [],
             viewed: false,
@@ -283,7 +283,7 @@ export class HomeComponent implements OnInit, OnDestroy {
                   _id: story.user._id,
                   username: story.user.username || 'unknown',
                   fullName: story.user.fullName || story.user.username || 'Unknown User',
-                  avatar: story.user.avatar || '/assets/images/default-avatar.svg'
+                  avatar: story.user.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png'
                 },
                 media: story.media || [],
                 viewed: false,
