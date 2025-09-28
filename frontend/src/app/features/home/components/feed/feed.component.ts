@@ -20,7 +20,183 @@ export class FeedComponent implements OnInit {
   hasMore = true;
   currentPage = 1;
   newComment = '';
+  imageUrl = environment.apiUrl;
 
+  // TrackBy for ngFor
+  trackByPostId(index: number, post: any) {
+    return post.id;
+  }
+
+  // Format time ago
+  getTimeAgo(date: string | Date): string {
+    if (!date) return '';
+    const now = new Date();
+    const postDate = new Date(date);
+    const diff = Math.floor((now.getTime() - postDate.getTime()) / 1000);
+    if (diff < 60) return `${diff}s ago`;
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return postDate.toLocaleDateString();
+  }
+
+  // Like/unlike post
+  toggleLike(post: any) {
+    const url = `${environment.apiUrl}/api/posts/${post.id}/like`;
+    this.http.post(url, {}).subscribe({
+      next: () => {
+        post.isLiked = !post.isLiked;
+        post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+      },
+      error: () => {}
+    });
+  }
+
+  // Focus comment input (no-op for now)
+  focusCommentInput(post: any) {
+    // Optionally scroll to comment input or set focus
+  }
+
+  // Share post
+  sharePost(post: any) {
+    const url = `${environment.apiUrl}/api/posts/${post.id}/share`;
+    this.http.post(url, {}).subscribe();
+    // Optionally show share UI
+  }
+
+  // Save/unsave post
+  toggleSave(post: any) {
+    const url = `${environment.apiUrl}/api/posts/${post.id}/save`;
+    this.http.post(url, {}).subscribe({
+      next: () => {
+        post.isSaved = !post.isSaved;
+        post.saves = post.isSaved ? post.saves + 1 : post.saves - 1;
+      },
+      error: () => {}
+    });
+  }
+
+  // Toggle comments (show/hide)
+  toggleComments(post: any) {
+    post.showComments = !post.showComments;
+  }
+
+  // Add comment to post
+  addComment(post: any) {
+    const commentText = this.newComment.trim();
+    if (!commentText) return;
+    const url = `${environment.apiUrl}/api/posts/${post.id}/comment`;
+    this.http.post(url, { text: commentText }).subscribe({
+      next: (res: any) => {
+        post.comments = post.comments || [];
+        post.comments.push({ text: commentText, createdAt: new Date(), user: 'You' });
+        post.commentsCount = (post.commentsCount || 0) + 1;
+        this.newComment = '';
+      },
+      error: () => {}
+    });
+  }
+
+  // Format price
+  formatPrice(price: number): string {
+    return price ? `$${price.toFixed(2)}` : '';
+  }
+
+  // Add product to cart
+  addToCart(product: any) {
+    this.cartService.addToCart(product.product || product);
+  }
+
+  // Add product to wishlist
+  addToWishlist(product: any) {
+    this.wishlistService.addToWishlist(product.product || product);
+  }
+
+  // Buy now (navigate to product page)
+  buyNow(product: any) {
+    const prodId = product.product?._id || product._id;
+    if (prodId) {
+      this.router.navigate(['/product', prodId]);
+    }
+  }
+
+  // Load more posts (pagination)
+  loadMorePosts() {
+    if (!this.hasMore || this.loading) return;
+    this.loading = true;
+    this.currentPage++;
+    this.http.get<any>(`${environment.apiUrl}/api/posts?page=${this.currentPage}`).subscribe({
+      next: (res: any) => {
+        console.log('post',res)
+        if (!res?.posts || !Array.isArray(res.posts) || res.posts.length === 0) {
+          this.hasMore = false;
+          this.loading = false;
+          return;
+        }
+        const base = environment.apiUrl.replace(/\/$/, '');
+        const newPosts = res.posts.map((p: any) => {
+          const mediaItem = p.media && p.media.length ? p.media[0] : null;
+          const mediaPath = mediaItem?.url || '/uploads/default-post.jpg';
+          const mediaUrl = `${base}${mediaPath}`;
+          const mediaType = mediaItem?.type || 'image';
+          const userObj = p.user || null;
+          const userAvatar = userObj?.avatar
+            ? `${base}${userObj.avatar}`
+            : `${base}/uploads/default-avatar.png`;
+          const mappedUser = userObj
+            ? { ...userObj, avatar: userAvatar }
+            : { username: 'Unknown User', avatar: `${base}/uploads/default-avatar.png` };
+          const mappedProducts = (p.products || []).map((pr: any) => {
+            const prodData = pr.product || null;
+            const prodImage = prodData?.image
+              ? `${base}${prodData.image}`
+              : `${base}/uploads/default-product.png`;
+            return {
+              ...pr,
+              image: prodImage,
+              name: prodData?.name || 'Unnamed Product',
+              price: prodData?.price ?? null,
+              product: prodData
+            };
+          });
+          return {
+            id: p._id,
+            caption: p.caption,
+            content: p.caption,
+            mediaType,
+            mediaUrl,
+            hashtags: p.hashtags || [],
+            mentions: p.mentions || [],
+            user: mappedUser,
+            products: mappedProducts,
+            likes: Array.isArray(p.likes)
+              ? p.likes.length
+              : (typeof p.likes === 'number' ? p.likes : 0),
+            comments: p.comments || [],
+            commentsCount: Array.isArray(p.comments)
+              ? p.comments.length
+              : (p.commentsCount || 0),
+            shares: Array.isArray(p.shares) ? p.shares.length : 0,
+            saves: Array.isArray(p.saves) ? p.saves.length : 0,
+            isLiked: p.isLiked || false,
+            isSaved: p.isSaved || false,
+            isReel: p.isReel || (mediaType === 'video'),
+            createdAt: p.createdAt,
+            updatedAt: p.updatedAt,
+            analytics: p.analytics || {},
+            engagement: p.engagement || {},
+            performance: p.performance || {},
+            settings: p.settings || {}
+          };
+        });
+        this.posts = [...this.posts, ...newPosts];
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.hasMore = false;
+      }
+    });
+  }
   constructor(
     private router: Router,
     private cartService: CartService,
@@ -31,179 +207,90 @@ export class FeedComponent implements OnInit {
 
   ngOnInit() {
   this.loadPosts();
+  // Debug: log feed data after loading
+  setTimeout(() => {
+    console.log('Feed posts:', this.posts);
+  }, 2000);
   }
 
-  loadPosts() {
-   this.loading = true;
+loadPosts() {
+  this.loading = true;
+  this.http.get<any>(`${environment.apiUrl}/api/posts`).subscribe({
+    next: (res: any) => {
+      const base = environment.apiUrl.replace(/\/$/, ''); // remove trailing slash
+      if (!res?.posts || !Array.isArray(res.posts)) {
+        this.posts = [];
+        this.loading = false;
+        return;
+      }
 
-this.http.get<any>(`${environment.apiUrl}/api/posts`).subscribe({
-  next: (res: any) => {
-    // API returns { success: true, posts: [...], pagination: {...} }
-    this.posts = res.posts.map((p: any) => ({
-      id: p._id,
-      caption: p.caption,
-      mediaType: p.media?.[0]?.type || 'image',
-      mediaUrl: p.media?.[0]?.url ? `${environment.apiUrl}${p.media[0].url}` : '',
-      hashtags: p.hashtags || [],
-      user: p.user || null,
-      products: p.products || [],
-      likes: Array.isArray(p.likes) ? p.likes.length : 0,
-      comments: p.comments || [],
-      commentsCount: Array.isArray(p.comments) ? p.comments.length : 0,
-      createdAt: p.createdAt,
-      isLiked: false,   // default UI state
-      isSaved: false,   // default UI state
-      isReel: p.media?.[0]?.type === 'video'
-    }));
+      this.posts = res.posts.map((p: any) => {
+        const mediaItem = p.media && p.media.length ? p.media[0] : null;
+        const mediaPath = mediaItem?.url || '/uploads/default-post.jpg';
+        const mediaUrl = `${base}${mediaPath}`; // full URL to image/video
+        const mediaType = mediaItem?.type || 'image';
 
-    this.loading = false;
-  },
-  error: (err: any) => {
-    console.error('Error loading posts:', err);
-    this.posts = [];
-    this.loading = false;
-  }
-});
+        // user/avatar fallback to server default
+        const userObj = p.user || null;
+        const userAvatar = userObj?.avatar
+          ? `${base}${userObj.avatar}`
+          : `${base}/uploads/default-avatar.png`;
+        const mappedUser = userObj
+          ? { ...userObj, avatar: userAvatar }
+          : { username: 'Unknown User', avatar: `${base}/uploads/default-avatar.png` };
 
-  }
+        // map product items so template can use product.image, product.name, product.price
+        const mappedProducts = (p.products || []).map((pr: any) => {
+          const prodData = pr.product || null;
+          const prodImage = prodData?.image
+            ? `${base}${prodData.image}`
+            : `${base}/uploads/default-product.png`;
+          return {
+            ...pr,
+            image: prodImage,
+            name: prodData?.name || 'Unnamed Product',
+            price: prodData?.price ?? null,
+            product: prodData
+          };
+        });
 
+        return {
+          id: p._id,
+          caption: p.caption,
+          content: p.caption,
+          mediaType,
+          mediaUrl,
+          hashtags: p.hashtags || [],
+          mentions: p.mentions || [],
+          user: mappedUser,
+          products: mappedProducts,
+          likes: Array.isArray(p.likes)
+            ? p.likes.length
+            : (typeof p.likes === 'number' ? p.likes : 0),
+          comments: p.comments || [],
+          commentsCount: Array.isArray(p.comments)
+            ? p.comments.length
+            : (p.commentsCount || 0),
+          shares: Array.isArray(p.shares) ? p.shares.length : 0,
+          saves: Array.isArray(p.saves) ? p.saves.length : 0,
+          isLiked: p.isLiked || false,
+          isSaved: p.isSaved || false,
+          isReel: p.isReel || (mediaType === 'video'),
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          analytics: p.analytics || {},
+          engagement: p.engagement || {},
+          performance: p.performance || {},
+          settings: p.settings || {}
+        };
+      });
 
-
-
-  loadMorePosts() {
-    this.currentPage++;
-    this.loadPosts();
-  }
-
-  trackByPostId(index: number, post: any): string {
-    return post._id;
-  }
-
-  // Instagram-style Actions
-  toggleLike(post: any) {
-    post.isLiked = !post.isLiked;
-    post.likes += post.isLiked ? 1 : -1;
-  }
-
-  toggleSave(post: any) {
-    post.isSaved = !post.isSaved;
-  }
-
-  toggleComments(post: any) {
-    // Navigate to post detail or show comments modal
-    console.log('Toggle comments for post:', post._id);
-  }
-
-  sharePost(post: any) {
-    // Implement share functionality
-    console.log('Share post:', post._id);
-  }
-
-  addComment(post: any) {
-    if (this.newComment.trim()) {
-      post.comments += 1;
-      console.log('Add comment:', this.newComment, 'to post:', post._id);
-      this.newComment = '';
+      this.loading = false; // ✅ put here
+    },
+    error: () => {
+      this.posts = [];
+      this.loading = false;
     }
-  }
-
-  focusCommentInput(post: any) {
-    // Focus on comment input
-    console.log('Focus comment input for post:', post._id);
-  }
-
-  toggleVideoPlay(event: Event) {
-    const video = event.target as HTMLVideoElement;
-    if (video.paused) {
-      video.play();
-    } else {
-      video.pause();
-    }
-  }
-
-  showProductDetails(product: any) {
-    console.log('Show product details:', product);
-  }
-
-  viewProduct(product: any) {
-    this.router.navigate(['/product', product._id]);
-  }
-
-  formatLikesCount(likes: number): string {
-    if (likes === 1) return '1 like';
-    if (likes < 1000) return `${likes} likes`;
-    if (likes < 1000000) return `${(likes / 1000).toFixed(1)}K likes`;
-    return `${(likes / 1000000).toFixed(1)}M likes`;
-  }
-
-  formatPrice(price: number): string {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0
-    }).format(price);
-  }
-
-  getTimeAgo(dateString: string): string {
-    const now = new Date();
-    const date = new Date(dateString);
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
-
-    if (diffInMinutes < 1) return 'now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m`;
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h`;
-
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d`;
-
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    return `${diffInWeeks}w`;
-  }
-
-  // E-commerce Actions
-  addToCart(product: any) {
-    console.log('Adding to cart:', product);
-    this.cartService.addToCart(product._id, 1, undefined, undefined).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert('Product added to cart!');
-        } else {
-          alert('Failed to add product to cart');
-        }
-      },
-      error: (error) => {
-        console.error('Error adding to cart:', error);
-        alert('Error adding product to cart');
-      }
-    });
-  }
-
-  addToWishlist(product: any) {
-    console.log('Adding to wishlist:', product);
-    this.wishlistService.addToWishlist(product._id).subscribe({
-      next: (response) => {
-        if (response.success) {
-          alert('Product added to wishlist!');
-        } else {
-          alert('Failed to add product to wishlist');
-        }
-      },
-      error: (error) => {
-        console.error('Error adding to wishlist:', error);
-        alert('Error adding product to wishlist');
-      }
-    });
-  }
-
-  buyNow(product: any) {
-    console.log('Buying product:', product);
-    this.router.navigate(['/checkout'], {
-      queryParams: {
-        productId: product._id,
-        source: 'feed'
-      }
-    });
-  }
+  });
+}
 }

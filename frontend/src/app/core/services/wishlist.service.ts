@@ -76,9 +76,12 @@ export class WishlistService {
 
     return this.http.get<WishlistResponse>(`${this.API_URL}/api/wishlist?page=${page}&limit=${limit}`, options).pipe(
       tap(response => {
-        if (response.success) {
+        if (response && response.success && response.data && Array.isArray(response.data.items)) {
           this.wishlistItemsSubject.next(response.data.items);
-          this.wishlistCountSubject.next(response.data.pagination.totalItems);
+          this.wishlistCountSubject.next(response.data.pagination?.totalItems || response.data.items.length);
+        } else {
+          this.wishlistItemsSubject.next([]);
+          this.wishlistCountSubject.next(0);
         }
       })
     );

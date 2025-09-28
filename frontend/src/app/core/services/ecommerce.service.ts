@@ -86,7 +86,7 @@ export interface CartItem {
   providedIn: 'root'
 })
 export class EcommerceService {
-  private apiUrl = 'http://localhost:3001/api/ecommerce'; // Updated to correct port and API version
+  private apiUrl = environment.apiUrl + '/api/ecommerce';
   
   // Subjects for real-time updates
   private wishlistSubject = new BehaviorSubject<WishlistItem[]>([]);
@@ -103,7 +103,7 @@ export class EcommerceService {
     private authService: AuthService
   ) {
     // Load initial data if user is authenticated
-    if (this.authService.isAuthenticated()) {
+  if (this.authService.isAuthenticated) {
       this.loadWishlist();
       this.loadCart();
     }
@@ -331,18 +331,20 @@ export class EcommerceService {
 
   // Check if product is liked by current user
   isProductLiked(product: Product): boolean {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser) return false;
-    
-    return product.likes.some(like => like.user === currentUser._id);
+    let user = this.authService.getCurrentUser();
+    if (user && typeof user === 'object' && '_id' in user) {
+      return product.likes.some(like => like.user === user._id);
+    }
+    return false;
   }
 
   // Check if wishlist item is liked by current user
   isWishlistItemLiked(item: WishlistItem): boolean {
-    const currentUser = this.authService.getCurrentUser();
-    if (!currentUser) return false;
-    
-    return item.likes.some(like => like.user === currentUser._id);
+    let user = this.authService.getCurrentUser();
+    if (user && typeof user === 'object' && '_id' in user) {
+      return item.likes.some(like => like.user === user._id);
+    }
+    return false;
   }
 
   // Format price for display

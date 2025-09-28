@@ -61,7 +61,28 @@ export class ExploreComponent implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Load categories
+    fetch('/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        this.categories = Array.isArray(data) ? data : (data.categories || []);
+      });
+
+    // Load trending items
+    fetch('/api/products/trending')
+      .then(res => res.json())
+      .then(data => {
+        this.trendingItems = Array.isArray(data) ? data : (data.products || []);
+      });
+
+    // Load featured brands
+    fetch('/api/products/featured-brands')
+      .then(res => res.json())
+      .then(data => {
+        this.featuredBrands = Array.isArray(data) ? data : (data.brands || []);
+      });
+  }
 
   onSearch() {
     if (this.searchQuery.trim()) {

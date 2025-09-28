@@ -65,7 +65,7 @@ export interface CartSummary {
   providedIn: 'root'
 })
 export class CartNewService {
-  private apiUrl = 'http://localhost:3001/api/cart-new'; // Updated to correct port
+  private apiUrl = environment.apiUrl + '/api/cart-new';
   private cartSubject = new BehaviorSubject<Cart | null>(null);
   private cartSummarySubject = new BehaviorSubject<CartSummary>({
     totalItems: 0,

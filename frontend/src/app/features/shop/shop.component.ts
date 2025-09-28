@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../core/services/product.service';
+import { AuthService } from '../../core/services/auth.service';
+import { CartService } from '../../core/services/cart.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { Product } from '../../core/models/product.interface';
 import { environment } from 'src/environments/environment';
 
@@ -39,77 +42,82 @@ export class ShopComponent implements OnInit {
   featuredBrands: Brand[] = [];
   trendingProducts: ShopProduct[] = [];
   newArrivals: ShopProduct[] = [];
-    imageUrl = environment.apiUrl
+  imageUrl = environment.apiUrl;
+  loading = true;
 
   constructor(
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private authService: AuthService,
+    private cartService: CartService,
+    private wishlistService: WishlistService
   ) {}
 
   ngOnInit() {
-    this.loadCategories();
-    this.loadFeaturedBrands();
-    this.loadTrendingProducts();
-    this.loadNewArrivals();
+    this.loadShopData();
   }
 
-  loadCategories() {
-    // Load categories from real API
-    this.productService.getCategories().subscribe({
-      next: (response) => {
-        this.categories = response?.data || [];
-      },
-      error: (error) => {
-        console.error('Error loading categories:', error);
-        this.categories = [];
-      }
+  loadShopData() {
+    this.loading = true;
+    Promise.all([
+      this.loadFeaturedBrands(),
+      this.loadTrendingProducts(),
+      this.loadNewArrivals(),
+      this.loadCategories()
+    ]).finally(() => {
+      this.loading = false;
     });
   }
 
   loadFeaturedBrands() {
-    // Load from real API
-    this.productService.getFeaturedBrands().subscribe({
-      next: (response) => {
+    return this.productService.getFeaturedBrands().toPromise().then(
+      (response) => {
         this.featuredBrands = response?.data || [];
-      },
-      error: (error) => {
-        console.error('Error loading featured brands:', error);
-        this.featuredBrands = [];
       }
+    ).catch(error => {
+      console.error('Error loading featured brands:', error);
+      this.featuredBrands = [];
     });
   }
 
   loadTrendingProducts() {
-    // Load from real API
-    this.productService.getTrendingProducts().subscribe({
-      next: (response) => {
+    return this.productService.getTrendingProducts().toPromise().then(
+      (response) => {
         this.trendingProducts = (response?.data || []).map((product: Product) => ({
           ...product,
           isTrending: true,
           isNew: false
         }));
-      },
-      error: (error) => {
-        console.error('Error loading trending products:', error);
-        this.trendingProducts = [];
       }
+    ).catch(error => {
+      console.error('Error loading trending products:', error);
+      this.trendingProducts = [];
     });
   }
 
   loadNewArrivals() {
-    // Load from real API
-    this.productService.getNewArrivals().subscribe({
-      next: (response) => {
+    return this.productService.getNewArrivals().toPromise().then(
+      (response) => {
         this.newArrivals = (response?.data || []).map((product: Product) => ({
           ...product,
           isNew: true,
           isTrending: false
         }));
-      },
-      error: (error) => {
-        console.error('Error loading new arrivals:', error);
-        this.newArrivals = [];
       }
+    ).catch(error => {
+      console.error('Error loading new arrivals:', error);
+      this.newArrivals = [];
+    });
+  }
+
+  loadCategories() {
+    return this.productService.getCategories().toPromise().then(
+      (response) => {
+        this.categories = response?.data || [];
+      }
+    ).catch(error => {
+      console.error('Error loading categories:', error);
+      this.categories = [];
     });
   }
 
@@ -118,6 +126,8 @@ export class ShopComponent implements OnInit {
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
     }
   }
+
+  // Add any additional product/cart/wishlist logic from both components here as needed
 
   navigateToCategory(categoryId: string) {
     this.router.navigate(['/category', categoryId]);
