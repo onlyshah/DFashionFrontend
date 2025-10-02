@@ -92,7 +92,7 @@ export interface PolluxDashboardStats {
   providedIn: 'root'
 })
 export class AdminApiService {
-  private apiUrl = environment.apiUrl + '/api/v1'; // Use environment configuration
+  private apiUrl = environment.apiUrl + '/api'; // Use environment configuration
 
   constructor(
     private http: HttpClient,

@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-vendor-orders',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-vendor-orders',
+    imports: [CommonModule],
+    template: `
     <div class="vendor-orders-container">
       <div class="header">
         <h1>Orders</h1>
@@ -114,7 +113,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .vendor-orders-container {
       max-width: 1200px;
       margin: 0 auto;

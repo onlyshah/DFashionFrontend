@@ -30,9 +30,10 @@ interface Brand {
 }
 
 @Component({
-  selector: 'app-product-management',
-  templateUrl: './product-management.component.html',
-  styleUrls: ['../pollux-ui.scss', '../forms/pollux-form-controls.scss']
+    selector: 'app-product-management',
+    templateUrl: './product-management.component.html',
+    styleUrls: ['../pollux-ui.scss', '../forms/pollux-form-controls.scss'],
+    standalone: false
 })
 export class ProductManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

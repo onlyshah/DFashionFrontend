@@ -1,17 +1,21 @@
-/* Global Styles */
+// -------------------------------
+// ✅ 1. Sass Modules: Must come FIRST
+// -------------------------------
+@use './styles/overlapping-fixes';
+@use './styles/admin-dashboard';
+@use './app/admin/styles/admin-theme';
+@use './styles/design-tokens';
+@use './styles/auth-components';
+
+// -------------------------------
+// ✅ 2. Google Fonts (CSS imports)
+// -------------------------------
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Billabong&display=swap');
 
-/* Import overlapping fixes to prevent layout conflicts */
-@import './styles/overlapping-fixes.scss';
-
-/* Admin Theme */
-@import './app/admin/styles/admin-theme.scss';
-
-/* StyleHub Design System */
-@import './styles/design-tokens.scss';
-@import './styles/auth-components.scss';
-
+// -------------------------------
+// ✅ 3. Global Styles
+// -------------------------------
 * {
   margin: 0;
   padding: 0;
@@ -27,7 +31,9 @@ body {
   font-weight: var(--font-normal);
 }
 
-/* Custom Variables */
+// -------------------------------
+// ✅ 4. Custom Variables
+// -------------------------------
 :root {
   --primary-color: #0095f6;
   --primary-dark: #0084d6;
@@ -41,7 +47,9 @@ body {
   --gradient-primary: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
 }
 
-/* Utility Classes */
+// -------------------------------
+// ✅ 5. Utility Classes
+// -------------------------------
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -60,62 +68,45 @@ body {
 }
 
 .btn-primary:hover {
-  background: #0084d6;
+  background: var(--primary-dark);
 }
 
-/* Instagram-like Animations */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+.btn-secondary {
+  background: transparent;
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-@keyframes slideOutRight {
-  from {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateX(100%);
-    opacity: 0;
-  }
+.btn-secondary:hover {
+  background: var(--primary-color);
+  color: white;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+.btn-outline {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
+  &:hover {
+    background: var(--surface-color);
+    border-color: var(--text-secondary);
   }
 }
 
-@keyframes scaleIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Social Media Button Styles */
+// -------------------------------
+// ✅ 6. Social Media Styles
+// -------------------------------
 .btn-social {
   background: var(--primary-color);
   color: white;
@@ -137,24 +128,6 @@ body {
   }
 }
 
-.btn-outline {
-  background: transparent;
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--surface-color);
-    border-color: var(--text-secondary);
-  }
-}
-
-/* Social Media Card Styles */
 .social-card {
   background: var(--surface-color);
   border: 1px solid var(--border-color);
@@ -167,23 +140,6 @@ body {
   }
 }
 
-.btn-secondary {
-  background: transparent;
-  color: var(--primary-color);
-  border: 1px solid var(--primary-color);
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-secondary:hover {
-  background: var(--primary-color);
-  color: white;
-}
-
-/* Social Media Gradient */
 .gradient-text {
   background: var(--gradient-primary);
   -webkit-background-clip: text;
@@ -197,21 +153,37 @@ body {
   border-radius: 50%;
 }
 
-/* Animations */
+// -------------------------------
+// ✅ 7. Animations
+// -------------------------------
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 @keyframes slideUp {
-  from { 
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to { 
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse {
@@ -232,7 +204,9 @@ body {
   animation: pulse 2s infinite;
 }
 
-/* Scrollbar Styling */
+// -------------------------------
+// ✅ 8. Scrollbar Styling
+// -------------------------------
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -250,23 +224,26 @@ body {
   background: #a8a8a8;
 }
 
-/* Material Design Overrides */
-.mat-mdc-button {
-  font-family: 'Inter', sans-serif !important;
-}
-
+// -------------------------------
+// ✅ 9. Material Design Overrides
+// -------------------------------
+.mat-mdc-button,
 .mat-mdc-form-field {
   font-family: 'Inter', sans-serif !important;
 }
 
-/* Responsive Design */
+// -------------------------------
+// ✅ 10. Responsive Design
+// -------------------------------
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;
   }
 }
 
-/* Loading Spinner */
+// -------------------------------
+// ✅ 11. Loading Spinner
+// -------------------------------
 .loading-spinner {
   display: inline-block;
   width: 20px;
@@ -282,7 +259,9 @@ body {
   100% { transform: rotate(360deg); }
 }
 
-/* Toast Notifications */
+// -------------------------------
+// ✅ 12. Toast Notifications
+// -------------------------------
 .toast {
   position: fixed;
   top: 20px;

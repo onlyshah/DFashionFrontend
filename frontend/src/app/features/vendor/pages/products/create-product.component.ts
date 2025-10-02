@@ -5,10 +5,9 @@ import { Router } from '@angular/router';
 import { UploadService, UploadProgress } from '../../../../core/services/upload.service';
 
 @Component({
-  selector: 'app-create-product',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  template: `
+    selector: 'app-create-product',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    template: `
     <div class="create-product-container">
       <div class="header">
         <h1>Create New Product</h1>
@@ -142,7 +141,7 @@ import { UploadService, UploadProgress } from '../../../../core/services/upload.
       </form>
     </div>
   `,
-  styles: [`
+    styles: [`
     .create-product-container {
       max-width: 800px;
       margin: 0 auto;

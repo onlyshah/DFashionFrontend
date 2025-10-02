@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TrendingService } from '../../../../core/services/trending.service';
+import { UnifiedApiService } from '../../../../core/services/unified-api.service';
 import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../core/services/cart.service';
@@ -12,11 +12,10 @@ import { ImageFallbackDirective } from '../../../../shared/directives/image-fall
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-trending-products',
-  standalone: true,
-  imports: [CommonModule, IonicModule, ImageFallbackDirective],
-  templateUrl: './trending-products.component.html',
-  styleUrls: ['./trending-products.component.scss']
+    selector: 'app-trending-products',
+    imports: [CommonModule, IonicModule, ImageFallbackDirective],
+    templateUrl: './trending-products.component.html',
+    styleUrls: ['./trending-products.component.scss']
 })
 export class TrendingProductsComponent implements OnInit, OnDestroy {
   trendingProducts: Product[] = [];
@@ -50,7 +49,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private trendingService: TrendingService,
+  private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
     private cartService: CartService,
     private wishlistService: WishlistService,
@@ -60,8 +59,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.loadTrendingProducts();
-    this.subscribeTrendingProducts();
+  this.loadTrendingProducts();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -73,16 +71,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private subscribeTrendingProducts() {
-    this.subscription.add(
-      this.trendingService.trendingProducts$.subscribe(products => {
-        this.trendingProducts = products;
-        console.log('TrendingProducts API data:', products);
-        this.isLoading = false;
-        this.updateSliderOnProductsLoad();
-      })
-    );
-  }
+  // No longer needed: subscribeTrendingProducts
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -92,18 +81,20 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private async loadTrendingProducts() {
-    try {
-      this.isLoading = true;
-      this.error = null;
-      await this.trendingService.loadTrendingProducts(1, 8);
-      let data =  this.trendingService.loadTrendingProducts(1, 8)
-      console.log(data)
-    } catch (error) {
-      console.error('Error loading trending products:', error);
-      this.error = 'Failed to load trending products';
-      this.isLoading = false;
-    }
+  private loadTrendingProducts() {
+    this.isLoading = true;
+    this.error = null;
+    this.unifiedApi.getTrendingProducts(1, 8).subscribe(
+      (response) => {
+        this.trendingProducts = response?.data || response?.products || [];
+        this.isLoading = false;
+        this.updateSliderOnProductsLoad();
+      },
+      (error) => {
+        this.error = 'Failed to load trending products';
+        this.isLoading = false;
+      }
+    );
   }
 
   onProductClick(product: Product) {

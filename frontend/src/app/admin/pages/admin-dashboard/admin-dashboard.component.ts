@@ -8,11 +8,10 @@ import { AdminApiService } from '../../services/admin-api.service';
 Chart.register(...registerables);
 
 @Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.scss'
+    selector: 'app-admin-dashboard',
+    imports: [CommonModule],
+    templateUrl: './admin-dashboard.component.html',
+    styleUrl: './admin-dashboard.component.scss'
 })
 export class AdminDashboardComponent implements OnInit, AfterViewInit {
   @ViewChild('transactionsChart', { static: false }) transactionsChart!: ElementRef<HTMLCanvasElement>;

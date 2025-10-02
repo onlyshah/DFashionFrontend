@@ -15,21 +15,20 @@ import { TopFashionInfluencersComponent } from '../top-fashion-influencers/top-f
 import { ShopByCategoryComponent } from '../shop-by-category/shop-by-category.component';
 
 @Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    IonicModule,
-    TrendingProductsComponent,
-    FeaturedBrandsComponent,
-    NewArrivalsComponent,
-    SuggestedForYouComponent,
-    TopFashionInfluencersComponent,
-    ShopByCategoryComponent
-  ],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
+    selector: 'app-sidebar',
+    imports: [
+        CommonModule,
+        RouterModule,
+        IonicModule,
+        TrendingProductsComponent,
+        FeaturedBrandsComponent,
+        NewArrivalsComponent,
+        SuggestedForYouComponent,
+        TopFashionInfluencersComponent,
+        ShopByCategoryComponent
+    ],
+    templateUrl: './sidebar.component.html',
+    styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
   isMobile(): boolean {

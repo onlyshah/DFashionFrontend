@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'app-error-state',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  templateUrl: './error-state.component.html',
-  styleUrls: ['./error-state.component.scss']
+    selector: 'app-error-state',
+    imports: [CommonModule, IonicModule],
+    templateUrl: './error-state.component.html',
+    styleUrls: ['./error-state.component.scss']
 })
 export class ErrorStateComponent {
   @Input() icon: string = 'alert-circle';

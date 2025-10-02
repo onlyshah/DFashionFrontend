@@ -8,11 +8,10 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { User } from '../../../../core/models/user.model';
 
 @Component({
-  selector: 'app-settings',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
-  templateUrl: './settings.component.html',
-  styles: [`
+    selector: 'app-settings',
+    imports: [CommonModule, FormsModule, IonicModule],
+    templateUrl: './settings.component.html',
+    styles: [`
     .settings-container {
       padding: 20px;
       max-width: 800px;

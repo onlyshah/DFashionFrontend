@@ -2,8 +2,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { AdminAuthService } from '../services/admin-auth.service';
 
 @Component({
-  selector: 'app-header',
-  template: `
+    selector: 'app-header',
+    template: `
     <mat-toolbar class="admin-header">
       <!-- Mobile Menu Toggle -->
       <button 
@@ -128,7 +128,8 @@ import { AdminAuthService } from '../services/admin-auth.service';
       </div>
     </mat-toolbar>
   `,
-  styleUrls: ['./header.component.scss']
+    styleUrls: ['./header.component.scss'],
+    standalone: false
 })
 export class HeaderComponent implements OnInit {
   @Output() sidenavToggle = new EventEmitter<void>();

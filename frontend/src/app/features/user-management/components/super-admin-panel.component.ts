@@ -34,23 +34,22 @@ interface SystemStats {
 }
 
 @Component({
-  selector: 'app-super-admin-panel',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatTabsModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatTableModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatDialogModule,
-    MatSnackBarModule
-  ],
-  templateUrl: './super-admin-panel.component.html',
-  styleUrls: ['./super-admin-panel.component.css']
+    selector: 'app-super-admin-panel',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatTabsModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatTableModule,
+        MatChipsModule,
+        MatProgressSpinnerModule,
+        MatDialogModule,
+        MatSnackBarModule
+    ],
+    templateUrl: './super-admin-panel.component.html',
+    styleUrls: ['./super-admin-panel.component.css']
 })
 
 // ...existing code...

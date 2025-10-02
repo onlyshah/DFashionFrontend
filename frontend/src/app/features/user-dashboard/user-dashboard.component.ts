@@ -29,20 +29,19 @@ interface RecentActivity {
 }
 
 @Component({
-  selector: 'app-user-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    IonicModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTabsModule,
-    RewardDashboardComponent,
-    CustomerDashboardComponent
-  ],
-  templateUrl: './user-dashboard.component.html',
-  styleUrls: ['./user-dashboard.component.css']
+    selector: 'app-user-dashboard',
+    imports: [
+        CommonModule,
+        IonicModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTabsModule,
+        RewardDashboardComponent,
+        CustomerDashboardComponent
+    ],
+    templateUrl: './user-dashboard.component.html',
+    styleUrls: ['./user-dashboard.component.css']
 })
 // ...existing code...
 

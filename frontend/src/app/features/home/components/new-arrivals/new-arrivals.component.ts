@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TrendingService } from '../../../../core/services/trending.service';
+import { UnifiedApiService } from '../../../../core/services/unified-api.service';
 import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../core/services/cart.service';
@@ -11,11 +11,10 @@ import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-new-arrivals',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  templateUrl: './new-arrivals.component.html',
-  styleUrls: ['./new-arrivals.component.scss']
+    selector: 'app-new-arrivals',
+    imports: [CommonModule, IonicModule],
+    templateUrl: './new-arrivals.component.html',
+    styleUrls: ['./new-arrivals.component.scss']
 })
 export class NewArrivalsComponent implements OnInit, OnDestroy {
   newArrivals: Product[] = [];
@@ -38,7 +37,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   isPaused = false;
    imageUrl = environment.apiUrl
   constructor(
-    private trendingService: TrendingService,
+  private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
     private cartService: CartService,
     private wishlistService: WishlistService,
@@ -46,8 +45,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.loadNewArrivals();
-    this.subscribeNewArrivals();
+  this.loadNewArrivals();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -58,18 +56,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private subscribeNewArrivals() {
-    this.subscription.add(
-      this.trendingService.newArrivals$.subscribe(products => {
-        this.newArrivals = products;
-        console.log('New Arrivals API data:', this.newArrivals,
-         
-        );
-        this.isLoading = false;
-        this.updateSliderOnProductsLoad();
-      })
-    );
-  }
+  // No longer needed: subscribeNewArrivals
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -79,16 +66,20 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private async loadNewArrivals() {
-    try {
-      this.isLoading = true;
-      this.error = null;
-      await this.trendingService.loadNewArrivals(1, 6);
-    } catch (error) {
-      console.error('Error loading new arrivals:', error);
-      this.error = 'Failed to load new arrivals';
-      this.isLoading = false;
-    }
+  private loadNewArrivals() {
+    this.isLoading = true;
+    this.error = null;
+    this.unifiedApi.getNewArrivals(1, 6).subscribe(
+      (response) => {
+        this.newArrivals = response?.data || response?.products || [];
+        this.isLoading = false;
+        this.updateSliderOnProductsLoad();
+      },
+      (error) => {
+        this.error = 'Failed to load new arrivals';
+        this.isLoading = false;
+      }
+    );
   }
 
   onProductClick(product: Product) {

@@ -10,11 +10,10 @@ import { WishlistNewService } from '../../../core/services/wishlist-new.service'
 import { User } from '../../../core/models/user.model';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
-  templateUrl: './header.component.html',
-  styles: [`
+    selector: 'app-header',
+    imports: [CommonModule, RouterModule, FormsModule],
+    templateUrl: './header.component.html',
+    styles: [`
     .header {
       background: #fff;
       border-bottom: 1px solid #dbdbdb;
@@ -456,7 +455,7 @@ export class HeaderComponent implements OnInit {
   cartTotalAmount = 0;
   showCartTotalPrice = false;
 
-  backendDefaultAvatar = environment.apiUrl + '/uploads/avatars/default-avatar.png';
+  backendDefaultAvatar = environment.apiUrl;
 
   // Search functionality
   showSuggestions = false;
@@ -649,8 +648,10 @@ export class HeaderComponent implements OnInit {
     this.showUserMenu = false;
   }
 
+  
   onAvatarError(event: any) {
     // Fallback to backend-served default avatar if the current one fails to load
     event.target.src = this.backendDefaultAvatar;
+    
   }
 }

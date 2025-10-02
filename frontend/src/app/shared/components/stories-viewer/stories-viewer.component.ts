@@ -2,9 +2,10 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ViewChild, E
 import { Platform } from '@ionic/angular';
 
 @Component({
-  selector: 'app-stories-viewer',
-  templateUrl: './stories-viewer.component.html',
-  styleUrls: ['./stories-viewer.component.scss']
+    selector: 'app-stories-viewer',
+    templateUrl: './stories-viewer.component.html',
+    styleUrls: ['./stories-viewer.component.scss'],
+    standalone: false
 })
 export class StoriesViewerComponent implements OnInit, OnDestroy {
   @Input() stories: any[] = [];

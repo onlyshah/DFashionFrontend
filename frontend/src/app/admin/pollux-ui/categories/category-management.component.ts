@@ -16,9 +16,10 @@ interface Category {
 }
 
 @Component({
-  selector: 'app-category-management',
-  templateUrl: './category-management.component.html',
-  styleUrls: ['../pollux-ui.scss', '../forms/pollux-form-controls.scss']
+    selector: 'app-category-management',
+    templateUrl: './category-management.component.html',
+    styleUrls: ['../pollux-ui.scss', '../forms/pollux-form-controls.scss'],
+    standalone: false
 })
 export class CategoryManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

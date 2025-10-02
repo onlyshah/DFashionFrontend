@@ -4,6 +4,7 @@ export interface User {
   email: string;
   fullName: string;
   avatar: string;
+  image?: string; // ✅ Add this line
   bio?: string;
   role: 'customer' | 'vendor' | 'admin' | 'super_admin' | 'end_user';
   isVerified: boolean;

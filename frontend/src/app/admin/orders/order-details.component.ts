@@ -4,8 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { OrderService } from '../services/order.service';
 
 @Component({
-  selector: 'app-order-details',
-  template: `
+    selector: 'app-order-details',
+    template: `
     <h2 mat-dialog-title>Order Details - {{ order.orderNumber }}</h2>
     
     <mat-dialog-content class="order-details-content">
@@ -134,7 +134,8 @@ import { OrderService } from '../services/order.service';
       </button>
     </mat-dialog-actions>
   `,
-  styleUrls: ['./order-details.component.scss']
+    styleUrls: ['./order-details.component.scss'],
+    standalone: false
 })
 export class OrderDetailsComponent implements OnInit {
   selectedStatus: string = '';

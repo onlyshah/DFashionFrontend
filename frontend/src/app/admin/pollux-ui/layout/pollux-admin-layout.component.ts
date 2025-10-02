@@ -28,9 +28,10 @@ interface Notification {
 }
 
 @Component({
-  selector: 'app-pollux-admin-layout',
-  templateUrl: './pollux-admin-layout.component.html',
-  styleUrls: ['../pollux-ui.scss']
+    selector: 'app-pollux-admin-layout',
+    templateUrl: './pollux-admin-layout.component.html',
+    styleUrls: ['../pollux-ui.scss'],
+    standalone: false
 })
 export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

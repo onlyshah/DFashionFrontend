@@ -33,20 +33,19 @@ interface CustomerActivity {
 }
 
 @Component({
-  selector: 'app-customer-data-table',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatTableModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatTabsModule
-  ],
-  template: `
+    selector: 'app-customer-data-table',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatTableModule,
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        MatChipsModule,
+        MatProgressSpinnerModule,
+        MatTabsModule
+    ],
+    template: `
     <div class="customer-data-container" *ngIf="customerData">
       <!-- Customer Profile Header -->
       <mat-card class="profile-header-card">
@@ -267,7 +266,7 @@ interface CustomerActivity {
       <p>Loading customer data...</p>
     </div>
   `,
-  styleUrls: ['./customer-data-table.component.scss']
+    styleUrls: ['./customer-data-table.component.scss']
 })
 export class CustomerDataTableComponent implements OnInit {
   @Input() customerData: any;

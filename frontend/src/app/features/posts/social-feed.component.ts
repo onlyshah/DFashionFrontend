@@ -66,11 +66,10 @@ interface Post {
 }
 
 @Component({
-  selector: 'app-social-feed',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ViewAddStoriesComponent],
-  templateUrl: './social-feed.component.html',
-  styles: [`
+    selector: 'app-social-feed',
+    imports: [CommonModule, FormsModule, ViewAddStoriesComponent],
+    templateUrl: './social-feed.component.html',
+    styles: [`
     .social-feed {
       max-width: 600px;
       margin: 0 auto;

@@ -4,10 +4,9 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-ecommerce-hub',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet],
-  template: `
+    selector: 'app-ecommerce-hub',
+    imports: [CommonModule, FormsModule, RouterOutlet],
+    template: `
     <div class="ecommerce-hub">
       <!-- Navigation Header -->
       <header class="hub-header">
@@ -271,7 +270,7 @@ import { FormsModule } from '@angular/forms';
       </nav>
     </div>
   `,
-  styles: [`
+    styles: [`
     .ecommerce-hub {
       min-height: 100vh;
       background: #f8f9fa;

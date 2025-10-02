@@ -11,7 +11,7 @@ import { AvatarService, AvatarData } from '../../../core/services/avatar.service
 })
 export class AvatarComponent implements OnInit, OnChanges {
   @Input() name: string = '';
-  @Input() imageUrl: string | null = null;
+  @Input() imageUrl: string | null = null; // Should be user.image if present, else avatar, else default
   @Input() size: number = 40;
   @Input() shape: 'circle' | 'square' = 'circle';
   @Input() showBorder: boolean = false;
@@ -38,7 +38,12 @@ export class AvatarComponent implements OnInit, OnChanges {
   }
 
   private initializeAvatar() {
-    this.avatarData = this.avatarService.generateAvatarData(this.name, this.imageUrl);
+    // Fallback logic: image > avatar > default
+    let finalImageUrl = this.imageUrl;
+    if (!finalImageUrl || finalImageUrl === '') {
+      finalImageUrl = '/uploads/default-avatar.svg';
+    }
+    this.avatarData = this.avatarService.generateAvatarData(this.name, finalImageUrl);
     this.avatarStyles = this.avatarService.generateAvatarStyles(this.name, this.size);
     this.imageLoaded = false;
     this.imageError = false;

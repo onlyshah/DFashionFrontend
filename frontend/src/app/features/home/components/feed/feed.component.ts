@@ -8,11 +8,10 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-feed',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './feed.component.html',
-  styleUrls: ['./feed.component.scss']
+    selector: 'app-feed',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './feed.component.html',
+    styleUrls: ['./feed.component.scss']
 })
 export class FeedComponent implements OnInit {
   posts: any[] = [];

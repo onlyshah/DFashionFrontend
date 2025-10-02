@@ -9,11 +9,10 @@ import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 
 @Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './product-detail.component.html',
-  styles: [`
+    selector: 'app-product-detail',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './product-detail.component.html',
+    styles: [`
     .product-detail-container {
       display: grid;
       grid-template-columns: 1fr 1fr;

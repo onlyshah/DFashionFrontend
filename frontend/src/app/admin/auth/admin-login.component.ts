@@ -5,9 +5,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminAuthService } from '../services/admin-auth.service';
 
 @Component({
-  selector: 'app-admin-login',
-  templateUrl: './admin-login.component.html',
-  styleUrls: ['./admin-login.component.scss']
+    selector: 'app-admin-login',
+    templateUrl: './admin-login.component.html',
+    styleUrls: ['./admin-login.component.scss'],
+    standalone: false
 })
 export class AdminLoginComponent implements OnInit {
   loginForm: FormGroup;

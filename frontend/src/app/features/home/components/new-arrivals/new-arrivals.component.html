@@ -58,10 +58,9 @@
         >
       <!-- Product Image -->
       <div class="product-image-container">
-        {{imageUrl +product.images[0].url}}
         <img 
-           [src]="imageUrl +product.images"
-        
+          [src]="product.images && product.images.length > 0 ? imageUrl + product.images[0].url : imageUrl + '/uploads/products/placeholder-product.png'"
+          [alt]="product.name"
           class="product-image"
           loading="lazy"
         />

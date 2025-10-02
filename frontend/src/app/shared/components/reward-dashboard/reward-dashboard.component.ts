@@ -27,17 +27,16 @@ interface RecentReward {
 }
 
 @Component({
-  selector: 'app-reward-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatProgressBarModule,
-    MatChipsModule
-  ],
-  template: `
+    selector: 'app-reward-dashboard',
+    imports: [
+        CommonModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatProgressBarModule,
+        MatChipsModule
+    ],
+    template: `
     <div class="reward-dashboard">
       <!-- Reward Summary Cards -->
       <div class="reward-summary">
@@ -175,7 +174,7 @@ interface RecentReward {
       </mat-card>
     </div>
   `,
-  styleUrls: ['./reward-dashboard.component.scss']
+    styleUrls: ['./reward-dashboard.component.scss']
 })
 export class RewardDashboardComponent implements OnInit {
   @Input() rewardSummary: RewardSummary | null = null;

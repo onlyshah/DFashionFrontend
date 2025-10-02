@@ -11,11 +11,10 @@ import { WishlistNewService } from '../../../core/services/wishlist-new.service'
 import { TrendingProductsComponent } from '../../../features/home/components/trending-products/trending-products.component';
 
 @Component({
-  selector: 'app-mobile-layout',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TrendingProductsComponent],
-  templateUrl: './mobile-layout.component.html',
-  styleUrls: ['./mobile-layout.component.scss']
+    selector: 'app-mobile-layout',
+    imports: [CommonModule, RouterModule, FormsModule, TrendingProductsComponent],
+    templateUrl: './mobile-layout.component.html',
+    styleUrls: ['./mobile-layout.component.scss']
 })
 export class MobileLayoutComponent implements OnInit, OnDestroy {
   isTrendingOpen = false;

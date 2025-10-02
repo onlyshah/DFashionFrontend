@@ -19,11 +19,10 @@ interface SuggestedUser {
 }
 
 @Component({
-  selector: 'app-suggested-for-you',
-  standalone: true,
-  imports: [CommonModule, IonicModule, ImageFallbackDirective],
-  templateUrl: './suggested-for-you.component.html',
-  styleUrls: ['./suggested-for-you.component.scss']
+    selector: 'app-suggested-for-you',
+    imports: [CommonModule, IonicModule, ImageFallbackDirective],
+    templateUrl: './suggested-for-you.component.html',
+    styleUrls: ['./suggested-for-you.component.scss']
 })
 export class SuggestedForYouComponent implements OnInit, OnDestroy {
   suggestedUsers: SuggestedUser[] = [];

@@ -10,10 +10,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-checkout',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
-  template: `
+    selector: 'app-checkout',
+    imports: [CommonModule, ReactiveFormsModule, FormsModule],
+    template: `
     <div class="checkout-container">
       <div class="checkout-header">
         <h1>Checkout</h1>
@@ -254,7 +253,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .checkout-container {
       max-width: 1200px;
       margin: 0 auto;

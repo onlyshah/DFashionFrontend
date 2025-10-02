@@ -29,7 +29,13 @@
 
     <!-- Login Form -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
+  <div class="form-group">
+      <div class="form-group remember-me-group">
+        <label>
+          <input type="checkbox" formControlName="rememberMe" />
+          Remember Me
+        </label>
+      </div>
         <div class="input-container">
           <input
             type="text"

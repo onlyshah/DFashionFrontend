@@ -1,103 +1,84 @@
-<div class="row">
-  <div class="col-xl-6 grid-margin stretch-card flex-column">
-    <h5 class="mb-2 text-titlecase mb-4">Status statistics</h5>
-    <div class="row">
-      <div class="col-md-6 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body d-flex flex-column justify-content-between">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <p class="mb-0 text-muted">Transactions</p>
-              <p class="mb-0 text-muted">+1.37%</p>
-            </div>
-            <h4>{{ dashboardStats.transactions || 1352 }}</h4>
-            <canvas #transactionsChart class="mt-auto" height="65"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 grid-margin stretch-card">
-        <div class="card">
-          <div class="card-body d-flex flex-column justify-content-between">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div>
-                <p class="mb-2 text-muted">Sales</p>
-                <h6 class="mb-0">{{ dashboardStats.sales || 563 }}</h6>
-              </div>
-              <div>
-                <p class="mb-2 text-muted">Orders</p>
-                <h6 class="mb-0">{{ dashboardStats.orders || 720 }}</h6>
-              </div>
-              <div>
-                <p class="mb-2 text-muted">Revenue</p>
-                <h6 class="mb-0">{{ dashboardStats.revenue || 5900 }}</h6>
-              </div>
-            </div>
-            <canvas #salesChart class="mt-auto" height="65"></canvas>
-          </div>
-        </div>
+<div class="container-scroller">
+  <!-- Navbar -->
+  <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+    <div class="navbar-brand-wrapper d-flex justify-content-center">
+      <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
+        <a class="navbar-brand brand-logo" href="/admin"><img src="../../../assets/logo.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="/admin"><img src="../../../assets/logo-mini.svg" alt="logo"/></a>
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button">
+          <span class="typcn typcn-th-menu"></span>
+        </button>
       </div>
     </div>
-    <div class="row h-100">
-      <div class="col-md-6 stretch-card grid-margin grid-margin-md-0">
-        <div class="card">
-          <div class="card-body d-flex flex-column justify-content-between">
-            <p class="text-muted">Sales Analytics</p>
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h3 class="mb-">{{ dashboardStats.totalSales || 27632 }}</h3>
-              <h3 class="mb-">{{ dashboardStats.salesPercentage || 78 }}%</h3>
-            </div>
-            <canvas #salesAnalyticsChart class="mt-auto" height="38"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div class="row h-100">
-              <div class="col-6 d-flex flex-column justify-content-between">
-                <p class="text-muted">CPU</p>
-                <h4>{{ dashboardStats.cpuUsage || 55 }}%</h4>
-                <canvas #cpuChart class="mt-auto"></canvas>
-              </div>
-              <div class="col-6 d-flex flex-column justify-content-between">
-                <p class="text-muted">Memory</p>
-                <h4>{{ dashboardStats.memoryUsage || '123,65' }}</h4>
-                <canvas #memoryChart class="mt-auto"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+      <!-- Profile, notifications, search, etc. -->
+      <!-- ...copy PolluxUI navbar content here... -->
     </div>
-  </div>
-  <div class="col-xl-6 grid-margin stretch-card flex-column">
-    <h5 class="mb-2 text-titlecase mb-4">Income statistics</h5>
-    <div class="row h-100">
-      <div class="col-md-12 stretch-card">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start flex-wrap">
-              <div>
-                <p class="mb-3">Monthly Increase</p>
-                <h3>{{ dashboardStats.monthlyIncrease || 67842 }}</h3>
-              </div>
-              <div id="income-chart-legend" class="d-flex flex-wrap mt-1 mt-md-0">
-                <div class="legend-item me-3">
-                  <span class="legend-dot bg-primary"></span>
-                  <span class="legend-text">Register User</span>
-                </div>
-                <div class="legend-item">
-                  <span class="legend-dot bg-info"></span>
-                  <span class="legend-text">Premium User</span>
-                </div>
+  </nav>
+
+  <!-- Breadcrumb -->
+  <nav class="navbar-breadcrumb col-xl-12 col-12 d-flex flex-row p-0">
+    <div class="navbar-links-wrapper d-flex align-items-stretch">
+      <!-- ...PolluxUI breadcrumb links... -->
+    </div>
+    <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+      <ul class="navbar-nav me-lg-2">
+        <li class="nav-item ms-0">
+          <h4 class="mb-0">Dashboard</h4>
+        </li>
+        <li class="nav-item">
+          <div class="d-flex align-items-baseline">
+            <p class="mb-0">Home</p>
+            <i class="typcn typcn-chevron-right"></i>
+            <p class="mb-0">Main Dashboard</p>
+          </div>
+        </li>
+      </ul>
+      <ul class="navbar-nav navbar-nav-right">
+        <li class="nav-item nav-search d-none d-md-block me-0">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search..." aria-label="search" aria-describedby="search">
+            <div class="input-group-prepend d-flex">
+              <span class="input-group-text" id="search">
+                <i class="typcn typcn-zoom"></i>
+              </span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid page-body-wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" href="/admin">
+            <i class="typcn typcn-device-desktop menu-icon"></i>
+            <span class="menu-title">Dashboard</span>
+            <div class="badge badge-danger">new</div>
+          </a>
+        </li>
+        <!-- ...copy PolluxUI sidebar items here... -->
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-panel">
+      <div class="content-wrapper">
+        <!-- Place your dashboard widgets and cards here, using PolluxUI grid and card classes -->
+        <div class="row">
+          <!-- Example widget -->
+          <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Transactions</h5>
+                <h4>{{ dashboardStats.transactions || 1352 }}</h4>
+                <canvas #transactionsChart height="65"></canvas>
               </div>
             </div>
-            <canvas #incomeChart></canvas>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 <div class="row">
   <div class="col-xl-4 grid-margin stretch-card">

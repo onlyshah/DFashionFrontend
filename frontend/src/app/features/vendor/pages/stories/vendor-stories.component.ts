@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-vendor-stories',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './vendor-stories.component.html',
-  styleUrls: ['./vendor-stories.component.scss']
+    selector: 'app-vendor-stories',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './vendor-stories.component.html',
+    styleUrls: ['./vendor-stories.component.scss']
 })
 export class VendorStoriesComponent implements OnInit {
   stories: any[] = [];

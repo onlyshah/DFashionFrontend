@@ -6,11 +6,10 @@ import { SocialFeedComponent } from '../posts/social-feed.component';
 import { StoriesViewerComponent } from '../stories/stories-viewer.component';
 
 @Component({
-  selector: 'app-social-media',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterOutlet, SocialFeedComponent, StoriesViewerComponent],
-  templateUrl: './social-media.component.html',
-  styles: [`
+    selector: 'app-social-media',
+    imports: [CommonModule, FormsModule, RouterOutlet, SocialFeedComponent, StoriesViewerComponent],
+    templateUrl: './social-media.component.html',
+    styles: [`
     .social-media-platform {
       min-height: 100vh;
       background: #f8f9fa;

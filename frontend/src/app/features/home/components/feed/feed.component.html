@@ -106,7 +106,12 @@
     <div class="products" *ngIf="post.products?.length > 0">
       <h4>Tagged Products:</h4>
       <div *ngFor="let product of post.products" class="product-item">
-        <img [src]="product.image" alt="{{ product.name }}" class="product-img">
+        <img 
+         [src]="post.mediaUrl"
+           [alt]="post.caption"
+           class="post-image"
+         alt="{{ product.name }}" 
+         class="product-img">
         <div class="details">
           <span>{{ product.name }}</span>
           <span *ngIf="product.price">{{ formatPrice(product.price) }}</span>

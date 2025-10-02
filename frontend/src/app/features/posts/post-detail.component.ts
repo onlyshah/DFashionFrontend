@@ -54,11 +54,10 @@ interface Post {
 }
 
 @Component({
-  selector: 'app-post-detail',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './post-detail.component.html',
-  styles: [`
+    selector: 'app-post-detail',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './post-detail.component.html',
+    styles: [`
     .post-detail-container {
       max-width: 600px;
       margin: 0 auto;

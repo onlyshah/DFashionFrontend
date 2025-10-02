@@ -25,9 +25,10 @@ interface RealTimeMetrics {
 // Remove the local interface since we're importing it from the service
 
 @Component({
-  selector: 'app-pollux-dashboard',
-  templateUrl: './pollux-dashboard.component.html',
-  styleUrls: ['../pollux-ui.scss']
+    selector: 'app-pollux-dashboard',
+    templateUrl: './pollux-dashboard.component.html',
+    styleUrls: ['../pollux-ui.scss'],
+    standalone: false
 })
 export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();

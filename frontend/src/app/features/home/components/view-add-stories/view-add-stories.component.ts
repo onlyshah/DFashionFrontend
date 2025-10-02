@@ -44,11 +44,10 @@ export interface CurrentUser {
 }
 
 @Component({
-  selector: 'app-view-add-stories',
-  standalone: true,
-  imports: [CommonModule, CarouselModule, ImageFallbackDirective],
-  templateUrl: './view-add-stories.component.html',
-  styleUrls: ['./view-add-stories.component.scss']
+    selector: 'app-view-add-stories',
+    imports: [CommonModule, CarouselModule, ImageFallbackDirective],
+    templateUrl: './view-add-stories.component.html',
+    styleUrls: ['./view-add-stories.component.scss']
 })
 export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   @ViewChild('storiesContainer', { static: false }) storiesContainer!: ElementRef;

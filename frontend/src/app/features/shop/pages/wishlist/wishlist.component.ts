@@ -6,10 +6,9 @@ import { WishlistNewService, WishlistItem } from '../../../../core/services/wish
 import { CartService } from '../../../../core/services/cart.service';
 
 @Component({
-  selector: 'app-wishlist',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-wishlist',
+    imports: [CommonModule],
+    template: `
     <div class="wishlist-page">
       <div class="wishlist-header">
         <h1>My Wishlist</h1>
@@ -77,7 +76,7 @@ import { CartService } from '../../../../core/services/cart.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .wishlist-page {
       padding: 2rem;
       max-width: 1200px;

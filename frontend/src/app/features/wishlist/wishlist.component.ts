@@ -9,11 +9,10 @@ import { AuthService } from '../../core/services/auth.service';
 // WishlistItem interface is now imported from the service
 
 @Component({
-  selector: 'app-wishlist',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './wishlist.component.html',
-  styles: [`
+    selector: 'app-wishlist',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './wishlist.component.html',
+    styles: [`
     .wishlist-container {
       max-width: 1200px;
       margin: 0 auto;

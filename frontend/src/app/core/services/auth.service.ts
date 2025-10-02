@@ -238,12 +238,24 @@ export class AuthService {
     );
   }
 
+  private rememberMe: boolean = true;
+
+  setRememberMe(remember: boolean) {
+    this.rememberMe = remember;
+  }
+
   getToken(): string | null {
-    return localStorage.getItem('token');
+    return localStorage.getItem('token') || sessionStorage.getItem('token');
   }
 
   private setToken(token: string): void {
-    localStorage.setItem('token', token);
+    if (this.rememberMe) {
+      localStorage.setItem('token', token);
+      sessionStorage.removeItem('token');
+    } else {
+      sessionStorage.setItem('token', token);
+      localStorage.removeItem('token');
+    }
   }
 
   get currentUserValue(): User | null {
@@ -478,7 +490,7 @@ export class AuthService {
           this.router.navigate(['/dashboard'], { replaceUrl: true });
           break;
         case 'vendor':
-          this.router.navigate(['/vendor'], { replaceUrl: true });
+          this.router.navigate(['/vendor/dashboard'], { replaceUrl: true });
           break;
         case 'end_user':
         case 'customer':

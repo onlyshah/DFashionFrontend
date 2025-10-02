@@ -5,8 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminProductService } from '../services/product.service';
 
 @Component({
-  selector: 'app-product-dialog',
-  template: `
+    selector: 'app-product-dialog',
+    template: `
     <h2 mat-dialog-title>{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h2>
     
     <mat-dialog-content>
@@ -131,7 +131,8 @@ import { AdminProductService } from '../services/product.service';
       </button>
     </mat-dialog-actions>
   `,
-  styleUrls: ['./product-dialog.component.scss']
+    styleUrls: ['./product-dialog.component.scss'],
+    standalone: false
 })
 export class ProductDialogComponent implements OnInit {
   productForm!: FormGroup;

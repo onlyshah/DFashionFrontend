@@ -47,30 +47,29 @@ interface UserStats {
 }
 
 @Component({
-  selector: 'app-user-management',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatSelectModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatChipsModule,
-    MatProgressSpinnerModule,
-    MatTabsModule,
-    MatTooltipModule,
-    FormsModule,
-    ReactiveFormsModule,
-    SuperAdminPanelComponent,
-    CustomerDataTableComponent
-  ],
-  templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss']
+    selector: 'app-user-management',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatInputModule,
+        MatSelectModule,
+        MatButtonModule,
+        MatIconModule,
+        MatCardModule,
+        MatChipsModule,
+        MatProgressSpinnerModule,
+        MatTabsModule,
+        MatTooltipModule,
+        FormsModule,
+        ReactiveFormsModule,
+        SuperAdminPanelComponent,
+        CustomerDataTableComponent
+    ],
+    templateUrl: './user-management.component.html',
+    styleUrls: ['./user-management.component.scss']
 })
 export class UserManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

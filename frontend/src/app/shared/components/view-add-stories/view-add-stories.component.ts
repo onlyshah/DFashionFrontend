@@ -25,11 +25,10 @@ export interface CurrentUser {
 }
 
 @Component({
-  selector: 'app-view-add-stories',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './view-add-stories.component.html',
-  styleUrls: ['./view-add-stories.component.scss']
+    selector: 'app-view-add-stories',
+    imports: [CommonModule],
+    templateUrl: './view-add-stories.component.html',
+    styleUrls: ['./view-add-stories.component.scss']
 })
 export class ViewAddStoriesComponent implements OnInit {
   @Input() stories: Story[] = [];

@@ -42,22 +42,21 @@ interface QuickAction {
 }
 
 @Component({
-  selector: 'app-customer-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTabsModule,
-    MatGridListModule,
-    MatProgressBarModule,
-    IonicModule,
-    RewardDashboardComponent
-  ],
-  templateUrl: './customer-dashboard.component.html',
-  styleUrls: ['./customer-dashboard.component.scss']
+    selector: 'app-customer-dashboard',
+    imports: [
+        CommonModule,
+        RouterModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatTabsModule,
+        MatGridListModule,
+        MatProgressBarModule,
+        IonicModule,
+        //RewardDashboardComponent
+    ],
+    templateUrl: './customer-dashboard.component.html',
+    styleUrls: ['./customer-dashboard.component.scss']
 })
 export class CustomerDashboardComponent implements OnInit, OnDestroy {
   currentUser: any = null;

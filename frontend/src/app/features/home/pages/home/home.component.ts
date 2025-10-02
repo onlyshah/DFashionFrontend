@@ -17,23 +17,22 @@ import { TopFashionInfluencersComponent } from '../../components/top-fashion-inf
 import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [
-    CommonModule,
-    IonicModule,
-    ViewAddStoriesComponent,
-    FeedComponent,
-    SidebarComponent,
-    TrendingProductsComponent,
-    FeaturedBrandsComponent,
-    NewArrivalsComponent,
-    SuggestedForYouComponent,
-    TopFashionInfluencersComponent,
-    ShopByCategoryComponent
-  ],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+    selector: 'app-home',
+    imports: [
+        CommonModule,
+        IonicModule,
+        ViewAddStoriesComponent,
+        FeedComponent,
+        SidebarComponent,
+        TrendingProductsComponent,
+        FeaturedBrandsComponent,
+        NewArrivalsComponent,
+        SuggestedForYouComponent,
+        TopFashionInfluencersComponent,
+        ShopByCategoryComponent
+    ],
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
   isMobile = false;

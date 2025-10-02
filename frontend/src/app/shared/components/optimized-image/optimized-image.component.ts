@@ -5,10 +5,9 @@ import { IonicModule } from '@ionic/angular';
 import { MediaService } from '../../../core/services/media.service';
 
 @Component({
-  selector: 'app-optimized-image',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  template: `
+    selector: 'app-optimized-image',
+    imports: [CommonModule, IonicModule],
+    template: `
     <div class="optimized-image-container" [class]="containerClass">
       <!-- Loading State -->
       <div class="loading-overlay" *ngIf="isLoading && showLoader">
@@ -40,7 +39,7 @@ import { MediaService } from '../../../core/services/media.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .optimized-image-container {
       position: relative;
       display: inline-block;

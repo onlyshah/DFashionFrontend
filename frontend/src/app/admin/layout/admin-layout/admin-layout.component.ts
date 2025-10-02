@@ -7,11 +7,10 @@ import { AdminNavbarComponent } from '../admin-navbar/admin-navbar.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
 
 @Component({
-  selector: 'app-admin-layout',
-  standalone: true,
-  imports: [CommonModule, RouterOutlet, AdminNavbarComponent, AdminSidebarComponent],
-  templateUrl: './admin-layout.component.html',
-  styleUrl: './admin-layout.component.scss'
+    selector: 'app-admin-layout',
+    imports: [CommonModule, RouterOutlet, AdminNavbarComponent, AdminSidebarComponent],
+    templateUrl: './admin-layout.component.html',
+    styleUrl: './admin-layout.component.scss'
 })
 export class AdminLayoutComponent implements OnInit {
   pageTitle: string = 'Dashboard';

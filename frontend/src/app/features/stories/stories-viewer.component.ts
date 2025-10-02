@@ -38,11 +38,10 @@ interface Story {
 }
 
 @Component({
-  selector: 'app-stories-viewer',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './stories-viewer.component.html',
-  styleUrls: ['./stories-viewer.component.scss']
+    selector: 'app-stories-viewer',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './stories-viewer.component.html',
+    styleUrls: ['./stories-viewer.component.scss']
 })
 export class StoriesViewerComponent implements OnInit, OnDestroy {
   @ViewChild('storyVideo') storyVideo!: ElementRef<HTMLVideoElement>;

@@ -67,26 +67,7 @@ export class ProductService {
     return this.http.post<{ message: string }>(`${this.API_URL}/products/${productId}/review`, reviewData);
   }
 
-  getFeaturedProducts(): Observable<{ products: Product[] }> {
-    return this.http.get<{ products: Product[] }>(`${this.API_URL}/products/featured`);
-  }
 
-  getTrendingProducts(): Observable<{ success: boolean; data: Product[] }> {
-    return this.http.get<{ success: boolean; data: Product[] }>(`${this.API_URL}/products/trending`);
-  }
-
-  getVendorProducts(vendorId: string, filters: ProductFilters = {}): Observable<ProductsResponse> {
-    let params = new HttpParams();
-    
-    Object.keys(filters).forEach(key => {
-      const value = (filters as any)[key];
-      if (value !== undefined && value !== null && value !== '') {
-        params = params.set(key, value.toString());
-      }
-    });
-
-    return this.http.get<ProductsResponse>(`${this.API_URL}/products/vendor/${vendorId}`, { params });
-  }
 
   searchProducts(query: string, filters: ProductFilters = {}): Observable<ProductsResponse> {
     const searchFilters = { ...filters, search: query };

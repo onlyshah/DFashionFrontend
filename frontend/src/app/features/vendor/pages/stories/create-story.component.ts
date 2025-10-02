@@ -5,11 +5,10 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: 'app-create-story',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  templateUrl: './create-story.component.html',
-  styleUrls: ['./create-story.component.scss']
+    selector: 'app-create-story',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './create-story.component.html',
+    styleUrls: ['./create-story.component.scss']
 })
 export class CreateStoryComponent implements OnInit {
   storyForm: FormGroup;

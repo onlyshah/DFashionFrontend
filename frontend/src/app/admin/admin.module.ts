@@ -1,7 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 // Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -70,91 +70,74 @@ import { RolePipe } from './pipes/role.pipe';
 import { StatusPipe } from './pipes/status.pipe';
 import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-format.pipe';
 
-@NgModule({
-  declarations: [
-    // Layout Components (old ones, keeping for compatibility)
-    SidebarComponent,
-    HeaderComponent,
-
-    // Auth Components
-    AdminLoginComponent,
-
-    // Dashboard Components (old one, keeping for compatibility)
-    
-    // User Management
-    UserManagementComponent,
-    UserDialogComponent,
-    
-    // Product Management
-    ProductManagementComponent,
-    ProductDialogComponent,
-    
-    // Order Management
-    OrderManagementComponent,
-    OrderDetailsComponent,
-    
-    // Analytics
-    AnalyticsComponent,
-    
-    // Settings
-    SettingsComponent,
-
-    // Pipes
-    RolePipe,
-    StatusPipe,
-    AdminCurrencyFormatPipe
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AdminRoutingModule,
-
-    // Pollux UI Module
-    PolluxUiModule,
-
-    // Angular Material Modules
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule,
-    MatIconModule,
-    MatButtonModule,
-    MatCardModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatDialogModule,
-    MatSnackBarModule,
-    MatProgressSpinnerModule,
-    MatCheckboxModule,
-    MatTooltipModule,
-    MatMenuModule,
-    MatBadgeModule,
-    MatTabsModule,
-    MatDividerModule,
-
-    // Standalone Components
-    AdminLoadingComponent,
-    AdminLayoutComponent,
-    AdminDashboardComponent,
-    RoleManagementComponent
-  ],
-  providers: [
-    AdminAuthService,
-    AdminApiService,
-    //UserService,
-    AdminProductService,
-    OrderService,
-    AnalyticsService,
-    AdminAuthGuard,
-    PermissionGuard
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
-})
+@NgModule({ declarations: [
+        // Layout Components (old ones, keeping for compatibility)
+        SidebarComponent,
+        HeaderComponent,
+        // Auth Components
+        AdminLoginComponent,
+        // Dashboard Components (old one, keeping for compatibility)
+        // User Management
+        UserManagementComponent,
+        UserDialogComponent,
+        // Product Management
+        ProductManagementComponent,
+        ProductDialogComponent,
+        // Order Management
+        OrderManagementComponent,
+        OrderDetailsComponent,
+        // Analytics
+        AnalyticsComponent,
+        // Settings
+        SettingsComponent,
+        // Pipes
+        RolePipe,
+        StatusPipe,
+        AdminCurrencyFormatPipe
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA], imports: [CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        AdminRoutingModule,
+        // Pollux UI Module
+        PolluxUiModule,
+        // Angular Material Modules
+        MatToolbarModule,
+        MatSidenavModule,
+        MatListModule,
+        MatIconModule,
+        MatButtonModule,
+        MatCardModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatInputModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+        MatTooltipModule,
+        MatMenuModule,
+        MatBadgeModule,
+        MatTabsModule,
+        MatDividerModule,
+        // Standalone Components
+        AdminLoadingComponent,
+        AdminLayoutComponent,
+        AdminDashboardComponent,
+        RoleManagementComponent], providers: [
+        AdminAuthService,
+        AdminApiService,
+        //UserService,
+        AdminProductService,
+        OrderService,
+        AnalyticsService,
+        AdminAuthGuard,
+        PermissionGuard,
+        provideHttpClient(withInterceptorsFromDi())
+    ] })
 export class AdminModule { }

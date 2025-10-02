@@ -4,11 +4,10 @@ import { IonicModule } from '@ionic/angular';
 import { SearchService } from '../../../core/services/search.service';
 
 @Component({
-  selector: 'app-visual-search',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  templateUrl: './visual-search.component.html',
-  styleUrls: ['./visual-search.component.scss']
+    selector: 'app-visual-search',
+    imports: [CommonModule, IonicModule],
+    templateUrl: './visual-search.component.html',
+    styleUrls: ['./visual-search.component.scss']
 })
 export class VisualSearchComponent {
   @Output() searchResults = new EventEmitter<any>();

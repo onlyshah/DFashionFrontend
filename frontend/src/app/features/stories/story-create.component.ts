@@ -4,11 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-story-create',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './story-create.component.html',
-  styleUrls: ['./story-create.component.scss']
+    selector: 'app-story-create',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './story-create.component.html',
+    styleUrls: ['./story-create.component.scss']
 })
 export class StoryCreateComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;

@@ -25,9 +25,10 @@ interface ChartDataPoint {
 }
 
 @Component({
-  selector: 'app-unified-dashboard',
-  templateUrl: './unified-dashboard.component.html',
-  styleUrls: ['./unified-dashboard.component.scss']
+    selector: 'app-unified-dashboard',
+    templateUrl: './unified-dashboard.component.html',
+    styleUrls: ['./unified-dashboard.component.scss'],
+    standalone: false
 })
 export class UnifiedDashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();

@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-settings',
-  template: `
+    selector: 'app-settings',
+    template: `
     <div class="settings-container">
       <div class="settings-header">
         <h1>Settings</h1>
@@ -219,7 +219,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       </mat-tab-group>
     </div>
   `,
-  styleUrls: ['./settings.component.scss']
+    styleUrls: ['./settings.component.scss'],
+    standalone: false
 })
 export class SettingsComponent implements OnInit {
   generalForm!: FormGroup;

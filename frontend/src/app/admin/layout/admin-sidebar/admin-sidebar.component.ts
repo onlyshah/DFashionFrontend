@@ -5,11 +5,10 @@ import { AdminAuthService } from '../../services/admin-auth.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-admin-sidebar',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './admin-sidebar.component.html',
-  styleUrl: './admin-sidebar.component.scss'
+    selector: 'app-admin-sidebar',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './admin-sidebar.component.html',
+    styleUrl: './admin-sidebar.component.scss'
 })
 export class AdminSidebarComponent implements OnInit {
   currentRoute: string = '';

@@ -10,8 +10,8 @@ import { FormControl } from '@angular/forms';
 import { OrderService, Order } from '../services/order.service';
 
 @Component({
-  selector: 'app-order-management',
-  template: `
+    selector: 'app-order-management',
+    template: `
     <div class="order-management">
       <mat-card>
         <mat-card-header>
@@ -148,7 +148,8 @@ import { OrderService, Order } from '../services/order.service';
       </mat-card>
     </div>
   `,
-  styleUrls: ['./order-management.component.scss']
+    styleUrls: ['./order-management.component.scss'],
+    standalone: false
 })
 export class OrderManagementComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

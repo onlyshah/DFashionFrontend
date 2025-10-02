@@ -2,10 +2,9 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-admin-loading',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-admin-loading',
+    imports: [CommonModule],
+    template: `
     <div class="loading-container" [class.fullscreen]="fullscreen">
       <div class="loading-content">
         <!-- Modern Spinner -->
@@ -31,7 +30,7 @@ import { CommonModule } from '@angular/common';
       </div>
     </div>
   `,
-  styleUrls: ['./loading.component.scss']
+    styleUrls: ['./loading.component.scss']
 })
 export class AdminLoadingComponent {
   @Input() title: string = 'Loading';

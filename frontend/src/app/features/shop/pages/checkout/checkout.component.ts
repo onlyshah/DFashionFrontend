@@ -6,10 +6,9 @@ import { Router } from '@angular/router';
 import { CartService, CartSummary } from '../../../../core/services/cart.service';
 
 @Component({
-  selector: 'app-checkout',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-checkout',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="checkout-page">
       <div class="checkout-header">
         <h1>Checkout</h1>
@@ -136,7 +135,7 @@ import { CartService, CartSummary } from '../../../../core/services/cart.service
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .checkout-page {
       padding: 2rem;
       max-width: 1200px;

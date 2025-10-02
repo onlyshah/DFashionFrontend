@@ -81,6 +81,21 @@ const routes: Routes = [
     path: 'mobile-vendor',
     loadChildren: () => import('./mobile/vendor/vendor.module').then(m => m.VendorPageModule)
   },
+
+  // Vendor dashboard route
+  {
+    path: 'vendor/dashboard',
+    loadComponent: () => import('./vendor/dashboard/vendor-dashboard.component').then(m => m.VendorDashboardComponent),
+    canActivate: [AuthGuard]
+  },
+
+  // Influencer dashboard route
+  {
+    path: 'influencer/dashboard',
+    loadComponent: () => import('./influencer/dashboard/influencer-dashboard.component').then(m => m.InfluencerDashboardComponent),
+    canActivate: [AuthGuard]
+  },
+
   // Admin routes (web-only)
   {
     path: 'admin',

@@ -9,10 +9,9 @@ import { WishlistService } from '../../core/services/wishlist.service';
 import { Product } from '../../core/models/product.interface';
 
 @Component({
-  selector: 'app-category',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-category',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="category-page">
       <!-- Header -->
       <div class="category-header">
@@ -132,7 +131,7 @@ import { Product } from '../../core/models/product.interface';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .category-page {
       max-width: 1200px;
       margin: 0 auto;

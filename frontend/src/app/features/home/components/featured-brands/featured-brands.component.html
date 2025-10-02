@@ -56,7 +56,7 @@
       <!-- Brand Header -->
       <div class="brand-header">
         <div class="brand-logo-container">
-          <img *ngIf="brand.logo" [src]="imageUrl + brand.logo" [alt]="brand.brand + ' logo'" class="brand-logo" loading="lazy" />
+          <img [src]="brand.logo ? imageUrl + brand.logo : imageUrl + '/uploads/default/brand-placeholder.png'" [alt]="brand.brand + ' logo'" class="brand-logo" loading="lazy" />
         </div>
         <div class="brand-info">
           <h3 class="brand-name">{{ brand.brand }}</h3>
@@ -68,15 +68,15 @@
           <div class="brand-stats">
             <div class="stat-item">
               <ion-icon name="bag-outline"></ion-icon>
-              <span>{{ brand.productCount }} Products</span>
+              <span>{{ brand['productCount'] }} Products</span>
             </div>
             <div class="stat-item">
               <ion-icon name="star"></ion-icon>
-              <span>{{ brand.avgRating }}/5</span>
+              <span>{{ brand['avgRating'] }}/5</span>
             </div>
             <div class="stat-item">
               <ion-icon name="eye-outline"></ion-icon>
-              <span>{{ formatNumber(brand.totalViews || 0) }} Views</span>
+              <span>{{ formatNumber(brand['totalViews'] || 0) }} Views</span>
             </div>
           </div>
         </div>
@@ -87,7 +87,7 @@
         <h4 class="products-title">Top Products</h4>
         <div class="products-list">
           <div 
-            *ngFor="let product of brand.topProducts; trackBy: trackByProductId" 
+            *ngFor="let product of brand['topProducts']; trackBy: trackByProductId"
             class="product-item"
             (click)="onProductClick(product, $event)"
           >

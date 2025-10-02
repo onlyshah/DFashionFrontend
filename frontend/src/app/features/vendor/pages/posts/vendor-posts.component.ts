@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-vendor-posts',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'app-vendor-posts',
+    imports: [CommonModule, RouterModule],
+    template: `
     <div class="vendor-posts-container">
       <div class="header">
         <h1>My Posts</h1>
@@ -75,7 +74,7 @@ import { RouterModule } from '@angular/router';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .vendor-posts-container {
       max-width: 1200px;
       margin: 0 auto;

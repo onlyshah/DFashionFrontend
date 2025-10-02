@@ -2,10 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ProductService } from '../../core/services/product.service';
-import { AuthService } from '../../core/services/auth.service';
-import { CartService } from '../../core/services/cart.service';
-import { WishlistService } from '../../core/services/wishlist.service';
+import { UnifiedApiService } from '../../core/services/unified-api.service';
 import { Product } from '../../core/models/product.interface';
 import { environment } from 'src/environments/environment';
 
@@ -30,11 +27,10 @@ interface ShopProduct extends Product {
 }
 
 @Component({
-  selector: 'app-shop',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './shop.component.html',
-  styleUrls: ['./shop.component.css']
+    selector: 'app-shop',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './shop.component.html',
+    styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit {
   searchQuery = '';
@@ -47,10 +43,7 @@ export class ShopComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private productService: ProductService,
-    private authService: AuthService,
-    private cartService: CartService,
-    private wishlistService: WishlistService
+    private unifiedApi: UnifiedApiService
   ) {}
 
   ngOnInit() {
@@ -70,9 +63,9 @@ export class ShopComponent implements OnInit {
   }
 
   loadFeaturedBrands() {
-    return this.productService.getFeaturedBrands().toPromise().then(
+    return this.unifiedApi.getFeaturedBrands().toPromise().then(
       (response) => {
-        this.featuredBrands = response?.data || [];
+        this.featuredBrands = response?.data || response?.brands || [];
       }
     ).catch(error => {
       console.error('Error loading featured brands:', error);
@@ -81,9 +74,9 @@ export class ShopComponent implements OnInit {
   }
 
   loadTrendingProducts() {
-    return this.productService.getTrendingProducts().toPromise().then(
+    return this.unifiedApi.getTrendingProducts().toPromise().then(
       (response) => {
-        this.trendingProducts = (response?.data || []).map((product: Product) => ({
+        this.trendingProducts = (response?.data || response?.products || []).map((product: Product) => ({
           ...product,
           isTrending: true,
           isNew: false
@@ -96,9 +89,9 @@ export class ShopComponent implements OnInit {
   }
 
   loadNewArrivals() {
-    return this.productService.getNewArrivals().toPromise().then(
+    return this.unifiedApi.getNewArrivals().toPromise().then(
       (response) => {
-        this.newArrivals = (response?.data || []).map((product: Product) => ({
+        this.newArrivals = (response?.data || response?.products || []).map((product: Product) => ({
           ...product,
           isNew: true,
           isTrending: false
@@ -111,9 +104,9 @@ export class ShopComponent implements OnInit {
   }
 
   loadCategories() {
-    return this.productService.getCategories().toPromise().then(
+    return this.unifiedApi.getCategories().toPromise().then(
       (response) => {
-        this.categories = response?.data || [];
+        this.categories = response?.data || response?.categories || [];
       }
     ).catch(error => {
       console.error('Error loading categories:', error);

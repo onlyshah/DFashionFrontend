@@ -6,10 +6,9 @@ import { VendorService, VendorStats, MonthlyRevenue } from '../../../../core/ser
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  selector: 'app-vendor-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  template: `
+    selector: 'app-vendor-dashboard',
+    imports: [CommonModule, RouterModule],
+    template: `
     <div class="vendor-dashboard">
       <div class="dashboard-header">
         <h1>Vendor Dashboard</h1>
@@ -177,7 +176,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .vendor-dashboard {
       max-width: 1200px;
       margin: 0 auto;

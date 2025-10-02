@@ -22,11 +22,10 @@ interface Category {
 }
 
 @Component({
-  selector: 'app-shop-by-category',
-  standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule],
-  templateUrl: './shop-by-category.component.html',
-  styleUrls: ['./shop-by-category.component.scss']
+    selector: 'app-shop-by-category',
+    imports: [CommonModule, IonicModule, CarouselModule],
+    templateUrl: './shop-by-category.component.html',
+    styleUrls: ['./shop-by-category.component.scss']
 })
 export class ShopByCategoryComponent implements OnInit, OnDestroy {
   categories: Category[] = [];

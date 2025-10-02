@@ -9,11 +9,11 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { RBACService } from '../../../../core/services/rbac.service';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, TitleCasePipe, MatIconModule],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    imports: [CommonModule, ReactiveFormsModule, 
+      RouterModule, MatIconModule],
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   loginForm: FormGroup;
@@ -52,7 +52,8 @@ export class LoginComponent {
         password: this.loginForm.value.password?.trim()
       };
 
-      this.authService.login(formData).subscribe({
+  this.authService.setRememberMe(!!formData.rememberMe);
+  this.authService.login(formData).subscribe({
         next: (response) => {
           this.loading = false;
           // Handle backend response format: { success: true, data: { token, user } }

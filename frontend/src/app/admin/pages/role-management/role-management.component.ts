@@ -7,11 +7,10 @@ import { UiAnimationService } from '../../services/ui-animation.service';
 declare var bootstrap: any;
 
 @Component({
-  selector: 'app-role-management',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './role-management.component.html',
-  styleUrl: './role-management.component.scss'
+    selector: 'app-role-management',
+    imports: [CommonModule, ReactiveFormsModule],
+    templateUrl: './role-management.component.html',
+    styleUrl: './role-management.component.scss'
 })
 export class RoleManagementComponent implements OnInit {
   roles: Role[] = [];

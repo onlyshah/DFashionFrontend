@@ -3,10 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-vendor-analytics',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-vendor-analytics',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="vendor-analytics-container">
       <div class="header">
         <h1>Analytics Dashboard</h1>
@@ -170,7 +169,7 @@ import { FormsModule } from '@angular/forms';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .vendor-analytics-container {
       max-width: 1200px;
       margin: 0 auto;

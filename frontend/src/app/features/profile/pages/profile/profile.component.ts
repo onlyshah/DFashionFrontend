@@ -9,11 +9,10 @@ import { User } from '../../../../core/models/user.model';
 import { OptimizedImageComponent } from '../../../../shared/components/optimized-image/optimized-image.component';
 
 @Component({
-  selector: 'app-profile',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, OptimizedImageComponent],
-  templateUrl: './profile.component.html',
-  styles: [`
+    selector: 'app-profile',
+    imports: [CommonModule, FormsModule, IonicModule, OptimizedImageComponent],
+    templateUrl: './profile.component.html',
+    styles: [`
     .profile-container {
       padding: 20px;
       max-width: 800px;

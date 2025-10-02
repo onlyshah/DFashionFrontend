@@ -11,8 +11,8 @@ import { AdminProductService, Product } from '../services/product.service';
 import { ProductDialogComponent } from './product-dialog.component';
 
 @Component({
-  selector: 'app-product-management',
-  template: `
+    selector: 'app-product-management',
+    template: `
     <div class="product-management">
       <mat-card>
         <mat-card-header>
@@ -147,7 +147,8 @@ import { ProductDialogComponent } from './product-dialog.component';
       </mat-card>
     </div>
   `,
-  styleUrls: ['./product-management.component.scss']
+    styleUrls: ['./product-management.component.scss'],
+    standalone: false
 })
 export class ProductManagementComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;

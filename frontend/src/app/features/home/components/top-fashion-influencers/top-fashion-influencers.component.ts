@@ -34,11 +34,10 @@ interface Influencer {
 }
 
 @Component({
-  selector: 'app-top-fashion-influencers',
-  standalone: true,
-  imports: [CommonModule, IonicModule, CarouselModule, ImageFallbackDirective],
-  templateUrl: './top-fashion-influencers.component.html',
-  styleUrls: ['./top-fashion-influencers.component.scss']
+    selector: 'app-top-fashion-influencers',
+    imports: [CommonModule, IonicModule, CarouselModule, ImageFallbackDirective],
+    templateUrl: './top-fashion-influencers.component.html',
+    styleUrls: ['./top-fashion-influencers.component.scss']
 })
 export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   topInfluencers: Influencer[] = [];

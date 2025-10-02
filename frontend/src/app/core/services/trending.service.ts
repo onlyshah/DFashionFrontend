@@ -28,7 +28,7 @@ export class TrendingService {
   public featuredBrands$ = this.featuredBrandsSubject.asObservable();
   public influencers$ = this.influencersSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private unifiedApi: import('./unified-api.service').UnifiedApiService) {}
 
   // API methods
   getTrendingProducts(page: number = 1, limit: number = 12): Observable<any> {
@@ -55,7 +55,8 @@ export class TrendingService {
   async loadTrendingProducts(page: number = 1, limit: number = 12): Promise<void> {
     console.log('🔵 TrendingService.loadTrendingProducts called');
     try {
-      const response = await this.getTrendingProducts(page, limit).toPromise();
+        const response = await this.unifiedApi.getTrendingProducts(page, limit).toPromise();
+        console.log('UnifiedApiService.getTrendingProducts response:', response);
       if (response?.success && response?.products) {
         this.trendingProductsSubject.next(response.products);
       }
@@ -68,7 +69,8 @@ export class TrendingService {
   // Load and cache suggested products
   async loadSuggestedProducts(page: number = 1, limit: number = 12): Promise<void> {
     try {
-      const response = await this.getSuggestedProducts(page, limit).toPromise();
+        const response = await this.unifiedApi.getSuggestedProducts(page, limit).toPromise();
+        console.log('UnifiedApiService.getSuggestedProducts response:', response);
       if (response?.success && response?.products) {
         this.suggestedProductsSubject.next(response.products);
       }
@@ -81,7 +83,8 @@ export class TrendingService {
   // Load and cache new arrivals
   async loadNewArrivals(page: number = 1, limit: number = 12): Promise<void> {
     try {
-      const response = await this.getNewArrivals(page, limit).toPromise();
+        const response = await this.unifiedApi.getNewArrivals(page, limit).toPromise();
+        console.log('UnifiedApiService.getNewArrivals response:', response);
       if (response?.success && response?.products) {
         this.newArrivalsSubject.next(response.products);
       }
@@ -94,7 +97,8 @@ export class TrendingService {
   // Load and cache featured brands
   async loadFeaturedBrands(): Promise<void> {
     try {
-      const response = await this.getFeaturedBrands().toPromise();
+        const response = await this.unifiedApi.getFeaturedBrands().toPromise();
+        console.log('UnifiedApiService.getFeaturedBrands response:', response);
       if (response?.success && response?.brands) {
         this.featuredBrandsSubject.next(response.brands);
       }
@@ -107,7 +111,8 @@ export class TrendingService {
   // Load and cache top influencers
   async loadTopInfluencers(): Promise<void> {
     try {
-      const response = await this.getInfluencers().toPromise();
+        const response = await this.unifiedApi.getTopInfluencers().toPromise();
+        console.log('UnifiedApiService.getTopInfluencers response:', response);
       if (response?.success && response?.data) {
         this.influencersSubject.next(response.data);
       }
@@ -115,6 +120,7 @@ export class TrendingService {
       console.error('Error loading influencers:', error);
       this.influencersSubject.next([]);
     }
+  // (removed duplicate constructor)
   }
 
   // Clear all cached data

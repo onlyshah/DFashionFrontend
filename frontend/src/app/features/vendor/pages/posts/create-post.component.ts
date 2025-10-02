@@ -6,10 +6,9 @@ import { HttpClient } from '@angular/common/http';
 import { UploadService, UploadProgress } from '../../../../core/services/upload.service';
 
 @Component({
-  selector: 'app-create-post',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
-  template: `
+    selector: 'app-create-post',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    template: `
     <div class="create-post-container">
       <div class="header">
         <h1>Create New Post</h1>
@@ -139,7 +138,7 @@ import { UploadService, UploadProgress } from '../../../../core/services/upload.
       </form>
     </div>
   `,
-  styles: [`
+    styles: [`
     .create-post-container {
       max-width: 800px;
       margin: 0 auto;

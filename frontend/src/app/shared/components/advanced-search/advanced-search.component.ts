@@ -9,11 +9,10 @@ import { ProductService } from '../../../core/services/product.service';
 import { VisualSearchComponent } from '../visual-search/visual-search.component';
 
 @Component({
-  selector: 'app-advanced-search',
-  standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, VisualSearchComponent],
-  templateUrl: './advanced-search.component.html',
-  styleUrls: ['./advanced-search.component.scss']
+    selector: 'app-advanced-search',
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, VisualSearchComponent],
+    templateUrl: './advanced-search.component.html',
+    styleUrls: ['./advanced-search.component.scss']
 })
 export class AdvancedSearchComponent implements OnInit, OnDestroy {
   @Input() placeholder: string = 'Search for products, brands, and more...';

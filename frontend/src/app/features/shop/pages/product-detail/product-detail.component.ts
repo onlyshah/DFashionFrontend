@@ -5,10 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 
 @Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
+    selector: 'app-product-detail',
+    imports: [CommonModule, FormsModule],
+    template: `
     <div class="product-detail-container">
       <div class="product-header">
         <button class="back-btn" (click)="goBack()">
@@ -36,7 +35,7 @@ import { ProductService } from '../../../../core/services/product.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .product-detail-container {
       padding: 2rem;
       max-width: 1200px;

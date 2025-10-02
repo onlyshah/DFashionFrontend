@@ -5,10 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 
 @Component({
-  selector: 'app-category',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
+    selector: 'app-category',
+    imports: [CommonModule],
+    template: `
     <div class="category-page">
       <div class="category-header">
         <h1>{{ categoryName | titlecase }}</h1>
@@ -69,7 +68,7 @@ import { ProductService } from '../../../../core/services/product.service';
       </div>
     </div>
   `,
-  styles: [`
+    styles: [`
     .category-page {
       padding: 2rem;
       max-width: 1200px;

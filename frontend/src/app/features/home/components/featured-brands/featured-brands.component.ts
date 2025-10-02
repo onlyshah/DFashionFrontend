@@ -1,19 +1,26 @@
+// Minimal interface for featured brands
+interface FeaturedBrand {
+  brand?: string;
+  name?: string;
+  logo?: string;
+  description?: string;
+  [key: string]: any;
+}
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TrendingService, FeaturedBrand } from '../../../../core/services/trending.service';
+import { UnifiedApiService } from '../../../../core/services/unified-api.service';
 import { Product } from '../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
 import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-featured-brands',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  templateUrl: './featured-brands.component.html',
-  styleUrls: ['./featured-brands.component.scss']
+    selector: 'app-featured-brands',
+    imports: [CommonModule, IonicModule],
+    templateUrl: './featured-brands.component.html',
+    styleUrls: ['./featured-brands.component.scss']
 })
 export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   featuredBrands: FeaturedBrand[] = [];
@@ -36,14 +43,13 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   isPaused = false;
    imageUrl = environment.apiUrl
   constructor(
-    private trendingService: TrendingService,
+  private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
     private router: Router
   ) {}
 
   ngOnInit() {
-    this.loadFeaturedBrands();
-    this.subscribeFeaturedBrands();
+  this.loadFeaturedBrands();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -54,15 +60,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     this.stopAutoSlide();
   }
 
-  private subscribeFeaturedBrands() {
-    this.subscription.add(
-      this.trendingService.featuredBrands$.subscribe(brands => {
-        this.featuredBrands = brands;
-        this.isLoading = false;
-        this.updateSliderOnBrandsLoad();
-      })
-    );
-  }
+  // No longer needed: subscribeFeaturedBrands
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -72,16 +70,21 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     );
   }
 
-  private async loadFeaturedBrands() {
-    try {
-      this.isLoading = true;
-      this.error = null;
-      await this.trendingService.loadFeaturedBrands();
-    } catch (error) {
-      console.error('Error loading featured brands:', error);
-      this.error = 'Failed to load featured brands';
-      this.isLoading = false;
-    }
+  private loadFeaturedBrands() {
+    this.isLoading = true;
+    this.error = null;
+    this.unifiedApi.getFeaturedBrands(1, 8).subscribe(
+      (response) => {
+        this.featuredBrands = response?.data || response?.brands || [];
+         console.log('featuredBrands' ,this.featuredBrands)
+        this.isLoading = false;
+        this.updateSliderOnBrandsLoad();
+      },
+      (error) => {
+        this.error = 'Failed to load featured brands';
+        this.isLoading = false;
+      }
+    );
   }
 
   onBrandClick(brand: FeaturedBrand) {

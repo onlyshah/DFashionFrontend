@@ -3,9 +3,10 @@ import { Platform, ActionSheetController, ToastController } from '@ionic/angular
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-create-content-modal',
-  templateUrl: './create-content-modal.component.html',
-  styleUrls: ['./create-content-modal.component.scss']
+    selector: 'app-create-content-modal',
+    templateUrl: './create-content-modal.component.html',
+    styleUrls: ['./create-content-modal.component.scss'],
+    standalone: false
 })
 export class CreateContentModalComponent implements OnInit, OnDestroy {
   @Input() isOpen: boolean = false;

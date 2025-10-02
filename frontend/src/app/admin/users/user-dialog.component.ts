@@ -5,9 +5,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { AdminApiService } from '../services/admin-api.service';
 
 @Component({
-  selector: 'app-user-dialog',
-  templateUrl: './user-dialog.component.html',
-  styles: [`
+    selector: 'app-user-dialog',
+    templateUrl: './user-dialog.component.html',
+    styles: [`
     .user-dialog {
       min-width: 500px;
     }
@@ -54,7 +54,8 @@ import { AdminApiService } from '../services/admin-api.service';
         width: 100%;
       }
     }
-  `]
+  `],
+    standalone: false
 })
 export class UserDialogComponent implements OnInit {
   userForm: FormGroup;

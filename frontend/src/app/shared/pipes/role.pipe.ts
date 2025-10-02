@@ -1,7 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'role'
+    name: 'role',
+    standalone: false
 })
 export class RolePipe implements PipeTransform {
   transform(value: string): string {

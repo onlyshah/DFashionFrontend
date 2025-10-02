@@ -1,6 +1,7 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 // Angular Material Modules
 import { MatButtonModule } from '@angular/material/button';
@@ -66,6 +67,7 @@ const MATERIAL_MODULES = [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+    FontAwesomeModule,
     ...MATERIAL_MODULES
   ],
   exports: [
@@ -73,6 +75,7 @@ const MATERIAL_MODULES = [
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
+    FontAwesomeModule,
     ...MATERIAL_MODULES,
     RolePipe,
     StoriesViewerComponent,

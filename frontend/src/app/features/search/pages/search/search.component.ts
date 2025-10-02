@@ -11,11 +11,10 @@ import { SearchService, SearchFilters, SearchSuggestion } from '../../../../core
 import { AdvancedSearchComponent } from '../../../../shared/components/advanced-search/advanced-search.component';
 
 @Component({
-  selector: 'app-search',
-  standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, AdvancedSearchComponent],
-  templateUrl: './search.component.html',
-  styles: [`
+    selector: 'app-search',
+    imports: [CommonModule, FormsModule, IonicModule, AdvancedSearchComponent],
+    templateUrl: './search.component.html',
+    styles: [`
     .search-page {
       min-height: calc(100vh - 60px);
       background: #f8f9fa;
