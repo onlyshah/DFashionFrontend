@@ -3,41 +3,10 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'app-loading-state',
-  standalone: true,
-  imports: [CommonModule, IonicModule],
-  template: `
-    <div [class]="containerClasses">
-      <!-- Spinner Loading -->
-      <div *ngIf="type === 'spinner'" class="spinner-container">
-        <ion-spinner [name]="spinnerType" [color]="color"></ion-spinner>
-        <p *ngIf="message" class="loading-message">{{ message }}</p>
-      </div>
-
-      <!-- Skeleton Loading -->
-      <div *ngIf="type === 'skeleton'" class="skeleton-container">
-        <div *ngFor="let item of skeletonItems" class="skeleton-item">
-          <div class="skeleton-avatar" *ngIf="showAvatar"></div>
-          <div class="skeleton-content">
-            <div class="skeleton-line" *ngFor="let line of item.lines" [style.width]="line + '%'"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Dots Loading -->
-      <div *ngIf="type === 'dots'" class="dots-container">
-        <div class="dot" *ngFor="let dot of [1,2,3]" [style.animation-delay]="(dot - 1) * 0.2 + 's'"></div>
-        <p *ngIf="message" class="loading-message">{{ message }}</p>
-      </div>
-
-      <!-- Pulse Loading -->
-      <div *ngIf="type === 'pulse'" class="pulse-container">
-        <div class="pulse-circle"></div>
-        <p *ngIf="message" class="loading-message">{{ message }}</p>
-      </div>
-    </div>
-  `,
-  styles: [`
+    selector: 'app-loading-state',
+    standalone: true,
+    imports: [CommonModule, IonicModule],
+    styles: [`
     .loading-state {
       display: flex;
       flex-direction: column;
@@ -189,34 +158,35 @@ import { IonicModule } from '@ionic/angular';
         opacity: 0;
       }
     }
-  `]
+  `],
+    templateUrl: './loading-state.component.html'
 })
 export class LoadingStateComponent {
-  @Input() type: 'spinner' | 'skeleton' | 'dots' | 'pulse' = 'spinner';
-  @Input() size: 'small' | 'medium' | 'large' = 'medium';
-  @Input() message: string = '';
-  @Input() color: string = 'primary';
-  @Input() spinnerType: string = 'crescent';
-  @Input() showAvatar: boolean = true;
-  @Input() skeletonCount: number = 3;
-  @Input() fullscreen: boolean = false;
-  @Input() customClass: string = '';
+    @Input() type: 'spinner' | 'skeleton' | 'dots' | 'pulse' = 'spinner';
+    @Input() size: 'small' | 'medium' | 'large' = 'medium';
+    @Input() message: string = '';
+    @Input() color: string = 'primary';
+    @Input() spinnerType: string = 'crescent';
+    @Input() showAvatar: boolean = true;
+    @Input() skeletonCount: number = 3;
+    @Input() fullscreen: boolean = false;
+    @Input() customClass: string = '';
 
-  get containerClasses(): string {
-    const classes = ['loading-state'];
-    if (this.size) classes.push(`size-${this.size}`);
-    if (this.fullscreen) classes.push('fullscreen');
-    if (this.customClass) classes.push(this.customClass);
-    return classes.join(' ');
-  }
-
-  get skeletonItems(): Array<{ lines: number[] }> {
-    const items = [];
-    for (let i = 0; i < this.skeletonCount; i++) {
-      items.push({
-        lines: [80, 60, 40] // Different line widths for variety
-      });
+    get containerClasses(): string {
+        const classes = ['loading-state'];
+        if (this.size) classes.push(`size-${this.size}`);
+        if (this.fullscreen) classes.push('fullscreen');
+        if (this.customClass) classes.push(this.customClass);
+        return classes.join(' ');
     }
-    return items;
-  }
+
+    get skeletonItems(): Array<{ lines: number[] }> {
+        const items = [];
+        for (let i = 0; i < this.skeletonCount; i++) {
+            items.push({
+                lines: [80, 60, 40] // Different line widths for variety
+            });
+        }
+        return items;
+    }
 }

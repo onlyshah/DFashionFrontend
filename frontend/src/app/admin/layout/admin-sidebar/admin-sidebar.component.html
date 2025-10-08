@@ -1,14 +1,107 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/dashboard')">
-      <a class="nav-link" routerLink="/admin/dashboard">
-        <i class="typcn typcn-device-desktop menu-icon"></i>
-        <span class="menu-title">Dashboard</span>
-        <div class="badge badge-danger">new</div>
-      </a>
-    </li>
+    <!-- Admin & Super Admin Sidebar -->
+    <ng-container *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
+      <li class="nav-item" [class.active]="isActiveRoute('/admin/dashboard')">
+        <a class="nav-link" routerLink="/admin/dashboard">
+          <i class="typcn typcn-device-desktop menu-icon"></i>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/admin/users')">
+        <a class="nav-link" routerLink="/admin/users">
+          <i class="typcn typcn-user-outline menu-icon"></i>
+          <span class="menu-title">User Management</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/admin/products')">
+        <a class="nav-link" routerLink="/admin/products">
+          <i class="typcn typcn-shopping-bag menu-icon"></i>
+          <span class="menu-title">Product Management</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/admin/orders')">
+        <a class="nav-link" routerLink="/admin/orders">
+          <i class="typcn typcn-clipboard menu-icon"></i>
+          <span class="menu-title">Order Management</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/admin/analytics')">
+        <a class="nav-link" routerLink="/admin/analytics">
+          <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+          <span class="menu-title">Analytics</span>
+        </a>
+      </li>
+    </ng-container>
 
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/users')">
+    <!-- Vendor Sidebar -->
+    <ng-container *ngIf="currentUser?.role === 'vendor'">
+      <li class="nav-item" [class.active]="isActiveRoute('/vendor/dashboard')">
+        <a class="nav-link" routerLink="/vendor/dashboard">
+          <i class="typcn typcn-briefcase menu-icon"></i>
+          <span class="menu-title">Vendor Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/vendor/orders')">
+        <a class="nav-link" routerLink="/vendor/orders">
+          <i class="typcn typcn-shopping-bag menu-icon"></i>
+          <span class="menu-title">Orders</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/vendor/inventory')">
+        <a class="nav-link" routerLink="/vendor/inventory">
+          <i class="typcn typcn-box menu-icon"></i>
+          <span class="menu-title">Inventory</span>
+        </a>
+      </li>
+    </ng-container>
+
+    <!-- Customer Sidebar -->
+    <ng-container *ngIf="currentUser?.role === 'end_user' && !currentUser?.isInfluencer">
+      <li class="nav-item" [class.active]="isActiveRoute('/customer/dashboard')">
+        <a class="nav-link" routerLink="/customer/dashboard">
+          <i class="typcn typcn-user menu-icon"></i>
+          <span class="menu-title">Customer Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/customer/orders')">
+        <a class="nav-link" routerLink="/customer/orders">
+          <i class="typcn typcn-shopping-bag menu-icon"></i>
+          <span class="menu-title">My Orders</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/customer/wishlist')">
+        <a class="nav-link" routerLink="/customer/wishlist">
+          <i class="typcn typcn-heart menu-icon"></i>
+          <span class="menu-title">Wishlist</span>
+        </a>
+      </li>
+    </ng-container>
+
+    <!-- Influencer Sidebar -->
+    <ng-container *ngIf="currentUser?.role === 'end_user' && currentUser?.isInfluencer">
+      <li class="nav-item" [class.active]="isActiveRoute('/influencer/dashboard')">
+        <a class="nav-link" routerLink="/influencer/dashboard">
+          <i class="typcn typcn-star menu-icon"></i>
+          <span class="menu-title">Influencer Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/influencer/orders')">
+        <a class="nav-link" routerLink="/influencer/orders">
+          <i class="typcn typcn-shopping-bag menu-icon"></i>
+          <span class="menu-title">Orders</span>
+        </a>
+      </li>
+      <li class="nav-item" [class.active]="isActiveRoute('/influencer/campaigns')">
+        <a class="nav-link" routerLink="/influencer/campaigns">
+          <i class="typcn typcn-camera menu-icon"></i>
+          <span class="menu-title">Campaigns</span>
+        </a>
+      </li>
+    </ng-container>
+
+  <!-- Admin & Super Admin User Management -->
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/users')" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
       <a class="nav-link" data-bs-toggle="collapse" href="#user-management"
          role="button" [attr.aria-expanded]="isMenuExpanded('user-management')"
          aria-controls="user-management" (click)="toggleMenu('user-management')">
@@ -34,7 +127,8 @@
       </div>
     </li>
 
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/products')">
+  <!-- Admin & Super Admin Product Management -->
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/products')" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
       <a class="nav-link" data-bs-toggle="collapse" href="#product-management"
          role="button" [attr.aria-expanded]="isMenuExpanded('product-management')"
          aria-controls="product-management" (click)="toggleMenu('product-management')">
@@ -57,14 +151,36 @@
       </div>
     </li>
 
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/orders')">
+  <!-- Admin & Super Admin Orders -->
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/orders')" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
+  <!-- Vendor Orders -->
+  <li class="nav-item" [class.active]="isActiveRoute('/vendor/orders')" *ngIf="currentUser?.role === 'vendor'">
+      <a class="nav-link" routerLink="/vendor/orders">
+        <i class="typcn typcn-shopping-bag menu-icon"></i>
+        <span class="menu-title">Vendor Orders</span>
+      </a>
+    </li>
+  <!-- Customer Orders -->
+  <li class="nav-item" [class.active]="isActiveRoute('/customer/orders')" *ngIf="currentUser?.role === 'end_user' && !currentUser?.isInfluencer">
+      <a class="nav-link" routerLink="/customer/orders">
+        <i class="typcn typcn-shopping-bag menu-icon"></i>
+        <span class="menu-title">My Orders</span>
+      </a>
+    </li>
+  <!-- Influencer Orders -->
+  <li class="nav-item" [class.active]="isActiveRoute('/influencer/orders')" *ngIf="currentUser?.role === 'end_user' && currentUser?.isInfluencer">
+      <a class="nav-link" routerLink="/influencer/orders">
+        <i class="typcn typcn-shopping-bag menu-icon"></i>
+        <span class="menu-title">Influencer Orders</span>
+      </a>
+    </li>
       <a class="nav-link" routerLink="/admin/orders">
         <i class="typcn typcn-clipboard menu-icon"></i>
         <span class="menu-title">Order Management</span>
       </a>
-    </li>
+    <!-- End Admin Orders Block -->
 
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/analytics')">
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/analytics')" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
       <a class="nav-link" data-bs-toggle="collapse" href="#analytics"
          role="button" [attr.aria-expanded]="isMenuExpanded('analytics')"
          aria-controls="analytics" (click)="toggleMenu('analytics')">
@@ -88,7 +204,7 @@
     </li>
 
     <!-- Super Admin Only Features -->
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/system')" *ngIf="isSuperAdmin()">
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/system')" *ngIf="isSuperAdmin()">
       <a class="nav-link" data-bs-toggle="collapse" href="#system-management"
          role="button" [attr.aria-expanded]="isMenuExpanded('system-management')"
          aria-controls="system-management" (click)="toggleMenu('system-management')">
@@ -114,7 +230,7 @@
       </div>
     </li>
 
-    <li class="nav-item" [class.active]="isActiveRoute('/admin/settings')">
+  <li class="nav-item" [class.active]="isActiveRoute('/admin/settings')" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
       <a class="nav-link" data-bs-toggle="collapse" href="#settings"
          role="button" [attr.aria-expanded]="isMenuExpanded('settings')"
          aria-controls="settings" (click)="toggleMenu('settings')">

@@ -1,0 +1,96 @@
+<div class="container-fluid mt-4">
+  <div class="alert alert-info">
+    <h4>🚀 Dashboard Performance Fix Available!</h4>
+    <p>We've identified and fixed the loading issues in your admin dashboard.</p>
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <h6>❌ Current Issues:</h6>
+        <ul>
+          <li>Continuous loading</li>
+          <li>API errors (401/403)</li>
+          <li>Slow performance</li>
+          <li>No error handling</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6>✅ Fixed Version Includes:</h6>
+        <ul>
+          <li>Fast loading (2-5 seconds)</li>
+          <li>Smart error handling</li>
+          <li>Fallback data when APIs fail</li>
+          <li>Performance optimization</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mt-3">
+      <button class="btn btn-success me-2" (click)="useFixedDashboard()">
+        🔧 Use Fixed Dashboard
+      </button>
+      <button class="btn btn-primary me-2" (click)="testCurrentDashboard()">
+        🧪 Test Current Dashboard
+      </button>
+      <button class="btn btn-info me-2" (click)="clearCacheAndReload()">
+        🗑️ Clear Cache & Reload
+      </button>
+      <button class="btn btn-warning" (click)="showDebugInfo()">
+        🔍 Show Debug Info
+      </button>
+    </div>
+  </div>
+
+  <!-- Debug Information -->
+  <div *ngIf="showDebug" class="card mt-3">
+    <div class="card-header">
+      <h5>🔍 Debug Information</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <h6>Authentication Status:</h6>
+          <ul class="list-unstyled">
+            <li><strong>Token:</strong> {{ hasToken ? '✅ Present' : '❌ Missing' }}</li>
+            <li><strong>User:</strong> {{ currentUser?.email || 'Not logged in' }}</li>
+            <li><strong>Role:</strong> {{ currentUser?.role || 'None' }}</li>
+            <li><strong>Admin Access:</strong> {{ hasAdminAccess ? '✅ Yes' : '❌ No' }}</li>
+          </ul>
+        </div>
+        <div class="col-md-6">
+          <h6>Performance Status:</h6>
+          <ul class="list-unstyled">
+            <li><strong>Cache Size:</strong> {{ cacheStatus.size }} items</li>
+            <li><strong>Using Fallback:</strong> {{ isUsingFallback ? '⚠️ Yes' : '✅ No' }}</li>
+            <li><strong>Last Load:</strong> {{ lastLoadTime || 'Never' }}</li>
+            <li><strong>Backend Status:</strong> {{ backendStatus }}</li>
+          </ul>
+        </div>
+      </div>
+      <div class="mt-3">
+        <h6>Quick Actions:</h6>
+        <button class="btn btn-sm btn-outline-primary me-2" (click)="testBackendConnection()">
+          Test Backend
+        </button>
+        <button class="btn btn-sm btn-outline-success me-2" (click)="testDashboardAPI()">
+          Test Dashboard API
+        </button>
+        <button class="btn btn-sm btn-outline-warning me-2" (click)="clearAllAuth()">
+          Clear Auth Data
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Results -->
+  <div *ngIf="testResults.length > 0" class="card mt-3">
+    <div class="card-header">
+      <h5>🧪 Test Results</h5>
+    </div>
+    <div class="card-body">
+      <div *ngFor="let result of testResults" class="alert" [ngClass]="result.success ? 'alert-success' : 'alert-danger'">
+        <strong>{{ result.test }}:</strong>
+        {{ result.success ? '✅ Success' : '❌ Failed' }}
+        <br>
+        <small>{{ result.message }}</small>
+      </div>
+    </div>
+  </div>
+</div>

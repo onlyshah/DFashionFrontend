@@ -7,67 +7,6 @@ import { ProductService } from '../../../../core/services/product.service';
 @Component({
     selector: 'app-category',
     imports: [CommonModule],
-    template: `
-    <div class="category-page">
-      <div class="category-header">
-        <h1>{{ categoryName | titlecase }}</h1>
-        <p>{{ productCount }} products found</p>
-      </div>
-
-      <div class="filters-section">
-        <div class="filter-chips">
-          <button 
-            *ngFor="let filter of activeFilters" 
-            class="filter-chip"
-            (click)="removeFilter(filter)"
-          >
-            {{ filter.label }}
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-      </div>
-
-      <div class="products-grid" *ngIf="!isLoading">
-        <div 
-          *ngFor="let product of products" 
-          class="product-card"
-          (click)="viewProduct(product._id)"
-        >
-          <div class="product-image">
-            <img [src]="product.images[0]?.url" [alt]="product.name">
-            <button class="wishlist-btn" (click)="toggleWishlist(product._id, $event)">
-              <i class="far fa-heart"></i>
-            </button>
-          </div>
-          <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <p class="brand">{{ product.brand }}</p>
-            <div class="price">
-              <span class="current-price">₹{{ product.price | number }}</span>
-              <span class="original-price" *ngIf="product.originalPrice">₹{{ product.originalPrice | number }}</span>
-            </div>
-            <div class="rating" *ngIf="product.rating">
-              <div class="stars">
-                <i *ngFor="let star of getStars(product.rating.average)" [class]="star"></i>
-              </div>
-              <span>({{ product.rating.count }})</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="loading-container" *ngIf="isLoading">
-        <div class="spinner"></div>
-        <p>Loading products...</p>
-      </div>
-
-      <div class="empty-state" *ngIf="!isLoading && products.length === 0">
-        <i class="fas fa-search"></i>
-        <h3>No products found</h3>
-        <p>Try adjusting your filters or search terms</p>
-      </div>
-    </div>
-  `,
     styles: [`
     .category-page {
       padding: 2rem;
@@ -264,61 +203,62 @@ import { ProductService } from '../../../../core/services/product.service';
         gap: 1rem;
       }
     }
-  `]
+  `],
+    templateUrl: './category.component.html'
 })
 export class CategoryComponent implements OnInit {
-  categoryName = '';
-  products: any[] = [];
-  productCount = 0;
-  isLoading = true;
-  activeFilters: any[] = [];
+    categoryName = '';
+    products: any[] = [];
+    productCount = 0;
+    isLoading = true;
+    activeFilters: any[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService
-  ) {}
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private productService: ProductService
+    ) { }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.categoryName = params['category'];
-      this.loadProducts();
-    });
-  }
-
-  loadProducts() {
-    this.isLoading = true;
-    // Load from real API
-    this.products = [];
-    this.productCount = 0;
-    this.isLoading = false;
-  }
-
-  viewProduct(productId: string) {
-    this.router.navigate(['/product', productId]);
-  }
-
-  toggleWishlist(productId: string, event: Event) {
-    event.stopPropagation();
-    console.log('Toggle wishlist for:', productId);
-  }
-
-  removeFilter(filter: any) {
-    this.activeFilters = this.activeFilters.filter(f => f !== filter);
-    this.loadProducts();
-  }
-
-  getStars(rating: number): string[] {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      if (i <= rating) {
-        stars.push('fas fa-star');
-      } else if (i - 0.5 <= rating) {
-        stars.push('fas fa-star-half-alt');
-      } else {
-        stars.push('far fa-star');
-      }
+    ngOnInit() {
+        this.route.params.subscribe(params => {
+            this.categoryName = params['category'];
+            this.loadProducts();
+        });
     }
-    return stars;
-  }
+
+    loadProducts() {
+        this.isLoading = true;
+        // Load from real API
+        this.products = [];
+        this.productCount = 0;
+        this.isLoading = false;
+    }
+
+    viewProduct(productId: string) {
+        this.router.navigate(['/product', productId]);
+    }
+
+    toggleWishlist(productId: string, event: Event) {
+        event.stopPropagation();
+        console.log('Toggle wishlist for:', productId);
+    }
+
+    removeFilter(filter: any) {
+        this.activeFilters = this.activeFilters.filter(f => f !== filter);
+        this.loadProducts();
+    }
+
+    getStars(rating: number): string[] {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars.push('fas fa-star');
+            } else if (i - 0.5 <= rating) {
+                stars.push('fas fa-star-half-alt');
+            } else {
+                stars.push('far fa-star');
+            }
+        }
+        return stars;
+    }
 }

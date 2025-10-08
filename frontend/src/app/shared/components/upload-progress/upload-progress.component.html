@@ -1,0 +1,21 @@
+<div class="upload-progress" *ngIf="progress">
+  <div class="progress-header">
+    <span class="progress-text">
+    {{ getProgressText() }}
+    </span>
+    <span class="progress-percentage">
+    {{ progress.percentage }}%
+    </span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="progress.percentage" [class.error]="progress.status === 'error'" [class.success]="progress.status === 'completed'"></div>
+  </div>
+  <div class="progress-details" *ngIf="showDetails">
+    <span class="file-size">
+    {{ formatBytes(progress.loaded) }} / {{ formatBytes(progress.total) }}
+    </span>
+    <span class="upload-speed" *ngIf="progress.status === 'uploading'">
+          Uploading...
+        </span>
+  </div>
+</div>

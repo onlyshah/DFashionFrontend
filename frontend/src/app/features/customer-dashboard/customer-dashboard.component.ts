@@ -11,8 +11,7 @@ import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
-import { CartService } from '../../core/services/cart.service';
-import { WishlistNewService } from '../../core/services/wishlist-new.service';
+import { ApiService } from '../../core/services/api.service';
 import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
 
 interface CustomerStats {
@@ -63,68 +62,16 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   isMobile = false;
   isTablet = false;
   
-  customerStats: CustomerStats = {
-    ordersCount: 0,
-    wishlistCount: 0,
-    cartCount: 0,
-    rewardsCount: 0,
-    totalSpent: 0,
-    savedAmount: 0
-  };
-
+  customerStats: CustomerStats | null = null;
   recentOrders: RecentOrder[] = [];
-  quickActions: QuickAction[] = [
-    {
-      title: 'Browse Products',
-      icon: 'storefront',
-      route: '/shop',
-      color: '#2196F3',
-      description: 'Discover new fashion items'
-    },
-    {
-      title: 'My Orders',
-      icon: 'receipt_long',
-      route: '/orders',
-      color: '#4CAF50',
-      description: 'Track your purchases'
-    },
-    {
-      title: 'Wishlist',
-      icon: 'favorite',
-      route: '/wishlist',
-      color: '#E91E63',
-      description: 'View saved items'
-    },
-    {
-      title: 'Cart',
-      icon: 'shopping_cart',
-      route: '/cart',
-      color: '#FF9800',
-      description: 'Complete your purchase'
-    },
-    {
-      title: 'Profile',
-      icon: 'person',
-      route: '/profile',
-      color: '#9C27B0',
-      description: 'Manage your account'
-    },
-    {
-      title: 'Support',
-      icon: 'help_center',
-      route: '/support',
-      color: '#607D8B',
-      description: 'Get help and support'
-    }
-  ];
+  quickActions: QuickAction[] = [];
 
   private subscriptions: Subscription[] = [];
 
   constructor(
-    public router: Router, // Make router public for template access
+    public router: Router,
     private authService: AuthService,
-    private cartService: CartService,
-    private wishlistService: WishlistNewService
+    private apiService: ApiService
   ) {}
 
   ngOnInit(): void {
@@ -132,6 +79,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
     this.loadUserData();
     this.loadCustomerStats();
     this.loadRecentOrders();
+    this.loadQuickActions();
   }
 
   ngOnDestroy(): void {
@@ -157,56 +105,42 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadCustomerStats(): void {
-    // Load cart count
-    const cartSub = this.cartService.cartItemCount$.subscribe(count => {
-      this.customerStats.cartCount = count;
+    this.apiService.get<CustomerStats>('/api/customer/stats').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.customerStats = res.data;
+        }
+      },
+      error: () => {
+        this.customerStats = null;
+      }
     });
-    this.subscriptions.push(cartSub);
-
-    // Load wishlist count
-    const wishlistSub = this.wishlistService.wishlistItemCount$.subscribe(count => {
-      this.customerStats.wishlistCount = count;
-    });
-    this.subscriptions.push(wishlistSub);
-
-    // TODO: Load other stats from API
-    this.customerStats = {
-      ...this.customerStats,
-      ordersCount: 8,
-      rewardsCount: 150,
-      totalSpent: 1250.99,
-      savedAmount: 320.50
-    };
   }
 
   private loadRecentOrders(): void {
-    // TODO: Load from API
-    this.recentOrders = [
-      {
-        id: 'ORD-001',
-        productName: 'Summer Floral Dress',
-        productImage: '/uploadsproducts/dress-1.jpg',
-        amount: 89.99,
-        status: 'delivered',
-        orderDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+    this.apiService.get<RecentOrder[]>('/api/customer/recent-orders').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.recentOrders = res.data;
+        }
       },
-      {
-        id: 'ORD-002',
-        productName: 'Casual Sneakers',
-        productImage: '/uploadsproducts/shoes-1.jpg',
-        amount: 129.99,
-        status: 'shipped',
-        orderDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)
-      },
-      {
-        id: 'ORD-003',
-        productName: 'Denim Jacket',
-        productImage: '/uploadsproducts/jacket-1.jpg',
-        amount: 79.99,
-        status: 'processing',
-        orderDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      error: () => {
+        this.recentOrders = [];
       }
-    ];
+    });
+  }
+
+  private loadQuickActions(): void {
+    this.apiService.get<QuickAction[]>('/api/customer/quick-actions').subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.quickActions = res.data;
+        }
+      },
+      error: () => {
+        this.quickActions = [];
+      }
+    });
   }
 
   // Navigation methods
@@ -296,9 +230,11 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
 
   // Utility method to check if user has any activity
   hasActivity(): boolean {
-    return this.customerStats.ordersCount > 0 ||
-           this.customerStats.wishlistCount > 0 ||
-           this.customerStats.cartCount > 0;
+    return !!this.customerStats && (
+      (this.customerStats.ordersCount > 0) ||
+      (this.customerStats.wishlistCount > 0) ||
+      (this.customerStats.cartCount > 0)
+    );
   }
 
   // Get greeting based on time of day

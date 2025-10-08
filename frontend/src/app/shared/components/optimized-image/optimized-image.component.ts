@@ -7,38 +7,6 @@ import { MediaService } from '../../../core/services/media.service';
 @Component({
     selector: 'app-optimized-image',
     imports: [CommonModule, IonicModule],
-    template: `
-    <div class="optimized-image-container" [class]="containerClass">
-      <!-- Loading State -->
-      <div class="loading-overlay" *ngIf="isLoading && showLoader">
-        <ion-spinner name="crescent" [color]="loaderColor"></ion-spinner>
-      </div>
-
-      <!-- Main Image -->
-      <img
-        [src]="currentSrc"
-        [alt]="alt"
-        [class]="imageClass"
-        [style.object-fit]="objectFit"
-        (load)="onImageLoad()"
-        (error)="onImageError($event)"
-        [class.loaded]="imageLoaded"
-        [class.error]="hasError"
-        [loading]="lazyLoad ? 'lazy' : 'eager'"
-      />
-
-      <!-- Error State -->
-      <div class="error-overlay" *ngIf="hasError && showErrorMessage">
-        <ion-icon name="image-outline" class="error-icon"></ion-icon>
-        <p class="error-text">{{ errorMessage }}</p>
-      </div>
-
-      <!-- Overlay Content -->
-      <div class="image-overlay" *ngIf="showOverlay">
-        <ng-content></ng-content>
-      </div>
-    </div>
-  `,
     styles: [`
     .optimized-image-container {
       position: relative;
@@ -121,126 +89,127 @@ import { MediaService } from '../../../core/services/media.service';
     .circle {
       border-radius: 50%;
     }
-  `]
+  `],
+    templateUrl: './optimized-image.component.html'
 })
 export class OptimizedImageComponent implements OnInit, OnDestroy {
-  @Input() src: string = '';
-  @Input() alt: string = '';
-  @Input() fallbackType: 'user' | 'product' | 'post' | 'story' = 'post';
-  @Input() width?: number;
-  @Input() height?: number;
-  @Input() quality: number = 80;
-  @Input() lazyLoad: boolean = true;
-  @Input() showLoader: boolean = true;
-  @Input() showErrorMessage: boolean = false;
-  @Input() loaderColor: string = 'primary';
-  @Input() errorMessage: string = 'Failed to load image';
-  @Input() objectFit: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none' = 'cover';
-  @Input() containerClass: string = '';
-  @Input() imageClass: string = '';
-  @Input() showOverlay: boolean = false;
-  @Input() preload: boolean = false;
+    @Input() src: string = '';
+    @Input() alt: string = '';
+    @Input() fallbackType: 'user' | 'product' | 'post' | 'story' = 'post';
+    @Input() width?: number;
+    @Input() height?: number;
+    @Input() quality: number = 80;
+    @Input() lazyLoad: boolean = true;
+    @Input() showLoader: boolean = true;
+    @Input() showErrorMessage: boolean = false;
+    @Input() loaderColor: string = 'primary';
+    @Input() errorMessage: string = 'Failed to load image';
+    @Input() objectFit: 'cover' | 'contain' | 'fill' | 'scale-down' | 'none' = 'cover';
+    @Input() containerClass: string = '';
+    @Input() imageClass: string = '';
+    @Input() showOverlay: boolean = false;
+    @Input() preload: boolean = false;
 
-  @Output() imageLoad = new EventEmitter<Event>();
-  @Output() imageError = new EventEmitter<Event>();
+    @Output() imageLoad = new EventEmitter<Event>();
+    @Output() imageError = new EventEmitter<Event>();
 
-  currentSrc: string = '';
-  isLoading: boolean = true;
-  imageLoaded: boolean = false;
-  hasError: boolean = false;
+    currentSrc: string = '';
+    isLoading: boolean = true;
+    imageLoaded: boolean = false;
+    hasError: boolean = false;
 
-  private retryCount: number = 0;
-  private maxRetries: number = 2;
+    private retryCount: number = 0;
+    private maxRetries: number = 2;
 
-  constructor(private mediaService: MediaService) {}
+    constructor(private mediaService: MediaService) { }
 
-  ngOnInit() {
-    this.loadImage();
-  }
-
-  ngOnDestroy() {
-    // Cleanup if needed
-  }
-
-  private loadImage() {
-    if (!this.src) {
-      this.setFallbackImage();
-      return;
+    ngOnInit() {
+        this.loadImage();
     }
 
-    // Get optimized image URL
-    let optimizedSrc = this.src;
-    if (this.width || this.height) {
-      optimizedSrc = this.mediaService.optimizeImageUrl(this.src, this.width, this.height, this.quality);
+    ngOnDestroy() {
+        // Cleanup if needed
     }
 
-    // Use media service to get safe URL
-    this.currentSrc = this.mediaService.getSafeImageUrl(optimizedSrc, this.fallbackType);
+    private loadImage() {
+        if (!this.src) {
+            this.setFallbackImage();
+            return;
+        }
 
-    // Preload if requested
-    if (this.preload) {
-      this.preloadImage();
-    }
-  }
+        // Get optimized image URL
+        let optimizedSrc = this.src;
+        if (this.width || this.height) {
+            optimizedSrc = this.mediaService.optimizeImageUrl(this.src, this.width, this.height, this.quality);
+        }
 
-  private preloadImage() {
-    const img = new Image();
-    img.onload = () => {
-      this.isLoading = false;
-      this.imageLoaded = true;
-    };
-    img.onerror = () => {
-      this.handleLoadError();
-    };
-    img.src = this.currentSrc;
-  }
+        // Use media service to get safe URL
+        this.currentSrc = this.mediaService.getSafeImageUrl(optimizedSrc, this.fallbackType);
 
-  onImageLoad() {
-    this.isLoading = false;
-    this.imageLoaded = true;
-    this.hasError = false;
-    this.retryCount = 0;
-    this.imageLoad.emit();
-  }
-
-  onImageError(event: Event) {
-    this.handleLoadError();
-    this.imageError.emit(event);
-  }
-
-  private handleLoadError() {
-    if (this.retryCount < this.maxRetries) {
-      this.retryCount++;
-      // Try with media service error handling
-      this.mediaService.handleImageError({ target: { src: this.currentSrc } } as any, this.fallbackType);
-      
-      // Get fallback URL
-      const fallbackUrl = this.mediaService.getReliableFallback(this.fallbackType);
-      if (this.currentSrc !== fallbackUrl) {
-        this.currentSrc = fallbackUrl;
-        return;
-      }
+        // Preload if requested
+        if (this.preload) {
+            this.preloadImage();
+        }
     }
 
-    this.setFallbackImage();
-  }
+    private preloadImage() {
+        const img = new Image();
+        img.onload = () => {
+            this.isLoading = false;
+            this.imageLoaded = true;
+        };
+        img.onerror = () => {
+            this.handleLoadError();
+        };
+        img.src = this.currentSrc;
+    }
 
-  private setFallbackImage() {
-    this.isLoading = false;
-    this.hasError = true;
-    this.currentSrc = this.mediaService.getReliableFallback(this.fallbackType);
-  }
+    onImageLoad() {
+        this.isLoading = false;
+        this.imageLoaded = true;
+        this.hasError = false;
+        this.retryCount = 0;
+        this.imageLoad.emit();
+    }
 
-  // Public methods for external control
-  reload() {
-    this.retryCount = 0;
-    this.hasError = false;
-    this.isLoading = true;
-    this.imageLoaded = false;
-    this.loadImage();
-  }
+    onImageError(event: Event) {
+        this.handleLoadError();
+        this.imageError.emit(event);
+    }
 
-  getResponsiveUrls() {
-    return this.mediaService.getResponsiveImageUrls(this.src);
-  }
+    private handleLoadError() {
+        if (this.retryCount < this.maxRetries) {
+            this.retryCount++;
+            // Try with media service error handling
+            this.mediaService.handleImageError({ target: { src: this.currentSrc } } as any, this.fallbackType);
+
+            // Get fallback URL
+            const fallbackUrl = this.mediaService.getReliableFallback(this.fallbackType);
+            if (this.currentSrc !== fallbackUrl) {
+                this.currentSrc = fallbackUrl;
+                return;
+            }
+        }
+
+        this.setFallbackImage();
+    }
+
+    private setFallbackImage() {
+        this.isLoading = false;
+        this.hasError = true;
+        this.currentSrc = this.mediaService.getReliableFallback(this.fallbackType);
+    }
+
+    // Public methods for external control
+    reload() {
+        this.retryCount = 0;
+        this.hasError = false;
+        this.isLoading = true;
+        this.imageLoaded = false;
+        this.loadImage();
+    }
+
+    getResponsiveUrls() {
+        return this.mediaService.getResponsiveImageUrls(this.src);
+    }
 }

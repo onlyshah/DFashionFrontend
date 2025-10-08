@@ -3,40 +3,10 @@ import { CommonModule } from '@angular/common';
 import { UploadProgress } from '../../../core/services/upload.service';
 
 @Component({
-  selector: 'app-upload-progress',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="upload-progress" *ngIf="progress">
-      <div class="progress-header">
-        <span class="progress-text">
-          {{ getProgressText() }}
-        </span>
-        <span class="progress-percentage">
-          {{ progress.percentage }}%
-        </span>
-      </div>
-      
-      <div class="progress-bar">
-        <div 
-          class="progress-fill" 
-          [style.width.%]="progress.percentage"
-          [class.error]="progress.status === 'error'"
-          [class.success]="progress.status === 'completed'"
-        ></div>
-      </div>
-      
-      <div class="progress-details" *ngIf="showDetails">
-        <span class="file-size">
-          {{ formatBytes(progress.loaded) }} / {{ formatBytes(progress.total) }}
-        </span>
-        <span class="upload-speed" *ngIf="progress.status === 'uploading'">
-          Uploading...
-        </span>
-      </div>
-    </div>
-  `,
-  styles: [`
+    selector: 'app-upload-progress',
+    standalone: true,
+    imports: [CommonModule],
+    styles: [`
     .upload-progress {
       background: white;
       border: 1px solid #e0e0e0;
@@ -149,34 +119,35 @@ import { UploadProgress } from '../../../core/services/upload.service';
         gap: 4px;
       }
     }
-  `]
+  `],
+    templateUrl: './upload-progress.component.html'
 })
 export class UploadProgressComponent {
-  @Input() progress: UploadProgress | null = null;
-  @Input() showDetails: boolean = true;
+    @Input() progress: UploadProgress | null = null;
+    @Input() showDetails: boolean = true;
 
-  getProgressText(): string {
-    if (!this.progress) return '';
+    getProgressText(): string {
+        if (!this.progress) return '';
 
-    switch (this.progress.status) {
-      case 'uploading':
-        return 'Uploading files...';
-      case 'completed':
-        return 'Upload completed successfully!';
-      case 'error':
-        return 'Upload failed. Please try again.';
-      default:
-        return 'Preparing upload...';
+        switch (this.progress.status) {
+            case 'uploading':
+                return 'Uploading files...';
+            case 'completed':
+                return 'Upload completed successfully!';
+            case 'error':
+                return 'Upload failed. Please try again.';
+            default:
+                return 'Preparing upload...';
+        }
     }
-  }
 
-  formatBytes(bytes: number): string {
-    if (bytes === 0) return '0 Bytes';
-    
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
+    formatBytes(bytes: number): string {
+        if (bytes === 0) return '0 Bytes';
+
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
 }

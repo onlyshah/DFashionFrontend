@@ -1,0 +1,98 @@
+<div class="search-analytics-container">
+  <div class="analytics-header">
+    <h3>Search Insights</h3>
+    <ion-button fill="clear" size="small" (click)="refreshData()">
+      <ion-icon name="refresh" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading insights...</p>
+  </div>
+  <div *ngIf="!isLoading && insights" class="analytics-content">
+
+    <!-- Overview Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">{{ insights.totalSearches | number }}</div>
+        <div class="stat-label">Total Searches</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ insights.uniqueQueries | number }}</div>
+        <div class="stat-label">Unique Queries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ insights.clickThroughRate | percent:'1.1-1' }}</div>
+        <div class="stat-label">Click Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">{{ insights.conversionRate | percent:'1.1-1' }}</div>
+        <div class="stat-label">Conversion</div>
+      </div>
+    </div>
+
+    <!-- Top Categories -->
+    <div class="insight-section">
+      <h4>Top Search Categories</h4>
+      <div class="category-list">
+        <div *ngFor="let category of insights.topCategories" class="category-item">
+          <div class="category-info">
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.count }} searches</span>
+          </div>
+          <div class="category-bar">
+            <div class="category-fill" [style.width.%]="category.percentage"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Trends -->
+    <div class="insight-section">
+      <h4>Trending Searches</h4>
+      <div class="trends-list">
+        <div *ngFor="let trend of insights.searchTrends" class="trend-item">
+          <div class="trend-query">{{ trend.query }}</div>
+          <div class="trend-stats">
+            <span class="trend-searches">{{ trend.searches }} searches</span>
+            <span class="trend-growth" [class.positive]="trend.growth > 0" [class.negative]="trend.growth < 0">
+                  <ion-icon [name]="trend.growth > 0 ? 'trending-up' : 'trending-down'"></ion-icon>
+                  {{ trend.growth | percent:'1.0-0' }}
+                </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular Filters -->
+    <div class="insight-section">
+      <h4>Popular Filters</h4>
+      <div class="filters-grid">
+        <div *ngFor="let filter of insights.popularFilters" class="filter-chip">
+          <span class="filter-name">{{ filter.filter }}</span>
+          <span class="filter-usage">{{ filter.usage }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Patterns -->
+    <div class="insight-section">
+      <h4>Search Patterns</h4>
+      <div class="patterns-container">
+        <div class="pattern-chart">
+          <h5>Peak Hours</h5>
+          <div class="hours-chart">
+            <div *ngFor="let hour of insights.searchPatterns.peakHours" class="hour-bar" [style.height.%]="getHourPercentage(hour.searches)">
+              <div class="hour-label">{{ hour.hour }}h</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="!isLoading && !insights" class="no-data">
+    <ion-icon name="analytics-outline" size="large"></ion-icon>
+    <h4>No Search Data</h4>
+    <p>Start searching to see your analytics!</p>
+  </div>
+</div>

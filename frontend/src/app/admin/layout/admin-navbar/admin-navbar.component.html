@@ -5,7 +5,7 @@
         <img src="assets/pollux/images/logo.svg" alt="logo"/>
       </a>
       <a class="navbar-brand brand-logo-mini" routerLink="/admin/dashboard">
-        <img src="assets/pollux/images/logo-mini.svg" alt="logo"/>
+        <img src="assets/pollux/images/logo.svg" alt="logo"/>
       </a>
       <button class="navbar-toggler navbar-toggler align-self-center" type="button" (click)="toggleSidebar()">
         <span class="typcn typcn-th-menu"></span>
@@ -14,10 +14,10 @@
   </div>
   <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
     <ul class="navbar-nav me-lg-2">
-      <li class="nav-item nav-profile dropdown">
+  <li class="nav-item nav-profile dropdown" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
         <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
            data-bs-toggle="dropdown" aria-expanded="false">
-          <img [src]="currentUser?.avatar || 'assets/pollux/images/faces/face5.jpg'" alt="profile"/>
+          <img [src]="imageUrl + currentUser?.avatar || 'uploads/default/default-avatar.png'" alt="profile"/>
           <span class="nav-profile-name">{{ currentUser?.fullName || 'Admin User' }}</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-end navbar-dropdown" aria-labelledby="profileDropdown">
@@ -32,18 +32,19 @@
           </a></li>
         </ul>
       </li>
-      <li class="nav-item nav-user-status dropdown">
+  <li class="nav-item nav-user-status dropdown" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
         <p class="mb-0">Last login was {{ getLastLoginTime() }}.</p>
       </li>
     </ul>
     <ul class="navbar-nav navbar-nav-right">
-      <li class="nav-item nav-date dropdown">
+  <li class="nav-item nav-date dropdown" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
         <a class="nav-link d-flex justify-content-center align-items-center" href="javascript:;">
           <h6 class="date mb-0">Today : {{ getCurrentDate() }}</h6>
           <i class="typcn typcn-calendar"></i>
         </a>
       </li>
-      <li class="nav-item dropdown">
+  <!-- Admin & Super Admin Messages -->
+  <li class="nav-item dropdown" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
         <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
            id="messageDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="typcn typcn-mail mx-0"></i>
@@ -58,13 +59,79 @@
               </div>
               <div class="preview-item-content flex-grow">
                 <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
-                <p class="fw-light small-text text-muted mb-0">{{ message.content }}</p>
               </div>
+              <p class="mb-0">{{ message.content }}</p>
             </a>
           </li>
         </ul>
       </li>
-      <li class="nav-item dropdown me-0">
+  <!-- Vendor Messages -->
+  <li class="nav-item dropdown" *ngIf="currentUser?.role === 'vendor'">
+        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+           id="messageDropdownVendor" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="typcn typcn-mail mx-0"></i>
+          <span class="count" *ngIf="messageCount > 0">{{ messageCount }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdownVendor">
+          <li><h6 class="dropdown-header">Vendor Messages</h6></li>
+          <li *ngFor="let message of recentMessages">
+            <a class="dropdown-item preview-item" href="javascript:;">
+              <div class="preview-thumbnail">
+                <img [src]="message.avatar" alt="image" class="profile-pic">
+              </div>
+              <div class="preview-item-content flex-grow">
+                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
+              </div>
+              <p class="mb-0">{{ message.content }}</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+  <!-- Customer Messages -->
+  <li class="nav-item dropdown" *ngIf="currentUser?.role === 'end_user' && !currentUser?.isInfluencer">
+        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+           id="messageDropdownCustomer" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="typcn typcn-mail mx-0"></i>
+          <span class="count" *ngIf="messageCount > 0">{{ messageCount }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdownCustomer">
+          <li><h6 class="dropdown-header">Customer Messages</h6></li>
+          <li *ngFor="let message of recentMessages">
+            <a class="dropdown-item preview-item" href="javascript:;">
+              <div class="preview-thumbnail">
+                <img [src]="message.avatar" alt="image" class="profile-pic">
+              </div>
+              <div class="preview-item-content flex-grow">
+                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
+              </div>
+              <p class="mb-0">{{ message.content }}</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+  <!-- Influencer Messages -->
+  <li class="nav-item dropdown" *ngIf="currentUser?.role === 'end_user' && currentUser?.isInfluencer">
+        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center"
+           id="messageDropdownInfluencer" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="typcn typcn-mail mx-0"></i>
+          <span class="count" *ngIf="messageCount > 0">{{ messageCount }}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdownInfluencer">
+          <li><h6 class="dropdown-header">Influencer Messages</h6></li>
+          <li *ngFor="let message of recentMessages">
+            <a class="dropdown-item preview-item" href="javascript:;">
+              <div class="preview-thumbnail">
+                <img [src]="message.avatar" alt="image" class="profile-pic">
+              </div>
+              <div class="preview-item-content flex-grow">
+                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
+              </div>
+              <p class="mb-0">{{ message.content }}</p>
+            </a>
+          </li>
+        </ul>
+      </li>
+  <li class="nav-item dropdown me-0" *ngIf="currentUser?.role === 'admin' || currentUser?.role === 'super_admin'">
         <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center"
            id="notificationDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="typcn typcn-bell mx-0"></i>

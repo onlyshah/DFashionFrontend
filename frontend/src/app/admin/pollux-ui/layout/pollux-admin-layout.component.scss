@@ -1,0 +1,20 @@
+// Pollux Admin Layout Styles
+.container-scroller {
+  min-height: 100vh;
+  background: #f2e9e4;
+}
+.main-panel {
+  background: #fff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.content-wrapper {
+  flex: 1;
+  padding: 2rem 1rem;
+}
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem 0.5rem;
+  }
+}

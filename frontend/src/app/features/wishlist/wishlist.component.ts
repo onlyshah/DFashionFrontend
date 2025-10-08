@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { WishlistNewService, WishlistItem } from '../../core/services/wishlist-new.service';
 import { CartNewService } from '../../core/services/cart-new.service';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from 'src/environments/environment';
 
 // WishlistItem interface is now imported from the service
 
@@ -423,6 +424,7 @@ export class WishlistComponent implements OnInit {
   sortedWishlistItems: WishlistItem[] = [];
   loading = true;
   sortBy = 'recent';
+   imageUrl = environment.apiUrl
 
   constructor(
     private router: Router,
@@ -481,7 +483,7 @@ export class WishlistComponent implements OnInit {
   }
 
   getProductImage(product: any): string {
-    return product.images[0]?.url || '/uploadsplaceholder.jpg';
+    return this.imageUrl+ product.images[0]?.url || '/uploads/placeholder.jpg';
   }
 
   getDiscountPercentage(product: any): number {

@@ -1,0 +1,58 @@
+
+<!-- Global Notifications Toast -->
+<div class="notification-toast" *ngIf="activeNotification" [ngClass]="'toast-' + activeNotification.type">
+  <div class="toast-content">
+    <div class="toast-icon">
+      <i [ngClass]="getNotificationIcon(activeNotification.type)"></i>
+    </div>
+    <div class="toast-message">
+      <h6>{{ activeNotification.title }}</h6>
+      <p>{{ activeNotification.message }}</p>
+    </div>
+    <button class="toast-close" (click)="dismissNotification()">
+      <i class="typcn typcn-times"></i>
+    </button>
+  </div>
+  <div class="toast-progress" [style.animation-duration]="toastDuration + 'ms'"></div>
+</div>
+
+<!-- Connection Status -->
+<div class="connection-status" *ngIf="!isOnline" class="offline-banner">
+  <div class="status-content">
+    <i class="typcn typcn-wifi-outline"></i>
+    <span>You're currently offline. Some features may not be available.</span>
+  </div>
+</div>
+
+<!-- Update Available Banner -->
+<div class="update-banner" *ngIf="updateAvailable" class="update-available">
+  <div class="update-content">
+    <i class="typcn typcn-download"></i>
+    <span>A new version is available!</span>
+    <button class="update-btn" (click)="updateApp()">Update Now</button>
+    <button class="dismiss-btn" (click)="dismissUpdate()">
+      <i class="typcn typcn-times"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" *ngIf="isGlobalLoading">
+  <div class="loading-content">
+    <div class="spinner"></div>
+    <p>{{ loadingMessage }}</p>
+  </div>
+</div>
+
+<!-- Error Boundary -->
+<div class="error-boundary" *ngIf="globalError">
+  <div class="error-content">
+    <i class="typcn typcn-warning"></i>
+    <h3>Something went wrong</h3>
+    <p>{{ globalError.message }}</p>
+    <div class="error-actions">
+      <button class="retry-btn" (click)="retryLastAction()">Try Again</button>
+      <button class="report-btn" (click)="reportError()">Report Issue</button>
+    </div>
+  </div>
+</div>

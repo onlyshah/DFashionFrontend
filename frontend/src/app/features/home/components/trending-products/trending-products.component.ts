@@ -8,12 +8,12 @@ import { SocialInteractionsService } from '../../../../core/services/social-inte
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { IonicModule } from '@ionic/angular';
-import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+//import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-trending-products',
-    imports: [CommonModule, IonicModule, ImageFallbackDirective],
+    imports: [CommonModule, IonicModule],
     templateUrl: './trending-products.component.html',
     styleUrls: ['./trending-products.component.scss']
 })

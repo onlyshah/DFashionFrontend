@@ -5,63 +5,6 @@ import { RouterModule } from '@angular/router';
 @Component({
     selector: 'app-vendor-products',
     imports: [CommonModule, RouterModule],
-    template: `
-    <div class="vendor-products-container">
-      <div class="header">
-        <h1>My Products</h1>
-        <a routerLink="/vendor/products/create" class="btn-primary">
-          <i class="fas fa-plus"></i> Add Product
-        </a>
-      </div>
-
-      <!-- Products Grid -->
-      <div class="products-grid" *ngIf="products.length > 0">
-        <div class="product-card" *ngFor="let product of products">
-          <div class="product-image">
-            <img [src]="getImageUrl(product.images[0])" [alt]="product.name">
-            <div class="product-status" [class]="product.status">
-              {{ product.status }}
-            </div>
-          </div>
-          
-          <div class="product-info">
-            <h3>{{ product.name }}</h3>
-            <p class="product-brand">{{ product.brand }}</p>
-            <div class="product-price">
-              <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
-              <span class="original-price" *ngIf="product.originalPrice">
-                ₹{{ product.originalPrice | number:'1.0-0' }}
-              </span>
-            </div>
-            <div class="product-stats">
-              <span><i class="fas fa-eye"></i> {{ product.views || 0 }}</span>
-              <span><i class="fas fa-shopping-cart"></i> {{ product.orders || 0 }}</span>
-              <span><i class="fas fa-star"></i> {{ product.rating || 0 }}</span>
-            </div>
-          </div>
-          
-          <div class="product-actions">
-            <button class="btn-edit" (click)="editProduct(product)">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn-delete" (click)="deleteProduct(product)">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="products.length === 0">
-        <div class="empty-content">
-          <i class="fas fa-box-open"></i>
-          <h2>No products yet</h2>
-          <p>Start by adding your first product</p>
-          <a routerLink="/vendor/products/create" class="btn-primary">Add Product</a>
-        </div>
-      </div>
-    </div>
-  `,
     styles: [`
     .vendor-products-container {
       max-width: 1200px;
@@ -264,38 +207,39 @@ import { RouterModule } from '@angular/router';
         grid-template-columns: 1fr;
       }
     }
-  `]
+  `],
+    templateUrl: './vendor-products.component.html'
 })
 export class VendorProductsComponent implements OnInit {
-  products: any[] = [];
+    products: any[] = [];
 
-  constructor() {}
+    constructor() { }
 
-  ngOnInit() {
-    this.loadProducts();
-  }
-
-  loadProducts() {
-    // Load vendor products from API
-    this.products = [];
-  }
-
-  getImageUrl(image: any): string {
-    if (typeof image === 'string') {
-      return image;
+    ngOnInit() {
+        this.loadProducts();
     }
-    return image?.url || '/uploadsplaceholder.jpg';
-  }
 
-  editProduct(product: any) {
-    // TODO: Navigate to edit product page
-    console.log('Edit product:', product);
-  }
-
-  deleteProduct(product: any) {
-    if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-      // TODO: Implement delete API call
-      this.products = this.products.filter(p => p._id !== product._id);
+    loadProducts() {
+        // Load vendor products from API
+        this.products = [];
     }
-  }
+
+    getImageUrl(image: any): string {
+        if (typeof image === 'string') {
+            return image;
+        }
+        return image?.url || '/uploadsplaceholder.jpg';
+    }
+
+    editProduct(product: any) {
+        // TODO: Navigate to edit product page
+        console.log('Edit product:', product);
+    }
+
+    deleteProduct(product: any) {
+        if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
+            // TODO: Implement delete API call
+            this.products = this.products.filter(p => p._id !== product._id);
+        }
+    }
 }

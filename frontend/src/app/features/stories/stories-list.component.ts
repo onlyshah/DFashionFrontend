@@ -17,6 +17,7 @@ interface StoryPreview {
   };
   isViewed: boolean;
   createdAt: Date;
+  products?: any[];
 }
 
 @Component({

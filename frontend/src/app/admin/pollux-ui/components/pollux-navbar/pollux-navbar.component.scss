@@ -1,0 +1,30 @@
+// PolluxUI Navbar Styles
+.navbar {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  .navbar-brand-wrapper {
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    .navbar-brand {
+      img {
+        height: 40px;
+        margin-right: 8px;
+      }
+    }
+    .navbar-toggler {
+      margin-left: 8px;
+    }
+  }
+  .navbar-menu-wrapper {
+    .nav-profile-name {
+      font-weight: 600;
+      color: #333;
+    }
+    .date {
+      font-size: 1rem;
+      color: #666;
+    }
+  }
+}

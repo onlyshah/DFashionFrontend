@@ -1,0 +1,98 @@
+<div class="vendor-orders-container">
+  <div class="header">
+    <h1>Orders</h1>
+    <div class="order-stats">
+      <div class="stat-item">
+        <span class="stat-value">{{ getTotalOrders() }}</span>
+        <span class="stat-label">Total Orders</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getPendingOrders() }}</span>
+        <span class="stat-label">Pending</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">₹{{ getTotalRevenue() | number:'1.0-0' }}</span>
+        <span class="stat-label">Revenue</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="filter-tabs">
+    <button *ngFor="let filter of filters" class="filter-tab" [class.active]="activeFilter === filter.key" (click)="setActiveFilter(filter.key)">
+      {{ filter.label }} ({{ getOrdersByStatus(filter.key).length }})
+    </button>
+  </div>
+
+  <!-- Orders List -->
+  <div class="orders-list" *ngIf="filteredOrders.length > 0">
+    <div class="order-card" *ngFor="let order of filteredOrders">
+      <div class="order-header">
+        <div class="order-info">
+          <h3>Order #{{ order.orderNumber }}</h3>
+          <span class="order-date">{{ order.createdAt | date:'medium' }}</span>
+        </div>
+        <div class="order-status">
+          <span class="status-badge" [class]="order.status">{{ order.status | titlecase }}</span>
+          <span class="order-total">₹{{ order.total | number:'1.0-0' }}</span>
+        </div>
+      </div>
+      <div class="order-customer">
+        <div class="customer-info">
+          <i class="fas fa-user"></i>
+          <span>{{ order.customer.name }}</span>
+        </div>
+        <div class="customer-contact">
+          <i class="fas fa-phone"></i>
+          <span>{{ order.customer.phone }}</span>
+        </div>
+      </div>
+      <div class="order-items">
+        <div class="item" *ngFor="let item of order.items">
+          <img [src]="getImageUrl(item.product.images[0])" [alt]="item.product.name">
+          <div class="item-details">
+            <h4>{{ item.product.name }}</h4>
+            <p>Qty: {{ item.quantity }} × ₹{{ item.price | number:'1.0-0' }}</p>
+            <div class="item-variants" *ngIf="item.size || item.color">
+              <span *ngIf="item.size">Size: {{ item.size }}</span>
+              <span *ngIf="item.color">Color: {{ item.color }}</span>
+            </div>
+          </div>
+          <div class="item-total">
+            ₹{{ (item.quantity * item.price) | number:'1.0-0' }}
+          </div>
+        </div>
+      </div>
+      <div class="order-address">
+        <h4>Shipping Address:</h4>
+        <p>{{ order.shippingAddress.addressLine1 }}, {{ order.shippingAddress.city }}, {{ order.shippingAddress.state }} - {{ order.shippingAddress.pincode }}</p>
+      </div>
+      <div class="order-actions">
+        <button class="btn-primary" (click)="updateOrderStatus(order)" *ngIf="order.status === 'pending'">
+          <i class="fas fa-check"></i> Confirm Order
+        </button>
+        <button class="btn-secondary" (click)="updateOrderStatus(order)" *ngIf="order.status === 'confirmed'">
+          <i class="fas fa-truck"></i> Mark as Shipped
+        </button>
+        <button class="btn-success" (click)="updateOrderStatus(order)" *ngIf="order.status === 'shipped'">
+          <i class="fas fa-box"></i> Mark as Delivered
+        </button>
+        <button class="btn-view" (click)="viewOrderDetails(order)">
+          <i class="fas fa-eye"></i> View Details
+        </button>
+        <button class="btn-contact" (click)="contactCustomer(order)">
+          <i class="fas fa-phone"></i> Contact Customer
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredOrders.length === 0">
+    <div class="empty-content">
+      <i class="fas fa-shopping-bag"></i>
+      <h2>No {{ activeFilter === 'all' ? '' : activeFilter }} orders</h2>
+      <p>{{ getEmptyMessage() }}</p>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../core/services/auth.service';
-import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
+//import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
 import { CustomerDashboardComponent } from '../customer-dashboard/customer-dashboard.component';
 
 interface UserStats {
@@ -37,7 +37,6 @@ interface RecentActivity {
         MatIconModule,
         MatButtonModule,
         MatTabsModule,
-        RewardDashboardComponent,
         CustomerDashboardComponent
     ],
     templateUrl: './user-dashboard.component.html',

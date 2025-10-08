@@ -68,7 +68,7 @@
                 <mat-icon>shopping_bag</mat-icon>
               </div>
               <div class="stat-info">
-                <div class="stat-number">{{ customerStats.ordersCount }}</div>
+                <div class="stat-number">{{ customerStats?.ordersCount }}</div>
                 <div class="stat-label">Orders</div>
               </div>
             </div>
@@ -83,7 +83,7 @@
                 <mat-icon>favorite</mat-icon>
               </div>
               <div class="stat-info">
-                <div class="stat-number">{{ customerStats.wishlistCount }}</div>
+                <div class="stat-number">{{ customerStats?.wishlistCount }}</div>
                 <div class="stat-label">Wishlist</div>
               </div>
             </div>
@@ -98,7 +98,7 @@
                 <mat-icon>shopping_cart</mat-icon>
               </div>
               <div class="stat-info">
-                <div class="stat-number">{{ customerStats.cartCount }}</div>
+                <div class="stat-number">{{ customerStats?.cartCount }}</div>
                 <div class="stat-label">Cart Items</div>
               </div>
             </div>
@@ -113,7 +113,7 @@
                 <mat-icon>card_giftcard</mat-icon>
               </div>
               <div class="stat-info">
-                <div class="stat-number">{{ customerStats.rewardsCount }}</div>
+                <div class="stat-number">{{ customerStats?.rewardsCount }}</div>
                 <div class="stat-label">Rewards</div>
               </div>
             </div>
@@ -187,15 +187,15 @@
           <div class="spending-stats">
             <div class="spending-item">
               <span class="label">Total Spent</span>
-              <span class="amount spent">{{ formatCurrency(customerStats.totalSpent) }}</span>
+              <span class="amount spent">{{ formatCurrency(customerStats?.totalSpent ?? 0) }}</span>
             </div>
             <div class="spending-item">
               <span class="label">Amount Saved</span>
-              <span class="amount saved">{{ formatCurrency(customerStats.savedAmount) }}</span>
+              <span class="amount saved">{{ formatCurrency(customerStats?.savedAmount ?? 0) }}</span>
             </div>
             <div class="spending-item">
               <span class="label">Average Order</span>
-              <span class="amount average">{{ formatCurrency(customerStats.totalSpent / customerStats.ordersCount) }}</span>
+              <span class="amount average">{{ formatCurrency((customerStats?.totalSpent || 0) / (customerStats?.ordersCount || 1)) }}</span>
             </div>
           </div>
         </mat-card-content>

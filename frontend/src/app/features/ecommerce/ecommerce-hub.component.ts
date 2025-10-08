@@ -6,270 +6,6 @@ import { FormsModule } from '@angular/forms';
 @Component({
     selector: 'app-ecommerce-hub',
     imports: [CommonModule, FormsModule, RouterOutlet],
-    template: `
-    <div class="ecommerce-hub">
-      <!-- Navigation Header -->
-      <header class="hub-header">
-        <div class="header-content">
-          <div class="logo-section">
-            <h1 class="hub-logo" (click)="goHome()">
-              <i class="fas fa-shopping-bag"></i>
-              DFashion Hub
-            </h1>
-          </div>
-          
-          <nav class="main-nav">
-            <button class="nav-btn" 
-                    (click)="navigateTo('shop')" 
-                    [class.active]="currentView === 'shop'">
-              <i class="fas fa-store"></i>
-              <span>Shop</span>
-            </button>
-            
-            <button class="nav-btn" 
-                    (click)="navigateTo('wishlist')" 
-                    [class.active]="currentView === 'wishlist'">
-              <i class="fas fa-heart"></i>
-              <span>Wishlist</span>
-              <span class="badge" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span>
-            </button>
-            
-            <button class="nav-btn" 
-                    (click)="navigateTo('cart')" 
-                    [class.active]="currentView === 'cart'">
-              <i class="fas fa-shopping-cart"></i>
-              <span>Cart</span>
-              <span class="badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
-            </button>
-            
-            <button class="nav-btn" 
-                    (click)="navigateTo('social')" 
-                    [class.active]="currentView === 'social'">
-              <i class="fas fa-users"></i>
-              <span>Social</span>
-            </button>
-          </nav>
-          
-          <div class="user-actions">
-            <button class="action-btn search-btn" (click)="toggleSearch()">
-              <i class="fas fa-search"></i>
-            </button>
-            
-            <button class="action-btn notifications-btn" (click)="showNotifications()">
-              <i class="fas fa-bell"></i>
-              <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
-            </button>
-            
-            <div class="user-menu" *ngIf="currentUser; else loginButton">
-              <img [src]="currentUser.avatar || '/uploadsdefault-avatar.png'" 
-                   [alt]="currentUser.fullName" 
-                   class="user-avatar"
-                   (click)="toggleUserMenu()">
-              
-              <div class="user-dropdown" *ngIf="showUserMenu">
-                <div class="dropdown-item" (click)="navigateTo('profile')">
-                  <i class="fas fa-user"></i>
-                  Profile
-                </div>
-                <div class="dropdown-item" (click)="navigateTo('orders')">
-                  <i class="fas fa-box"></i>
-                  Orders
-                </div>
-                <div class="dropdown-item" (click)="navigateTo('settings')">
-                  <i class="fas fa-cog"></i>
-                  Settings
-                </div>
-                <div class="dropdown-divider"></div>
-                <div class="dropdown-item" (click)="logout()">
-                  <i class="fas fa-sign-out-alt"></i>
-                  Logout
-                </div>
-              </div>
-            </div>
-            
-            <ng-template #loginButton>
-              <button class="btn-login" (click)="navigateTo('auth/login')">
-                Login
-              </button>
-            </ng-template>
-          </div>
-        </div>
-        
-        <!-- Search Bar -->
-        <div class="search-section" *ngIf="showSearchBar">
-          <div class="search-container">
-            <div class="search-bar">
-              <i class="fas fa-search"></i>
-              <input type="text" 
-                     [(ngModel)]="searchQuery"
-                     placeholder="Search products, brands, or users..."
-                     (keyup.enter)="search()"
-                     (input)="onSearchInput()">
-              <button class="btn-clear" *ngIf="searchQuery" (click)="clearSearch()">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            
-            <!-- Search Suggestions -->
-            <div class="search-suggestions" *ngIf="searchSuggestions.length > 0">
-              <div class="suggestion-item" 
-                   *ngFor="let suggestion of searchSuggestions"
-                   (click)="selectSuggestion(suggestion)">
-                <i class="fas" [class]="getSuggestionIcon(suggestion.type)"></i>
-                <span>{{ suggestion.text }}</span>
-                <span class="suggestion-type">{{ suggestion.type }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- Quick Stats Dashboard -->
-      <section class="quick-stats" *ngIf="currentView === 'dashboard'">
-        <div class="stats-container">
-          <div class="stat-card" (click)="navigateTo('wishlist')">
-            <div class="stat-icon wishlist">
-              <i class="fas fa-heart"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ wishlistCount }}</h3>
-              <p>Wishlist Items</p>
-            </div>
-          </div>
-          
-          <div class="stat-card" (click)="navigateTo('cart')">
-            <div class="stat-icon cart">
-              <i class="fas fa-shopping-cart"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ cartCount }}</h3>
-              <p>Cart Items</p>
-            </div>
-          </div>
-          
-          <div class="stat-card" (click)="navigateTo('orders')">
-            <div class="stat-icon orders">
-              <i class="fas fa-box"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ orderCount }}</h3>
-              <p>Orders</p>
-            </div>
-          </div>
-          
-          <div class="stat-card" (click)="navigateTo('social')">
-            <div class="stat-icon social">
-              <i class="fas fa-users"></i>
-            </div>
-            <div class="stat-info">
-              <h3>{{ socialCount }}</h3>
-              <p>Social Posts</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Feature Highlights -->
-      <section class="feature-highlights" *ngIf="currentView === 'dashboard'">
-        <div class="highlights-container">
-          <h2>Explore Features</h2>
-          
-          <div class="feature-grid">
-            <div class="feature-card" (click)="navigateTo('shop')">
-              <div class="feature-icon">
-                <i class="fas fa-store"></i>
-              </div>
-              <h3>Shop Products</h3>
-              <p>Browse our extensive collection of fashion items</p>
-              <div class="feature-action">
-                <span>Explore Now</span>
-                <i class="fas fa-arrow-right"></i>
-              </div>
-            </div>
-            
-            <div class="feature-card" (click)="navigateTo('wishlist')">
-              <div class="feature-icon">
-                <i class="fas fa-heart"></i>
-              </div>
-              <h3>Wishlist</h3>
-              <p>Save your favorite items for later purchase</p>
-              <div class="feature-action">
-                <span>View Wishlist</span>
-                <i class="fas fa-arrow-right"></i>
-              </div>
-            </div>
-            
-            <div class="feature-card" (click)="navigateTo('social')">
-              <div class="feature-icon">
-                <i class="fas fa-camera"></i>
-              </div>
-              <h3>Social Shopping</h3>
-              <p>Discover products through stories and posts</p>
-              <div class="feature-action">
-                <span>Go Social</span>
-                <i class="fas fa-arrow-right"></i>
-              </div>
-            </div>
-            
-            <div class="feature-card" (click)="navigateTo('share')">
-              <div class="feature-icon">
-                <i class="fas fa-share-alt"></i>
-              </div>
-              <h3>Share & Earn</h3>
-              <p>Share products with friends and family</p>
-              <div class="feature-action">
-                <span>Start Sharing</span>
-                <i class="fas fa-arrow-right"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Main Content Area -->
-      <main class="hub-content">
-        <router-outlet></router-outlet>
-      </main>
-
-      <!-- Mobile Bottom Navigation -->
-      <nav class="mobile-nav">
-        <button class="mobile-nav-btn" 
-                (click)="navigateTo('shop')" 
-                [class.active]="currentView === 'shop'">
-          <i class="fas fa-store"></i>
-          <span>Shop</span>
-        </button>
-        
-        <button class="mobile-nav-btn" 
-                (click)="navigateTo('wishlist')" 
-                [class.active]="currentView === 'wishlist'">
-          <i class="fas fa-heart"></i>
-          <span>Wishlist</span>
-          <span class="mobile-badge" *ngIf="wishlistCount > 0">{{ wishlistCount }}</span>
-        </button>
-        
-        <button class="mobile-nav-btn hub-btn" (click)="navigateTo('dashboard')">
-          <i class="fas fa-th-large"></i>
-          <span>Hub</span>
-        </button>
-        
-        <button class="mobile-nav-btn" 
-                (click)="navigateTo('cart')" 
-                [class.active]="currentView === 'cart'">
-          <i class="fas fa-shopping-cart"></i>
-          <span>Cart</span>
-          <span class="mobile-badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
-        </button>
-        
-        <button class="mobile-nav-btn" 
-                (click)="navigateTo('social')" 
-                [class.active]="currentView === 'social'">
-          <i class="fas fa-users"></i>
-          <span>Social</span>
-        </button>
-      </nav>
-    </div>
-  `,
     styles: [`
     .ecommerce-hub {
       min-height: 100vh;
@@ -808,130 +544,131 @@ import { FormsModule } from '@angular/forms';
         padding: 24px 20px;
       }
     }
-  `]
+  `],
+    templateUrl: './ecommerce-hub.component.html'
 })
 export class EcommerceHubComponent implements OnInit {
-  currentView = 'dashboard';
-  currentUser: any = null;
-  showUserMenu = false;
-  showSearchBar = false;
-  searchQuery = '';
-  searchSuggestions: any[] = [];
-  
-  // Counts
-  wishlistCount = 0;
-  cartCount = 0;
-  orderCount = 0;
-  socialCount = 0;
-  notificationCount = 0;
+    currentView = 'dashboard';
+    currentUser: any = null;
+    showUserMenu = false;
+    showSearchBar = false;
+    searchQuery = '';
+    searchSuggestions: any[] = [];
 
-  constructor(private router: Router) {}
+    // Counts
+    wishlistCount = 0;
+    cartCount = 0;
+    orderCount = 0;
+    socialCount = 0;
+    notificationCount = 0;
 
-  ngOnInit() {
-    this.loadCurrentUser();
-    this.loadCounts();
-    this.updateCurrentView();
-    
-    // Listen for route changes
-    this.router.events.subscribe(() => {
-      this.updateCurrentView();
-    });
-  }
+    constructor(private router: Router) { }
 
-  loadCurrentUser() {
-    // Get current user from auth service
-    this.currentUser = null; // Will be set by auth service
-  }
+    ngOnInit() {
+        this.loadCurrentUser();
+        this.loadCounts();
+        this.updateCurrentView();
 
-  loadCounts() {
-    // Get actual counts from services
-    this.wishlistCount = 0;
-    this.cartCount = 0;
-    this.orderCount = 0;
-    this.socialCount = 0;
-    this.notificationCount = 0;
-  }
-
-  updateCurrentView() {
-    const url = this.router.url;
-    if (url.includes('/shop')) this.currentView = 'shop';
-    else if (url.includes('/wishlist')) this.currentView = 'wishlist';
-    else if (url.includes('/cart')) this.currentView = 'cart';
-    else if (url.includes('/social')) this.currentView = 'social';
-    else if (url.includes('/orders')) this.currentView = 'orders';
-    else if (url.includes('/profile')) this.currentView = 'profile';
-    else this.currentView = 'dashboard';
-  }
-
-  // Navigation methods
-  goHome() {
-    this.navigateTo('dashboard');
-  }
-
-  navigateTo(route: string) {
-    this.router.navigate([route]);
-    this.showUserMenu = false;
-  }
-
-  // User menu
-  toggleUserMenu() {
-    this.showUserMenu = !this.showUserMenu;
-  }
-
-  logout() {
-    // Implement logout functionality
-    this.showUserMenu = false;
-    this.router.navigate(['/auth/login']);
-  }
-
-  // Search functionality
-  toggleSearch() {
-    this.showSearchBar = !this.showSearchBar;
-    if (!this.showSearchBar) {
-      this.clearSearch();
+        // Listen for route changes
+        this.router.events.subscribe(() => {
+            this.updateCurrentView();
+        });
     }
-  }
 
-  onSearchInput() {
-    if (this.searchQuery.length > 2) {
-      // Implement search suggestions from API
-      this.searchSuggestions = [];
-    } else {
-      this.searchSuggestions = [];
+    loadCurrentUser() {
+        // Get current user from auth service
+        this.currentUser = null; // Will be set by auth service
     }
-  }
 
-  search() {
-    if (this.searchQuery.trim()) {
-      this.router.navigate(['/search'], { 
-        queryParams: { q: this.searchQuery } 
-      });
-      this.showSearchBar = false;
-      this.clearSearch();
+    loadCounts() {
+        // Get actual counts from services
+        this.wishlistCount = 0;
+        this.cartCount = 0;
+        this.orderCount = 0;
+        this.socialCount = 0;
+        this.notificationCount = 0;
     }
-  }
 
-  selectSuggestion(suggestion: any) {
-    this.searchQuery = suggestion.text;
-    this.search();
-  }
-
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchSuggestions = [];
-  }
-
-  getSuggestionIcon(type: string): string {
-    switch (type) {
-      case 'product': return 'fa-box';
-      case 'brand': return 'fa-tag';
-      case 'user': return 'fa-user';
-      default: return 'fa-search';
+    updateCurrentView() {
+        const url = this.router.url;
+        if (url.includes('/shop')) this.currentView = 'shop';
+        else if (url.includes('/wishlist')) this.currentView = 'wishlist';
+        else if (url.includes('/cart')) this.currentView = 'cart';
+        else if (url.includes('/social')) this.currentView = 'social';
+        else if (url.includes('/orders')) this.currentView = 'orders';
+        else if (url.includes('/profile')) this.currentView = 'profile';
+        else this.currentView = 'dashboard';
     }
-  }
 
-  // Notifications
-  showNotifications() {
-    this.router.navigate(['/notifications']);
-  }
+    // Navigation methods
+    goHome() {
+        this.navigateTo('dashboard');
+    }
+
+    navigateTo(route: string) {
+        this.router.navigate([route]);
+        this.showUserMenu = false;
+    }
+
+    // User menu
+    toggleUserMenu() {
+        this.showUserMenu = !this.showUserMenu;
+    }
+
+    logout() {
+        // Implement logout functionality
+        this.showUserMenu = false;
+        this.router.navigate(['/auth/login']);
+    }
+
+    // Search functionality
+    toggleSearch() {
+        this.showSearchBar = !this.showSearchBar;
+        if (!this.showSearchBar) {
+            this.clearSearch();
+        }
+    }
+
+    onSearchInput() {
+        if (this.searchQuery.length > 2) {
+            // Implement search suggestions from API
+            this.searchSuggestions = [];
+        } else {
+            this.searchSuggestions = [];
+        }
+    }
+
+    search() {
+        if (this.searchQuery.trim()) {
+            this.router.navigate(['/search'], {
+                queryParams: { q: this.searchQuery }
+            });
+            this.showSearchBar = false;
+            this.clearSearch();
+        }
+    }
+
+    selectSuggestion(suggestion: any) {
+        this.searchQuery = suggestion.text;
+        this.search();
+    }
+
+    clearSearch() {
+        this.searchQuery = '';
+        this.searchSuggestions = [];
+    }
+
+    getSuggestionIcon(type: string): string {
+        switch (type) {
+            case 'product': return 'fa-box';
+            case 'brand': return 'fa-tag';
+            case 'user': return 'fa-user';
+            default: return 'fa-search';
+        }
+    }
+
+    // Notifications
+    showNotifications() {
+        this.router.navigate(['/notifications']);
+    }
 }

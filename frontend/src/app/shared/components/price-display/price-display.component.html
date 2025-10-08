@@ -1,0 +1,18 @@
+<div class="price-display" [class]="size">
+  <span class="current-price" [style.color]="currentPriceColor">
+  {{ currency }}{{ currentPrice | number:'1.0-2' }}
+  </span>
+  <span *ngIf="originalPrice && originalPrice > currentPrice"
+            class="original-price">
+  {{ currency }}{{ originalPrice | number:'1.0-2' }}
+  </span>
+  <span *ngIf="discountPercentage > 0"
+            class="discount-badge"
+            [style.background-color]="discountColor">
+  {{ discountPercentage }}% OFF
+  </span>
+  <span *ngIf="showSavings && savings > 0"
+            class="savings">
+        You save {{ currency }}{{ savings | number:'1.0-2' }}
+      </span>
+</div>

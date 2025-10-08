@@ -1,0 +1,171 @@
+<div class="product-detail-container" *ngIf="product">
+
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a (click)="goHome()">Home</a>
+    <span>/</span>
+    <a (click)="goToProducts()">Products</a>
+    <span>/</span>
+    <span>{{ product.name }}</span>
+  </nav>
+  <div class="product-detail-content">
+
+    <!-- Product Images -->
+    <div class="product-images">
+      <div class="main-image">
+        <img [src]="selectedImage" [alt]="product.name" class="main-product-image">
+        <div class="image-badges">
+          <span class="badge sale-badge" *ngIf="discountPercentage > 0">
+          {{ discountPercentage }}% OFF
+          </span>
+          <span class="badge stock-badge" [class.out-of-stock]="product.stock === 0">
+          {{ product.stock === 0 ? 'Out of Stock' : 'In Stock' }}
+          </span>
+        </div>
+      </div>
+      <div class="image-thumbnails" *ngIf="product.images.length > 1">
+        <img *ngFor="let image of product.images; let i = index" [src]="image" [alt]="product.name + ' image ' + (i + 1)" class="thumbnail" [class.active]="selectedImage === image" (click)="selectImage(image)">
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <div class="product-header">
+        <h1 class="product-title">{{ product.name }}</h1>
+        <div class="product-brand">by {{ product.brand }}</div>
+        <div class="product-rating" *ngIf="product.rating.count > 0">
+          <div class="stars">
+            <i *ngFor="let star of [1,2,3,4,5]" class="fas fa-star" [class.filled]="star <= product.rating.average"></i>
+          </div>
+          <span class="rating-text">{{ product.rating.average }} ({{ product.rating.count }} reviews)</span>
+        </div>
+      </div>
+      <div class="product-pricing">
+        <div class="price-display">
+          <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
+          <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
+                ₹{{ product.originalPrice | number:'1.0-0' }}
+              </span>
+        </div>
+        <div class="savings" *ngIf="discountPercentage > 0">
+          You save ₹{{ savings | number:'1.0-0' }} ({{ discountPercentage }}%)
+        </div>
+      </div>
+
+      <!-- Product Options -->
+      <div class="product-options">
+
+        <!-- Size Selection -->
+        <div class="option-group" *ngIf="product.sizes && product.sizes.length > 0">
+          <label class="option-label">Size:</label>
+          <div class="size-options">
+            <button *ngFor="let sizeOption of product.sizes" class="size-option" [class.selected]="selectedSize === sizeOption.size" [class.out-of-stock]="sizeOption.stock === 0" [disabled]="sizeOption.stock === 0" (click)="selectSize(sizeOption.size)">
+              {{ sizeOption.size }}
+              <span class="stock-info" *ngIf="sizeOption.stock < 5 && sizeOption.stock > 0">
+                    ({{ sizeOption.stock }} left)
+                  </span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Color Selection -->
+        <div class="option-group" *ngIf="product.colors && product.colors.length > 0">
+          <label class="option-label">Color:</label>
+          <div class="color-options">
+            <button *ngFor="let color of product.colors" class="color-option" [class.selected]="selectedColor === color" [style.background-color]="getColorValue(color)" [title]="color" (click)="selectColor(color)">
+              <i class="fas fa-check" *ngIf="selectedColor === color"></i>
+            </button>
+          </div>
+          <span class="selected-color-name" *ngIf="selectedColor">{{ selectedColor }}</span>
+        </div>
+
+        <!-- Quantity Selection -->
+        <div class="option-group">
+          <label class="option-label">Quantity:</label>
+          <div class="quantity-selector">
+            <button class="qty-btn" (click)="decreaseQuantity()" [disabled]="quantity <= 1">-</button>
+            <span class="quantity">{{ quantity }}</span>
+            <button class="qty-btn" (click)="increaseQuantity()" [disabled]="quantity >= maxQuantity">+</button>
+          </div>
+          <span class="max-qty-info" *ngIf="maxQuantity < 10">Max {{ maxQuantity }} per order</span>
+        </div>
+      </div>
+
+      <!-- Shopping Actions -->
+      <div class="shopping-actions-container">
+        <app-shopping-actions [product]="product" [showPrice]="false" (buyNowClick)="onBuyNow()" (productClick)="onProductClick()"></app-shopping-actions>
+      </div>
+
+      <!-- Product Features -->
+      <div class="product-features" *ngIf="product.features && product.features.length > 0">
+        <h3>Key Features</h3>
+        <ul class="features-list">
+          <li *ngFor="let feature of product.features">
+            <i class="fas fa-check"></i>
+            {{ feature }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Vendor Info -->
+      <div class="vendor-info" *ngIf="product.vendor">
+        <h3>Sold by</h3>
+        <div class="vendor-details">
+          <strong>{{ product.vendor.businessName || product.vendor.fullName }}</strong>
+          <button class="view-vendor-btn" (click)="viewVendor()">View Store</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Description & Specifications -->
+  <div class="product-details-tabs">
+    <div class="tab-headers">
+      <button class="tab-header" [class.active]="activeTab === 'description'" (click)="activeTab = 'description'">
+        Description
+      </button>
+      <button class="tab-header" [class.active]="activeTab === 'specifications'" (click)="activeTab = 'specifications'" *ngIf="product.specifications && Object.keys(product.specifications).length > 0">
+        Specifications
+      </button>
+      <button class="tab-header" [class.active]="activeTab === 'reviews'" (click)="activeTab = 'reviews'">
+        Reviews ({{ product.rating.count }})
+      </button>
+    </div>
+    <div class="tab-content">
+      <div class="tab-panel" *ngIf="activeTab === 'description'">
+        <p>{{ product.description }}</p>
+      </div>
+      <div class="tab-panel" *ngIf="activeTab === 'specifications' && product.specifications">
+        <div class="specifications-table">
+          <div class="spec-row" *ngFor="let spec of objectKeys(product.specifications)">
+            <div class="spec-label">{{ spec }}</div>
+            <div class="spec-value">{{ product.specifications[spec] }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-panel" *ngIf="activeTab === 'reviews'">
+        <div class="reviews-placeholder">
+          <p>Reviews feature coming soon...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <div class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+    <p>Loading product details...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="error">
+  <div class="error-message">
+    <i class="fas fa-exclamation-triangle"></i>
+    <h2>Product Not Found</h2>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="goToProducts()">Browse Products</button>
+  </div>
+</div>

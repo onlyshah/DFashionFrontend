@@ -1,0 +1,25 @@
+// PolluxUI Sidebar Styles
+.sidebar {
+  background: #22223b;
+  color: #fff;
+  .nav {
+    .nav-item {
+      .nav-link {
+        color: #fff;
+        &:hover, &.active {
+          background: #4a4e69;
+          color: #f2e9e4;
+        }
+        .menu-title {
+          font-weight: 500;
+        }
+        .badge-danger {
+          background: #e63946;
+        }
+      }
+      .collapse {
+        background: #2a2b3c;
+      }
+    }
+  }
+}

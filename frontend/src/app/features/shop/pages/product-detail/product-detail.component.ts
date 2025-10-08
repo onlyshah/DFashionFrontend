@@ -7,34 +7,6 @@ import { ProductService } from '../../../../core/services/product.service';
 @Component({
     selector: 'app-product-detail',
     imports: [CommonModule, FormsModule],
-    template: `
-    <div class="product-detail-container">
-      <div class="product-header">
-        <button class="back-btn" (click)="goBack()">
-          <i class="fas fa-arrow-left"></i>
-          Back
-        </button>
-        <h1>Product Details</h1>
-      </div>
-
-      <div class="product-content" *ngIf="product">
-        <div class="product-image">
-          <img [src]="getProductImage(product)" [alt]="product.name">
-        </div>
-        <div class="product-info">
-          <h2>{{ product.name }}</h2>
-          <p class="price">₹{{ product.price }}</p>
-          <p class="description">{{ product.description }}</p>
-
-          <div class="product-actions">
-            <button class="btn-cart">Add to Cart</button>
-            <button class="btn-wishlist">Add to Wishlist</button>
-            <button class="btn-buy">Buy Now</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
     styles: [`
     .product-detail-container {
       padding: 2rem;
@@ -146,50 +118,51 @@ import { ProductService } from '../../../../core/services/product.service';
         flex-direction: column;
       }
     }
-  `]
+  `],
+    templateUrl: './product-detail.component.html'
 })
 export class ProductDetailComponent implements OnInit {
-  productId: string | null = null;
-  product: any = null;
-  loading = true;
+    productId: string | null = null;
+    product: any = null;
+    loading = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService
-  ) {}
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private productService: ProductService
+    ) { }
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.productId = params['id'];
-      if (this.productId) {
-        this.loadProduct();
-      }
-    });
-  }
+    ngOnInit() {
+        this.route.params.subscribe(params => {
+            this.productId = params['id'];
+            if (this.productId) {
+                this.loadProduct();
+            }
+        });
+    }
 
-  loadProduct() {
-    if (!this.productId) return;
+    loadProduct() {
+        if (!this.productId) return;
 
-    this.loading = true;
-    this.productService.getProductById(this.productId).subscribe({
-      next: (response) => {
-        this.product = response?.data || null;
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading product:', error);
-        this.product = null;
-        this.loading = false;
-      }
-    });
-  }
+        this.loading = true;
+        this.productService.getProductById(this.productId).subscribe({
+            next: (response) => {
+                this.product = response?.data || null;
+                this.loading = false;
+            },
+            error: (error) => {
+                console.error('Error loading product:', error);
+                this.product = null;
+                this.loading = false;
+            }
+        });
+    }
 
-  getProductImage(product: any): string {
-    return product?.images?.[0]?.url || '/uploadsdefault-product.svg';
-  }
+    getProductImage(product: any): string {
+        return product?.images?.[0]?.url || '/uploadsdefault-product.svg';
+    }
 
-  goBack() {
-    this.router.navigate(['/']);
-  }
+    goBack() {
+        this.router.navigate(['/']);
+    }
 }

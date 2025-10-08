@@ -1,0 +1,27 @@
+<!-- PolluxUI Sidebar Component -->
+<ng-container>
+  <nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+      <li class="nav-item" *ngFor="let item of navigationItems">
+        <a class="nav-link" [routerLink]="item.route" routerLinkActive="active" *ngIf="!item.children" (click)="onMenuItemClick(item)">
+          <i class="typcn" [ngClass]="item.icon + ' menu-icon'"></i>
+          <span class="menu-title">{{ item.title }}</span>
+          <div class="badge badge-danger" *ngIf="item.badge">{{ item.badge }}</div>
+        </a>
+        <!-- Dropdown Menu -->
+        <a class="nav-link" [attr.data-bs-toggle]="item.children ? 'collapse' : null" [attr.href]="item.children ? '#' + item.id : null" [attr.aria-expanded]="item.expanded" [attr.aria-controls]="item.id" *ngIf="item.children" (click)="toggleSubmenu(item)">
+          <i class="typcn" [ngClass]="item.icon + ' menu-icon'"></i>
+          <span class="menu-title">{{ item.title }}</span>
+          <i class="menu-arrow typcn typcn-chevron-right"></i>
+        </a>
+        <div class="collapse" [id]="item.id" [class.show]="item.expanded" *ngIf="item.children">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item" *ngFor="let child of item.children">
+              <a class="nav-link" [routerLink]="child.route" routerLinkActive="active">{{ child.title }}</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
+</ng-container>

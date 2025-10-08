@@ -1,0 +1,24 @@
+<div class="product-detail-container">
+  <div class="product-header">
+    <button class="back-btn" (click)="goBack()">
+      <i class="fas fa-arrow-left"></i>
+      Back
+    </button>
+    <h1>Product Details</h1>
+  </div>
+  <div class="product-content" *ngIf="product">
+    <div class="product-image">
+      <img [src]="getProductImage(product)" [alt]="product.name">
+    </div>
+    <div class="product-info">
+      <h2>{{ product.name }}</h2>
+      <p class="price">₹{{ product.price }}</p>
+      <p class="description">{{ product.description }}</p>
+      <div class="product-actions">
+        <button class="btn-cart">Add to Cart</button>
+        <button class="btn-wishlist">Add to Wishlist</button>
+        <button class="btn-buy">Buy Now</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,219 @@
+<div class="customer-data-container" *ngIf="customerData">
+
+  <!-- Customer Profile Header -->
+  <mat-card class="profile-header-card">
+    <mat-card-content>
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <img *ngIf="customerData.avatar" [src]="customerData.avatar" [alt]="customerData.fullName">
+          <div *ngIf="!customerData.avatar" class="avatar-placeholder">
+            {{ getInitials(customerData.fullName) }}
+          </div>
+        </div>
+        <div class="profile-info">
+          <h2>{{ customerData.fullName }}</h2>
+          <p class="email">{{ customerData.email }}</p>
+          <p class="username">{{ '@' + customerData.username }}</p>
+          <div class="profile-badges">
+            <mat-chip class="role-chip">{{ customerData.role | titlecase }}</mat-chip>
+            <mat-chip [class]="customerData.isActive ? 'status-active' : 'status-inactive'">
+              {{ customerData.isActive ? 'Active' : 'Inactive' }}
+            </mat-chip>
+            <mat-chip *ngIf="customerData.isVerified" class="verified-chip">
+              <mat-icon>verified</mat-icon>
+              Verified
+            </mat-chip>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-value">{{ customerData.totalOrders || 0 }}</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">${{ formatCurrency(customerData.totalSpent || 0) }}</div>
+            <div class="stat-label">Total Spent</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ formatDate(customerData.createdAt) }}</div>
+            <div class="stat-label">Member Since</div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Customer Data Tabs -->
+  <mat-tab-group class="customer-tabs">
+
+    <!-- Personal Information Tab -->
+    <mat-tab label="Personal Information">
+      <div class="tab-content">
+        <mat-card class="info-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>person</mat-icon>
+              Personal Details
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Full Name</label>
+                <span>{{ customerData.fullName }}</span>
+              </div>
+              <div class="info-item">
+                <label>Email Address</label>
+                <span>{{ customerData.email }}</span>
+              </div>
+              <div class="info-item">
+                <label>Username</label>
+                <span>{{ '@' + customerData.username }}</span>
+              </div>
+              <div class="info-item">
+                <label>Account Status</label>
+                <span [class]="customerData.isActive ? 'status-active' : 'status-inactive'">
+                {{ customerData.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <div class="info-item">
+                <label>Email Verified</label>
+                <span [class]="customerData.isVerified ? 'status-verified' : 'status-unverified'">
+                {{ customerData.isVerified ? 'Yes' : 'No' }}
+                </span>
+              </div>
+              <div class="info-item">
+                <label>Last Login</label>
+                <span>{{ formatDate(customerData.lastLogin) || 'Never' }}</span>
+              </div>
+              <div class="info-item">
+                <label>Member Since</label>
+                <span>{{ formatDate(customerData.createdAt) }}</span>
+              </div>
+              <div class="info-item">
+                <label>Profile Updated</label>
+                <span>{{ formatDate(customerData.updatedAt) }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Order History Tab -->
+    <mat-tab label="Order History">
+      <div class="tab-content">
+        <mat-card class="orders-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>shopping_cart</mat-icon>
+              Order History ({{ orders.length }})
+            </mat-card-title>
+            <button mat-icon-button (click)="refreshOrders()">
+              <mat-icon>refresh</mat-icon>
+            </button>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="orders-container" *ngIf="orders.length > 0; else noOrders">
+              <div *ngFor="let order of orders" class="order-item">
+                <div class="order-header">
+                  <div class="order-info">
+                    <h4>Order #{{ order.orderNumber }}</h4>
+                    <p class="order-date">{{ formatDate(order.date) }}</p>
+                  </div>
+                  <div class="order-status">
+                    <mat-chip [class]="'status-' + order.status.toLowerCase()">
+                      {{ order.status | titlecase }}
+                    </mat-chip>
+                    <span class="order-total">${{ formatCurrency(order.total) }}</span>
+                  </div>
+                </div>
+                <div class="order-items">
+                  <div *ngFor="let item of order.items" class="order-item-detail">
+                    <span class="item-name">{{ item.productName }}</span>
+                    <span class="item-quantity">Qty: {{ item.quantity }}</span>
+                    <span class="item-price">${{ formatCurrency(item.price) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <ng-template #noOrders>
+              <div class="no-data">
+                <mat-icon>shopping_cart_outlined</mat-icon>
+                <h3>No Orders Found</h3>
+                <p>This customer hasn't placed any orders yet.</p>
+              </div>
+            </ng-template>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Activity Log Tab -->
+    <mat-tab label="Activity Log">
+      <div class="tab-content">
+        <mat-card class="activity-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>timeline</mat-icon>
+              Recent Activity
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="activity-timeline">
+              <div *ngFor="let activity of recentActivity" class="activity-item">
+                <div class="activity-icon">
+                  <mat-icon>{{ activity.icon }}</mat-icon>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-description">{{ activity.description }}</div>
+                  <div class="activity-timestamp">{{ formatDate(activity.timestamp) }}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <!-- Account Settings Tab -->
+    <mat-tab label="Account Settings">
+      <div class="tab-content">
+        <mat-card class="settings-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>settings</mat-icon>
+              Account Management
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="settings-actions">
+              <button mat-raised-button color="primary" (click)="editProfile()">
+                <mat-icon>edit</mat-icon>
+                Edit Profile
+              </button>
+              <button mat-raised-button color="accent" (click)="changePassword()">
+                <mat-icon>lock</mat-icon>
+                Change Password
+              </button>
+              <button mat-raised-button [color]="customerData.isActive ? 'warn' : 'primary'" (click)="toggleAccountStatus()">
+                <mat-icon>{{ customerData.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                {{ customerData.isActive ? 'Deactivate' : 'Activate' }} Account
+              </button>
+              <button mat-raised-button color="warn" (click)="deleteAccount()">
+                <mat-icon>delete</mat-icon>
+                Delete Account
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading">
+  <mat-spinner diameter="50"></mat-spinner>
+  <p>Loading customer data...</p>
+</div>

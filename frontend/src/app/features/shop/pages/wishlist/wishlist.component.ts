@@ -4,78 +4,11 @@ import { Router } from '@angular/router';
 
 import { WishlistNewService, WishlistItem } from '../../../../core/services/wishlist-new.service';
 import { CartService } from '../../../../core/services/cart.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-wishlist',
     imports: [CommonModule],
-    template: `
-    <div class="wishlist-page">
-      <div class="wishlist-header">
-        <h1>My Wishlist</h1>
-        <p *ngIf="wishlistItems.length > 0">{{ wishlistItems.length }} items</p>
-      </div>
-
-      <div class="wishlist-content" *ngIf="wishlistItems.length > 0">
-        <div class="wishlist-grid">
-          <div *ngFor="let item of wishlistItems" class="wishlist-item">
-            <div class="item-image">
-              <img [src]="item.product.images[0].url" [alt]="item.product.name">
-              <button class="remove-btn" (click)="removeFromWishlist(item.product._id)">
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <div class="item-details">
-              <h3>{{ item.product.name }}</h3>
-              <p class="brand">{{ item.product.brand }}</p>
-              <div class="price">
-                <span class="current-price">₹{{ item.product.price | number }}</span>
-                <span class="original-price" *ngIf="item.product.originalPrice">₹{{ item.product.originalPrice | number }}</span>
-                <span class="discount" *ngIf="getDiscount(item.product) > 0">{{ getDiscount(item.product) }}% OFF</span>
-              </div>
-              <div class="rating" *ngIf="item.product.rating">
-                <div class="stars">
-                  <i *ngFor="let star of getStars(item.product.rating.average)" [class]="star"></i>
-                </div>
-                <span>({{ item.product.rating.count }})</span>
-              </div>
-              <div class="item-actions">
-                <button class="add-to-cart-btn" (click)="addToCart(item.product._id)">
-                  <i class="fas fa-shopping-cart"></i>
-                  Add to Cart
-                </button>
-                <button class="view-product-btn" (click)="viewProduct(item.product._id)">
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="wishlist-actions">
-          <button class="clear-wishlist-btn" (click)="clearWishlist()">
-            Clear Wishlist
-          </button>
-          <button class="continue-shopping-btn" (click)="continueShopping()">
-            Continue Shopping
-          </button>
-        </div>
-      </div>
-
-      <div class="empty-wishlist" *ngIf="wishlistItems.length === 0 && !isLoading">
-        <i class="fas fa-heart"></i>
-        <h3>Your wishlist is empty</h3>
-        <p>Save items you love to your wishlist</p>
-        <button class="shop-now-btn" (click)="continueShopping()">
-          Shop Now
-        </button>
-      </div>
-
-      <div class="loading-container" *ngIf="isLoading">
-        <div class="spinner"></div>
-        <p>Loading wishlist...</p>
-      </div>
-    </div>
-  `,
     styles: [`
     .wishlist-page {
       padding: 2rem;
@@ -353,110 +286,111 @@ import { CartService } from '../../../../core/services/cart.service';
         max-width: 300px;
       }
     }
-  `]
+  `],
+    templateUrl: './wishlist.component.html'
 })
 export class WishlistComponent implements OnInit {
-  // Calculate discount percentage for a product
-  getDiscount(product: any): number {
-    if (!product.originalPrice || product.originalPrice <= product.price) return 0;
-    return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-  }
-  wishlistItems: WishlistItem[] = [];
-  isLoading = true;
-
-  constructor(
-  private wishlistService: WishlistNewService,
-    private cartService: CartService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.loadWishlist();
-    this.subscribeToWishlistUpdates();
-  }
-
-  loadWishlist() {
-    this.isLoading = true;
-    this.wishlistService.loadWishlist().subscribe({
-      next: () => {
-        this.isLoading = false;
-        // Items will be updated via subscription
-      },
-      error: (error: any) => {
-        console.error('Failed to load wishlist:', error);
-        this.isLoading = false;
-        this.wishlistItems = [];
-      }
-    });
-  }
-
-  subscribeToWishlistUpdates() {
-    this.wishlistService.wishlist$.subscribe(wishlist => {
-      this.wishlistItems = wishlist?.items || [];
-    });
-  }
-
-  removeFromWishlist(productId: string) {
-    this.wishlistService.removeFromWishlist(productId).subscribe({
-      next: () => {
-        this.loadWishlist(); // Refresh wishlist
-      },
-      error: (error) => {
-        console.error('Failed to remove from wishlist:', error);
-      }
-    });
-  }
-
-  addToCart(productId: string) {
-    this.cartService.addToCart(productId, 1).subscribe({
-      next: () => {
-        this.showNotification('Added to cart successfully!');
-      },
-      error: (error) => {
-        console.error('Failed to add to cart:', error);
-        this.showNotification('Failed to add to cart');
-      }
-    });
-  }
-
-  viewProduct(productId: string) {
-    this.router.navigate(['/product', productId]);
-  }
-
-  clearWishlist() {
-    if (confirm('Are you sure you want to clear your entire wishlist?')) {
-      // Remove all items one by one (WishlistNewService does not have clearWishlist)
-      const ids = this.wishlistItems.map(item => item.product._id);
-      ids.forEach(id => {
-        this.removeFromWishlist(id);
-      });
-      this.wishlistItems = [];
+    // Calculate discount percentage for a product
+    getDiscount(product: any): number {
+        if (!product.originalPrice || product.originalPrice <= product.price) return 0;
+        return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
     }
-  }
+    wishlistItems: WishlistItem[] = [];
+    isLoading = true;
+    imageUrl = environment.apiUrl;
+    constructor(
+        private wishlistService: WishlistNewService,
+        private cartService: CartService,
+        private router: Router
+    ) { }
 
-  continueShopping() {
-    this.router.navigate(['/']);
-  }
-
-  getStars(rating: number): string[] {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      if (i <= rating) {
-        stars.push('fas fa-star');
-      } else if (i - 0.5 <= rating) {
-        stars.push('fas fa-star-half-alt');
-      } else {
-        stars.push('far fa-star');
-      }
+    ngOnInit() {
+        this.loadWishlist();
+        this.subscribeToWishlistUpdates();
     }
-    return stars;
-  }
 
-  private showNotification(message: string) {
-    // Create a simple notification
-    const notification = document.createElement('div');
-    notification.textContent = message;
-    notification.style.cssText = `
+    loadWishlist() {
+        this.isLoading = true;
+        this.wishlistService.loadWishlist().subscribe({
+            next: () => {
+                this.isLoading = false;
+                // Items will be updated via subscription
+            },
+            error: (error: any) => {
+                console.error('Failed to load wishlist:', error);
+                this.isLoading = false;
+                this.wishlistItems = [];
+            }
+        });
+    }
+
+    subscribeToWishlistUpdates() {
+        this.wishlistService.wishlist$.subscribe(wishlist => {
+            this.wishlistItems = wishlist?.items || [];
+        });
+    }
+
+    removeFromWishlist(productId: string) {
+        this.wishlistService.removeFromWishlist(productId).subscribe({
+            next: () => {
+                this.loadWishlist(); // Refresh wishlist
+            },
+            error: (error) => {
+                console.error('Failed to remove from wishlist:', error);
+            }
+        });
+    }
+
+    addToCart(productId: string) {
+        this.cartService.addToCart(productId, 1).subscribe({
+            next: () => {
+                this.showNotification('Added to cart successfully!');
+            },
+            error: (error) => {
+                console.error('Failed to add to cart:', error);
+                this.showNotification('Failed to add to cart');
+            }
+        });
+    }
+
+    viewProduct(productId: string) {
+        this.router.navigate(['/product', productId]);
+    }
+
+    clearWishlist() {
+        if (confirm('Are you sure you want to clear your entire wishlist?')) {
+            // Remove all items one by one (WishlistNewService does not have clearWishlist)
+            const ids = this.wishlistItems.map(item => item.product._id);
+            ids.forEach(id => {
+                this.removeFromWishlist(id);
+            });
+            this.wishlistItems = [];
+        }
+    }
+
+    continueShopping() {
+        this.router.navigate(['/']);
+    }
+
+    getStars(rating: number): string[] {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars.push('fas fa-star');
+            } else if (i - 0.5 <= rating) {
+                stars.push('fas fa-star-half-alt');
+            } else {
+                stars.push('far fa-star');
+            }
+        }
+        return stars;
+    }
+
+    private showNotification(message: string) {
+        // Create a simple notification
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
       position: fixed;
       top: 20px;
       right: 20px;
@@ -469,10 +403,10 @@ export class WishlistComponent implements OnInit {
       animation: slideIn 0.3s ease;
     `;
 
-    document.body.appendChild(notification);
+        document.body.appendChild(notification);
 
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
 }

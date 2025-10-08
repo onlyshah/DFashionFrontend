@@ -1,0 +1,112 @@
+<div class="category-page">
+
+  <!-- Header -->
+  <div class="category-header">
+    <div class="breadcrumb">
+      <span (click)="goHome()">Home</span>
+      <i class="fas fa-chevron-right"></i>
+      <span class="current">{{ getCategoryDisplayName() }}</span>
+    </div>
+    <h1>{{ getCategoryDisplayName() }}</h1>
+    <p class="category-description">{{ getCategoryDescription() }}</p>
+  </div>
+
+  <!-- Filters & Sort -->
+  <div class="filters-section">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>Sort by:</label>
+        <select [(ngModel)]="sortBy" (change)="onSortChange()">
+          <option value="featured">Featured</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="rating">Customer Rating</option>
+          <option value="newest">Newest First</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Price Range:</label>
+        <select [(ngModel)]="priceRange" (change)="onFilterChange()">
+          <option value="">All Prices</option>
+          <option value="0-1000">Under ₹1,000</option>
+          <option value="1000-3000">₹1,000 - ₹3,000</option>
+          <option value="3000-5000">₹3,000 - ₹5,000</option>
+          <option value="5000-10000">₹5,000 - ₹10,000</option>
+          <option value="10000+">Above ₹10,000</option>
+        </select>
+      </div>
+      <div class="filter-group" *ngIf="category === 'women' || category === 'men'">
+        <label>Size:</label>
+        <select [(ngModel)]="selectedSize" (change)="onFilterChange()">
+          <option value="">All Sizes</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="XXL">XXL</option>
+        </select>
+      </div>
+      <div class="results-count">
+        {{ filteredProducts.length }} products found
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid" *ngIf="filteredProducts.length > 0">
+    <div class="product-card" *ngFor="let product of filteredProducts" (click)="viewProduct(product)">
+      <div class="product-image">
+        <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
+        <div class="product-actions">
+          <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
+            <i class="far fa-heart"></i>
+          </button>
+          <button class="btn-quick-view" (click)="quickView(product, $event)">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="discount-badge" *ngIf="product.originalPrice && product.originalPrice > product.price">
+          {{ getDiscountPercentage(product) }}% OFF
+        </div>
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-brand">{{ product.brand }}</p>
+        <div class="product-rating" *ngIf="product.rating">
+          <div class="stars">
+            <i class="fas fa-star" *ngFor="let star of getStars(product.rating.average)"></i>
+            <i class="far fa-star" *ngFor="let star of getEmptyStars(product.rating.average)"></i>
+          </div>
+          <span class="rating-count">({{ product.rating.count }})</span>
+        </div>
+        <div class="product-price">
+          <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
+          <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
+                ₹{{ product.originalPrice | number:'1.0-0' }}
+              </span>
+        </div>
+        <button class="btn-add-cart" (click)="addToCart(product, $event)">
+          <i class="fas fa-shopping-cart"></i>
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="filteredProducts.length === 0 && !loading">
+    <div class="empty-content">
+      <i class="fas fa-search"></i>
+      <h2>No products found</h2>
+      <p>Try adjusting your filters or browse other categories</p>
+      <button class="btn-primary" (click)="clearFilters()">Clear Filters</button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading products...</p>
+  </div>
+</div>

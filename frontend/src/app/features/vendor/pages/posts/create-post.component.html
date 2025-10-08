@@ -1,0 +1,104 @@
+<div class="create-post-container">
+  <div class="header">
+    <h1>Create New Post</h1>
+    <p>Share your products with the community</p>
+  </div>
+  <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+
+    <!-- Media Upload -->
+    <div class="form-section">
+      <h3>Media</h3>
+      <div class="media-upload">
+        <div class="upload-area" (click)="fileInput.click()" [class.has-files]="selectedFiles.length > 0">
+          <input #fileInput type="file" multiple accept="image/*,video/*" (change)="onFileSelect($event)" style="display: none;">
+          <div class="upload-content" *ngIf="selectedFiles.length === 0">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Click to upload images or videos</p>
+            <span>Support: JPG, PNG, MP4, MOV</span>
+          </div>
+          <div class="file-preview" *ngIf="selectedFiles.length > 0">
+            <div class="file-item" *ngFor="let file of selectedFiles; let i = index">
+              <img *ngIf="file.type.startsWith('image')" [src]="file.preview" [alt]="file.name">
+              <video *ngIf="file.type.startsWith('video')" [src]="file.preview" controls></video>
+              <button type="button" class="remove-file" (click)="removeFile(i)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Caption -->
+    <div class="form-section">
+      <h3>Caption</h3>
+      <textarea formControlName="caption" placeholder="Write a caption for your post..." rows="4" maxlength="2000"></textarea>
+      <div class="char-count">{{ postForm.get('caption')?.value?.length || 0 }}/2000</div>
+    </div>
+
+    <!-- Product Tags -->
+    <div class="form-section">
+      <h3>Tag Products</h3>
+      <div class="product-search">
+        <input type="text" placeholder="Search your products..." (input)="searchProducts($event)" class="search-input">
+        <div class="product-results" *ngIf="searchResults.length > 0">
+          <div class="product-item" *ngFor="let product of searchResults" (click)="addProductTag(product)">
+            <img [src]="product.images[0]?.url" [alt]="product.name">
+            <div class="product-info">
+              <h4>{{ product.name }}</h4>
+              <p>₹{{ product.price | number:'1.0-0' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tagged-products" *ngIf="taggedProducts.length > 0">
+        <h4>Tagged Products:</h4>
+        <div class="tagged-list">
+          <div class="tagged-item" *ngFor="let product of taggedProducts; let i = index">
+            <img [src]="product.images[0]?.url" [alt]="product.name">
+            <span>{{ product.name }}</span>
+            <button type="button" (click)="removeProductTag(i)">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hashtags -->
+    <div class="form-section">
+      <h3>Hashtags</h3>
+      <input type="text" placeholder="Add hashtags (e.g., #fashion #style #trending)" (keyup.enter)="addHashtag($event)" class="hashtag-input">
+      <div class="hashtags" *ngIf="hashtags.length > 0">
+        <span class="hashtag" *ngFor="let tag of hashtags; let i = index">
+              #{{ tag }}
+              <button type="button" (click)="removeHashtag(i)">×</button>
+            </span>
+      </div>
+    </div>
+
+    <!-- Post Settings -->
+    <div class="form-section">
+      <h3>Post Settings</h3>
+      <div class="settings-grid">
+        <label class="setting-item">
+          <input type="checkbox" formControlName="allowComments">
+          <span>Allow comments</span>
+        </label>
+        <label class="setting-item">
+          <input type="checkbox" formControlName="allowSharing">
+          <span>Allow sharing</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="form-actions">
+      <button type="button" class="btn-secondary" (click)="saveDraft()">Save as Draft</button>
+      <button type="submit" class="btn-primary" [disabled]="!postForm.valid || uploading">
+        <span *ngIf="uploading">Publishing...</span>
+        <span *ngIf="!uploading">Publish Post</span>
+      </button>
+    </div>
+  </form>
+</div>

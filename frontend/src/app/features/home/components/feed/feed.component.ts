@@ -7,12 +7,16 @@ import { WishlistService } from '../../../../core/services/wishlist.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 
+import { StoriesListComponent } from '../../../stories/stories-list.component';
 @Component({
-    selector: 'app-feed',
-    imports: [CommonModule, FormsModule],
-    templateUrl: './feed.component.html',
-    styleUrls: ['./feed.component.scss']
+  selector: 'app-feed',
+  imports: [CommonModule, FormsModule, StoriesListComponent],
+  templateUrl: './feed.component.html',
+  styleUrls: ['./feed.component.scss']
 })
+
+
+
 export class FeedComponent implements OnInit {
   posts: any[] = [];
   loading = true;
@@ -20,6 +24,8 @@ export class FeedComponent implements OnInit {
   currentPage = 1;
   newComment = '';
   imageUrl = environment.apiUrl;
+  stories: any[] = [];
+  storiesLoading = true;
 
   // TrackBy for ngFor
   trackByPostId(index: number, post: any) {
@@ -204,12 +210,35 @@ export class FeedComponent implements OnInit {
 
   ) {}
 
+
   ngOnInit() {
-  this.loadPosts();
-  // Debug: log feed data after loading
-  setTimeout(() => {
-    console.log('Feed posts:', this.posts);
-  }, 2000);
+    this.loadPosts();
+    this.loadStories();
+    // Debug: log feed data after loading
+    setTimeout(() => {
+      console.log('Feed posts:', this.posts);
+    }, 2000);
+  }
+
+  loadStories() {
+    this.storiesLoading = true;
+    this.http.get<any>(`${environment.apiUrl}/api/stories/preview`).subscribe({
+      next: (res: any) => {
+        this.stories = Array.isArray(res?.stories) ? res.stories : [];
+        this.storiesLoading = false;
+      },
+      error: () => {
+        this.stories = [];
+        this.storiesLoading = false;
+      }
+    });
+  }
+
+  openStory(event: { story: any, index: number }) {
+    const { story, index } = event;
+    this.router.navigate(['/stories', story.user._id], {
+      queryParams: { index, storyId: story._id }
+    });
   }
 
 loadPosts() {

@@ -1,0 +1,90 @@
+<form [formGroup]="secureForm" (ngSubmit)="onSubmit()" class="secure-form">
+  <div *ngFor="let field of fields" class="form-field">
+
+    <!-- Text, Email, Password, Tel, URL, Number inputs -->
+    <div *ngIf="['text', 'email', 'password', 'tel', 'url', 'number'].includes(field.type)" class="input-group">
+      <label [for]="field.name" class="form-label">
+        {{ field.label }}
+        <span *ngIf="field.required" class="required">*</span>
+      </label>
+      <input [id]="field.name" [formControlName]="field.name" [type]="field.type" [placeholder]="field.placeholder || ''" class="form-control" [class.is-invalid]="isFieldInvalid(field.name)" [attr.data-testid]="field.name + '-input'" autocomplete="off" spellcheck="false" (blur)="onFieldBlur(field.name)" (input)="onFieldInput(field.name, $event)" />
+
+      <!-- Password strength indicator -->
+      <div *ngIf="field.type === 'password' && getFieldValue(field.name)" class="password-strength">
+        <div class="strength-meter">
+          <div class="strength-bar" [ngClass]="getPasswordStrength(getFieldValue(field.name))"></div>
+        </div>
+        <small class="strength-text">
+          {{ getPasswordStrengthText(getFieldValue(field.name)) }}
+        </small>
+      </div>
+    </div>
+
+    <!-- Textarea -->
+    <div *ngIf="field.type === 'textarea'" class="input-group">
+      <label [for]="field.name" class="form-label">
+        {{ field.label }}
+        <span *ngIf="field.required" class="required">*</span>
+      </label>
+      <textarea [id]="field.name" [formControlName]="field.name" [placeholder]="field.placeholder || ''" class="form-control" [class.is-invalid]="isFieldInvalid(field.name)" [attr.data-testid]="field.name + '-input'" rows="4" maxlength="1000" (blur)="onFieldBlur(field.name)" (input)="onFieldInput(field.name, $event)"></textarea>
+      <small class="char-count">
+        {{ getFieldValue(field.name)?.length || 0 }}/1000
+      </small>
+    </div>
+
+    <!-- Select -->
+    <div *ngIf="field.type === 'select'" class="input-group">
+      <label [for]="field.name" class="form-label">
+        {{ field.label }}
+        <span *ngIf="field.required" class="required">*</span>
+      </label>
+      <select [id]="field.name" [formControlName]="field.name" class="form-control" [class.is-invalid]="isFieldInvalid(field.name)" [attr.data-testid]="field.name + '-select'">
+        <option value="">Select {{ field.label }}</option>
+        <option *ngFor="let option of field.options" [value]="option.value">
+          {{ option.label }}
+        </option>
+      </select>
+    </div>
+
+    <!-- File Upload -->
+    <div *ngIf="field.type === 'file'" class="input-group">
+      <label [for]="field.name" class="form-label">
+        {{ field.label }}
+        <span *ngIf="field.required" class="required">*</span>
+      </label>
+      <input [id]="field.name" type="file" [accept]="field.accept || '*'" class="form-control" [class.is-invalid]="isFieldInvalid(field.name)" [attr.data-testid]="field.name + '-input'" (change)="onFileSelect(field.name, $event)" />
+      <small class="file-info">
+        Max size: {{ field.maxSize || 5 }}MB
+        <span *ngIf="field.accept">
+              | Allowed: {{ field.accept }}
+            </span>
+      </small>
+    </div>
+
+    <!-- Field Errors -->
+    <div *ngIf="isFieldInvalid(field.name)" class="field-errors">
+      <small *ngFor="let error of getFieldErrors(field.name)" class="error-message" [attr.data-testid]="field.name + '-error'">
+        {{ error }}
+      </small>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary" [disabled]="secureForm.invalid || isSubmitting" [attr.data-testid]="submitButtonTestId">
+      <span *ngIf="isSubmitting" class="spinner"></span>
+      {{ submitText }}
+    </button>
+    <button *ngIf="showCancelButton" type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="isSubmitting">
+      Cancel
+    </button>
+  </div>
+
+  <!-- Security Notice -->
+  <div class="security-notice">
+    <small>
+      <i class="icon-shield"></i>
+      Your information is protected with enterprise-grade security.
+    </small>
+  </div>
+</form>

@@ -1,5 +1,13 @@
 <!-- Instagram-style Feed -->
 <div class="instagram-feed">
+  <!-- Stories List (Instagram-style) -->
+  <app-stories-list
+    [stories]="stories"
+    [loading]="storiesLoading"
+    (storySelected)="openStory($event)"
+    class="feed-stories-bar"
+    *ngIf="stories && stories.length > 0"
+  ></app-stories-list>
   <!-- Loading State -->
   <div *ngIf="loading" class="loading-container">
     <div *ngFor="let item of [1,2,3]" class="post-skeleton">

@@ -9,252 +9,33 @@ import { AuthService } from '../../../core/services/auth.service';
 import { ShoppingActionsComponent } from '../../../shared/components/shopping-actions/shopping-actions.component';
 
 interface Product {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  originalPrice?: number;
-  images: string[];
-  brand: string;
-  category: string;
-  sizes: { size: string; stock: number }[];
-  colors: string[];
-  rating: { average: number; count: number };
-  features: string[];
-  specifications: { [key: string]: string };
-  isActive: boolean;
-  stock: number;
-  vendor: {
     _id: string;
-    fullName: string;
-    businessName: string;
-  };
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    images: string[];
+    brand: string;
+    category: string;
+    sizes: { size: string; stock: number }[];
+    colors: string[];
+    rating: { average: number; count: number };
+    features: string[];
+    specifications: { [key: string]: string };
+    isActive: boolean;
+    stock: number;
+    vendor: {
+        _id: string;
+        fullName: string;
+        businessName: string;
+    };
 }
 
 @Component({
-  selector: 'app-product-detail',
-  standalone: true,
-  imports: [CommonModule, ShoppingActionsComponent],
-  template: `
-    <div class="product-detail-container" *ngIf="product">
-      <!-- Breadcrumb -->
-      <nav class="breadcrumb">
-        <a (click)="goHome()">Home</a>
-        <span>/</span>
-        <a (click)="goToProducts()">Products</a>
-        <span>/</span>
-        <span>{{ product.name }}</span>
-      </nav>
-
-      <div class="product-detail-content">
-        <!-- Product Images -->
-        <div class="product-images">
-          <div class="main-image">
-            <img [src]="selectedImage" [alt]="product.name" class="main-product-image">
-            <div class="image-badges">
-              <span class="badge sale-badge" *ngIf="discountPercentage > 0">
-                {{ discountPercentage }}% OFF
-              </span>
-              <span class="badge stock-badge" [class.out-of-stock]="product.stock === 0">
-                {{ product.stock === 0 ? 'Out of Stock' : 'In Stock' }}
-              </span>
-            </div>
-          </div>
-          <div class="image-thumbnails" *ngIf="product.images.length > 1">
-            <img 
-              *ngFor="let image of product.images; let i = index"
-              [src]="image"
-              [alt]="product.name + ' image ' + (i + 1)"
-              class="thumbnail"
-              [class.active]="selectedImage === image"
-              (click)="selectImage(image)"
-            >
-          </div>
-        </div>
-
-        <!-- Product Info -->
-        <div class="product-info">
-          <div class="product-header">
-            <h1 class="product-title">{{ product.name }}</h1>
-            <div class="product-brand">by {{ product.brand }}</div>
-            
-            <div class="product-rating" *ngIf="product.rating.count > 0">
-              <div class="stars">
-                <i 
-                  *ngFor="let star of [1,2,3,4,5]" 
-                  class="fas fa-star"
-                  [class.filled]="star <= product.rating.average"
-                ></i>
-              </div>
-              <span class="rating-text">{{ product.rating.average }} ({{ product.rating.count }} reviews)</span>
-            </div>
-          </div>
-
-          <div class="product-pricing">
-            <div class="price-display">
-              <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
-              <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
-                ₹{{ product.originalPrice | number:'1.0-0' }}
-              </span>
-            </div>
-            <div class="savings" *ngIf="discountPercentage > 0">
-              You save ₹{{ savings | number:'1.0-0' }} ({{ discountPercentage }}%)
-            </div>
-          </div>
-
-          <!-- Product Options -->
-          <div class="product-options">
-            <!-- Size Selection -->
-            <div class="option-group" *ngIf="product.sizes && product.sizes.length > 0">
-              <label class="option-label">Size:</label>
-              <div class="size-options">
-                <button 
-                  *ngFor="let sizeOption of product.sizes"
-                  class="size-option"
-                  [class.selected]="selectedSize === sizeOption.size"
-                  [class.out-of-stock]="sizeOption.stock === 0"
-                  [disabled]="sizeOption.stock === 0"
-                  (click)="selectSize(sizeOption.size)"
-                >
-                  {{ sizeOption.size }}
-                  <span class="stock-info" *ngIf="sizeOption.stock < 5 && sizeOption.stock > 0">
-                    ({{ sizeOption.stock }} left)
-                  </span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Color Selection -->
-            <div class="option-group" *ngIf="product.colors && product.colors.length > 0">
-              <label class="option-label">Color:</label>
-              <div class="color-options">
-                <button 
-                  *ngFor="let color of product.colors"
-                  class="color-option"
-                  [class.selected]="selectedColor === color"
-                  [style.background-color]="getColorValue(color)"
-                  [title]="color"
-                  (click)="selectColor(color)"
-                >
-                  <i class="fas fa-check" *ngIf="selectedColor === color"></i>
-                </button>
-              </div>
-              <span class="selected-color-name" *ngIf="selectedColor">{{ selectedColor }}</span>
-            </div>
-
-            <!-- Quantity Selection -->
-            <div class="option-group">
-              <label class="option-label">Quantity:</label>
-              <div class="quantity-selector">
-                <button class="qty-btn" (click)="decreaseQuantity()" [disabled]="quantity <= 1">-</button>
-                <span class="quantity">{{ quantity }}</span>
-                <button class="qty-btn" (click)="increaseQuantity()" [disabled]="quantity >= maxQuantity">+</button>
-              </div>
-              <span class="max-qty-info" *ngIf="maxQuantity < 10">Max {{ maxQuantity }} per order</span>
-            </div>
-          </div>
-
-          <!-- Shopping Actions -->
-          <div class="shopping-actions-container">
-            <app-shopping-actions 
-              [product]="product"
-              [showPrice]="false"
-              (buyNowClick)="onBuyNow()"
-              (productClick)="onProductClick()"
-            ></app-shopping-actions>
-          </div>
-
-          <!-- Product Features -->
-          <div class="product-features" *ngIf="product.features && product.features.length > 0">
-            <h3>Key Features</h3>
-            <ul class="features-list">
-              <li *ngFor="let feature of product.features">
-                <i class="fas fa-check"></i>
-                {{ feature }}
-              </li>
-            </ul>
-          </div>
-
-          <!-- Vendor Info -->
-          <div class="vendor-info" *ngIf="product.vendor">
-            <h3>Sold by</h3>
-            <div class="vendor-details">
-              <strong>{{ product.vendor.businessName || product.vendor.fullName }}</strong>
-              <button class="view-vendor-btn" (click)="viewVendor()">View Store</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Description & Specifications -->
-      <div class="product-details-tabs">
-        <div class="tab-headers">
-          <button 
-            class="tab-header"
-            [class.active]="activeTab === 'description'"
-            (click)="activeTab = 'description'"
-          >
-            Description
-          </button>
-          <button 
-            class="tab-header"
-            [class.active]="activeTab === 'specifications'"
-            (click)="activeTab = 'specifications'"
-            *ngIf="product.specifications && Object.keys(product.specifications).length > 0"
-          >
-            Specifications
-          </button>
-          <button 
-            class="tab-header"
-            [class.active]="activeTab === 'reviews'"
-            (click)="activeTab = 'reviews'"
-          >
-            Reviews ({{ product.rating.count }})
-          </button>
-        </div>
-
-        <div class="tab-content">
-          <div class="tab-panel" *ngIf="activeTab === 'description'">
-            <p>{{ product.description }}</p>
-          </div>
-
-          <div class="tab-panel" *ngIf="activeTab === 'specifications' && product.specifications">
-            <div class="specifications-table">
-              <div class="spec-row" *ngFor="let spec of objectKeys(product.specifications)">
-                <div class="spec-label">{{ spec }}</div>
-                <div class="spec-value">{{ product.specifications[spec] }}</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="tab-panel" *ngIf="activeTab === 'reviews'">
-            <div class="reviews-placeholder">
-              <p>Reviews feature coming soon...</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Loading State -->
-    <div class="loading-container" *ngIf="loading">
-      <div class="loading-spinner">
-        <i class="fas fa-spinner fa-spin"></i>
-        <p>Loading product details...</p>
-      </div>
-    </div>
-
-    <!-- Error State -->
-    <div class="error-container" *ngIf="error">
-      <div class="error-message">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h2>Product Not Found</h2>
-        <p>{{ error }}</p>
-        <button class="btn btn-primary" (click)="goToProducts()">Browse Products</button>
-      </div>
-    </div>
-  `,
-  styles: [`
+    selector: 'app-product-detail',
+    standalone: true,
+    imports: [CommonModule, ShoppingActionsComponent],
+    styles: [`
     .product-detail-container {
       max-width: 1200px;
       margin: 0 auto;
@@ -720,140 +501,141 @@ interface Product {
         text-align: left;
       }
     }
-  `]
+  `],
+    templateUrl: './product-detail.component.html'
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product | null = null;
-  loading = true;
-  error = '';
-  
-  selectedImage = '';
-  selectedSize = '';
-  selectedColor = '';
-  quantity = 1;
-  activeTab = 'description';
+    product: Product | null = null;
+    loading = true;
+    error = '';
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService,
-    private cartService: CartService,
-    private wishlistService: WishlistService,
-    private authService: AuthService
-  ) {}
+    selectedImage = '';
+    selectedSize = '';
+    selectedColor = '';
+    quantity = 1;
+    activeTab = 'description';
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      const productId = params['id'];
-      if (productId) {
-        this.loadProduct(productId);
-      }
-    });
-  }
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private productService: ProductService,
+        private cartService: CartService,
+        private wishlistService: WishlistService,
+        private authService: AuthService
+    ) { }
 
-  loadProduct(productId: string) {
-    this.loading = true;
-    this.error = '';
-
-    // Load product from API
-    setTimeout(() => {
-      this.product = null; // Will be loaded from API
-      this.loading = false;
-    }, 1000);
-  }
-
-  get discountPercentage(): number {
-    if (this.product?.originalPrice && this.product.originalPrice > this.product.price) {
-      return Math.round(((this.product.originalPrice - this.product.price) / this.product.originalPrice) * 100);
+    ngOnInit() {
+        this.route.params.subscribe(params => {
+            const productId = params['id'];
+            if (productId) {
+                this.loadProduct(productId);
+            }
+        });
     }
-    return 0;
-  }
 
-  get savings(): number {
-    if (this.product?.originalPrice && this.product.originalPrice > this.product.price) {
-      return (this.product.originalPrice - this.product.price) * this.quantity;
+    loadProduct(productId: string) {
+        this.loading = true;
+        this.error = '';
+
+        // Load product from API
+        setTimeout(() => {
+            this.product = null; // Will be loaded from API
+            this.loading = false;
+        }, 1000);
     }
-    return 0;
-  }
 
-  get maxQuantity(): number {
-    if (this.product?.sizes && this.selectedSize) {
-      const sizeInfo = this.product.sizes.find(s => s.size === this.selectedSize);
-      return Math.min(sizeInfo?.stock || 0, 10);
+    get discountPercentage(): number {
+        if (this.product?.originalPrice && this.product.originalPrice > this.product.price) {
+            return Math.round(((this.product.originalPrice - this.product.price) / this.product.originalPrice) * 100);
+        }
+        return 0;
     }
-    return Math.min(this.product?.stock || 0, 10);
-  }
 
-  selectImage(image: string) {
-    this.selectedImage = image;
-  }
-
-  selectSize(size: string) {
-    this.selectedSize = size;
-    this.quantity = 1; // Reset quantity when size changes
-  }
-
-  selectColor(color: string) {
-    this.selectedColor = color;
-  }
-
-  getColorValue(colorName: string): string {
-    const colorMap: { [key: string]: string } = {
-      'red': '#e74c3c',
-      'blue': '#3498db',
-      'green': '#2ecc71',
-      'black': '#2c3e50',
-      'white': '#ecf0f1',
-      'yellow': '#f1c40f',
-      'purple': '#9b59b6',
-      'orange': '#e67e22',
-      'pink': '#e91e63',
-      'brown': '#8d6e63',
-      'gray': '#95a5a6',
-      'grey': '#95a5a6'
-    };
-    return colorMap[colorName.toLowerCase()] || '#ddd';
-  }
-
-  increaseQuantity() {
-    if (this.quantity < this.maxQuantity) {
-      this.quantity++;
+    get savings(): number {
+        if (this.product?.originalPrice && this.product.originalPrice > this.product.price) {
+            return (this.product.originalPrice - this.product.price) * this.quantity;
+        }
+        return 0;
     }
-  }
 
-  decreaseQuantity() {
-    if (this.quantity > 1) {
-      this.quantity--;
+    get maxQuantity(): number {
+        if (this.product?.sizes && this.selectedSize) {
+            const sizeInfo = this.product.sizes.find(s => s.size === this.selectedSize);
+            return Math.min(sizeInfo?.stock || 0, 10);
+        }
+        return Math.min(this.product?.stock || 0, 10);
     }
-  }
 
-  onBuyNow() {
-    if (!this.product) return;
-
-    // Simulate buy now action
-    alert(`Added ${this.quantity} x ${this.product.name} to cart`);
-    this.router.navigate(['/checkout']);
-  }
-
-  onProductClick() {
-    // Handle product click if needed
-  }
-
-  viewVendor() {
-    if (this.product?.vendor) {
-      this.router.navigate(['/vendor', this.product.vendor._id]);
+    selectImage(image: string) {
+        this.selectedImage = image;
     }
-  }
 
-  goHome() {
-    this.router.navigate(['/']);
-  }
+    selectSize(size: string) {
+        this.selectedSize = size;
+        this.quantity = 1; // Reset quantity when size changes
+    }
 
-  goToProducts() {
-    this.router.navigate(['/products']);
-  }
+    selectColor(color: string) {
+        this.selectedColor = color;
+    }
 
-  objectKeys(obj: any): string[] {
-    return Object.keys(obj);
-  }
+    getColorValue(colorName: string): string {
+        const colorMap: { [key: string]: string } = {
+            'red': '#e74c3c',
+            'blue': '#3498db',
+            'green': '#2ecc71',
+            'black': '#2c3e50',
+            'white': '#ecf0f1',
+            'yellow': '#f1c40f',
+            'purple': '#9b59b6',
+            'orange': '#e67e22',
+            'pink': '#e91e63',
+            'brown': '#8d6e63',
+            'gray': '#95a5a6',
+            'grey': '#95a5a6'
+        };
+        return colorMap[colorName.toLowerCase()] || '#ddd';
+    }
+
+    increaseQuantity() {
+        if (this.quantity < this.maxQuantity) {
+            this.quantity++;
+        }
+    }
+
+    decreaseQuantity() {
+        if (this.quantity > 1) {
+            this.quantity--;
+        }
+    }
+
+    onBuyNow() {
+        if (!this.product) return;
+
+        // Simulate buy now action
+        alert(`Added ${this.quantity} x ${this.product.name} to cart`);
+        this.router.navigate(['/checkout']);
+    }
+
+    onProductClick() {
+        // Handle product click if needed
+    }
+
+    viewVendor() {
+        if (this.product?.vendor) {
+            this.router.navigate(['/vendor', this.product.vendor._id]);
+        }
+    }
+
+    goHome() {
+        this.router.navigate(['/']);
+    }
+
+    goToProducts() {
+        this.router.navigate(['/products']);
+    }
+
+    objectKeys(obj: any): string[] {
+        return Object.keys(obj);
+    }
 }

@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { AdminAuthService } from '../../services/admin-auth.service';
 import { UiAnimationService } from '../../services/ui-animation.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 interface Message {
   sender: string;
@@ -30,7 +31,7 @@ export class AdminNavbarComponent implements OnInit, AfterViewInit {
   notificationCount: number = 0;
   recentMessages: Message[] = [];
   recentNotifications: Notification[] = [];
-
+ imageUrl = environment.apiUrl
   constructor(
     private adminAuthService: AdminAuthService,
     private uiAnimationService: UiAnimationService,

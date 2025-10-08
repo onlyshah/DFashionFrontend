@@ -1,0 +1,21 @@
+<div class="optimized-image-container" [class]="containerClass">
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading && showLoader">
+    <ion-spinner name="crescent" [color]="loaderColor"></ion-spinner>
+  </div>
+
+  <!-- Main Image -->
+  <img [src]="currentSrc" [alt]="alt" [class]="imageClass" [style.object-fit]="objectFit" (load)="onImageLoad()" (error)="onImageError($event)" [class.loaded]="imageLoaded" [class.error]="hasError" [loading]="lazyLoad ? 'lazy' : 'eager'" />
+
+  <!-- Error State -->
+  <div class="error-overlay" *ngIf="hasError && showErrorMessage">
+    <ion-icon name="image-outline" class="error-icon"></ion-icon>
+    <p class="error-text">{{ errorMessage }}</p>
+  </div>
+
+  <!-- Overlay Content -->
+  <div class="image-overlay" *ngIf="showOverlay">
+    <ng-content></ng-content>
+  </div>
+</div>

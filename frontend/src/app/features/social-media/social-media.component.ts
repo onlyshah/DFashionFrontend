@@ -3,11 +3,11 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocialFeedComponent } from '../posts/social-feed.component';
-import { StoriesViewerComponent } from '../stories/stories-viewer.component';
+//import { StoriesViewerComponent } from '../stories/stories-viewer.component';
 
 @Component({
     selector: 'app-social-media',
-    imports: [CommonModule, FormsModule, RouterOutlet, SocialFeedComponent, StoriesViewerComponent],
+    imports: [CommonModule, FormsModule, RouterOutlet, SocialFeedComponent],
     templateUrl: './social-media.component.html',
     styles: [`
     .social-media-platform {

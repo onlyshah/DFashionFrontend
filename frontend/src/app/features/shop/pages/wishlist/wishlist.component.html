@@ -1,0 +1,62 @@
+<div class="wishlist-page">
+  <div class="wishlist-header">
+    <h1>My Wishlist</h1>
+    <p *ngIf="wishlistItems.length > 0">{{ wishlistItems.length }} items</p>
+  </div>
+  <div class="wishlist-content" *ngIf="wishlistItems.length > 0">
+    <div class="wishlist-grid">
+      <div *ngFor="let item of wishlistItems" class="wishlist-item">
+        <div class="item-image">
+          <img [src]="imageUrl +item.product.images[0].url" [alt]="item.product.name">
+          <button class="remove-btn" (click)="removeFromWishlist(item.product._id)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div class="item-details">
+          <h3>{{ item.product.name }}</h3>
+          <p class="brand">{{ item.product.brand }}</p>
+          <div class="price">
+            <span class="current-price">₹{{ item.product.price | number }}</span>
+            <span class="original-price" *ngIf="item.product.originalPrice">₹{{ item.product.originalPrice | number }}</span>
+            <span class="discount" *ngIf="getDiscount(item.product) > 0">{{ getDiscount(item.product) }}% OFF</span>
+          </div>
+          <div class="rating" *ngIf="item.product.rating">
+            <div class="stars">
+              <i *ngFor="let star of getStars(item.product.rating.average)" [class]="star"></i>
+            </div>
+            <span>({{ item.product.rating.count }})</span>
+          </div>
+          <div class="item-actions">
+            <button class="add-to-cart-btn" (click)="addToCart(item.product._id)">
+              <i class="fas fa-shopping-cart"></i>
+              Add to Cart
+            </button>
+            <button class="view-product-btn" (click)="viewProduct(item.product._id)">
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wishlist-actions">
+      <button class="clear-wishlist-btn" (click)="clearWishlist()">
+        Clear Wishlist
+      </button>
+      <button class="continue-shopping-btn" (click)="continueShopping()">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+  <div class="empty-wishlist" *ngIf="wishlistItems.length === 0 && !isLoading">
+    <i class="fas fa-heart"></i>
+    <h3>Your wishlist is empty</h3>
+    <p>Save items you love to your wishlist</p>
+    <button class="shop-now-btn" (click)="continueShopping()">
+      Shop Now
+    </button>
+  </div>
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading wishlist...</p>
+  </div>
+</div>

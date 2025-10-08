@@ -5,75 +5,6 @@ import { RouterModule } from '@angular/router';
 @Component({
     selector: 'app-vendor-posts',
     imports: [CommonModule, RouterModule],
-    template: `
-    <div class="vendor-posts-container">
-      <div class="header">
-        <h1>My Posts</h1>
-        <a routerLink="/vendor/posts/create" class="btn-primary">
-          <i class="fas fa-plus"></i> Create Post
-        </a>
-      </div>
-
-      <!-- Posts Grid -->
-      <div class="posts-grid" *ngIf="posts.length > 0">
-        <div class="post-card" *ngFor="let post of posts">
-          <div class="post-media">
-            <img [src]="getMediaUrl(post.media[0])" [alt]="post.caption">
-            <div class="media-count" *ngIf="post.media.length > 1">
-              <i class="fas fa-images"></i> {{ post.media.length }}
-            </div>
-          </div>
-          
-          <div class="post-content">
-            <p class="post-caption">{{ post.caption | slice:0:100 }}{{ post.caption.length > 100 ? '...' : '' }}</p>
-            
-            <div class="post-stats">
-              <span><i class="fas fa-heart"></i> {{ post.likes || 0 }}</span>
-              <span><i class="fas fa-comment"></i> {{ post.comments || 0 }}</span>
-              <span><i class="fas fa-share"></i> {{ post.shares || 0 }}</span>
-              <span><i class="fas fa-eye"></i> {{ post.views || 0 }}</span>
-            </div>
-
-            <div class="post-products" *ngIf="post.taggedProducts && post.taggedProducts.length > 0">
-              <h4>Tagged Products:</h4>
-              <div class="tagged-products">
-                <span class="product-tag" *ngFor="let product of post.taggedProducts">
-                  {{ product.name }}
-                </span>
-              </div>
-            </div>
-
-            <div class="post-meta">
-              <span class="post-date">{{ post.createdAt | date:'short' }}</span>
-              <span class="post-status" [class]="post.status">{{ post.status }}</span>
-            </div>
-          </div>
-          
-          <div class="post-actions">
-            <button class="btn-edit" (click)="editPost(post)">
-              <i class="fas fa-edit"></i> Edit
-            </button>
-            <button class="btn-analytics" (click)="viewAnalytics(post)">
-              <i class="fas fa-chart-bar"></i> Analytics
-            </button>
-            <button class="btn-delete" (click)="deletePost(post)">
-              <i class="fas fa-trash"></i> Delete
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="posts.length === 0">
-        <div class="empty-content">
-          <i class="fas fa-camera"></i>
-          <h2>No posts yet</h2>
-          <p>Start sharing your products with engaging posts</p>
-          <a routerLink="/vendor/posts/create" class="btn-primary">Create Your First Post</a>
-        </div>
-      </div>
-    </div>
-  `,
     styles: [`
     .vendor-posts-container {
       max-width: 1200px;
@@ -308,43 +239,44 @@ import { RouterModule } from '@angular/router';
         flex-direction: column;
       }
     }
-  `]
+  `],
+    templateUrl: './vendor-posts.component.html'
 })
 export class VendorPostsComponent implements OnInit {
-  posts: any[] = [];
+    posts: any[] = [];
 
-  constructor() {}
+    constructor() { }
 
-  ngOnInit() {
-    this.loadPosts();
-  }
-
-  loadPosts() {
-    // Load vendor posts from API
-    this.posts = [];
-  }
-
-  getMediaUrl(media: any): string {
-    if (typeof media === 'string') {
-      return media;
+    ngOnInit() {
+        this.loadPosts();
     }
-    return media?.url || '/uploadsplaceholder.jpg';
-  }
 
-  editPost(post: any) {
-    // TODO: Navigate to edit post page
-    console.log('Edit post:', post);
-  }
-
-  viewAnalytics(post: any) {
-    // TODO: Show post analytics
-    console.log('View analytics for post:', post);
-  }
-
-  deletePost(post: any) {
-    if (confirm('Are you sure you want to delete this post?')) {
-      // TODO: Implement delete API call
-      this.posts = this.posts.filter(p => p._id !== post._id);
+    loadPosts() {
+        // Load vendor posts from API
+        this.posts = [];
     }
-  }
+
+    getMediaUrl(media: any): string {
+        if (typeof media === 'string') {
+            return media;
+        }
+        return media?.url || '/uploadsplaceholder.jpg';
+    }
+
+    editPost(post: any) {
+        // TODO: Navigate to edit post page
+        console.log('Edit post:', post);
+    }
+
+    viewAnalytics(post: any) {
+        // TODO: Show post analytics
+        console.log('View analytics for post:', post);
+    }
+
+    deletePost(post: any) {
+        if (confirm('Are you sure you want to delete this post?')) {
+            // TODO: Implement delete API call
+            this.posts = this.posts.filter(p => p._id !== post._id);
+        }
+    }
 }

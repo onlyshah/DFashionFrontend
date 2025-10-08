@@ -1,0 +1,30 @@
+<div [class]="containerClasses">
+
+  <!-- Spinner Loading -->
+  <div *ngIf="type === 'spinner'" class="spinner-container">
+    <ion-spinner [name]="spinnerType" [color]="color"></ion-spinner>
+    <p *ngIf="message" class="loading-message">{{ message }}</p>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div *ngIf="type === 'skeleton'" class="skeleton-container">
+    <div *ngFor="let item of skeletonItems" class="skeleton-item">
+      <div class="skeleton-avatar" *ngIf="showAvatar"></div>
+      <div class="skeleton-content">
+        <div class="skeleton-line" *ngFor="let line of item.lines" [style.width]="line + '%'"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dots Loading -->
+  <div *ngIf="type === 'dots'" class="dots-container">
+    <div class="dot" *ngFor="let dot of [1,2,3]" [style.animation-delay]="(dot - 1) * 0.2 + 's'"></div>
+    <p *ngIf="message" class="loading-message">{{ message }}</p>
+  </div>
+
+  <!-- Pulse Loading -->
+  <div *ngIf="type === 'pulse'" class="pulse-container">
+    <div class="pulse-circle"></div>
+    <p *ngIf="message" class="loading-message">{{ message }}</p>
+  </div>
+</div>

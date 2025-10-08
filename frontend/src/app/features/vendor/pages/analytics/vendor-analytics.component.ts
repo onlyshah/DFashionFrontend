@@ -5,170 +5,6 @@ import { FormsModule } from '@angular/forms';
 @Component({
     selector: 'app-vendor-analytics',
     imports: [CommonModule, FormsModule],
-    template: `
-    <div class="vendor-analytics-container">
-      <div class="header">
-        <h1>Analytics Dashboard</h1>
-        <div class="date-filter">
-          <select [(ngModel)]="selectedPeriod" (change)="onPeriodChange()">
-            <option value="7">Last 7 days</option>
-            <option value="30">Last 30 days</option>
-            <option value="90">Last 3 months</option>
-            <option value="365">Last year</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Key Metrics -->
-      <div class="metrics-grid">
-        <div class="metric-card">
-          <div class="metric-icon">
-            <i class="fas fa-rupee-sign"></i>
-          </div>
-          <div class="metric-content">
-            <h3>₹{{ analytics.revenue | number:'1.0-0' }}</h3>
-            <p>Total Revenue</p>
-            <span class="metric-change positive">+12.5%</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">
-            <i class="fas fa-shopping-cart"></i>
-          </div>
-          <div class="metric-content">
-            <h3>{{ analytics.orders }}</h3>
-            <p>Total Orders</p>
-            <span class="metric-change positive">+8.3%</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">
-            <i class="fas fa-eye"></i>
-          </div>
-          <div class="metric-content">
-            <h3>{{ analytics.views | number:'1.0-0' }}</h3>
-            <p>Product Views</p>
-            <span class="metric-change positive">+15.7%</span>
-          </div>
-        </div>
-
-        <div class="metric-card">
-          <div class="metric-icon">
-            <i class="fas fa-percentage"></i>
-          </div>
-          <div class="metric-content">
-            <h3>{{ analytics.conversionRate }}%</h3>
-            <p>Conversion Rate</p>
-            <span class="metric-change negative">-2.1%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Charts Section -->
-      <div class="charts-section">
-        <div class="chart-card">
-          <h3>Revenue Trend</h3>
-          <div class="chart-placeholder">
-            <div class="chart-bars">
-              <div class="bar" *ngFor="let data of revenueData" [style.height.%]="data.percentage">
-                <span class="bar-value">₹{{ data.value | number:'1.0-0' }}</span>
-              </div>
-            </div>
-            <div class="chart-labels">
-              <span *ngFor="let label of chartLabels">{{ label }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <h3>Order Status Distribution</h3>
-          <div class="pie-chart">
-            <div class="pie-item" *ngFor="let item of orderStatusData">
-              <div class="pie-color" [style.background-color]="item.color"></div>
-              <span class="pie-label">{{ item.label }}</span>
-              <span class="pie-value">{{ item.value }}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Top Products -->
-      <div class="top-products-section">
-        <h3>Top Performing Products</h3>
-        <div class="products-table">
-          <div class="table-header">
-            <span>Product</span>
-            <span>Views</span>
-            <span>Orders</span>
-            <span>Revenue</span>
-            <span>Conversion</span>
-          </div>
-          <div class="table-row" *ngFor="let product of topProducts">
-            <div class="product-info">
-              <img [src]="product.image" [alt]="product.name">
-              <span>{{ product.name }}</span>
-            </div>
-            <span>{{ product.views | number:'1.0-0' }}</span>
-            <span>{{ product.orders }}</span>
-            <span>₹{{ product.revenue | number:'1.0-0' }}</span>
-            <span>{{ product.conversion }}%</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Social Media Performance -->
-      <div class="social-performance">
-        <h3>Content Performance</h3>
-        <div class="performance-grid">
-          <div class="performance-card">
-            <h4>Posts</h4>
-            <div class="performance-stats">
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.posts.total }}</span>
-                <span class="stat-label">Total Posts</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.posts.likes }}</span>
-                <span class="stat-label">Total Likes</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.posts.comments }}</span>
-                <span class="stat-label">Comments</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.posts.shares }}</span>
-                <span class="stat-label">Shares</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="performance-card">
-            <h4>Stories</h4>
-            <div class="performance-stats">
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.stories.total }}</span>
-                <span class="stat-label">Total Stories</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.stories.views }}</span>
-                <span class="stat-label">Total Views</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.stories.replies }}</span>
-                <span class="stat-label">Replies</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ socialStats.stories.productClicks }}</span>
-                <span class="stat-label">Product Clicks</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
     styles: [`
     .vendor-analytics-container {
       max-width: 1200px;
@@ -475,91 +311,92 @@ import { FormsModule } from '@angular/forms';
         margin-bottom: 8px;
       }
     }
-  `]
+  `],
+    templateUrl: './vendor-analytics.component.html'
 })
 export class VendorAnalyticsComponent implements OnInit {
-  selectedPeriod = '30';
-  
-  analytics = {
-    revenue: 125000,
-    orders: 150,
-    views: 12500,
-    conversionRate: 3.2
-  };
+    selectedPeriod = '30';
 
-  revenueData = [
-    { value: 15000, percentage: 60 },
-    { value: 18000, percentage: 72 },
-    { value: 22000, percentage: 88 },
-    { value: 25000, percentage: 100 },
-    { value: 20000, percentage: 80 },
-    { value: 23000, percentage: 92 },
-    { value: 28000, percentage: 100 }
-  ];
+    analytics = {
+        revenue: 125000,
+        orders: 150,
+        views: 12500,
+        conversionRate: 3.2
+    };
 
-  chartLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    revenueData = [
+        { value: 15000, percentage: 60 },
+        { value: 18000, percentage: 72 },
+        { value: 22000, percentage: 88 },
+        { value: 25000, percentage: 100 },
+        { value: 20000, percentage: 80 },
+        { value: 23000, percentage: 92 },
+        { value: 28000, percentage: 100 }
+    ];
 
-  orderStatusData = [
-    { label: 'Delivered', value: 65, color: '#28a745' },
-    { label: 'Shipped', value: 20, color: '#007bff' },
-    { label: 'Confirmed', value: 10, color: '#ffc107' },
-    { label: 'Pending', value: 5, color: '#dc3545' }
-  ];
+    chartLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  topProducts = [
-    {
-      name: 'Summer Dress',
-      image: '/uploadsproduct1.jpg',
-      views: 2500,
-      orders: 45,
-      revenue: 134550,
-      conversion: 1.8
-    },
-    {
-      name: 'Casual Shirt',
-      image: '/uploadsproduct2.jpg',
-      views: 1800,
-      orders: 32,
-      revenue: 51168,
-      conversion: 1.7
-    },
-    {
-      name: 'Sneakers',
-      image: '/uploadsproduct3.jpg',
-      views: 1200,
-      orders: 28,
-      revenue: 139720,
-      conversion: 2.3
+    orderStatusData = [
+        { label: 'Delivered', value: 65, color: '#28a745' },
+        { label: 'Shipped', value: 20, color: '#007bff' },
+        { label: 'Confirmed', value: 10, color: '#ffc107' },
+        { label: 'Pending', value: 5, color: '#dc3545' }
+    ];
+
+    topProducts = [
+        {
+            name: 'Summer Dress',
+            image: '/uploadsproduct1.jpg',
+            views: 2500,
+            orders: 45,
+            revenue: 134550,
+            conversion: 1.8
+        },
+        {
+            name: 'Casual Shirt',
+            image: '/uploadsproduct2.jpg',
+            views: 1800,
+            orders: 32,
+            revenue: 51168,
+            conversion: 1.7
+        },
+        {
+            name: 'Sneakers',
+            image: '/uploadsproduct3.jpg',
+            views: 1200,
+            orders: 28,
+            revenue: 139720,
+            conversion: 2.3
+        }
+    ];
+
+    socialStats = {
+        posts: {
+            total: 12,
+            likes: 456,
+            comments: 89,
+            shares: 34
+        },
+        stories: {
+            total: 8,
+            views: 1234,
+            replies: 67,
+            productClicks: 234
+        }
+    };
+
+    constructor() { }
+
+    ngOnInit() {
+        this.loadAnalytics();
     }
-  ];
 
-  socialStats = {
-    posts: {
-      total: 12,
-      likes: 456,
-      comments: 89,
-      shares: 34
-    },
-    stories: {
-      total: 8,
-      views: 1234,
-      replies: 67,
-      productClicks: 234
+    onPeriodChange() {
+        this.loadAnalytics();
     }
-  };
 
-  constructor() {}
-
-  ngOnInit() {
-    this.loadAnalytics();
-  }
-
-  onPeriodChange() {
-    this.loadAnalytics();
-  }
-
-  loadAnalytics() {
-    // TODO: Implement API call to get analytics data based on selected period
-    console.log('Loading analytics for period:', this.selectedPeriod);
-  }
+    loadAnalytics() {
+        // TODO: Implement API call to get analytics data based on selected period
+        console.log('Loading analytics for period:', this.selectedPeriod);
+    }
 }

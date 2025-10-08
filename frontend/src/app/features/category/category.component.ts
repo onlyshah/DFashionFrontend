@@ -11,126 +11,6 @@ import { Product } from '../../core/models/product.interface';
 @Component({
     selector: 'app-category',
     imports: [CommonModule, FormsModule],
-    template: `
-    <div class="category-page">
-      <!-- Header -->
-      <div class="category-header">
-        <div class="breadcrumb">
-          <span (click)="goHome()">Home</span>
-          <i class="fas fa-chevron-right"></i>
-          <span class="current">{{ getCategoryDisplayName() }}</span>
-        </div>
-        <h1>{{ getCategoryDisplayName() }}</h1>
-        <p class="category-description">{{ getCategoryDescription() }}</p>
-      </div>
-
-      <!-- Filters & Sort -->
-      <div class="filters-section">
-        <div class="filter-row">
-          <div class="filter-group">
-            <label>Sort by:</label>
-            <select [(ngModel)]="sortBy" (change)="onSortChange()">
-              <option value="featured">Featured</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Customer Rating</option>
-              <option value="newest">Newest First</option>
-            </select>
-          </div>
-
-          <div class="filter-group">
-            <label>Price Range:</label>
-            <select [(ngModel)]="priceRange" (change)="onFilterChange()">
-              <option value="">All Prices</option>
-              <option value="0-1000">Under ₹1,000</option>
-              <option value="1000-3000">₹1,000 - ₹3,000</option>
-              <option value="3000-5000">₹3,000 - ₹5,000</option>
-              <option value="5000-10000">₹5,000 - ₹10,000</option>
-              <option value="10000+">Above ₹10,000</option>
-            </select>
-          </div>
-
-          <div class="filter-group" *ngIf="category === 'women' || category === 'men'">
-            <label>Size:</label>
-            <select [(ngModel)]="selectedSize" (change)="onFilterChange()">
-              <option value="">All Sizes</option>
-              <option value="XS">XS</option>
-              <option value="S">S</option>
-              <option value="M">M</option>
-              <option value="L">L</option>
-              <option value="XL">XL</option>
-              <option value="XXL">XXL</option>
-            </select>
-          </div>
-
-          <div class="results-count">
-            {{ filteredProducts.length }} products found
-          </div>
-        </div>
-      </div>
-
-      <!-- Products Grid -->
-      <div class="products-grid" *ngIf="filteredProducts.length > 0">
-        <div class="product-card" *ngFor="let product of filteredProducts" (click)="viewProduct(product)">
-          <div class="product-image">
-            <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
-            <div class="product-actions">
-              <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
-                <i class="far fa-heart"></i>
-              </button>
-              <button class="btn-quick-view" (click)="quickView(product, $event)">
-                <i class="fas fa-eye"></i>
-              </button>
-            </div>
-            <div class="discount-badge" *ngIf="product.originalPrice && product.originalPrice > product.price">
-              {{ getDiscountPercentage(product) }}% OFF
-            </div>
-          </div>
-          
-          <div class="product-info">
-            <h3 class="product-name">{{ product.name }}</h3>
-            <p class="product-brand">{{ product.brand }}</p>
-            
-            <div class="product-rating" *ngIf="product.rating">
-              <div class="stars">
-                <i class="fas fa-star" *ngFor="let star of getStars(product.rating.average)"></i>
-                <i class="far fa-star" *ngFor="let star of getEmptyStars(product.rating.average)"></i>
-              </div>
-              <span class="rating-count">({{ product.rating.count }})</span>
-            </div>
-            
-            <div class="product-price">
-              <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
-              <span class="original-price" *ngIf="product.originalPrice && product.originalPrice > product.price">
-                ₹{{ product.originalPrice | number:'1.0-0' }}
-              </span>
-            </div>
-            
-            <button class="btn-add-cart" (click)="addToCart(product, $event)">
-              <i class="fas fa-shopping-cart"></i>
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Empty State -->
-      <div class="empty-state" *ngIf="filteredProducts.length === 0 && !loading">
-        <div class="empty-content">
-          <i class="fas fa-search"></i>
-          <h2>No products found</h2>
-          <p>Try adjusting your filters or browse other categories</p>
-          <button class="btn-primary" (click)="clearFilters()">Clear Filters</button>
-        </div>
-      </div>
-
-      <!-- Loading State -->
-      <div class="loading-state" *ngIf="loading">
-        <div class="loading-spinner"></div>
-        <p>Loading products...</p>
-      </div>
-    </div>
-  `,
     styles: [`
     .category-page {
       max-width: 1200px;
@@ -454,203 +334,204 @@ import { Product } from '../../core/models/product.interface';
         gap: 16px;
       }
     }
-  `]
+  `],
+    templateUrl: './category.component.html'
 })
 export class CategoryComponent implements OnInit {
-  category: string = '';
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
-  loading = true;
-  
-  // Filters
-  sortBy = 'featured';
-  priceRange = '';
-  selectedSize = '';
+    category: string = '';
+    products: Product[] = [];
+    filteredProducts: Product[] = [];
+    loading = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService,
-    private authService: AuthService,
-    private cartService: CartService,
-    private wishlistService: WishlistService
-  ) {}
+    // Filters
+    sortBy = 'featured';
+    priceRange = '';
+    selectedSize = '';
 
-  ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.category = params['slug'] || params['category'];
-      this.loadProducts();
-    });
-  }
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private productService: ProductService,
+        private authService: AuthService,
+        private cartService: CartService,
+        private wishlistService: WishlistService
+    ) { }
 
-  loadProducts() {
-    this.loading = true;
+    ngOnInit() {
+        this.route.params.subscribe(params => {
+            this.category = params['slug'] || params['category'];
+            this.loadProducts();
+        });
+    }
 
-    // Load products from API using category slug
-    this.productService.getCategoryProducts(this.category).subscribe({
-      next: (response) => {
-        this.products = response.products || [];
+    loadProducts() {
+        this.loading = true;
+
+        // Load products from API using category slug
+        this.productService.getCategoryProducts(this.category).subscribe({
+            next: (response) => {
+                this.products = response.products || [];
+                this.applyFilters();
+                this.loading = false;
+            },
+            error: (error) => {
+                console.error('Error loading products:', error);
+                this.products = [];
+                this.filteredProducts = [];
+                this.loading = false;
+            }
+        });
+    }
+
+
+
+    getCategoryDisplayName(): string {
+        const categoryNames: { [key: string]: string } = {
+            'women': 'Women\'s Fashion',
+            'men': 'Men\'s Fashion',
+            'kids': 'Kids\' Fashion',
+            'ethnic': 'Ethnic Wear',
+            'all': 'All Products'
+        };
+        return categoryNames[this.category] || this.category.charAt(0).toUpperCase() + this.category.slice(1);
+    }
+
+    getCategoryDescription(): string {
+        const descriptions: { [key: string]: string } = {
+            'women': 'Discover the latest trends in women\'s fashion',
+            'men': 'Explore stylish and comfortable men\'s clothing',
+            'kids': 'Fun and comfortable clothing for children',
+            'ethnic': 'Traditional and ethnic wear for special occasions',
+            'all': 'Browse our complete collection of fashion items'
+        };
+        return descriptions[this.category] || 'Explore our collection';
+    }
+
+
+
+    onSortChange() {
         this.applyFilters();
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error loading products:', error);
-        this.products = [];
-        this.filteredProducts = [];
-        this.loading = false;
-      }
-    });
-  }
-
-
-
-  getCategoryDisplayName(): string {
-    const categoryNames: { [key: string]: string } = {
-      'women': 'Women\'s Fashion',
-      'men': 'Men\'s Fashion',
-      'kids': 'Kids\' Fashion',
-      'ethnic': 'Ethnic Wear',
-      'all': 'All Products'
-    };
-    return categoryNames[this.category] || this.category.charAt(0).toUpperCase() + this.category.slice(1);
-  }
-
-  getCategoryDescription(): string {
-    const descriptions: { [key: string]: string } = {
-      'women': 'Discover the latest trends in women\'s fashion',
-      'men': 'Explore stylish and comfortable men\'s clothing',
-      'kids': 'Fun and comfortable clothing for children',
-      'ethnic': 'Traditional and ethnic wear for special occasions',
-      'all': 'Browse our complete collection of fashion items'
-    };
-    return descriptions[this.category] || 'Explore our collection';
-  }
-
-
-
-  onSortChange() {
-    this.applyFilters();
-  }
-
-  onFilterChange() {
-    this.applyFilters();
-  }
-
-  applyFilters() {
-    let filtered = [...this.products];
-
-    // Apply price filter
-    if (this.priceRange) {
-      if (this.priceRange === '10000+') {
-        filtered = filtered.filter(p => p.price >= 10000);
-      } else {
-        const [min, max] = this.priceRange.split('-').map(Number);
-        filtered = filtered.filter(p => p.price >= min && p.price <= max);
-      }
     }
 
-    // Apply size filter
-    if (this.selectedSize) {
-      // Filter products by available sizes
-      filtered = filtered.filter(p =>
-        (p as any).sizes && (p as any).sizes.some((size: any) => size.size === this.selectedSize)
-      );
+    onFilterChange() {
+        this.applyFilters();
     }
 
-    // Apply sorting
-    switch (this.sortBy) {
-      case 'price-low':
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case 'rating':
-        filtered.sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0));
-        break;
-      case 'newest':
-        // Sort by creation date (newest first)
-        filtered.sort((a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime());
-        break;
-      default:
-        // Featured - keep original order
-        break;
+    applyFilters() {
+        let filtered = [...this.products];
+
+        // Apply price filter
+        if (this.priceRange) {
+            if (this.priceRange === '10000+') {
+                filtered = filtered.filter(p => p.price >= 10000);
+            } else {
+                const [min, max] = this.priceRange.split('-').map(Number);
+                filtered = filtered.filter(p => p.price >= min && p.price <= max);
+            }
+        }
+
+        // Apply size filter
+        if (this.selectedSize) {
+            // Filter products by available sizes
+            filtered = filtered.filter(p =>
+                (p as any).sizes && (p as any).sizes.some((size: any) => size.size === this.selectedSize)
+            );
+        }
+
+        // Apply sorting
+        switch (this.sortBy) {
+            case 'price-low':
+                filtered.sort((a, b) => a.price - b.price);
+                break;
+            case 'price-high':
+                filtered.sort((a, b) => b.price - a.price);
+                break;
+            case 'rating':
+                filtered.sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0));
+                break;
+            case 'newest':
+                // Sort by creation date (newest first)
+                filtered.sort((a, b) => new Date((b as any).createdAt || 0).getTime() - new Date((a as any).createdAt || 0).getTime());
+                break;
+            default:
+                // Featured - keep original order
+                break;
+        }
+
+        this.filteredProducts = filtered;
     }
 
-    this.filteredProducts = filtered;
-  }
-
-  clearFilters() {
-    this.sortBy = 'featured';
-    this.priceRange = '';
-    this.selectedSize = '';
-    this.filteredProducts = [...this.products];
-  }
-
-  getProductImage(product: Product): string {
-    return product.images[0]?.url || '/uploadsplaceholder.jpg';
-  }
-
-  getDiscountPercentage(product: Product): number {
-    if (!product.originalPrice || product.originalPrice <= product.price) return 0;
-    return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
-  }
-
-  getStars(rating: number): number[] {
-    return Array(Math.floor(rating)).fill(0);
-  }
-
-  getEmptyStars(rating: number): number[] {
-    return Array(5 - Math.floor(rating)).fill(0);
-  }
-
-  viewProduct(product: Product) {
-    this.router.navigate(['/product', product._id]);
-  }
-
-  addToWishlist(product: Product, event: Event) {
-    event.stopPropagation();
-    if (!this.authService.isAuthenticated) {
-      this.router.navigate(['/login']);
-      return;
+    clearFilters() {
+        this.sortBy = 'featured';
+        this.priceRange = '';
+        this.selectedSize = '';
+        this.filteredProducts = [...this.products];
     }
 
-    this.wishlistService.addToWishlist(product._id).subscribe({
-      next: (response) => {
-        console.log('Product added to wishlist:', response);
-        // You could show a toast notification here
-      },
-      error: (error) => {
-        console.error('Error adding to wishlist:', error);
-      }
-    });
-  }
-
-  quickView(product: Product, event: Event) {
-    event.stopPropagation();
-    // Navigate to product detail page
-    this.router.navigate(['/product', product._id]);
-  }
-
-  addToCart(product: Product, event: Event) {
-    event.stopPropagation();
-    if (!this.authService.isAuthenticated) {
-      this.router.navigate(['/login']);
-      return;
+    getProductImage(product: Product): string {
+        return product.images[0]?.url || '/uploadsplaceholder.jpg';
     }
 
-    this.cartService.addToCart(product._id, 1).subscribe({
-      next: (response) => {
-        console.log('Product added to cart:', response);
-        alert('Product added to cart successfully!');
-      },
-      error: (error) => {
-        console.error('Error adding to cart:', error);
-      }
-    });
-  }
+    getDiscountPercentage(product: Product): number {
+        if (!product.originalPrice || product.originalPrice <= product.price) return 0;
+        return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+    }
 
-  goHome() {
-    this.router.navigate(['/home']);
-  }
+    getStars(rating: number): number[] {
+        return Array(Math.floor(rating)).fill(0);
+    }
+
+    getEmptyStars(rating: number): number[] {
+        return Array(5 - Math.floor(rating)).fill(0);
+    }
+
+    viewProduct(product: Product) {
+        this.router.navigate(['/product', product._id]);
+    }
+
+    addToWishlist(product: Product, event: Event) {
+        event.stopPropagation();
+        if (!this.authService.isAuthenticated) {
+            this.router.navigate(['/login']);
+            return;
+        }
+
+        this.wishlistService.addToWishlist(product._id).subscribe({
+            next: (response) => {
+                console.log('Product added to wishlist:', response);
+                // You could show a toast notification here
+            },
+            error: (error) => {
+                console.error('Error adding to wishlist:', error);
+            }
+        });
+    }
+
+    quickView(product: Product, event: Event) {
+        event.stopPropagation();
+        // Navigate to product detail page
+        this.router.navigate(['/product', product._id]);
+    }
+
+    addToCart(product: Product, event: Event) {
+        event.stopPropagation();
+        if (!this.authService.isAuthenticated) {
+            this.router.navigate(['/login']);
+            return;
+        }
+
+        this.cartService.addToCart(product._id, 1).subscribe({
+            next: (response) => {
+                console.log('Product added to cart:', response);
+                alert('Product added to cart successfully!');
+            },
+            error: (error) => {
+                console.error('Error adding to cart:', error);
+            }
+        });
+    }
+
+    goHome() {
+        this.router.navigate(['/home']);
+    }
 }

@@ -14,7 +14,7 @@ import { FeaturedBrandsComponent } from '../../components/featured-brands/featur
 import { NewArrivalsComponent } from '../../components/new-arrivals/new-arrivals.component';
 import { SuggestedForYouComponent } from '../../components/suggested-for-you/suggested-for-you.component';
 import { TopFashionInfluencersComponent } from '../../components/top-fashion-influencers/top-fashion-influencers.component';
-import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
+//import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
 @Component({
     selector: 'app-home',
@@ -29,7 +29,7 @@ import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-
         NewArrivalsComponent,
         SuggestedForYouComponent,
         TopFashionInfluencersComponent,
-        ShopByCategoryComponent
+        //ShopByCategoryComponent
     ],
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss']

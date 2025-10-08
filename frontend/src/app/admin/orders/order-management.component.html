@@ -1,0 +1,128 @@
+<div class="order-management">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Order Management</mat-card-title>
+      <mat-card-subtitle>Track and manage customer orders</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+
+      <!-- Filters -->
+      <div class="filters-section">
+        <mat-form-field appearance="outline">
+          <mat-label>Search orders</mat-label>
+          <input matInput [formControl]="searchControl" placeholder="Search by order number or customer">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [formControl]="statusFilter">
+            <mat-option *ngFor="let status of statuses" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Payment Status</mat-label>
+          <mat-select [formControl]="paymentStatusFilter">
+            <mat-option *ngFor="let status of paymentStatuses" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="table-container">
+        <table mat-table [dataSource]="dataSource" matSort>
+
+          <!-- Order Number Column -->
+          <ng-container matColumnDef="orderNumber">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Order #</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="order-number">{{ order.orderNumber }}</div>
+              <div class="order-date">{{ formatDate(order.orderDate) }}</div>
+            </td>
+          </ng-container>
+
+          <!-- Customer Column -->
+          <ng-container matColumnDef="customer">
+            <th mat-header-cell *matHeaderCellDef>Customer</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="customer-info">
+                <div class="customer-name">{{ order.customer?.fullName }}</div>
+                <div class="customer-email">{{ order.customer?.email }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Items Column -->
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef>Items</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="items-info">
+                <span class="items-count">{{ order.items?.length || 0 }} item(s)</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Amount Column -->
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Amount</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="amount-cell">
+                <span class="total-amount">₹{{ order.totalAmount }}</span>
+                <div class="payment-method">{{ order.paymentMethod | titlecase }}</div>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Status Column -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="status-cell">
+                <span class="status-chip" [style.background-color]="getStatusColor(order.status)">
+                {{ order.status | titlecase }}
+                </span>
+                <span class="payment-status" [style.color]="getPaymentStatusColor(order.paymentStatus)">
+                {{ order.paymentStatus | titlecase }}
+                </span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let order">
+              <div class="actions-cell">
+                <button mat-icon-button matTooltip="View order details" (click)="viewOrder(order)">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Update status" (click)="updateOrderStatus(order)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Print invoice" (click)="printInvoice(order)">
+                  <mat-icon>print</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <!-- No Data Message -->
+        <div *ngIf="dataSource.data.length === 0" class="no-data">
+          <mat-icon>shopping_cart</mat-icon>
+          <h3>No orders found</h3>
+          <p>Try adjusting your search criteria.</p>
+        </div>
+      </div>
+
+      <!-- Paginator -->
+      <mat-paginator [length]="totalOrders" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 50]" (page)="onPageChange()" showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

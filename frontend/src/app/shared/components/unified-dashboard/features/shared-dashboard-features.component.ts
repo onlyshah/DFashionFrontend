@@ -4,87 +4,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 
 export interface Notification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-  actionText?: string;
+    id: string;
+    type: 'info' | 'success' | 'warning' | 'error';
+    title: string;
+    message: string;
+    timestamp: Date;
+    isRead: boolean;
+    actionUrl?: string;
+    actionText?: string;
 }
 
 @Component({
-  selector: 'app-shared-dashboard-features',
-  standalone: true,
-  imports: [CommonModule],
-  template: `
-    <!-- Global Notifications Toast -->
-    <div class="notification-toast" 
-         *ngIf="activeNotification"
-         [ngClass]="'toast-' + activeNotification.type">
-      <div class="toast-content">
-        <div class="toast-icon">
-          <i [ngClass]="getNotificationIcon(activeNotification.type)"></i>
-        </div>
-        <div class="toast-message">
-          <h6>{{ activeNotification.title }}</h6>
-          <p>{{ activeNotification.message }}</p>
-        </div>
-        <button class="toast-close" (click)="dismissNotification()">
-          <i class="typcn typcn-times"></i>
-        </button>
-      </div>
-      <div class="toast-progress" 
-           [style.animation-duration]="toastDuration + 'ms'"></div>
-    </div>
-
-    <!-- Connection Status -->
-    <div class="connection-status" 
-         *ngIf="!isOnline"
-         class="offline-banner">
-      <div class="status-content">
-        <i class="typcn typcn-wifi-outline"></i>
-        <span>You're currently offline. Some features may not be available.</span>
-      </div>
-    </div>
-
-    <!-- Update Available Banner -->
-    <div class="update-banner" 
-         *ngIf="updateAvailable"
-         class="update-available">
-      <div class="update-content">
-        <i class="typcn typcn-download"></i>
-        <span>A new version is available!</span>
-        <button class="update-btn" (click)="updateApp()">Update Now</button>
-        <button class="dismiss-btn" (click)="dismissUpdate()">
-          <i class="typcn typcn-times"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" *ngIf="isGlobalLoading">
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <p>{{ loadingMessage }}</p>
-      </div>
-    </div>
-
-    <!-- Error Boundary -->
-    <div class="error-boundary" *ngIf="globalError">
-      <div class="error-content">
-        <i class="typcn typcn-warning"></i>
-        <h3>Something went wrong</h3>
-        <p>{{ globalError.message }}</p>
-        <div class="error-actions">
-          <button class="retry-btn" (click)="retryLastAction()">Try Again</button>
-          <button class="report-btn" (click)="reportError()">Report Issue</button>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
+    selector: 'app-shared-dashboard-features',
+    standalone: true,
+    imports: [CommonModule],
+    styles: [`
     // Notification Toast
     .notification-toast {
       position: fixed;
@@ -424,223 +358,224 @@ export interface Notification {
         padding: 24px;
       }
     }
-  `]
+  `],
+    templateUrl: './shared-dashboard-features.component.html'
 })
 export class SharedDashboardFeaturesComponent implements OnInit, OnDestroy {
-  @Input() currentUser: any;
-  @Input() availableFeatures: string[] = [];
+    @Input() currentUser: any;
+    @Input() availableFeatures: string[] = [];
 
-  // Notification system
-  activeNotification: Notification | null = null;
-  toastDuration = 5000;
+    // Notification system
+    activeNotification: Notification | null = null;
+    toastDuration = 5000;
 
-  // App state
-  isOnline = navigator.onLine;
-  updateAvailable = false;
-  isGlobalLoading = false;
-  loadingMessage = 'Loading...';
-  globalError: any = null;
+    // App state
+    isOnline = navigator.onLine;
+    updateAvailable = false;
+    isGlobalLoading = false;
+    loadingMessage = 'Loading...';
+    globalError: any = null;
 
-  private subscriptions: Subscription[] = [];
-  private notificationQueue: Notification[] = [];
-  private toastTimeout?: number;
+    private subscriptions: Subscription[] = [];
+    private notificationQueue: Notification[] = [];
+    private toastTimeout?: number;
 
-  constructor(private snackBar: MatSnackBar) {}
+    constructor(private snackBar: MatSnackBar) { }
 
-  ngOnInit() {
-    this.setupConnectionListener();
-    this.setupErrorHandler();
-    this.checkForUpdates();
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
-    }
-  }
-
-  private setupConnectionListener() {
-    window.addEventListener('online', () => {
-      this.isOnline = true;
-      this.showNotification({
-        id: 'connection-restored',
-        type: 'success',
-        title: 'Connection Restored',
-        message: 'You are back online!',
-        timestamp: new Date(),
-        isRead: false
-      });
-    });
-
-    window.addEventListener('offline', () => {
-      this.isOnline = false;
-    });
-  }
-
-  private setupErrorHandler() {
-    window.addEventListener('error', (event) => {
-      this.handleGlobalError({
-        message: event.message,
-        filename: event.filename,
-        lineno: event.lineno,
-        colno: event.colno,
-        error: event.error
-      });
-    });
-
-    window.addEventListener('unhandledrejection', (event) => {
-      this.handleGlobalError({
-        message: 'Unhandled Promise Rejection',
-        error: event.reason
-      });
-    });
-  }
-
-  private checkForUpdates() {
-    // Check for service worker updates
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        this.updateAvailable = true;
-      });
-    }
-  }
-
-  // Notification Methods
-  showNotification(notification: Notification) {
-    if (this.activeNotification) {
-      this.notificationQueue.push(notification);
-      return;
+    ngOnInit() {
+        this.setupConnectionListener();
+        this.setupErrorHandler();
+        this.checkForUpdates();
     }
 
-    this.activeNotification = notification;
-    
-    this.toastTimeout = window.setTimeout(() => {
-      this.dismissNotification();
-    }, this.toastDuration);
-  }
-
-  dismissNotification() {
-    if (this.toastTimeout) {
-      clearTimeout(this.toastTimeout);
-    }
-
-    this.activeNotification = null;
-
-    // Show next notification in queue
-    if (this.notificationQueue.length > 0) {
-      const nextNotification = this.notificationQueue.shift();
-      if (nextNotification) {
-        setTimeout(() => {
-          this.showNotification(nextNotification);
-        }, 300);
-      }
-    }
-  }
-
-  getNotificationIcon(type: string): string {
-    switch (type) {
-      case 'success': return 'typcn typcn-tick';
-      case 'error': return 'typcn typcn-times';
-      case 'warning': return 'typcn typcn-warning';
-      case 'info': return 'typcn typcn-info';
-      default: return 'typcn typcn-info';
-    }
-  }
-
-  // Loading Methods
-  showGlobalLoading(message = 'Loading...') {
-    this.isGlobalLoading = true;
-    this.loadingMessage = message;
-  }
-
-  hideGlobalLoading() {
-    this.isGlobalLoading = false;
-  }
-
-  // Error Handling
-  handleGlobalError(error: any) {
-    console.error('Global error:', error);
-    this.globalError = error;
-  }
-
-  retryLastAction() {
-    this.globalError = null;
-    // Implement retry logic based on the last action
-    window.location.reload();
-  }
-
-  reportError() {
-    // Implement error reporting
-    this.showNotification({
-      id: 'error-reported',
-      type: 'info',
-      title: 'Error Reported',
-      message: 'Thank you for reporting this issue. Our team will investigate.',
-      timestamp: new Date(),
-      isRead: false
-    });
-    this.globalError = null;
-  }
-
-  // Update Methods
-  updateApp() {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistration().then(registration => {
-        if (registration && registration.waiting) {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          window.location.reload();
+    ngOnDestroy() {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
         }
-      });
     }
-  }
 
-  dismissUpdate() {
-    this.updateAvailable = false;
-  }
+    private setupConnectionListener() {
+        window.addEventListener('online', () => {
+            this.isOnline = true;
+            this.showNotification({
+                id: 'connection-restored',
+                type: 'success',
+                title: 'Connection Restored',
+                message: 'You are back online!',
+                timestamp: new Date(),
+                isRead: false
+            });
+        });
 
-  // Public API for other components
-  public showSuccess(title: string, message: string) {
-    this.showNotification({
-      id: Date.now().toString(),
-      type: 'success',
-      title,
-      message,
-      timestamp: new Date(),
-      isRead: false
-    });
-  }
+        window.addEventListener('offline', () => {
+            this.isOnline = false;
+        });
+    }
 
-  public showError(title: string, message: string) {
-    this.showNotification({
-      id: Date.now().toString(),
-      type: 'error',
-      title,
-      message,
-      timestamp: new Date(),
-      isRead: false
-    });
-  }
+    private setupErrorHandler() {
+        window.addEventListener('error', (event) => {
+            this.handleGlobalError({
+                message: event.message,
+                filename: event.filename,
+                lineno: event.lineno,
+                colno: event.colno,
+                error: event.error
+            });
+        });
 
-  public showWarning(title: string, message: string) {
-    this.showNotification({
-      id: Date.now().toString(),
-      type: 'warning',
-      title,
-      message,
-      timestamp: new Date(),
-      isRead: false
-    });
-  }
+        window.addEventListener('unhandledrejection', (event) => {
+            this.handleGlobalError({
+                message: 'Unhandled Promise Rejection',
+                error: event.reason
+            });
+        });
+    }
 
-  public showInfo(title: string, message: string) {
-    this.showNotification({
-      id: Date.now().toString(),
-      type: 'info',
-      title,
-      message,
-      timestamp: new Date(),
-      isRead: false
-    });
-  }
+    private checkForUpdates() {
+        // Check for service worker updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                this.updateAvailable = true;
+            });
+        }
+    }
+
+    // Notification Methods
+    showNotification(notification: Notification) {
+        if (this.activeNotification) {
+            this.notificationQueue.push(notification);
+            return;
+        }
+
+        this.activeNotification = notification;
+
+        this.toastTimeout = window.setTimeout(() => {
+            this.dismissNotification();
+        }, this.toastDuration);
+    }
+
+    dismissNotification() {
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+        }
+
+        this.activeNotification = null;
+
+        // Show next notification in queue
+        if (this.notificationQueue.length > 0) {
+            const nextNotification = this.notificationQueue.shift();
+            if (nextNotification) {
+                setTimeout(() => {
+                    this.showNotification(nextNotification);
+                }, 300);
+            }
+        }
+    }
+
+    getNotificationIcon(type: string): string {
+        switch (type) {
+            case 'success': return 'typcn typcn-tick';
+            case 'error': return 'typcn typcn-times';
+            case 'warning': return 'typcn typcn-warning';
+            case 'info': return 'typcn typcn-info';
+            default: return 'typcn typcn-info';
+        }
+    }
+
+    // Loading Methods
+    showGlobalLoading(message = 'Loading...') {
+        this.isGlobalLoading = true;
+        this.loadingMessage = message;
+    }
+
+    hideGlobalLoading() {
+        this.isGlobalLoading = false;
+    }
+
+    // Error Handling
+    handleGlobalError(error: any) {
+        console.error('Global error:', error);
+        this.globalError = error;
+    }
+
+    retryLastAction() {
+        this.globalError = null;
+        // Implement retry logic based on the last action
+        window.location.reload();
+    }
+
+    reportError() {
+        // Implement error reporting
+        this.showNotification({
+            id: 'error-reported',
+            type: 'info',
+            title: 'Error Reported',
+            message: 'Thank you for reporting this issue. Our team will investigate.',
+            timestamp: new Date(),
+            isRead: false
+        });
+        this.globalError = null;
+    }
+
+    // Update Methods
+    updateApp() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration && registration.waiting) {
+                    registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                    window.location.reload();
+                }
+            });
+        }
+    }
+
+    dismissUpdate() {
+        this.updateAvailable = false;
+    }
+
+    // Public API for other components
+    public showSuccess(title: string, message: string) {
+        this.showNotification({
+            id: Date.now().toString(),
+            type: 'success',
+            title,
+            message,
+            timestamp: new Date(),
+            isRead: false
+        });
+    }
+
+    public showError(title: string, message: string) {
+        this.showNotification({
+            id: Date.now().toString(),
+            type: 'error',
+            title,
+            message,
+            timestamp: new Date(),
+            isRead: false
+        });
+    }
+
+    public showWarning(title: string, message: string) {
+        this.showNotification({
+            id: Date.now().toString(),
+            type: 'warning',
+            title,
+            message,
+            timestamp: new Date(),
+            isRead: false
+        });
+    }
+
+    public showInfo(title: string, message: string) {
+        this.showNotification({
+            id: Date.now().toString(),
+            type: 'info',
+            title,
+            message,
+            timestamp: new Date(),
+            isRead: false
+        });
+    }
 }

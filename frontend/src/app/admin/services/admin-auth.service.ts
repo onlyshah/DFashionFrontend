@@ -57,7 +57,7 @@ export class AdminAuthService {
     }
   }
 
-  // Login
+  // Admin Login
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/admin/login`, {
       email,
@@ -65,19 +65,69 @@ export class AdminAuthService {
     }).pipe(
       tap(response => {
         if (response.success) {
-          console.log('🔐 Admin login successful, storing token:', response.data.token.substring(0, 20) + '...');
-
-          // Store token and user data
           localStorage.setItem('admin_token', response.data.token);
           localStorage.setItem('admin_user', JSON.stringify(response.data.user));
-
-          // Update subjects
           this.tokenSubject.next(response.data.token);
           this.currentUserSubject.next(response.data.user);
-
-          console.log('🔐 Token stored in localStorage:', !!localStorage.getItem('admin_token'));
         }
       }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
+
+  // Vendor Login
+  loginVendor(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/vendor/login`, {
+      email,
+      password
+    }).pipe(
+      tap(response => {
+        if (response.success) {
+          localStorage.setItem('vendor_token', response.data.token);
+          localStorage.setItem('vendor_user', JSON.stringify(response.data.user));
+          this.tokenSubject.next(response.data.token);
+          this.currentUserSubject.next(response.data.user);
+        }
+      }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
+
+  // Customer Login
+  loginCustomer(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/customer/login`, {
+      email,
+      password
+    }).pipe(
+      tap(response => {
+        if (response.success) {
+          localStorage.setItem('customer_token', response.data.token);
+          localStorage.setItem('customer_user', JSON.stringify(response.data.user));
+          this.tokenSubject.next(response.data.token);
+          this.currentUserSubject.next(response.data.user);
+        }
+      }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
+
+  // Influencer Login
+  loginInfluencer(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/influencer/login`, {
+      email,
+      password
+    }).pipe(
+      tap(response => {
+        if (response.success) {
+          localStorage.setItem('influencer_token', response.data.token);
+          localStorage.setItem('influencer_user', JSON.stringify(response.data.user));
+          this.tokenSubject.next(response.data.token);
+          this.currentUserSubject.next(response.data.user);
+        }
+      }),
+      catchError((error: any) => throwError(() => error))
+    );
+  }
       catchError(error => {
         console.error('Login error:', error);
         return throwError(error);
