@@ -1,3 +1,4 @@
+import { MaterialModule } from './material.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule, FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -43,7 +44,8 @@ import { SharedModule } from './shared/shared.module';
     IonicStorageModule.forRoot(),
     AppRoutingModule,
     SharedModule,
-    FontAwesomeModule
+  FontAwesomeModule,
+  MaterialModule
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

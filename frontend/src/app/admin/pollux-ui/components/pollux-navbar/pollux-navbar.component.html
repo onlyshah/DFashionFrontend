@@ -1,77 +1,106 @@
-<!-- PolluxUI Navbar Component -->
-<ng-container>
-  <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row align-items-center">
-    <div class="navbar-brand-wrapper d-flex align-items-center" style="min-width: 180px;">
-      <a class="navbar-brand brand-logo me-2" routerLink="/dashboard"><img src="assets/pollux/images/logo.svg" alt="logo"/></a>
-      <button class="navbar-toggler navbar-toggler align-self-center ms-2" type="button" (click)="toggleSidebar()">
-        <span class="typcn typcn-th-menu"></span>
-      </button>
+<mat-toolbar class="admin-header">
+  <!-- Brand/Logo and Sidebar Toggle -->
+  <div class="navbar-brand-wrapper d-flex align-items-center">
+    <a class="navbar-brand brand-logo" routerLink="/admin/dashboard">
+      <img src="assets/pollux/images/logo.svg" alt="logo" 
+      style="width: 200px; height: 100px;"
+      />
+    </a>
+    <button mat-icon-button class="menu-toggle" (click)="toggleSidebar()">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <!-- Page Title (optional, can be set via @Input or service) -->
+  <div class="page-title">
+    <h1>{{ pageTitle || 'Dashboard' }}</h1>
+  </div>
+
+  <!-- Header Actions -->
+  <div class="header-actions d-flex align-items-center">
+    <!-- Search -->
+    <div class="search-container">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search...</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (keyup.enter)="onSearch()">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
     </div>
-    <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-      <ul class="navbar-nav me-lg-2">
-        <li class="nav-item nav-profile dropdown" *ngIf="currentUser">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown" aria-expanded="false">
-            <img [src]="currentUser.avatar" alt="profile"/>
-            <span class="nav-profile-name">{{ currentUser.fullName }}</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-end navbar-dropdown" aria-labelledby="profileDropdown">
-            <a class="dropdown-item" routerLink="/settings"><i class="typcn typcn-cog-outline text-primary"></i> Settings</a>
-            <a class="dropdown-item" (click)="onLogout()"><i class="typcn typcn-eject text-primary"></i> Logout</a>
+
+    <!-- Notifications -->
+    <button mat-icon-button [matMenuTriggerFor]="notificationMenu" class="notification-button">
+      <mat-icon [matBadge]="notificationCount" matBadgeColor="warn">notifications</mat-icon>
+    </button>
+    <mat-menu #notificationMenu="matMenu" class="notification-menu">
+      <div class="notification-header">
+        <h3>Notifications</h3>
+        <button mat-button color="primary" (click)="markAllAsRead()">Mark all as read</button>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="notification-list">
+        <button *ngFor="let notification of recentNotifications" mat-menu-item class="notification-item" [class.unread]="!notification.read" (click)="onNotificationClick(notification)">
+          <div class="notification-content">
+            <div class="notification-title">{{ notification.title }}</div>
+            <div class="notification-message">{{ notification.message }}</div>
+            <div class="notification-time">{{ formatNotificationTime(notification.time) }}</div>
           </div>
-        </li>
-        <li class="nav-item nav-user-status">
-          <p class="mb-0">Last login: {{ getLastLoginTime() }}</p>
-        </li>
-      </ul>
-      <ul class="navbar-nav navbar-nav-right">
-        <li class="nav-item nav-date">
-          <a class="nav-link d-flex justify-content-center align-items-center">
-            <h6 class="date mb-0">Today: {{ getCurrentDate() }}</h6>
-            <i class="typcn typcn-calendar"></i>
-          </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" href="#" data-bs-toggle="dropdown" id="messageDropdown" aria-expanded="false">
-            <i class="typcn typcn-mail mx-0"></i>
-            <span class="count" *ngIf="unreadMessages > 0">{{ unreadMessages }}</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-            <p class="mb-0 fw-normal float-start dropdown-header">Messages</p>
-            <a class="dropdown-item preview-item" *ngFor="let message of recentMessages" href="#">
-              <div class="preview-thumbnail">
-                <img [src]="message.avatar" alt="image" class="profile-pic">
-              </div>
-              <div class="preview-item-content flex-grow">
-                <h6 class="preview-subject ellipsis fw-normal">{{ message.sender }}</h6>
-                <p class="fw-light small-text text-muted mb-0">{{ message.preview }}</p>
-              </div>
-            </a>
-          </div>
-        </li>
-        <li class="nav-item dropdown me-0">
-          <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" href="#" data-bs-toggle="dropdown" id="notificationDropdown" aria-expanded="false">
-            <i class="typcn typcn-bell mx-0"></i>
-            <span class="count" *ngIf="unreadNotifications > 0">{{ unreadNotifications }}</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-            <p class="mb-0 fw-normal float-start dropdown-header">Notifications</p>
-            <a class="dropdown-item preview-item" *ngFor="let notification of recentNotifications" href="#">
-              <div class="preview-thumbnail">
-                <div class="preview-icon" [ngClass]="'bg-' + notification.type">
-                  <i class="typcn" [ngClass]="notification.icon + ' mx-0'"></i>
-                </div>
-              </div>
-              <div class="preview-item-content">
-                <h6 class="preview-subject fw-normal">{{ notification.title }}</h6>
-                <p class="fw-light small-text mb-0 text-muted">{{ notification.time }}</p>
-              </div>
-            </a>
-          </div>
-        </li>
-      </ul>
-      <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" (click)="toggleSidebar()">
-        <i class="typcn typcn-th-menu"></i>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/admin/notifications" class="view-all-button">
+        <mat-icon>list</mat-icon>
+        View All Notifications
       </button>
-    </div>
-  </nav>
-</ng-container>
+    </mat-menu>
+
+    <!-- Quick Actions -->
+    <button mat-icon-button [matMenuTriggerFor]="quickActionsMenu" matTooltip="Quick Actions">
+      <mat-icon>add</mat-icon>
+    </button>
+    <mat-menu #quickActionsMenu="matMenu">
+      <button mat-menu-item routerLink="/admin/products/new">
+        <mat-icon>add_box</mat-icon>
+        <span>Add Product</span>
+      </button>
+      <button mat-menu-item routerLink="/admin/users/new">
+        <mat-icon>person_add</mat-icon>
+        <span>Add User</span>
+      </button>
+      <button mat-menu-item routerLink="/admin/orders">
+        <mat-icon>shopping_cart</mat-icon>
+        <span>View Orders</span>
+      </button>
+      <button mat-menu-item routerLink="/admin/analytics">
+        <mat-icon>analytics</mat-icon>
+        <span>View Analytics</span>
+      </button>
+    </mat-menu>
+
+    <!-- User Profile -->
+    <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-profile-button">
+      <mat-icon>account_circle</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <div class="user-menu-header" *ngIf="currentUser">
+        <div class="user-info">
+          <div class="user-name">{{ currentUser.fullName }}</div>
+          <div class="user-email">{{ currentUser.email }}</div>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item routerLink="/admin/profile">
+        <mat-icon>person</mat-icon>
+        <span>My Profile</span>
+      </button>
+      <button mat-menu-item routerLink="/admin/settings">
+        <mat-icon>settings</mat-icon>
+        <span>Settings</span>
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </mat-menu>
+  </div>
+</mat-toolbar>

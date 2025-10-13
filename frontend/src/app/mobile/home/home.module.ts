@@ -1,3 +1,4 @@
+
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,6 +10,10 @@ import { HomePage } from './home.page';
 
 // Import Swiper modules
 import { register } from 'swiper/element/bundle';
+
+// Import PolluxSidebarModule and SharedModule
+import { PolluxSidebarModule } from '../../admin/pollux-ui/components/pollux-sidebar/pollux-sidebar.module';
+import { SharedModule } from '../../shared/shared.module';
 
 const routes: Routes = [
   {
@@ -22,7 +27,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    PolluxSidebarModule,
+    SharedModule
   ],
   declarations: [HomePage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

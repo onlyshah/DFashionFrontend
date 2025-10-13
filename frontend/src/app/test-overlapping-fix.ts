@@ -93,7 +93,7 @@ export class OverlappingTestHelper {
     console.log('🧪 Testing DOM Elements for Overlapping');
     
     const elements = {
-      header: document.querySelector('app-header'),
+  header: document.querySelector('app-pollux-navbar'),
       dashboard: document.querySelector('app-dashboard'),
       unifiedDashboard: document.querySelector('.unified-dashboard'),
       mainContent: document.querySelector('.main-content'),

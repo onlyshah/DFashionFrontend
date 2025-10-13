@@ -128,12 +128,7 @@ export class AdminAuthService {
       catchError((error: any) => throwError(() => error))
     );
   }
-      catchError(error => {
-        console.error('Login error:', error);
-        return throwError(error);
-      })
-    );
-  }
+// ...existing code...
 
   // Logout
   logout(): void {
@@ -206,88 +201,71 @@ export class AdminAuthService {
   }
 
   // Check if user has specific permission
-  hasPermission(module: string, action: string): boolean {
+  public hasPermission(module: string, action: string): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-
-    // Super admin has all permissions
     if (user.role === 'super_admin') return true;
-
-    // Check specific permission
     return user.permissions?.some(permission => 
       permission.module === module && permission.actions.includes(action)
     ) || false;
   }
 
   // Check if user has any of the specified roles
-  hasRole(roles: string | string[]): boolean {
+  public hasRole(roles: string | string[]): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-
     const allowedRoles = Array.isArray(roles) ? roles : [roles];
     return allowedRoles.includes(user.role);
   }
 
   // Verify token with server
-  verifyToken(): Observable<any> {
+  public verifyToken(): Observable<any> {
     const token = this.getToken();
     if (!token) {
-      return throwError('No token found');
+      return throwError(() => 'No token found');
     }
-
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
     return this.http.get(`${this.apiUrl}/auth/verify`, { headers }).pipe(
       tap(response => {
-        // Token is valid, update user data if needed
         if (response && (response as any).data?.user) {
           this.currentUserSubject.next((response as any).data.user);
         }
       }),
-      catchError(error => {
-        // Token is invalid, logout user
+      catchError((error: any) => {
         this.logout();
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
 
   // Get authorization headers
-  getAuthHeaders(): HttpHeaders {
+  public getAuthHeaders(): HttpHeaders {
     let token = this.getToken();
-
-    // If no admin token, check for regular auth token (for super admin users)
     if (!token && this.authService.isAuthenticated) {
       const regularUser = this.authService.currentUserValue;
       if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
         token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        console.log('🔐 Using regular auth token for admin API calls');
       }
     }
-
     if (!token) {
-      console.warn('⚠️ No authentication token found for admin API calls');
       return new HttpHeaders();
     }
-
     return new HttpHeaders().set('Authorization', `Bearer ${token}`);
   }
 
   // Refresh user data
-  refreshUserData(): Observable<AdminUser> {
+  public refreshUserData(): Observable<AdminUser> {
     return this.verifyToken().pipe(
-      map(response => response.data.user)
+      map((response: any) => response.data.user)
     );
   }
 
   // Update user profile
-  updateProfile(profileData: Partial<AdminUser>): Observable<any> {
+  public updateProfile(profileData: Partial<AdminUser>): Observable<any> {
     const headers = this.getAuthHeaders();
-    
     return this.http.put(`${this.apiUrl}/admin/profile`, profileData, { headers }).pipe(
       tap(response => {
         if (response && (response as any).success) {
-          // Update current user data
           const currentUser = this.getCurrentUser();
           if (currentUser) {
             const updatedUser = { ...currentUser, ...profileData };
@@ -300,9 +278,8 @@ export class AdminAuthService {
   }
 
   // Change password
-  changePassword(currentPassword: string, newPassword: string): Observable<any> {
+  public changePassword(currentPassword: string, newPassword: string): Observable<any> {
     const headers = this.getAuthHeaders();
-    
     return this.http.post(`${this.apiUrl}/admin/change-password`, {
       currentPassword,
       newPassword
@@ -310,47 +287,40 @@ export class AdminAuthService {
   }
 
   // Get user permissions for display
-  getUserPermissions(): Permission[] {
+  public getUserPermissions(): Permission[] {
     const user = this.getCurrentUser();
     return user?.permissions || [];
   }
 
   // Check if user can access admin panel
-  canAccessAdmin(): boolean {
+  public canAccessAdmin(): boolean {
     const adminRoles = [
       'super_admin', 'admin', 'sales_manager', 'marketing_manager',
       'account_manager', 'support_manager', 'sales_executive',
       'marketing_executive', 'account_executive', 'support_executive'
     ];
-
-    // First check admin-specific roles
     if (this.hasRole(adminRoles)) {
       return true;
     }
-
-    // Also check regular auth service for super admin users
     if (this.authService.isAuthenticated) {
       const regularUser = this.authService.currentUserValue;
-
       if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
         return true;
       }
     }
-
     return false;
   }
 
   // Get user's department
-  getUserDepartment(): string {
+  public getUserDepartment(): string {
     const user = this.getCurrentUser();
     return user?.department || '';
   }
 
   // Get user's role display name
-  getRoleDisplayName(): string {
+  public getRoleDisplayName(): string {
     const user = this.getCurrentUser();
     if (!user) return '';
-
     const roleNames: { [key: string]: string } = {
       'super_admin': 'Super Administrator',
       'admin': 'Administrator',
@@ -363,14 +333,11 @@ export class AdminAuthService {
       'account_executive': 'Account Executive',
       'support_executive': 'Support Executive'
     };
-
     return roleNames[user.role] || user.role;
   }
 
   // Auto-logout on token expiration
   private setupTokenExpiration(): void {
-    // This would typically decode JWT to get expiration time
-    // For now, we'll set a timeout for 8 hours (token expiry time)
     setTimeout(() => {
       this.logout();
     }, 8 * 60 * 60 * 1000); // 8 hours

@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 // Old components (keeping for fallback)
-import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
-import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
 import { RoleManagementComponent } from './pages/role-management/role-management.component';
 import { AdminLoginComponent } from './auth/admin-login.component';
 import { UserManagementComponent } from './users/user-management.component';
