@@ -1,3 +1,10 @@
+interface DashboardStats {
+  overview: any;
+  revenue: any;
+  monthlyTrends: any[];
+  topCustomers: any[];
+  _isFallback?: boolean;
+}
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, timer } from 'rxjs';
@@ -227,7 +234,7 @@ export class DashboardPerformanceService {
   /**
    * Get empty data when APIs fail - no fallback mock data
    */
-  private getFallbackData(): any {
+  private getFallbackData(): DashboardStats {
     console.log('📋 No fallback data - using empty data structure');
     return {
       overview: {
@@ -254,8 +261,8 @@ export class DashboardPerformanceService {
    * Check if current data is from fallback
    */
   isUsingFallbackData(): boolean {
-    const cached = this.getFromCache('dashboard-stats');
-    return cached && cached._isFallback === true;
+    const cached = this.getFromCache('dashboard-stats') as DashboardStats | null;
+    return !!(cached && cached._isFallback === true);
   }
 
   /**

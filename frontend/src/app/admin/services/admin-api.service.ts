@@ -446,7 +446,7 @@ export class AdminApiService {
 
   // Dashboard Metrics API - Role-based data
   getDashboardMetrics(role: string): Observable<any> {
-    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/dashboard/metrics?role=${role}`, {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/admin/dashboard/metrics?role=${role}`, {
       headers: this.getHeaders()
     }).pipe(
       map(response => response.data),

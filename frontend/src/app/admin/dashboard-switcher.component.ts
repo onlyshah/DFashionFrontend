@@ -26,7 +26,7 @@ export class DashboardSwitcherComponent {
     hasToken = false;
     currentUser: any = null;
     hasAdminAccess = false;
-    cacheStatus = { size: 0, keys: [] };
+    cacheStatus: { size: number; keys: string[] } = { size: 0, keys: [] };
     isUsingFallback = false;
     lastLoadTime = '';
     backendStatus = 'Unknown';
@@ -124,7 +124,7 @@ export class DashboardSwitcherComponent {
         }
 
         try {
-            const response = await fetch('http://localhost:3001/api/admin/dashboard', {
+            const response = await fetch('http://localhost:3001/api/admin/dashboard/stats', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
