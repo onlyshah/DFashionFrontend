@@ -5,8 +5,11 @@
 .sidenav-container,
 .sidebar-container {
   height: 100vh;
-  background: #f8fafc;
-  overflow: hidden; /* prevent whole page scroll */
+  // background: #f8fafc;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
 }
 
 /* =============================
@@ -15,14 +18,32 @@
 .sidebar,
 .sidenav {
   width: 280px;
+  height: 100vh;
   background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
   color: white;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
+  position: fixed;
+  overflow-y: auto;
+  overflow-x: hidden;
   box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: var(--navbar-height, 64px);
+  transition: width 0.3s ease;
+
+  /* Custom Scrollbar */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
 }
 
 .sidebar::before,
@@ -128,6 +149,241 @@
   font-size: 0.85rem;
   font-weight: 500;
 }
+
+/* Navigation Menu Styles */
+.nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+}
+
+.nav-item {
+  position: relative;
+  width: 100%;
+}
+
+.nav-item .nav-link {
+  padding: 0.8rem 1.5rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.8);
+  transition: all 0.3s ease;
+}
+
+.nav-item .nav-link .menu-icon {
+  font-size: 1.2rem;
+  margin-right: 1rem;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-item .nav-link .menu-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item .nav-link .menu-arrow {
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.nav-item .nav-link .menu-arrow.expanded {
+  transform: rotate(90deg);
+}
+
+.nav-item .nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item .nav-link.active {
+  color: white;
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.2), transparent);
+  border-left: 3px solid #667eea;
+}
+
+.nav-item .sub-menu {
+  background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease-out;
+}
+
+.nav-item .sub-menu.expanded {
+  max-height: 500px;
+}
+
+.nav-item .sub-menu .nav-item .nav-link {
+  padding-left: 3.5rem;
+  font-size: 0.9rem;
+}
+
+.nav-item .sub-menu .nav-item .nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Responsive Sidebar */
+@media screen and (min-width: 992px) {
+  .sidebar-icon-only .sidebar {
+    width: 70px;
+  }
+
+  .sidebar-icon-only .nav-item .nav-link {
+    padding: 1rem 0.5rem;
+    justify-content: center;
+  }
+
+  .sidebar-icon-only .nav-item .nav-link .menu-title,
+  .sidebar-icon-only .nav-item .nav-link .menu-arrow {
+    display: none;
+  }
+
+  .sidebar-icon-only .nav-item .nav-link .menu-icon {
+    margin: 0;
+  }
+
+  .sidebar-icon-only .nav-item:hover {
+    .nav-link .menu-title {
+      display: block;
+      position: absolute;
+      left: 70px;
+      top: 0;
+      width: 180px;
+      height: 44px;
+      padding: 0.8rem 1rem;
+      background: #1a1a1a;
+      z-index: 1001;
+    }
+
+    .sub-menu {
+      display: block !important;
+      position: absolute;
+      left: 70px;
+      top: 44px;
+      width: 180px;
+      background: #1a1a1a;
+      z-index: 1001;
+      max-height: none;
+      box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+@media screen and (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 1001;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: none;
+  }
+
+  .sidebar-overlay.show {
+    display: block;
+  }
+}
+
+
+/* Navigation Menu Styles */
+.nav {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+
+  .nav-item {
+    position: relative;
+    width: 100%;
+
+    .nav-link {
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+
+      .menu-icon {
+        font-size: 1.2rem;
+        margin-right: 1rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .menu-title {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .menu-arrow {
+        margin-left: auto;
+        transition: transform 0.3s ease;
+        font-size: 1.2rem;
+        opacity: 0.7;
+
+        &.expanded {
+          transform: rotate(90deg);
+        }
+      }
+
+      &:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      &.active {
+        color: white;
+        background: linear-gradient(90deg, rgba(102, 126, 234, 0.2), transparent);
+        border-left: 3px solid #667eea;
+      }
+    }
+
+    .sub-menu {
+      background: rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease-out;
+
+      &.expanded {
+        max-height: 500px;
+      }
+
+      .nav-item {
+        .nav-link {
+          padding-left: 3.5rem;
+          font-size: 0.9rem;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.05);
+          }
+        }
+      }
+    }
+  }
+}
+
 
 /* =============================
    Navigation Menu

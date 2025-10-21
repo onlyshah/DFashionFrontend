@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import //{ UserService } from '../../core/services/user.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-profile',
@@ -66,8 +66,7 @@ export class ProfilePage implements OnInit {
 
   constructor(
     private router: Router,
-    private authService: AuthService,
-    private userService: UserService
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -88,8 +87,9 @@ export class ProfilePage implements OnInit {
     try {
       this.isLoading = true;
       if (this.isAuthenticated) {
-        const response = await this.userService.getCurrentUser().toPromise();
-        this.user = response?.data;
+        const response = await firstValueFrom(this.authService.getCurrentUser());
+        // getCurrentUser() may return { user } or the user object directly
+        this.user = response && (response as any).user ? (response as any).user : response;
       }
     } catch (error) {
       console.error('Error loading user data:', error);

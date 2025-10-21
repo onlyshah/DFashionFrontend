@@ -15,6 +15,7 @@ export interface AdminUser {
   employeeId: string;
   permissions: Permission[];
   avatar?: string;
+  lastLogin?: string;
 }
 
 export interface Permission {

@@ -15,11 +15,11 @@
         <!-- Dynamic Menu Items Based on Role -->
   <li class="nav-item" [class.nav-group]="item.children" *ngFor="let item of navigationItems">
           <!-- Direct Route Links -->
-          <a class="nav-link"
-             *ngIf="!item.children && canShow(item)"
-             [routerLink]="item.route"
-             routerLinkActive="active"
-             (click)="onMenuItemClick()">
+       <a class="nav-link"
+         *ngIf="!item.children && canShow(item)"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         (click)="onMenuItemClick(item)">
             <i class="typcn" [ngClass]="item.icon + ' menu-icon'"></i>
             <span class="menu-title">{{ item.title }}</span>
             <div class="badge badge-danger" *ngIf="item.badge">{{ item.badge }}</div>
@@ -42,7 +42,7 @@
           <div class="collapse" [id]="item.id" [class.show]="item.expanded" *ngIf="item.children && canShow(item)">
             <ul class="nav flex-column sub-menu">
               <li class="nav-item" *ngFor="let child of item.children; trackBy: trackByChild" [hidden]="!canShow(child)">
-                <a class="nav-link" [routerLink]="child.route" routerLinkActive="active">
+                <a class="nav-link" [routerLink]="child.route" routerLinkActive="active" (click)="onMenuItemClick(child)">
                   <i class="typcn" [ngClass]="child.icon || 'typcn-arrow-forward'"></i>
                   <span class="menu-title">{{ child.title }}</span>
                 </a>

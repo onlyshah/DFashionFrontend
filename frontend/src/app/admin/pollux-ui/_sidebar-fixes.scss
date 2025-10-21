@@ -1,0 +1,162 @@
+/* Fix for sidebar scrolling and submenus */
+:host {
+  display: block;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  width: var(--sidebar-width, 260px);
+  z-index: 999;
+  background: var(--sidebar-bg);
+  transition: all 0.25s ease;
+  padding-top: var(--navbar-height);
+  border-right: 1px solid rgba(0, 0, 0, 0.05);
+
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem 0;
+
+    .nav-item {
+      position: relative;
+      width: 100%;
+
+      .nav-link {
+        padding: 0.8rem 1.5rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        color: var(--sidebar-text);
+        transition: all 0.3s ease;
+
+        .menu-title {
+          margin-left: 1rem;
+          flex: 1;
+        }
+
+        .menu-arrow {
+          font-family: "Material Icons";
+          font-size: 1.2rem;
+          transition: transform 0.3s ease;
+          transform: rotate(0deg);
+
+          &.expanded {
+            transform: rotate(90deg);
+          }
+        }
+
+        &:hover {
+          background: var(--sidebar-hover-bg);
+          color: var(--sidebar-hover-text);
+        }
+      }
+
+      .sub-menu {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background: var(--submenu-bg);
+
+        &.expanded {
+          max-height: 500px; /* Adjust based on your content */
+        }
+
+        .nav-item {
+          padding-left: 2rem;
+
+          .nav-link {
+            font-size: 0.9rem;
+            padding: 0.6rem 1.5rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Main panel fixes to prevent page level scrollbar */
+.main-panel {
+  margin-left: var(--sidebar-width, 260px);
+  min-height: 100vh;
+  padding-top: var(--navbar-height);
+  transition: all 0.25s ease;
+  overflow-y: auto;
+}
+
+/* Sidebar icon only state */
+.sidebar-icon-only {
+  .sidebar {
+    width: 70px;
+    
+    .nav-item {
+      .nav-link {
+        padding: 0.8rem;
+        justify-content: center;
+
+        .menu-title,
+        .menu-arrow {
+          display: none;
+        }
+
+        .menu-icon {
+          margin: 0;
+        }
+      }
+
+      &:hover {
+        > .nav-link {
+          .menu-title {
+            display: block;
+            position: absolute;
+            left: 70px;
+            top: 0;
+            width: 180px;
+            height: 44px;
+            padding: 0.8rem 1rem;
+            background: var(--sidebar-bg);
+            border-radius: 0 4px 4px 0;
+            box-shadow: 4px 0 7px rgba(0,0,0,0.1);
+          }
+        }
+
+        .sub-menu {
+          display: block !important;
+          position: absolute;
+          left: 70px;
+          top: 44px;
+          width: 180px;
+          background: var(--sidebar-bg);
+          border-radius: 0 0 4px 4px;
+          box-shadow: 4px 4px 7px rgba(0,0,0,0.1);
+        }
+      }
+    }
+  }
+
+  .main-panel {
+    margin-left: 70px;
+  }
+}

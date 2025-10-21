@@ -1,0 +1,163 @@
+/* Theme overrides for Pollux UI */
+:root {
+  --sidebar-width: 260px;
+  --navbar-height: 64px;
+  --sidebar-bg: #282f3a;
+  --sidebar-text: #d0cfcf;
+  --sidebar-hover-bg: #3b424c;
+  --sidebar-hover-text: #ffffff;
+  --submenu-bg: #1e2229;
+}
+
+/* Layout Container */
+.page-body-wrapper {
+  min-height: 100vh;
+  padding-top: var(--navbar-height);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Fixed Sidebar */
+.sidebar-wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  z-index: 1000;
+  transition: width 0.25s ease;
+}
+
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  padding-top: var(--navbar-height);
+  transition: width 0.25s ease;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+}
+
+/* Main Content Area */
+.main-panel {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  min-height: calc(100vh - var(--navbar-height));
+  overflow-y: auto;
+  position: relative;
+  transition: margin 0.25s ease;
+}
+
+/* Navigation Styles */
+.nav-item {
+  position: relative;
+  width: 100%;
+
+  .nav-link {
+    padding: 12px 25px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    color: var(--sidebar-text);
+    
+    .menu-title {
+      margin-left: 15px;
+    }
+    
+    .menu-arrow {
+      margin-left: auto;
+      transition: transform 0.3s ease;
+    }
+    
+    &.expanded .menu-arrow {
+      transform: rotate(90deg);
+    }
+  }
+  
+  .sub-menu {
+    background: var(--submenu-bg);
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    max-height: 0;
+    
+    &.expanded {
+      max-height: 1000px;
+    }
+    
+    .nav-link {
+      padding-left: 50px;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+/* Sidebar Icon Only State */
+.sidebar-icon-only {
+  .sidebar {
+    width: 70px;
+    
+    .nav-item {
+      .nav-link {
+        padding: 15px 20px;
+        text-align: center;
+        
+        .menu-title,
+        .menu-arrow {
+          display: none;
+        }
+        
+        i {
+          margin: 0;
+        }
+      }
+      
+      &:hover {
+        .nav-link {
+          width: 260px;
+          background: var(--sidebar-bg);
+          
+          .menu-title {
+            display: inline-block;
+            margin-left: 15px;
+          }
+        }
+        
+        .sub-menu {
+          display: block;
+          position: absolute;
+          left: 70px;
+          top: 100%;
+          width: 190px;
+          z-index: 1001;
+          background: var(--sidebar-bg);
+          padding: 5px 0;
+          border-radius: 0 0 4px 4px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+          
+          .nav-link {
+            width: 100%;
+            padding-left: 15px;
+          }
+        }
+      }
+    }
+  }
+  
+  .main-panel {
+    margin-left: 70px;
+  }
+}

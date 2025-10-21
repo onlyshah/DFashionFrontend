@@ -9,6 +9,6 @@ export function selectDashboardComponent(role: string): string {
     case 'influencer':
       return 'dashboard-influencer';
     default:
-      return 'dashboard-rbac';
+      return 'dashboard-user';
   }
 }

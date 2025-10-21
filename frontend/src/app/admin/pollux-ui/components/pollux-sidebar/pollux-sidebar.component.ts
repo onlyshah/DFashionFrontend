@@ -1,5 +1,5 @@
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { MatSidenav } from '@angular/material/sidenav';
@@ -7,6 +7,7 @@ import { MaterialModule } from 'src/app/material.module';
 import { map, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
 import { AdminAuthService, AdminUser } from 'src/app/admin/services/admin-auth.service';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { NavigationItem } from '../../models/navigation-item';
 @Component({
   selector: 'app-pollux-sidebar',
   templateUrl: './pollux-sidebar.component.html',
@@ -20,6 +21,12 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
   }
   
   @ViewChild('drawer') drawer!: MatSidenav;
+
+  // Input from layout to control expanded/collapsed state
+  @Input('isExpanded') isExpanded: boolean | undefined;
+
+  // Emit when a menu item is clicked. The layout expects a NavigationItem.
+  @Output('itemClicked') itemClicked = new EventEmitter<NavigationItem>();
 
   private destroy$ = new Subject<void>();
   currentUser$: Observable<AdminUser | null>;
@@ -120,7 +127,12 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
     item.expanded = !item.expanded;
   }
 
-  onMenuItemClick(): void {
+  onMenuItemClick(item?: NavigationItem): void {
+    // Emit clicked item for parent layout to react
+    if (item) {
+      this.itemClicked.emit(item);
+    }
+
     this.isHandset$.pipe(takeUntil(this.destroy$)).subscribe(isHandset => {
       if (isHandset && this.drawer) {
         this.drawer.close();

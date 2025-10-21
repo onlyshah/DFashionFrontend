@@ -27,7 +27,11 @@ export class DashboardRbacComponent implements OnInit {
   constructor(private rbacActions: DashboardRbacActions) {}
 
   ngOnInit(): void {
-    this.dashboardComponent = selectDashboardComponent(this.role);
+    // Set dashboard component based on role, with default handling
+    const role = this.role?.toLowerCase() || 'user';
+    const validRoles = ['admin', 'vendor', 'user', 'influencer'];
+    const dashboardType = validRoles.includes(role) ? `dashboard-${role}` : 'dashboard-user';
+    this.dashboardComponent = dashboardType;
   }
 
   canAccess(requiredRole: string): boolean {

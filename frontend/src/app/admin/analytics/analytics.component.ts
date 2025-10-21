@@ -39,21 +39,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   isLoading = false;
 
-  topProducts = [
-    { name: 'Classic White Shirt', sales: 45, revenue: 112500, trend: 1 },
-    { name: 'Denim Jeans', sales: 38, revenue: 95000, trend: 1 },
-    { name: 'Summer Dress', sales: 32, revenue: 80000, trend: -1 },
-    { name: 'Casual Sneakers', sales: 28, revenue: 70000, trend: 1 },
-    { name: 'Leather Jacket', sales: 22, revenue: 55000, trend: -1 }
-  ];
-
-  trafficSources = [
-    { name: 'Direct', percentage: 35, visitors: 4200 },
-    { name: 'Google Search', percentage: 28, visitors: 3360 },
-    { name: 'Social Media', percentage: 18, visitors: 2160 },
-    { name: 'Email Marketing', percentage: 12, visitors: 1440 },
-    { name: 'Referrals', percentage: 7, visitors: 840 }
-  ];
+  topProducts: any[] = [];
+  trafficSources: any[] = [];
 
   constructor(
     private analyticsService: AnalyticsService
@@ -87,20 +74,19 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.totalRevenue = data.revenue.totalRevenue || 0;
           this.averageOrderValue = data.revenue.averageOrderValue || 0;
 
-          // Calculate growth rates (mock for now)
-          this.customerGrowth = 15.2;
-          this.orderGrowth = 8.3;
-          this.revenueGrowth = 12.5;
-          this.conversionRate = 3.2;
+          // Calculate growth rates from backend data
+          this.customerGrowth = data.growthRates?.customerGrowth || 0;
+          this.orderGrowth = data.growthRates?.orderGrowth || 0;
+          this.revenueGrowth = data.growthRates?.revenueGrowth || 0;
+          this.conversionRate = data.growthRates?.conversionRate || 0;
 
           // Update top products from analytics
           if (data.analytics.topPerformingProducts) {
-            this.topProducts = data.analytics.topPerformingProducts.slice(0, 5).map((product: any, index: number) => ({
-              name: product.name,
-              sales: product.analytics?.purchases || 0,
-              revenue: product.price * (product.analytics?.purchases || 0),
-              trend: index % 2 === 0 ? 1 : -1 // Mock trend
-            }));
+            this.topProducts = data.analytics.topPerformingProducts;
+          }
+          // Update traffic sources from analytics
+          if (data.analytics.trafficSources) {
+            this.trafficSources = data.analytics.trafficSources;
           }
         }
         this.isLoading = false;

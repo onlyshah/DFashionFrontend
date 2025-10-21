@@ -14,15 +14,7 @@ import { dashboardVendorRoutes } from '../components/dashboard-vendor/dashboard-
 import { dashboardUserRoutes } from '../components/dashboard-user/dashboard-user.routes';
 import { dashboardInfluencerRoutes } from '../components/dashboard-influencer/dashboard-influencer.routes';
 
-interface NavigationItem {
-  id: string;
-  title: string;
-  icon: string;
-  route?: string;
-  badge?: string;
-  children?: Omit<NavigationItem, 'icon' | 'children' | 'expanded'>[];
-  expanded?: boolean;
-}
+import { NavigationItem } from '../models/navigation-item';
 
 interface Message {
   sender: string;
@@ -354,8 +346,13 @@ export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
   }
 
   onMenuItemClick(item: NavigationItem): void {
+    // Parent handler receives typed NavigationItem from sidebar
     if (this.isMobile) {
       this.sidebarOpen = false;
+    }
+    // Optionally update breadcrumb/page title based on item.route
+    if (item?.title) {
+      this.pageTitle = item.title;
     }
   }
 

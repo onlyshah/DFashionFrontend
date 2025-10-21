@@ -14,7 +14,8 @@ export class DashboardRbacActions {
       case 'influencer':
         return 'dashboard-influencer';
       default:
-        return 'dashboard-rbac';
+        // Fallback to user dashboard so there's always a usable dashboard
+        return 'dashboard-user';
     }
   }
 

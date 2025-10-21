@@ -3,12 +3,20 @@
  * Based on the Pollux UI template design
  */
 
-/* Import Fonts and Icons */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+/* Fonts and Icons: prefer system/local stack to avoid external fetch in CI */
+/* Use local/system font stack; keep typicons from CDN for icons (CSS import allowed)
+  and load theme styles via @use (Dart Sass module system) to avoid @import deprecation. */
+@use './theme/pollux-layout';
 @import url('https://cdn.jsdelivr.net/npm/typicons.font@2.1.2/src/font/typicons.css');
 
 /* EXACT POLLUX UI VARIABLES - MATCHING ORIGINAL THEME */
 :root {
+  /* Layout Variables */
+  --navbar-height: 64px;
+  --sidebar-width: 280px;
+  --sidebar-minimized-width: 70px;
+  --content-padding: 2rem;
+
   /* Bootstrap Variables from Original Pollux UI */
   --bs-primary: #844fc1;
   --bs-secondary: #6c7293;
@@ -42,8 +50,8 @@
   --card-padding: 25px;
   --border-radius: 8px;
 
-  /* Typography - Pollux UI Font Stack */
-  --font-family: "Poppins", sans-serif;
+  /* Typography - use a robust system/local font stack as fallback */
+  --font-family: Inter, "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-size-base: 0.875rem;
   --font-size-sm: 0.75rem;
   --font-size-lg: 1rem;
@@ -849,13 +857,56 @@ body.sidebar-icon-only .sidebar:hover .nav-link .menu-icon {
 }
 
 /* Page Body Wrapper - PREVENT OVERLAPPING */
+/* Layout Structure */
+.pollux-layout {
+  min-height: 100vh;
+  background: #f4f7fa;
+}
+
 .page-body-wrapper {
-  display: flex !important;
-  width: 100% !important;
-  position: relative !important;
-  min-height: calc(100vh - var(--navbar-height) - var(--breadcrumb-height));
-  margin: 0;
-  padding: 0;
+  padding-top: var(--navbar-height);
+  min-height: calc(100vh - var(--navbar-height));
+  display: flex;
+  position: relative;
+}
+
+/* Main Panel */
+.main-panel {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+  overflow-y: auto;
+  background: #f4f7fa;
+}
+
+.sidebar-icon-only .main-panel {
+  margin-left: var(--sidebar-minimized-width);
+}
+
+.content-wrapper {
+  padding: var(--content-padding);
+}
+
+@media (max-width: 991px) {
+  .main-panel {
+    margin-left: 0;
+  }
+  
+  .navbar {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+  }
+}
+
+/* Smooth Transitions */
+* {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
 }
 
 .content-wrapper {
