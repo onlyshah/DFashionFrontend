@@ -69,8 +69,14 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Initialize currentUser immediately from service or fallback to main auth
+    const initial = this.authService.getCurrentUser();
+    if (initial) {
+      this.currentUser = initial;
+    }
+    // Subscribe to updates
     this.currentUser$.pipe(takeUntil(this.destroy$)).subscribe(user => {
-      this.currentUser = user;
+      this.currentUser = user || this.authService.getCurrentUser();
     });
 
     this.router.events.pipe(takeUntil(this.destroy$)).subscribe(event => {

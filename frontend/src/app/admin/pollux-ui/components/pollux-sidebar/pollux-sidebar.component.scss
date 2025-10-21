@@ -4,9 +4,9 @@
 
 .sidenav-container,
 .sidebar-container {
-  height: auto;
+  height: 100vh;
   background: #f8fafc;
-  //display: flex;
+  overflow: hidden; /* prevent whole page scroll */
 }
 
 /* =============================
@@ -149,23 +149,21 @@
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   border-radius: 12px;
-  transition: all 0.3s ease;
+  transition: background 0.2s ease;
   margin: 0.25rem 1rem;
   cursor: pointer;
   position: relative;
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    transform: translateX(6px);
-  }
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: white;
+    }
 
   &.active,
   &.active-nav-item {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    transform: translateX(6px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
   }
 }
 
@@ -192,13 +190,16 @@
 }
 
 /* Collapsible groups */
-.nav-group .sub-menu {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-
-  &.expanded {
-    max-height: 300px;
+/* grouped nav items */
+.nav-group {
+  & .sub-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  /* when Bootstrap collapse adds .show, expand */
+  & .collapse.show .sub-menu {
+    max-height: 500px;
   }
 
   .sub-link {

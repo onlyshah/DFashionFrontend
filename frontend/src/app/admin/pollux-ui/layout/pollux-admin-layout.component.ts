@@ -228,7 +228,9 @@ export class PolluxAdminLayoutComponent implements OnInit, OnDestroy {
   private loadCurrentUser(): void {
     this.authService.getCurrentUser()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
+      .subscribe(resp => {
+        // getCurrentUser() may return either { user } or the user object directly depending on API
+        const user = resp && (resp as any).user ? (resp as any).user : resp;
         this.currentUser = user;
         this.currentUserRole = this.rbacService.getRoleForUser(user);
       });

@@ -13,7 +13,7 @@
       <ul class="nav">
 
         <!-- Dynamic Menu Items Based on Role -->
-        <li class="nav-item" *ngFor="let item of navigationItems">
+  <li class="nav-item" [class.nav-group]="item.children" *ngFor="let item of navigationItems">
           <!-- Direct Route Links -->
           <a class="nav-link"
              *ngIf="!item.children && canShow(item)"
