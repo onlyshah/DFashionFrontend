@@ -117,21 +117,42 @@ export class WishlistService {
 
   clearWishlist(): Observable<any> {
     const token = localStorage.getItem('token');
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
+    // If there's no token, just clear local data and return success
+    if (!token) {
+      this.wishlistItemsSubject.next([]);
+      this.wishlistCountSubject.next(0);
+      return of({ success: true, message: 'Wishlist cleared locally (no auth)' });
+    }
 
-    return this.http.delete(`${this.API_URL}/api/wishlist`, options).pipe(
+    const headers = { Authorization: `Bearer ${token}` };
+
+    return this.http.delete(`${this.API_URL}/api/wishlist`, { headers }).pipe(
       tap(() => {
         this.wishlistItemsSubject.next([]);
         this.wishlistCountSubject.next(0);
       }),
-      catchError(error => {
-        console.error('Error clearing wishlist:', error);
-        // Still clear local data even if API call fails
+      catchError((error: any) => {
+        // Handle specific statuses quietly
+        if (error && error.status === 401) {
+          // Token invalid/expired — remove it and clear local data
+          localStorage.removeItem('token');
+          this.wishlistItemsSubject.next([]);
+          this.wishlistCountSubject.next(0);
+          return of({ success: true, message: 'Wishlist cleared locally (auth expired)' });
+        }
+
+        if (error && error.status === 403) {
+          // Forbidden — user likely doesn't have 'end_user' role. Clear local data silently.
+          this.wishlistItemsSubject.next([]);
+          this.wishlistCountSubject.next(0);
+          return of({ success: true, message: 'Wishlist cleared locally (forbidden)' });
+        }
+
+        // For other errors, avoid noisy full error logs — keep a concise message and clear local data
+        console.warn('clearWishlist: server error, cleared local wishlist for resiliency');
         this.wishlistItemsSubject.next([]);
         this.wishlistCountSubject.next(0);
-        return of({ success: true, message: 'Wishlist cleared locally' });
+        return of({ success: true, message: 'Wishlist cleared locally (server error)' });
       })
     );
   }

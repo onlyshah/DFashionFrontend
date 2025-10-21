@@ -15,11 +15,12 @@ export class AdminNotificationService {
   constructor(private http: HttpClient) {}
 
   getNotifications(): Observable<AdminNotification[]> {
-    return this.http.get<AdminNotification[]>(`${environment.apiUrl}/api/admin/notifications`)
+      return this.http.get<{ success: boolean; data: AdminNotification[] }>(`${environment.apiUrl}/api/admin/notifications`)
       .pipe(
-        map(notifications => {
-          this.notificationsSubject.next(notifications);
-          return notifications;
+          map(response => {
+            const notifications = Array.isArray(response.data) ? response.data : [];
+            this.notificationsSubject.next(notifications);
+            return notifications;
         })
       );
   }

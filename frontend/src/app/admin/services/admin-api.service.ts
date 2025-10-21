@@ -398,10 +398,19 @@ export class AdminApiService {
 
   // Quick Actions - dynamic list for admin navbar
   getQuickActions(): Observable<any[]> {
-    return this.http.get<ApiResponse<{ quickActions: any[] }>>(`${this.apiUrl}/admin/quick-actions`, {
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/admin/quick-actions`, {
       headers: this.getHeaders()
     }).pipe(
-      map(response => response.data?.quickActions || []),
+      map(response => {
+        const data = response.data;
+        if (Array.isArray(data)) {
+          return data;
+        }
+        if (data && typeof data === 'object' && 'quickActions' in data && Array.isArray(data.quickActions)) {
+          return data.quickActions;
+        }
+        return [];
+      }),
       catchError(error => {
         console.error('Failed to load quick actions:', error);
         return of([]);

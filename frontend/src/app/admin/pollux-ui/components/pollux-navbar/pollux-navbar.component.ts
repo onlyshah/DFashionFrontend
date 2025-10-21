@@ -83,7 +83,8 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   isSearching: boolean = false;
   searchResults: any[] = [];
   notificationCount: number = 0;
-  recentNotifications: AdminNotification[] = [];
+  recentNotifications: Array<AdminNotification> = [];
+  private isLoadingNotifications = false;
   imageUrl = environment.apiUrl;
   isDarkMode = false;
 
@@ -296,9 +297,13 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     // Initialize animations after view is ready
     this.uiAnimationService.initializeAllAnimations();
     
-    // Initialize charts and start monitoring
-    this.initializeCharts();
-    this.startAnalyticsMonitoring();
+    // Initialize charts and start monitoring only if chart canvases exist on this view
+    const hasRevenueCanvas = !!document.getElementById('revenueChart');
+    const hasTrafficCanvas = !!document.getElementById('trafficSourcesChart');
+    if (hasRevenueCanvas && hasTrafficCanvas) {
+      this.initializeCharts();
+      this.startAnalyticsMonitoring();
+    }
   }
 
 
@@ -435,7 +440,13 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateNotificationCount(): void {
-    this.notificationCount = this.recentNotifications.filter(n => !n.read).length;
+      if (Array.isArray(this.recentNotifications)) {
+        this.notificationCount = this.recentNotifications.filter(n => !n.read).length;
+      } else {
+        console.warn('recentNotifications is not an array:', this.recentNotifications);
+        this.notificationCount = 0;
+        this.recentNotifications = [];
+      }
   }
 
   private getCachedResults(searchTerm: string): any[] | null {
@@ -525,7 +536,6 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  isLoadingNotifications = false;
   searchCache: Map<string, any[]> = new Map();
   searchCacheTimeout = 5 * 60 * 1000; // 5 minutes
   lastSearchTime: number = 0;
