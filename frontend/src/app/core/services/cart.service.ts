@@ -414,13 +414,19 @@ export class CartService {
         currentCart.push(cartItem);
       }
 
-      this.cartItems.next(currentCart);
-      this.updateCartCount();
-      await this.saveCartToStorage();
-      await this.showToast('Item added to cart', 'success');
+        this.cartItems.next(currentCart);
+        this.updateCartCount();
+        await this.saveCartToStorage();
+        await this.showToast('Item added to cart', 'success');
+        return true;
+      } catch (error) {
+        console.error('Error adding to cart (local):', error);
+        await this.showToast('Failed to add item to cart', 'danger');
+        return false;
+      }
       return true;
 
-    } catch (error) {
+    } async catch (error:any) {
       console.error('Error adding to cart:', error);
       await this.showToast('Failed to add item to cart', 'danger');
       return false;
