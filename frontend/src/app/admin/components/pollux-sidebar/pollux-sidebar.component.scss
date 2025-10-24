@@ -1,0 +1,4 @@
+.sidebar { width: var(--sidebar-width,236px); position:fixed; left:0; top:var(--navbar-height,74px); bottom:0; background:#fff; border-right:1px solid var(--border-color,#f3f3f3); padding-top:20px; }
+.sidebar .nav { list-style:none; padding:0; }
+.sidebar .nav .nav-item { padding:8px 14px; }
+.sidebar .nav .nav-link { color:var(--dark-color,#282f3a); text-decoration:none; display:block; }

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-import { WishlistNewService, WishlistItem } from '../../core/services/wishlist-new.service';
+import { WishlistNewService, WishlistItem } from '../../core/services/wishlist.service';
 import { CartService } from '../../core/services/cart.service';
 
 @Component({

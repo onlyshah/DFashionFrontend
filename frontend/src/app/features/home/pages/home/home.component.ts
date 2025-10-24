@@ -53,6 +53,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Categories Data - Will be loaded from API
   categories: any[] = [];
 
+  // Trending products for the home page (loaded from API or empty fallback)
+  trendingProducts: any[] = [];
+  currentSlide = 0;
+  itemsPerSlide = 4;
+
   private apiUrl = environment.apiUrl;
 
   constructor(
@@ -117,6 +122,17 @@ export class HomeComponent implements OnInit, OnDestroy {
     if (this.isSidebarOpen || this.isTabMenuOpen || this.isSidebarContentOpen) {
       e.preventDefault();
     }
+  }
+
+  // Products carousel navigation
+  slideNext() {
+    if (this.trendingProducts.length <= this.itemsPerSlide) return;
+    const maxSlide = Math.ceil(this.trendingProducts.length / this.itemsPerSlide) - 1;
+    this.currentSlide = Math.min(this.currentSlide + 1, maxSlide);
+  }
+
+  slidePrev() {
+    this.currentSlide = Math.max(this.currentSlide - 1, 0);
   }
 
   // Tab Menu Methods
@@ -247,6 +263,22 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   navigateToCart() {
     // TODO: Implement navigation to cart page
+  }
+
+  // Product actions used by the inline product cards
+  addToCart(product: any) {
+    console.log('Add to cart clicked for', product);
+    // TODO: integrate with CartService
+  }
+
+  toggleWishlist(product: any) {
+    console.log('Toggle wishlist for', product);
+    // TODO: integrate with WishlistService
+  }
+
+  isInWishlist(productId: string): boolean {
+    // Placeholder implementation
+    return false;
   }
 
   // Load stories from API

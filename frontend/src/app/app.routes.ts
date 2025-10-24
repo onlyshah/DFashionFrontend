@@ -197,10 +197,10 @@ export const routes: Routes = [
     redirectTo: 'products/:id'
   },
 
-  // Admin Routes
+  // Admin Routes (standalone)
   {
     path: 'admin',
-    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
+    loadComponent: () => import('./admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent)
   },
 
   // Support & Help (using existing profile as placeholder)

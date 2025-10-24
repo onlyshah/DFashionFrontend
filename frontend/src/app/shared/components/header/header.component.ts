@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
-import { WishlistNewService } from '../../../core/services/wishlist-new.service';
+import { WishlistNewService } from '../../../core/services/wishlist.service';
 import { User } from '../../../core/models/user.model';
 
 @Component({

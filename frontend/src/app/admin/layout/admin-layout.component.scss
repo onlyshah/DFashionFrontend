@@ -1,0 +1,5 @@
+@use '../pollux-ui/pollux-ui' as *;
+
+.container-scroller { width:100%; }
+.main-panel { margin-left: var(--sidebar-width,236px); padding-top: var(--navbar-height,74px); }
+.content-wrapper { padding: 24px; }

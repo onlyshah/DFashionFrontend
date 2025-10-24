@@ -5,11 +5,13 @@
 
 /* CSS Variables for consistency and performance */
 :root {
-  /* Z-Index Scale */
+  /* Z-Index Scale (Revised for better layering) */
   --z-background: -1;
   --z-base: 1;
   --z-content: 10;
-  --z-sidebar: 100;
+  --z-feed: 15;
+  --z-sidebar: 20;
+  --z-stories: 25;
   --z-header: 999;
   --z-mobile-nav: 998;
   --z-dashboard: 1000;

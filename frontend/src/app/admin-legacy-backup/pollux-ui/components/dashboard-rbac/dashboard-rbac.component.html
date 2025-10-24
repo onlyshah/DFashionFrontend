@@ -1,0 +1,10 @@
+<!-- PolluxUI RBAC Dashboard Router -->
+<ng-container>
+  <app-dashboard-admin *ngIf="dashboardComponent === 'dashboard-admin' && canAccess('admin')"></app-dashboard-admin>
+  <app-dashboard-vendor *ngIf="dashboardComponent === 'dashboard-vendor' && canAccess('vendor')"></app-dashboard-vendor>
+  <app-dashboard-user *ngIf="dashboardComponent === 'dashboard-user' && canAccess('user')"></app-dashboard-user>
+  <app-dashboard-influencer *ngIf="dashboardComponent === 'dashboard-influencer' && canAccess('influencer')"></app-dashboard-influencer>
+  <div *ngIf="dashboardComponent === 'dashboard-rbac'" class="dashboard-container">
+    <div class="alert alert-warning mt-4">No dashboard available for this role.</div>
+  </div>
+</ng-container>

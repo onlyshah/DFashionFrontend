@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, firstValueFrom, forkJoin } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { StorageService } from './storage.service';
 import { ToastController } from '@ionic/angular';
@@ -366,53 +366,72 @@ export class CartService {
     );
   }
 
-  // Legacy method for backward compatibility - works for guest users
-  async addToCartLegacy(product: any, quantity: number = 1, size?: string, color?: string): Promise<boolean> {
-    try {
-      const productId = product._id || product.id;
+  // Backwards-compatible wrappers used by older components (CartNewService API)
+  addFromWishlist(productId: string, quantity: number = 1, size?: string, color?: string) {
+    return this.addToCart(productId, quantity, size, color);
+  }
 
-      // Try API first, but fallback to local storage for guest users
+  addFromProduct(productId: string, quantity: number = 1, size?: string, color?: string) {
+    return this.addToCart(productId, quantity, size, color);
+  }
+
+  addFromPost(productId: string, quantity: number = 1, size?: string, color?: string) {
+    return this.addToCart(productId, quantity, size, color);
+  }
+  // Backwards-compatible wrappers finished. (Do not close the class here.)
+  // Fallback method to add item to cart when called with a product object (tries API then local storage)
+    async addToCartLocal(product: any, quantity: number = 1, size?: string, color?: string): Promise<boolean> {
       try {
-        const response = await this.addToCart(productId, quantity, size, color).toPromise();
-        if (response?.success) {
-          await this.showToast('Item added to cart', 'success');
-          this.loadCart(); // Refresh cart
-          return true;
+        const productId = (product && (product._id || product.id)) || String(product);
+
+        // Try API first (if authenticated), otherwise fall back to local storage
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const response = await this.addToCart(productId, quantity, size, color).toPromise();
+            if (response?.success) {
+              await this.showToast('Item added to cart', 'success');
+              this.loadCart(); // Refresh cart from API
+              return true;
+            }
+          } catch (apiError) {
+            console.log('API not available or failed, using local storage fallback', apiError);
+          }
         }
-      } catch (apiError) {
-        console.log('API not available, using local storage');
-      }
 
-      // Fallback to local storage (for guest users)
-      const cartItem: CartItem = {
-        _id: `${productId}_${size || 'default'}_${color || 'default'}`,
-        product: {
-          _id: productId,
-          name: product.name,
-          price: product.price,
-          originalPrice: product.originalPrice,
-          images: product.images || [],
-          brand: product.brand || '',
-          discount: product.discount
-        },
-        quantity,
-        size,
-        color,
-        addedAt: new Date()
-      };
+        // Fallback to local storage (for guest users or when API fails)
+        const cartItem: CartItem = {
+          _id: `${productId}_${size || 'default'}_${color || 'default'}`,
+          product: {
+            _id: productId,
+            name: product?.name || '',
+            price: product?.price || 0,
+            originalPrice: product?.originalPrice,
+            images: product?.images || [],
+            brand: product?.brand || '',
+            discount: product?.discount
+          },
+          quantity,
+          size,
+          color,
+          addedAt: new Date()
+        };
 
-      const currentCart = this.cartItems.value;
-      const existingItemIndex = currentCart.findIndex(item =>
-        item.product._id === productId &&
-        (item.size || 'default') === (size || 'default') &&
-        (item.color || 'default') === (color || 'default')
-      );
+        const currentCart = [...(this.cartItems.value || [])];
+        const existingItemIndex = currentCart.findIndex((item: CartItem) =>
+          item.product._id === productId &&
+          (item.size || 'default') === (size || 'default') &&
+          (item.color || 'default') === (color || 'default')
+        );
 
-      if (existingItemIndex >= 0) {
-        currentCart[existingItemIndex].quantity += quantity;
-      } else {
-        currentCart.push(cartItem);
-      }
+        if (existingItemIndex >= 0) {
+          currentCart[existingItemIndex] = {
+            ...currentCart[existingItemIndex],
+            quantity: currentCart[existingItemIndex].quantity + quantity
+          };
+        } else {
+          currentCart.push(cartItem);
+        }
 
         this.cartItems.next(currentCart);
         this.updateCartCount();
@@ -424,79 +443,7 @@ export class CartService {
         await this.showToast('Failed to add item to cart', 'danger');
         return false;
       }
-      return true;
-
-    } async catch (error:any) {
-      console.error('Error adding to cart:', error);
-      await this.showToast('Failed to add item to cart', 'danger');
-      return false;
     }
-  }
-
-  // Remove item from cart via API
-  removeFromCart(itemId: string): Observable<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart-new/remove/${itemId}`, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
-      })
-    );
-  }
-
-  // Bulk remove items from cart
-  bulkRemoveFromCart(itemIds: string[]): Observable<{ success: boolean; message: string; removedCount: number }> {
-    const token = localStorage.getItem('token');
-    const options = token ? {
-      body: { itemIds },
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {
-      body: { itemIds }
-    };
-    return this.http.delete<{ success: boolean; message: string; removedCount: number }>(`${this.API_URL}/cart-new/bulk-remove`, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
-      })
-    );
-  }
-
-  // Legacy method
-  async removeFromCartLegacy(itemId: string): Promise<void> {
-    try {
-      const response = await this.removeFromCart(itemId).toPromise();
-      if (response?.success) {
-        await this.showToast('Item removed from cart', 'success');
-        this.loadCart(); // Refresh cart
-      }
-    } catch (error) {
-      console.error('Error removing from cart:', error);
-      await this.showToast('Failed to remove item from cart', 'danger');
-    }
-  }
-
-  // Update cart item quantity via API
-  updateCartItem(itemId: string, quantity: number): Observable<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.put<{ success: boolean; message: string }>(`${this.API_URL}/cart-new/update/${itemId}`, { quantity }, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
-      })
-    );
-  }
 
   // Legacy method
   async updateQuantity(itemId: string, quantity: number): Promise<void> {
@@ -506,7 +453,7 @@ export class CartService {
         return;
       }
 
-      const response = await this.updateCartItem(itemId, quantity).toPromise();
+      const response = await firstValueFrom(this.updateCartItem(itemId, quantity));
       if (response?.success) {
         this.loadCart(); // Refresh cart
       }
@@ -514,6 +461,106 @@ export class CartService {
       console.error('Error updating quantity:', error);
       await this.showToast('Failed to update quantity', 'danger');
     }
+  }
+  updateCartItem(itemId: string, quantity: number): Observable<{ success: boolean; message: string }> {
+    const token = localStorage.getItem('token');
+    const options = token ? {
+      headers: { Authorization: `Bearer ${token}` }
+    } : {};
+    return this.http.put<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/update/${itemId}`, { quantity }, options).pipe(
+      tap((response: any) => {
+        if (response.success) {
+          // Immediately refresh cart to get updated count
+          this.loadCartFromAPI();
+        }
+      }),
+      catchError(error => {
+        console.error('Error updating cart item:', error);
+        return of({ success: false, message: 'Update failed' });
+      })
+    );
+  }
+  async removeFromCartLegacy(itemId: string): Promise<void> {
+    try {
+      const token = localStorage.getItem('token');
+      const options = token ? {
+        headers: { Authorization: `Bearer ${token}` }
+      } : {};
+
+      const response = await firstValueFrom(
+        this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/remove/${itemId}`, options).pipe(
+          tap((res: any) => {
+            if (res.success) {
+              this.loadCartFromAPI();
+            }
+          }),
+          catchError(error => {
+            console.error('Error removing cart item:', error);
+            return of({ success: false, message: 'Remove failed' });
+          })
+        )
+      );
+
+      // optional: handle response if needed
+      return;
+    } catch (error) {
+      console.error('Error in removeFromCartLegacy:', error);
+    }
+  }
+
+  // Observable-based API for removing a single item (used by many components)
+  removeFromCart(itemId: string): Observable<{ success: boolean; message: string }> {
+    const token = localStorage.getItem('token');
+    const options = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/remove/${itemId}`, options).pipe(
+      tap((res: any) => {
+        if (res?.success) {
+          // Refresh cart state after successful removal
+          this.loadCartFromAPI();
+        }
+      }),
+      catchError(error => {
+        console.error('Error removing cart item:', error);
+        return of({ success: false, message: 'Remove failed' });
+      })
+    );
+  }
+
+  // Bulk remove items - try a bulk API endpoint, fall back to sequential deletes
+  bulkRemoveFromCart(itemIds: string[]): Observable<{ success: boolean; message: string; removedCount?: number }> {
+    const token = localStorage.getItem('token');
+    const options = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+
+    // Try a single bulk API call first
+    return this.http.post<{ success: boolean; message: string; removedCount?: number }>(`${this.API_URL}/api/cart-new/bulk-remove`, { ids: itemIds }, options).pipe(
+      tap((res: any) => {
+        if (res?.success) {
+          this.loadCartFromAPI();
+        }
+      }),
+      map((res: any) => ({ success: !!res?.success, message: res?.message || '', removedCount: res?.removedCount || 0 })),
+      catchError(err => {
+        // Fallback: perform sequential deletes and aggregate the results
+        console.warn('Bulk remove API failed, falling back to sequential removes', err);
+        const deleteCalls = itemIds.map(id =>
+          this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/remove/${id}`, options).pipe(
+            catchError(e => of({ success: false, message: 'remove failed' }))
+          )
+        );
+
+        return forkJoin(deleteCalls).pipe(
+          map((results: any[]) => {
+            const removedCount = results.filter(r => r && r.success).length;
+            const allSuccess = results.every(r => r && r.success);
+            if (removedCount > 0) {
+              this.loadCartFromAPI();
+            }
+            return { success: allSuccess, message: allSuccess ? 'Bulk remove successful' : 'Some removes failed', removedCount };
+          })
+        );
+      })
+    );
   }
 
   // Clear cart via API
@@ -654,4 +701,5 @@ export class CartService {
     });
     toast.present();
   }
+
 }

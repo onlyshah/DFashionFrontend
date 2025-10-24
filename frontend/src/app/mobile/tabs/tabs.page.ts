@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
-import { WishlistNewService } from '../../core/services/wishlist-new.service';
+import { WishlistNewService } from '../../core/services/wishlist.service';
 
 @Component({
   selector: 'app-tabs',

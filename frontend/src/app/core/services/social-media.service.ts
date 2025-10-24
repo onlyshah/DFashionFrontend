@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
-import { CartNewService } from './cart-new.service';
-import { WishlistNewService } from './wishlist-new.service';
+import {CartService } from './cart.service';
+import { WishlistNewService } from './wishlist.service';
 import { environment } from '../../../environments/environment';
 
 export interface SocialPost {
@@ -112,7 +112,7 @@ export class SocialMediaService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private cartService: CartNewService,
+    private cartService: CartService,
     private wishlistService: WishlistNewService
   ) {}
 
@@ -282,8 +282,8 @@ export class SocialMediaService {
     // Track analytics
     this.trackStoryProductClick(storyId, productId, 'add_to_cart').subscribe();
 
-    // Add to cart
-    return this.cartService.addFromStory(productId, quantity, size, color);
+    // Add to cart (use existing addFromPost on CartService)
+    return this.cartService.addFromPost(productId, quantity, size, color);
   }
 
   addToWishlistFromStory(storyId: string, productId: string, size?: string, color?: string): Observable<any> {

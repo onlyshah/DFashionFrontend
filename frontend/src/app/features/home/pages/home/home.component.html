@@ -1,24 +1,87 @@
-<div class="home-container" [class.mobile-social]="isMobile" [class.sidebar-open]="isSidebarOpen" [class.mobile]="isMobile">
-  <!-- Mobile Header with social media styling -->
-  <div class="mobile-header social-style" *ngIf="isMobile">
-    <div class="header-left">
-      <h1 class="app-logo">TrendSpace</h1>
-      <ion-icon name="chevron-down" class="logo-dropdown"></ion-icon>
-    </div>
-    <div class="header-right">
-      <ion-icon name="heart-outline" class="header-icon"></ion-icon>
-      <div class="menu-icon-container" (click)="toggleTabMenu()">
-        <ion-icon name="grid-outline" class="header-icon menu-icon"></ion-icon>
-        <div class="notification-dot" *ngIf="hasNotifications">3</div>
+<div class="home-container">
+  <!-- Main Navigation -->
+  <nav class="main-nav">
+    <div class="nav-container">
+      <!-- Left Navigation -->
+      <div class="nav-left">
+        <a href="#" class="brand">DFashion</a>
+        <div class="search-box">
+          <input type="text" placeholder="Search for products, brands and more...">
+          <ion-icon name="search-outline"></ion-icon>
+        </div>
       </div>
-      <div class="menu-icon-container" (click)="toggleSidebar()">
-        <ion-icon name="menu-outline" class="header-icon menu-icon"></ion-icon>
+
+      <!-- Right Navigation -->
+      <div class="nav-right">
+        <a routerlink="/explore" routerlinkactive="active"
+        class="nav-link" href="/explore">
+         <i  class="fas fa-compass"></i><span>Explore</span></a>
+        </a>
+        <a href="#" class="nav-link">
+          <ion-icon name="notifications-outline"></ion-icon>
+          Notifications
+          <span class="badge">3</span>
+        </a>
+        <a href="#" class="nav-link">
+          <ion-icon name="heart-outline"></ion-icon>
+          Wishlist
+        </a>
+        <a href="#" class="nav-link active">
+          <ion-icon name="cart-outline"></ion-icon>
+          Cart
+          <span class="badge">2</span>
+        </a>
+        <div class="total-box">
+          <ion-icon name="wallet-outline"></ion-icon>
+          <span class="amount">₹1,299</span>
+        </div>
+        <div class="user-menu">
+          <img src="assets/images/avatar.jpg" alt="User" class="avatar">
+          <span>John Doe</span>
+          <ion-icon name="chevron-down-outline"></ion-icon>
+        </div>
       </div>
     </div>
-  </div>
+  </nav>
 
-  <!-- Removed separate mobile stories section - using unified responsive stories component -->
-
+  <!-- Main Content -->
+  <div class="web-layout">
+    <!-- Trending Section -->
+    <section class="trending-section">
+      <div class="section-header">
+        <div class="header-left">
+          <ion-icon name="trending-up" class="trending-icon"></ion-icon>
+          <h2>Trending Products</h2>
+          <span class="subtitle">See what's popular today</span>
+        </div>
+        <a href="#" class="view-all">
+          View All
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </a>
+      </div>
+      <div class="products-grid">
+        <div class="product-card" *ngFor="let product of trendingProducts">
+          <div class="product-image">
+            <img [src]="product.images?.[0]?.url || 'assets/images/product-placeholder.png'" [alt]="product.name || 'Product'">
+            <span class="discount-badge" *ngIf="product.discount">{{product.discount}}% OFF</span>
+          </div>
+          <div class="product-info">
+            <div class="brand">{{product.brand}}</div>
+            <h3 class="name">{{product.name}}</h3>
+            <div class="price-row">
+              <span class="current-price">₹{{product.price}}</span>
+              <span class="original-price" *ngIf="product.originalPrice">₹{{product.originalPrice}}</span>
+            </div>
+            <div class="actions">
+              <button class="add-to-cart" (click)="addToCart(product)">Add to Cart</button>
+              <button class="wishlist" (click)="toggleWishlist(product)">
+                <ion-icon [name]="isInWishlist(product._id) ? 'heart' : 'heart-outline'"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
   <!-- Web Layout: Stories Section + Two Column Layout -->
   <div class="web-layout" *ngIf="!isMobile">
