@@ -1,0 +1,141 @@
+@import '../../../styles/abstracts/variables';
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.container-scroller {
+  min-height: 100vh;
+}
+
+.page-body-wrapper {
+  min-height: 100vh;
+  padding-left: 0;
+  padding-right: 0;
+  
+  &.full-page-wrapper {
+    width: 100%;
+    min-height: 100vh;
+  }
+}
+
+.content-wrapper {
+  min-height: 100vh;
+  background: #f2edf3;
+  padding: 2rem 0;
+}
+
+.auth-form-light {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+  
+  .brand-logo {
+    margin-bottom: 2rem;
+    
+    img {
+      width: 150px;
+    }
+  }
+  
+  h4 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  h6 {
+    color: #6c757d;
+    font-size: 0.9375rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-control {
+  height: 50px;
+  border: 1px solid #ebedf2;
+  font-size: 0.9375rem;
+  border-radius: 4px;
+  padding: 0.94rem 1.375rem;
+  
+  &:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+}
+
+.auth-form-btn {
+  height: 50px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  border-radius: 4px;
+  padding: 0.94rem 1.375rem;
+  width: 100%;
+  
+  &.btn-primary {
+    background-color: #0033c4;
+    border-color: #0033c4;
+    
+    &:hover {
+      background-color: darken(#0033c4, 5%);
+      border-color: darken(#0033c4, 5%);
+    }
+    
+    &:disabled {
+      background-color: lighten(#0033c4, 20%);
+      border-color: lighten(#0033c4, 20%);
+    }
+  }
+}
+
+.form-check {
+  .form-check-label {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    padding-left: 1.5rem;
+    
+    input {
+      margin-top: 0.3rem;
+      margin-left: -1.5rem;
+    }
+  }
+}
+
+.auth-link {
+  font-size: 0.875rem;
+  color: #000;
+  text-decoration: underline;
+  
+  &:hover {
+    color: #0033c4;
+  }
+}
+
+.text-primary {
+  color: #0033c4 !important;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Animation
+.auth-form-light {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

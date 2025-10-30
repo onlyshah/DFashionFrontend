@@ -7,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { MobileOptimizationService, DeviceInfo, ViewportBreakpoints } from '../../../core/services/mobile-optimization.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
-import { WishlistNewService } from '../../../core/services/wishlist.service';
+import { WishlistNewService } from '../../../core/services/wishlist-new.service';
 import { TrendingProductsComponent } from '../../../features/home/components/trending-products/trending-products.component';
 
 @Component({

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
-import { WishlistNewService, WishlistItem } from '../../../../core/services/wishlist.service';
+import { WishlistNewService, WishlistItem } from '../../../../core/services/wishlist-new.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { environment } from 'src/environments/environment';
 

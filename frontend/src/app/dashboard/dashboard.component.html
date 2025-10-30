@@ -1,1 +1,19 @@
-<app-unified-dashboard></app-unified-dashboard>
+<div class="dashboard-container">
+    <div *ngIf="isLoading" class="loading-overlay">
+        <div class="spinner-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="error" class="alert alert-danger alert-dismissible fade show m-3" role="alert">
+        {{ error }}
+        <button type="button" class="btn-close" (click)="clearError()" aria-label="Close"></button>
+    </div>
+
+    <app-unified-dashboard 
+        (error)="handleError($event)"
+        (loading)="handleLoading($event)">
+    </app-unified-dashboard>
+</div>

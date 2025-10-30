@@ -1,0 +1,49 @@
+// Import PolluxUI variables
+@import "../../polluxui-free/src/assets/scss/_variables.scss";
+
+// Theme Colors
+$primary: #7DA0FA;
+$secondary: #7987a1;
+$success: #05a34a;
+$info: #66d1d1;
+$warning: #fbbc06;
+$danger: #ff3366;
+$light: #e9ecef;
+$dark: #282f3a;
+
+// Body
+$body-bg: #f9fafb;
+$body-color: #001737;
+
+// Typography
+$font-family-base: 'Roboto', sans-serif;
+$font-size-base: .875rem;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+// Card
+$card-border-radius: .35rem;
+$card-box-shadow: 0 0 10px 0 rgba(183, 192, 206, 0.2);
+$card-spacer-y: 1.5rem;
+$card-spacer-x: 1.5rem;
+
+// Buttons
+$btn-font-size: .875rem;
+$btn-padding-y: .5rem;
+$btn-padding-x: 1.25rem;
+$btn-border-radius: .2rem;
+
+// Tables
+$table-cell-padding: .75rem;
+$table-border-color: #f3f3f3;
+
+// Forms
+$input-padding-y: .5rem;
+$input-padding-x: .75rem;
+$input-border-radius: .2rem;
+$input-border-color: #e9ecef;
+$input-focus-border-color: $primary;
+
+// Import PolluxUI components styles
+@import "../../polluxui-free/src/assets/scss/style.scss";

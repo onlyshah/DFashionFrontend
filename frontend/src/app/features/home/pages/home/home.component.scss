@@ -1,5 +1,3 @@
-@use "sass:color";
-
 // Optimized Home Component
 // Reduced from 1548 lines to ~300 lines
 
@@ -13,224 +11,26 @@
   --accent-color: #0095f6;
 }
 
-// Main container and navigation
+// Main container
 .home-container {
-  min-height: 100vh;
-  background: #f8f9fa;
-}
+  padding: 0;
+  min-height: calc(100vh - var(--header-height));
+  position: relative;
+  background: var(--bg-primary);
+  z-index: 1;
 
-// Main navigation
-.main-nav {
-  background: white;
-  border-bottom: 1px solid #dee2e6;
-  padding: 12px 0;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-
-  .nav-container {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-
-      .brand {
-        font-size: 24px;
-        font-weight: 700;
-        color: #ff5722;
-        text-decoration: none;
-      }
-
-      .search-box {
-        position: relative;
-        width: 400px;
-
-        input {
-          width: 100%;
-          padding: 10px 16px;
-          padding-right: 40px;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
-          font-size: 14px;
-          outline: none;
-
-          &:focus {
-            border-color: #ff5722;
-          }
-        }
-
-        ion-icon {
-          position: absolute;
-          right: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: 20px;
-          color: #6c757d;
-        }
-      }
-    }
-
-    .nav-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-
-      .nav-link {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-decoration: none;
-        color: #495057;
-        font-size: 13px;
-        position: relative;
-        padding: 4px 8px;
-
-        ion-icon {
-          font-size: 22px;
-          margin-bottom: 2px;
-        }
-
-        &.active {
-          color: #ff5722;
-        }
-
-        .badge {
-          position: absolute;
-          top: -4px;
-          right: -4px;
-          background: #ff5722;
-          color: white;
-          font-size: 11px;
-          padding: 2px 6px;
-          border-radius: 10px;
-          font-weight: 500;
-        }
-      }
-
-      .total-box {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background: #6c5ce7;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 8px;
-        font-size: 13px;
-
-        ion-icon {
-          font-size: 18px;
-        }
-
-        .amount {
-          font-weight: 600;
-        }
-      }
-
-      .user-menu {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        cursor: pointer;
-        padding: 6px 12px;
-        border-radius: 8px;
-        background: #f8f9fa;
-
-        .avatar {
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-        }
-
-        span {
-          font-size: 14px;
-          color: #495057;
-        }
-
-        ion-icon {
-          font-size: 16px;
-          color: #6c757d;
-        }
-      }
-    }
+  &.mobile-social {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 0;
+    min-height: 100vh;
   }
-}
 
-// Main content area
-.web-layout {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 24px 20px;
+  .web-layout {
+    padding: 16px 0;
 
-  // Trending section
-  .trending-section {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 24px;
-
-      .header-left {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-
-        .trending-icon {
-          font-size: 24px;
-          color: #ff5722;
-        }
-
-        h2 {
-          font-size: 20px;
-          font-weight: 600;
-          margin: 0;
-          color: #212529;
-        }
-
-        .subtitle {
-          font-size: 14px;
-          color: #6c757d;
-          margin-left: 8px;
-        }
-      }
-
-      .view-all {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        background: #ff5722;
-        color: white;
-        text-decoration: none;
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
-        transition: background 0.2s;
-
-        &:hover {
-          background: color.adjust(#ff5722, $lightness: -5%);
-        }
-
-        ion-icon {
-          font-size: 18px;
-        }
-      }
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 24px;
+    @media (min-width: 769px) {
+      padding: 20px 0;
     }
   }
 }
@@ -342,131 +142,65 @@
   }
 }
 
-// Product card styles
-.product-card {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
+// Post section (left column)
+.post-section {
+  flex: 1 1 0%;
+  min-width: 0;
+  max-width: 470px;
+  margin-top: 20px; /* Align with sidebar-section top */
 
-  .product-image {
-    position: relative;
-    width: 100%;
-    padding-top: 100%; // 1:1 aspect ratio
-    background: #f8f9fa;
-
-    img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .trending-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: #ff5722;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .discount-badge {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      background: #ff0000;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-  }
-
-  .product-info {
-    padding: 12px;
-
-    .product-brand {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 4px;
-    }
-
-    .product-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: #333;
-      margin-bottom: 8px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .price-container {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-
-      .current-price {
-        font-size: 18px;
-        font-weight: 600;
-        color: #ff5722;
-      }
-
-      .original-price {
-        font-size: 14px;
-        color: #999;
-        text-decoration: line-through;
-      }
-    }
-
-    .actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 12px;
-
-      .add-to-cart {
-        background: #ff5722;
-        color: white;
-        border: none;
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-weight: 500;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-
-        &:hover {
-          background: color.adjust(#ff5722, $lightness: -5%);
-        }
-      }
-
-      .wishlist-btn {
-        background: none;
-        border: none;
-        color: #666;
-        cursor: pointer;
-        padding: 8px;
-
-        &:hover {
-          color: #ff0000;
-        }
-      }
-    }
+  @media (max-width: 768px) {
+    max-width: 100%;
+    margin-top: 0;
   }
 }
 
-// Stories section - hidden for now as per screenshot
+// Sidebar section (right column)
+.sidebar-section {
+  width: 293px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Feed section
+.feed-section {
+  flex: 1;
+  max-width: 470px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+// Sidebar section
+.sidebar-section {
+  width: 293px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+// Stories section
 .stories-section {
-  display: none;
+  margin-bottom: 24px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 0;
+    position: sticky;
+    top: var(--header-height);
+    z-index: 100;
+    background: var(--bg-primary);
+  }
 }
 
 // Responsive layout

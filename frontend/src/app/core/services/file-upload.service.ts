@@ -328,33 +328,6 @@ export class FileUploadService {
   }
 
   /**
-   * Generic adapter to upload a single file based on a simple type string.
-   * Keeps backward compatibility for components that call `uploadFile(file, type)`.
-   */
-  uploadFile(file: File, type: 'product' | 'content' | 'profile' | 'evidence' | 'image' | 'video' | 'document'): Observable<any> {
-    switch (type) {
-      case 'profile':
-        return this.uploadAvatar(file as File);
-      case 'product':
-        // uploadProductImages expects an array, wrap the single file
-        return this.uploadProductImages([file]);
-      case 'content':
-        // treat content as post media (allows images/videos)
-        return this.uploadPostMedia([file]);
-      case 'evidence':
-      case 'image':
-        return this.uploadImage(file as File);
-      case 'video':
-        return this.uploadStoryMedia(file as File);
-      case 'document':
-        // no dedicated document endpoint; send as post-media or multiple
-        return this.uploadPostMedia([file]);
-      default:
-        return this.uploadImage(file as File);
-    }
-  }
-
-  /**
    * Get allowed file types for display
    */
   getAllowedTypes(type: 'image' | 'video' | 'document' | 'all'): string[] {

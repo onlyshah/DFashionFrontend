@@ -385,11 +385,16 @@ export class PolluxDashboardComponent implements OnInit, OnDestroy, AfterViewIni
             callbacks: {
               title: (context) => `Date: ${context[0].label}`,
               label: (context) => {
-                const label = context.dataset.label;
+                const label = context.dataset.label || 'Value';
                 const value = context.parsed.y;
+                
+                if (value === null || value === undefined) {
+                  return `${label}: No data`;
+                }
+                
                 return label === 'Revenue'
                   ? `${label}: $${(value * 100).toLocaleString()}`
-                  : `${label}: ${value}`;
+                  : `${label}: ${value.toLocaleString()}`;
               }
             }
           }

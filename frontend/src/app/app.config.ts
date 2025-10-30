@@ -9,15 +9,11 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { errorInterceptor } from './admin/shared/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(withInterceptors([
-        authInterceptor,
-        errorInterceptor
-    ])),
+    provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     importProvidersFrom(
       MatSnackBarModule,

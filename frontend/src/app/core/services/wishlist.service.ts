@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
-import { tap, catchError, map } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface WishlistItem {
@@ -9,56 +9,21 @@ export interface WishlistItem {
   product: {
     _id: string;
     name: string;
-    images: Array<{ url: string; alt?: string; isPrimary?: boolean }>;
     price: number;
     originalPrice?: number;
+    images: Array<{ url: string; alt?: string; isPrimary: boolean }>;
     brand: string;
-    category: string;
-    isActive: boolean;
-    rating?: {
+    discount: number;
+    rating: {
       average: number;
       count: number;
     };
-    vendor: {
-      _id: string;
-      username: string;
-      fullName: string;
-      vendorInfo: {
-        businessName: string;
-      };
-    };
-    analytics?: {
+    analytics: {
       views: number;
       likes: number;
     };
   };
-  size?: string;
-  color?: string;
-  price: number;
-  originalPrice?: number;
-  addedFrom: string;
   addedAt: Date;
-  updatedAt: Date;
-  notes?: string;
-  priority?: 'low' | 'medium' | 'high';
-  isAvailable: boolean;
-  vendor: string;
-  likes?: Array<{
-    user: {
-      _id: string;
-      username: string;
-      fullName: string;
-      avatar?: string;
-    };
-    likedAt: Date;
-  }>;
-}
-
-export interface WishlistSummary {
-  totalItems: number;
-  totalValue: number;
-  totalSavings: number;
-  itemCount: number;
 }
 
 export interface WishlistResponse {
@@ -80,25 +45,12 @@ export interface WishlistResponse {
 })
 export class WishlistService {
   private readonly API_URL = environment.apiUrl;
-  private wishlistItemsSubject = new BehaviorSubject<WishlistItem[] | null>(null);
-  private wishlistSummarySubject = new BehaviorSubject<WishlistSummary>({
-    totalItems: 0,
-    totalValue: 0,
-    totalSavings: 0,
-    itemCount: 0
-  });
+  private wishlistItemsSubject = new BehaviorSubject<WishlistItem[]>([]);
   private wishlistCountSubject = new BehaviorSubject<number>(0);
 
   // Public observables
   public wishlistItems$ = this.wishlistItemsSubject.asObservable();
   public wishlistCount$ = this.wishlistCountSubject.asObservable();
-  public wishlistSummary$ = this.wishlistSummarySubject.asObservable();
-
-  // Backwards-compatible observable names expected by older components
-  public wishlist$ = combineLatest([this.wishlistItems$, this.wishlistSummary$]).pipe(
-    map(([items, summary]) => ({ items: items || [], summary }))
-  );
-  public wishlistItemCount$ = this.wishlistCount$;
 
   constructor(private http: HttpClient) {
     this.initializeWishlist();
@@ -135,18 +87,15 @@ export class WishlistService {
     );
   }
 
-  addToWishlist(productId: string, size?: string, color?: string, source?: string): Observable<any> {
+  addToWishlist(productId: string): Observable<any> {
     const token = localStorage.getItem('token');
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    const payload: any = { productId };
-    if (typeof size !== 'undefined') payload.size = size;
-    if (typeof color !== 'undefined') payload.color = color;
-    if (typeof source !== 'undefined') payload.addedFrom = source;
-
-    return this.http.post(`${this.API_URL}/api/wishlist`, payload, options).pipe(
+    return this.http.post(`${this.API_URL}/api/wishlist`, {
+      productId
+    }, options).pipe(
       tap(() => {
         this.loadWishlist(); // Refresh wishlist after adding
       })
@@ -230,8 +179,8 @@ export class WishlistService {
   }
 
   isInWishlist(productId: string): boolean {
-    const items = this.wishlistItemsSubject.value || [];
-    return items.some((item: any) => item.product && item.product._id === productId);
+    const items = this.wishlistItemsSubject.value;
+    return items.some(item => item.product._id === productId);
   }
 
   toggleWishlist(productId: string): Observable<any> {
@@ -242,26 +191,28 @@ export class WishlistService {
     }
   }
 
-  // Public loader used by components; returns an Observable so callers can subscribe.
-  public loadWishlist(): Observable<any> {
+  private loadWishlist(): void {
     const token = localStorage.getItem('token');
     if (!token) {
       console.log('❌ No authentication token, using local storage fallback');
       this.loadWishlistFromLocalStorage();
-      return of({ success: false, message: 'No auth token' });
+      return;
     }
 
-    return this.getWishlist().pipe(
-      catchError((error: any) => {
+    this.getWishlist().subscribe({
+      next: (response) => {
+        // Wishlist is already updated in the tap operator
+      },
+      error: (error) => {
         console.error('Failed to load wishlist:', error);
-        if (error && error.status === 401) {
+        if (error.status === 401) {
           console.log('❌ Authentication failed, clearing token');
           localStorage.removeItem('token');
         }
+        // Use localStorage as fallback
         this.loadWishlistFromLocalStorage();
-        return of({ success: false, error });
-      })
-    );
+      }
+    });
   }
 
   private loadWishlistFromLocalStorage(): void {
@@ -294,35 +245,4 @@ export class WishlistService {
       })
     );
   }
-
-  // Backwards-compatible quick-add helpers used by older components
-  addFromPost(productId: string, size?: string, color?: string) {
-    return this.addToWishlist(productId, size, color, 'post');
-  }
-
-  addFromStory(productId: string, size?: string, color?: string) {
-    return this.addToWishlist(productId, size, color, 'story');
-  }
-
-  addFromProduct(productId: string, size?: string, color?: string) {
-    return this.addToWishlist(productId, size, color, 'product');
-  }
-
-  addFromCart(productId: string, size?: string, color?: string) {
-    return this.addToWishlist(productId, size, color, 'cart');
-  }
-
-  // Helpers for login/logout flows used across the app
-  refreshWishlistOnLogin() {
-    this.loadWishlist().subscribe({ next: () => {}, error: () => {} });
-  }
-
-  clearWishlistOnLogout() {
-    this.wishlistItemsSubject.next([]);
-    this.wishlistCountSubject.next(0);
-  }
 }
-
-// Backwards-compatible export: preserve the old symbol name for callers that
-// expect `WishlistNewService` while using the canonical implementation.
-export { WishlistService as WishlistNewService };

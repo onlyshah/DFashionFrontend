@@ -1,0 +1,99 @@
+<div class="container-scroller">
+  <div class="container-fluid page-body-wrapper full-page-wrapper">
+    <div class="content-wrapper d-flex align-items-center auth px-0">
+      <div class="row w-100 mx-0">
+        <div class="col-lg-4 mx-auto">
+          <div class="auth-form-light text-start py-5 px-4 px-sm-5">
+            <div class="brand-logo">
+              <img src="assets/images/logo-dark.svg" alt="logo">
+            </div>
+            <h4>New here?</h4>
+            <h6 class="fw-light">Join DFashion - Sign up to get started!</h6>
+            <form class="pt-3" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+              <div class="form-group">
+                <input 
+                  type="text" 
+                  class="form-control form-control-lg" 
+                  formControlName="fullName"
+                  placeholder="Full Name">
+                <div *ngIf="registerForm.get('fullName')?.touched && registerForm.get('fullName')?.invalid" class="text-danger small mt-1">
+                  <div *ngIf="registerForm.get('fullName')?.errors?.['required']">Full name is required</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input 
+                  type="text" 
+                  class="form-control form-control-lg" 
+                  formControlName="username"
+                  placeholder="Username">
+                <div *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.invalid" class="text-danger small mt-1">
+                  <div *ngIf="registerForm.get('username')?.errors?.['required']">Username is required</div>
+                  <div *ngIf="registerForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input 
+                  type="email" 
+                  class="form-control form-control-lg" 
+                  formControlName="email"
+                  placeholder="Email">
+                <div *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid" class="text-danger small mt-1">
+                  <div *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</div>
+                  <div *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input 
+                  type="password" 
+                  class="form-control form-control-lg" 
+                  formControlName="password"
+                  placeholder="Password">
+                <div *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid" class="text-danger small mt-1">
+                  <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</div>
+                  <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input 
+                  type="password" 
+                  class="form-control form-control-lg" 
+                  formControlName="confirmPassword"
+                  placeholder="Confirm Password">
+                <div *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.invalid" class="text-danger small mt-1">
+                  <div *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">Please confirm your password</div>
+                  <div *ngIf="registerForm.get('confirmPassword')?.errors?.['passwordMismatch']">Passwords do not match</div>
+                </div>
+              </div>
+              <div class="mb-4">
+                <div class="form-check">
+                  <label class="form-check-label text-muted">
+                    <input type="checkbox" class="form-check-input" formControlName="acceptTerms">
+                    I agree to all Terms & Conditions
+                  </label>
+                  <div *ngIf="registerForm.get('acceptTerms')?.touched && registerForm.get('acceptTerms')?.invalid" class="text-danger small mt-1">
+                    <div *ngIf="registerForm.get('acceptTerms')?.errors?.['required']">You must accept the terms and conditions</div>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3">
+                <button 
+                  type="submit" 
+                  class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn"
+                  [disabled]="registerForm.invalid || isLoading">
+                  <span *ngIf="!isLoading">SIGN UP</span>
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                </button>
+              </div>
+              <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+                {{ errorMessage }}
+              </div>
+              <div class="text-center mt-4 fw-light">
+                Already have an account? <a routerLink="/auth/login" class="text-primary">Login</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { AuthService } from './auth.service';
 import { AdminAuthService } from '../../admin/services/admin-auth.service';
-import { Permission as PermissionServicePermission } from '../../admin/shared/models/permission.model';
+import { Permission as PermissionServicePermission } from '../../admin/services/permission.service';
 import { Permission as AdminPermission } from '../../admin/services/admin-auth.service';
 
 export interface UserRole {
@@ -274,7 +274,7 @@ export class RBACService {
               return ['unknown'];
             })
           : [];
-  this.setUserRole(adminUser.role || 'customer', permissions);
+        this.setUserRole(adminUser.role, permissions);
       }
     });
 

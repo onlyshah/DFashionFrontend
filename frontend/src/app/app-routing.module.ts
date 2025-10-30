@@ -46,11 +46,6 @@ const routes: Routes = [
     loadChildren: () => import('./mobile/tabs/tabs.module').then(m => m.TabsPageModule)
   },
   {
-    path: 'admin',
-    canActivate: [AuthGuard],
-    loadChildren: () => import('./admin/admin.routes').then(m => m.adminRoutes)
-  },
-  {
     path: 'mobile-cart',
     loadChildren: () => import('./mobile/cart/cart.module').then(m => m.CartPageModule)
   },
@@ -101,10 +96,10 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
 
-  // Admin routes (web-only) — now using standalone AdminLayoutComponent
+  // Admin routes (web-only)
   {
     path: 'admin',
-    loadComponent: () => import('./admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent)
+    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
 
   // Unified Dashboard Route

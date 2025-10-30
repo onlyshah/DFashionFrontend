@@ -1,0 +1,151 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $body-bg;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: $sidebar-width-lg;
+  transition: margin .3s ease;
+  
+  &.with-header {
+    padding-top: 4.5rem;
+  }
+  
+  @media (max-width: 991.98px) {
+    margin-left: 0;
+  }
+}
+
+// Sidebar styles
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: $sidebar-width-lg;
+  background: $sidebar-light-bg;
+  border-right: 1px solid rgba(0,0,0,.05);
+  z-index: 1000;
+  transition: width .3s ease;
+  
+  .nav-item {
+    padding: $sidebar-menu-padding;
+    
+    .nav-link {
+      color: $sidebar-light-menu-color;
+      font-size: $sidebar-menu-font-size;
+      
+      &:hover {
+        color: $sidebar-light-menu-hover-color;
+        background: $sidebar-light-menu-hover-bg;
+      }
+      
+      &.active {
+        color: $sidebar-light-menu-active-color;
+        background: $sidebar-light-menu-active-bg;
+      }
+      
+      i {
+        color: $sidebar-light-menu-icon-color;
+        font-size: $sidebar-icon-font-size;
+        margin-right: .5rem;
+      }
+    }
+  }
+}
+
+// Header styles
+.header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: $sidebar-width-lg;
+  height: 4rem;
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,.05);
+  z-index: 1000;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  transition: left .3s ease;
+  
+  @media (max-width: 991.98px) {
+    left: 0;
+  }
+}
+
+// Card styles
+.card {
+  border: none;
+  border-radius: $card-border-radius;
+  box-shadow: $card-box-shadow;
+  margin-bottom: 1.5rem;
+  
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid $table-border-color;
+    padding: $card-spacer-y $card-spacer-x;
+    
+    h5 {
+      margin: 0;
+      font-weight: $font-weight-medium;
+    }
+  }
+  
+  .card-body {
+    padding: $card-spacer-y $card-spacer-x;
+  }
+}
+
+// Table styles
+.table {
+  margin-bottom: 0;
+  
+  thead th {
+    border-top: none;
+    border-bottom-width: 1px;
+    font-weight: $font-weight-medium;
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: .5px;
+    color: $secondary;
+  }
+  
+  td {
+    vertical-align: middle;
+  }
+}
+
+// Button styles
+.btn {
+  font-size: $btn-font-size;
+  padding: $btn-padding-y $btn-padding-x;
+  border-radius: $btn-border-radius;
+  font-weight: $font-weight-medium;
+  
+  &.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+// Form styles
+.form-control {
+  border-radius: $input-border-radius;
+  border-color: $input-border-color;
+  padding: $input-padding-y $input-padding-x;
+  font-size: $font-size-base;
+  
+  &:focus {
+    border-color: $input-focus-border-color;
+    box-shadow: none;
+  }
+}
