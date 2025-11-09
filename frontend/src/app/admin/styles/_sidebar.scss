@@ -1,0 +1,61 @@
+@use '../../../assets/scss/variables' as vars;
+@use '../../../assets/scss/mixins' as mix;
+
+.sidebar {
+  width: vars.$sidebar-width-lg;
+  background: vars.$sidebar-light-bg;
+  min-height: 100vh;
+  padding-top: 70px;
+  transition: width 0.25s ease;
+  
+  .nav {
+    overflow: hidden;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    
+    .nav-item {
+      .nav-link {
+        align-items: center;
+        display: flex;
+        padding: vars.$sidebar-menu-padding;
+        white-space: nowrap;
+        color: vars.$sidebar-light-menu-color;
+        border-radius: 8px;
+        transition: all .4s ease-in-out;
+        position: relative;
+        cursor: pointer;
+        font-size: vars.$sidebar-menu-font-size;
+        
+        .menu-icon {
+          color: vars.$sidebar-light-menu-icon-color;
+          margin-right: .5rem;
+          font-size: vars.$sidebar-icon-font-size;
+          line-height: 1;
+        }
+        
+        .menu-title {
+          color: inherit;
+          display: inline-block;
+          font-size: vars.$sidebar-menu-font-size;
+          line-height: 1;
+          vertical-align: middle;
+          white-space: nowrap;
+        }
+        
+        &.active {
+          background: vars.$sidebar-light-menu-active-bg;
+          color: vars.$sidebar-light-menu-active-color;
+          
+          .menu-icon {
+            color: vars.$primary;
+          }
+        }
+        
+        &:hover {
+          background: vars.$sidebar-light-menu-hover-bg;
+          color: vars.$sidebar-light-menu-hover-color;
+        }
+      }
+    }
+  }
+}

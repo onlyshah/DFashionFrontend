@@ -1,0 +1,257 @@
+// Import PolluxUI Base Styles
+@import "../../../../assets/pollux/scss/variables";
+@import "../../../../assets/pollux/scss/mixins";
+@import "../../../../assets/pollux/scss/functions";
+
+// Theme Variables
+:root {
+  // Layout Variables
+  --navbar-height: #{$navbar-height};
+  --sidebar-width-lg: #{$sidebar-width-lg};
+  --sidebar-width-icon: #{$sidebar-width-icon};
+  --action-transition-duration: #{$action-transition-duration};
+  --action-transition-timing-function: #{$action-transition-timing-function};
+  
+  // Colors
+  --primary-color: #{$primary};
+  --secondary-color: #{$secondary};
+  --success-color: #{$success};
+  --info-color: #{$info};
+  --warning-color: #{$warning};
+  --danger-color: #{$danger};
+  --light-color: #{$light};
+  --dark-color: #{$dark};
+  --border-color: #{$border-color};
+  --content-bg: #{$content-bg};
+  
+  // Sidebar Colors
+  --sidebar-dark-bg: #{$sidebar-dark-bg};
+  --sidebar-dark-menu-color: #{$sidebar-dark-menu-color};
+  --sidebar-dark-menu-icon-color: #{$sidebar-dark-menu-icon-color};
+  --sidebar-dark-menu-active-bg: #{$sidebar-dark-menu-active-bg};
+  --sidebar-dark-menu-active-color: #{$sidebar-dark-menu-active-color};
+  --sidebar-dark-submenu-color: #{$sidebar-dark-submenu-color};
+  --sidebar-dark-submenu-hover-bg: #{$sidebar-dark-submenu-hover-bg};
+  
+  // Typography
+  --font-weight-light: #{$font-weight-light};
+  --font-weight-normal: #{$font-weight-normal};
+  --font-weight-bold: #{$font-weight-bold};
+  --font-size-base: #{$font-size-base};
+}
+
+// Layout Components
+.container-scroller {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.page-body-wrapper {
+  min-height: calc(100vh - #{$navbar-height});
+  display: flex;
+  flex-direction: row;
+  padding-left: $sidebar-width-lg;
+  padding-top: $navbar-height;
+}
+
+// Navbar
+.navbar {
+  font-weight: normal;
+  background: transparent;
+  padding: 0;
+  transition: all $action-transition-duration $action-transition-timing-function;
+  position: fixed;
+  width: calc(100% - #{$sidebar-width-lg});
+  right: 0;
+  z-index: 1030;
+
+  .navbar-brand-wrapper {
+    background: $navbar-brand-bg;
+    transition: width $action-transition-duration $action-transition-timing-function;
+    width: $sidebar-width-lg;
+    height: $navbar-height;
+    padding: 20px 35px;
+  }
+
+  .navbar-menu-wrapper {
+    background: $navbar-bg;
+    transition: width $action-transition-duration $action-transition-timing-function;
+    padding-left: 3.5rem;
+    padding-right: 2.187rem;
+    width: calc(100% - #{$sidebar-width-lg});
+    height: $navbar-height;
+  }
+}
+
+// Sidebar
+.sidebar {
+  min-height: calc(100vh - #{$navbar-height});
+  background: $sidebar-dark-bg;
+  font-family: $type1;
+  font-weight: normal;
+  padding: 0;
+  width: $sidebar-width-lg;
+  z-index: 11;
+  transition: width $action-transition-duration $action-transition-timing-function;
+  position: fixed;
+  top: $navbar-height;
+  left: 0;
+  bottom: 0;
+  
+  .nav {
+    overflow: hidden;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin-bottom: 60px;
+
+    .nav-item {
+      padding: 0 $sidebar-menu-padding-x;
+      transition: all 0.3s ease-in-out;
+      position: relative;
+      cursor: pointer;
+
+      .nav-link {
+        color: $sidebar-dark-menu-color;
+        padding: $sidebar-menu-padding-y 0;
+        position: relative;
+        font-size: $sidebar-menu-font-size;
+        line-height: 1;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        
+        i {
+          color: inherit;
+          font-size: $sidebar-icon-font-size;
+          margin-right: .75rem;
+        }
+      }
+
+      &.active {
+        .nav-link {
+          color: $sidebar-dark-menu-active-color;
+          background: $sidebar-dark-menu-active-bg;
+        }
+      }
+
+      &:hover {
+        .nav-link {
+          color: $sidebar-dark-menu-hover-color;
+          background: $sidebar-dark-menu-hover-bg;
+        }
+      }
+    }
+  }
+}
+
+// Cards
+.card {
+  border: none;
+  border-radius: $card-border-radius;
+  box-shadow: $card-box-shadow;
+  margin-bottom: 30px;
+  
+  .card-body {
+    padding: $card-padding-y $card-padding-x;
+  }
+  
+  .card-title {
+    color: $card-title-color;
+    margin-bottom: 1.5rem;
+    text-transform: capitalize;
+    font-size: 1.125rem;
+    font-weight: $font-weight-bold;
+  }
+}
+
+// Stats Cards
+.stats-card {
+  background: $white;
+  padding: 1.5rem;
+  border-radius: $border-radius;
+  box-shadow: $card-box-shadow;
+  
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: $font-weight-bold;
+    color: $body-color;
+    margin: 0.5rem 0;
+  }
+  
+  .stat-label {
+    font-size: 0.875rem;
+    color: $text-muted;
+    margin-bottom: 0;
+  }
+  
+  .stat-icon {
+    font-size: 2rem;
+    color: $primary;
+  }
+}
+
+// Charts
+.chart-card {
+  padding: 1.5rem;
+  
+  canvas {
+    width: 100% !important;
+    height: 250px !important;
+  }
+}
+
+// Activity List
+.activity-list {
+  .activity-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid $border-color;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .activity-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: rgba($primary, 0.1);
+      color: $primary;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+    
+    .activity-content {
+      h6 {
+        margin: 0;
+        color: $body-color;
+        font-size: 0.875rem;
+      }
+      
+      p {
+        margin: 0;
+        color: $text-muted;
+        font-size: 0.75rem;
+      }
+    }
+  }
+}
+
+// Utilities
+.grid-margin {
+  margin-bottom: 2rem;
+}
+
+.bg-gradient-primary {
+  background: linear-gradient(to right, $primary, lighten($primary, 15%)) !important;
+}
+
+.text-muted {
+  color: $text-muted !important;
+}
+
+.font-weight-bold {
+  font-weight: $font-weight-bold !important;
+}

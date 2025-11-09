@@ -18,7 +18,6 @@ import { SharedModule } from '../../shared/shared.module';
 @NgModule({
   declarations: [
     PolluxDashboardComponent,
-    UnifiedDashboardComponent,
     ProductManagementComponent,
     CategoryManagementComponent
   ],
@@ -30,11 +29,11 @@ import { SharedModule } from '../../shared/shared.module';
     MatMenuModule,
     MatButtonModule,
     MatIconModule,
-    SharedModule
+    SharedModule,
+    UnifiedDashboardComponent
   ],
   exports: [
     PolluxDashboardComponent,
-    UnifiedDashboardComponent,
     ProductManagementComponent,
     CategoryManagementComponent
   ]

@@ -1,0 +1,26 @@
+@use 'variables' as vars;
+
+// Mixins for responsive design
+@mixin responsive($breakpoint) {
+  @if $breakpoint == small {
+    @media (max-width: 576px) { @content; }
+  }
+  @if $breakpoint == medium {
+    @media (max-width: 768px) { @content; }
+  }
+  @if $breakpoint == large {
+    @media (max-width: 992px) { @content; }
+  }
+  @if $breakpoint == xlarge {
+    @media (max-width: 1200px) { @content; }
+  }
+}
+
+// Card mixins
+@mixin card-base {
+  background: var(--card-bg, #ffffff);
+  border-radius: var(--card-border-radius, 0.428rem);
+  box-shadow: var(--card-shadow, 0 4px 24px 0 rgba(34, 41, 47, 0.1));
+  margin-bottom: 2rem;
+  position: relative;
+}

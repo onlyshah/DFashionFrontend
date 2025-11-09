@@ -26,6 +26,8 @@ export class AuthService {
 
   public currentUser$ = this.currentUserSubject.asObservable();
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+  public isSuperAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'super_admin'));
+  public userRole$ = this.currentUser$.pipe(map(user => user?.role));
 
   constructor(
     private http: HttpClient,

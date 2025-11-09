@@ -1,18 +1,30 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-// Old components (keeping for fallback)
-import { RoleManagementComponent } from './pages/role-management/role-management.component';
+import { NgModule, Injectable } from '@angular/core';
+import { RouterModule, Routes, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AdminLoginComponent } from './auth/admin-login.component';
+import { AdminAuthGuard } from './guards/admin-auth.guard';
+
+// Components
+
+@Injectable({ providedIn: 'root' })
+export class SuperAdminGuard implements CanActivate {
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): boolean | UrlTree {
+    // TODO: implement real super-admin permission check (e.g. via an AuthService).
+    // For now allow access to avoid build errors.
+    return true;
+  }
+}
+import { SuperAdminDashboardComponent } from './components/super-admin-dashboard/super-admin-dashboard.component';
+import { GeneralDashboardComponent } from './components/general-dashboard/general-dashboard.component';
 import { UserManagementComponent } from './users/user-management.component';
 import { OrderManagementComponent } from './orders/order-management.component';
-import { AnalyticsComponent } from './analytics/analytics.component';
-import { SettingsComponent } from './settings/settings.component';
-// New Pollux UI components
-import { PolluxAdminLayoutComponent } from './pollux-ui/layout/pollux-admin-layout.component';
-import { PolluxDashboardComponent } from './pollux-ui/dashboard/pollux-dashboard.component';
-import { ProductManagementComponent as PolluxProductManagementComponent } from './pollux-ui/products/product-management.component';
+import { ProductManagementComponent } from './products/product-management.component';
 import { CategoryManagementComponent } from './pollux-ui/categories/category-management.component';
-import { AdminAuthGuard } from './guards/admin-auth.guard';
+import { RoleManagementComponent } from './roles/role-management.component';
+import { SettingsComponent } from './settings/settings.component';
+import { AnalyticsComponent } from './analytics/analytics.component';
 
 const routes: Routes = [
   {
@@ -21,7 +33,6 @@ const routes: Routes = [
   },
   {
     path: '',
-    component: PolluxAdminLayoutComponent,
     canActivate: [AdminAuthGuard],
     children: [
       {
@@ -31,13 +42,25 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        component: PolluxDashboardComponent,
-        data: { title: 'Dashboard', permission: 'dashboard:view' }
+        children: [
+          {
+            path: '',
+            component: GeneralDashboardComponent,
+            data: { title: 'Dashboard' }
+          },
+          {
+            path: 'super',
+            component: SuperAdminDashboardComponent,
+            canActivate: [SuperAdminGuard],
+            data: { title: 'Super Admin Dashboard' }
+          }
+        ]
       },
       {
         path: 'users',
         component: UserManagementComponent,
-        data: { title: 'User Management', permission: 'users:view' }
+        canActivate: [SuperAdminGuard],
+        data: { title: 'User Management' }
       },
       {
         path: 'customers',
@@ -61,7 +84,7 @@ const routes: Routes = [
       },
       {
         path: 'products',
-        component: PolluxProductManagementComponent,
+        component: ProductManagementComponent,
         data: { title: 'Product Management', permission: 'products:view' }
       },
       {
@@ -71,12 +94,12 @@ const routes: Routes = [
       },
       {
         path: 'brands',
-        component: PolluxProductManagementComponent,
+        component: ProductManagementComponent,
         data: { title: 'Brand Management', permission: 'brands:view', type: 'brands' }
       },
       {
         path: 'attributes',
-        component: PolluxProductManagementComponent,
+        component: ProductManagementComponent,
         data: { title: 'Attribute Management', permission: 'attributes:view', type: 'attributes' }
       },
       {

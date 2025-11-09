@@ -1,0 +1,121 @@
+@use '../../../assets/scss/variables' as vars;
+@use '../../../assets/scss/mixins' as mix;
+
+.navbar {
+  height: 70px;
+  background: vars.$sidebar-light-bg;
+  border-bottom: 1px solid #f3f3f3;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  position: fixed;
+  right: 0;
+  left: 0;
+  z-index: 1030;
+  transition: all 0.25s ease;
+  
+  .navbar-brand-wrapper {
+    width: vars.$sidebar-width-lg;
+    padding: 0 2.125rem;
+    background: vars.$sidebar-light-bg;
+    transition: width 0.25s ease;
+    
+    .navbar-brand {
+      padding: 0;
+      margin: 0;
+      
+      img {
+        height: 40px;
+        max-width: 100%;
+      }
+      
+      &.brand-logo-mini {
+        display: none;
+        
+        img {
+          width: 40px;
+          max-width: 100%;
+        }
+      }
+    }
+  }
+  
+  .navbar-menu-wrapper {
+    padding: 0 2.125rem;
+    width: calc(100% - #{vars.$sidebar-width-lg});
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: width 0.25s ease;
+    
+    .navbar-nav {
+      display: flex;
+      flex-direction: row;
+      margin: 0;
+      
+      .nav-item {
+        margin-right: 1.5rem;
+        
+        &:last-child {
+          margin-right: 0;
+        }
+        
+        .nav-link {
+          font-size: 0.875rem;
+          color: vars.$sidebar-light-menu-color;
+          padding: 0;
+          position: relative;
+          
+          i {
+            font-size: vars.$sidebar-icon-font-size;
+            margin-right: 0.5rem;
+          }
+        }
+        
+        &.nav-profile {
+          .nav-link {
+            display: flex;
+            align-items: center;
+            
+            img {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              margin-right: 0.75rem;
+            }
+            
+            .nav-profile-name {
+              color: vars.$sidebar-light-profile-name-color;
+              font-weight: 500;
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 991px) {
+  .navbar {
+    .navbar-brand-wrapper {
+      width: vars.$sidebar-width-mini;
+      padding: 0 1rem;
+      
+      .navbar-brand {
+        &.brand-logo {
+          display: none;
+        }
+        
+        &.brand-logo-mini {
+          display: inline-block;
+        }
+      }
+    }
+    
+    .navbar-menu-wrapper {
+      width: calc(100% - #{vars.$sidebar-width-mini});
+      padding: 0 1rem;
+    }
+  }
+}

@@ -1,0 +1,83 @@
+@use '../../styles/variables' as vars;
+@use 'sass:color';
+
+$action-transition-duration: 0.22s;
+$action-transition-timing-function: ease-out;
+
+:host {
+  display: block;
+}
+
+/* PolluxUI-like header adjustments */
+.navbar {
+  font-weight: 500;
+  transition: background $action-transition-duration $action-transition-timing-function, box-shadow 0.2s ease;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  z-index: 1040; /* ensure dropdowns sit above other content */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+  /* left brand area */
+  .navbar-brand-wrapper {
+    background: linear-gradient(90deg, #5f4fd6 0%, #7a66e6 100%);
+    width: 260px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    padding: 0 1.25rem;
+    color: #fff;
+
+  .navbar-brand-inner-wrapper { width: 100%; display:flex; justify-content: space-between; align-items: center; }
+
+  /* default: show full logo, hide mini variant on larger screens */
+  .navbar-brand.brand-logo { display: inline-block; }
+  .navbar-brand.brand-logo-mini { display: none; }
+
+  .navbar-brand img { height: 40px; max-width: 100%; display:block; }
+  .navbar-brand-mini img { height: 28px; }
+    .navbar-toggler { border: 0; color: #fff; padding: 0; font-size: 1.2rem; }
+  }
+
+  .navbar-menu-wrapper {
+    background: transparent;
+    padding-left: 1.812rem;
+    padding-right: 1.812rem;
+    width: calc(100% - 260px);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+
+    @media (max-width: 991px) {
+      width: calc(100% - 55px);
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .navbar-nav { display:flex; flex-direction: row; align-items: center; gap: .5rem; }
+    .navbar-nav-right { margin-left: auto; }
+  }
+
+  .nav-item { margin: 0 .4rem; }
+
+  /* avatar */
+  .profile-avatar, .nav-profile img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,0.18); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .nav-profile-name { margin-left: .6rem; font-weight: 600; color:#222; }
+
+  .dropdown-menu { box-shadow: 0 6px 28px rgba(19, 24, 0, 0.12); border-radius: 8px; border: none; }
+  .navbar-dropdown { position: absolute; right: 16px; top: calc(100% + 8px); font-size: .95rem; min-width: 240px; }
+  .preview-item { display:flex; align-items:center; padding:.6rem 1rem; }
+  .preview-thumbnail img { width:40px; height:40px; border-radius:6px; }
+}
+
+@media (max-width: 991px) {
+  .navbar { flex-direction: row; }
+  .navbar-brand-wrapper { width: 55px; }
+  .navbar-brand.brand-logo { display: none; }
+  .navbar-brand.brand-logo-mini { display: inline-block; }
+}
+
+.welcome-section { background: linear-gradient(90deg, #7a66e6, #a99cff); border-radius:6px; padding:24px; margin:88px 0 24px 0; color:#fff; box-shadow: 0 6px 22px rgba(83,63,187,0.14); }
+
+.typcn { font-size: 1.15rem; }

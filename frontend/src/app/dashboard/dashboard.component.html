@@ -12,8 +12,49 @@
         <button type="button" class="btn-close" (click)="clearError()" aria-label="Close"></button>
     </div>
 
-    <app-unified-dashboard 
-        (error)="handleError($event)"
-        (loading)="handleLoading($event)">
-    </app-unified-dashboard>
+    <div class="dashboard-content p-4">
+        <!-- Dashboard content will be rendered based on user role -->
+        <div *ngIf="userRole === 'admin'">
+            <div class="row">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Users</h5>
+                            <h2 class="card-text">{{ dashboardStats?.totalUsers || 0 }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Orders</h5>
+                            <h2 class="card-text">{{ dashboardStats?.totalOrders || 0 }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Products</h5>
+                            <h2 class="card-text">{{ dashboardStats?.totalProducts || 0 }}</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Revenue</h5>
+                            <h2 class="card-text">{{ dashboardStats?.totalRevenue || 0 | currency }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="userRole === 'user'">
+            <div class="text-center mt-5">
+                <h2>Welcome to your Dashboard</h2>
+                <p>View your recent orders and account activity below.</p>
+            </div>
+        </div>
+    </div>
 </div>

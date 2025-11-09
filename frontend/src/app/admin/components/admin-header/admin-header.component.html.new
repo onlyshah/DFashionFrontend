@@ -1,0 +1,73 @@
+<nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+  <div class="navbar-brand-wrapper d-flex align-items-center justify-content-center">
+    <button class="navbar-toggler align-self-center me-2" type="button" (click)="toggleSidebar()">
+      <span class="typcn typcn-th-menu"></span>
+    </button>
+    <a class="navbar-brand brand-logo" href="javascript:void(0)">
+      <img src="assets/images/logo-light.png" alt="DFashion"/>
+    </a>
+    <a class="navbar-brand brand-logo-mini d-lg-none" href="javascript:void(0)">
+      <img src="assets/images/logo-mini.png" alt="DFashion"/>
+    </a>
+  </div>
+
+  <div class="navbar-menu-wrapper d-flex align-items-stretch">
+    <ul class="navbar-nav navbar-nav-right">
+      <li class="nav-item nav-profile dropdown" ngbDropdown>
+        <a class="nav-link d-flex align-items-center" href="javascript:void(0)" ngbDropdownToggle id="profileDropdown">
+          <div class="nav-profile-img">
+            <img [src]="(currentUser$ | async)?.avatar || 'assets/images/faces/default-avatar.jpg'" alt="profile"/>
+          </div>
+          <div class="nav-profile-text">
+            <p class="mb-1">{{ (currentUser$ | async)?.fullName || 'Super Admin' }}</p>
+          </div>
+        </a>
+        <div ngbDropdownMenu class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
+          <a ngbDropdownItem class="dropdown-item" routerLink="/admin/settings">
+            <i class="typcn typcn-cog text-primary me-2"></i>
+            Settings
+          </a>
+          <div class="dropdown-divider"></div>
+          <a ngbDropdownItem class="dropdown-item" (click)="logout()">
+            <i class="typcn typcn-power text-primary me-2"></i>
+            Logout
+          </a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <span class="nav-link">Last login was 23 hours ago.</span>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="bottom-navbar">
+  <div class="container-fluid px-0">
+    <ul class="nav page-navigation">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/dashboard">
+          <i class="typcn typcn-chart-pie-outline menu-icon"></i>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/users">
+          <i class="typcn typcn-user-outline menu-icon"></i>
+          <span class="menu-title">Users</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/products">
+          <i class="typcn typcn-shopping-cart menu-icon"></i>
+          <span class="menu-title">Products</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/orders">
+          <i class="typcn typcn-clipboard menu-icon"></i>
+          <span class="menu-title">Orders</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

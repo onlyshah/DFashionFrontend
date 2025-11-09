@@ -1,0 +1,134 @@
+@use 'sass:color';
+@use '../../../assets/scss/variables' as vars;
+@use '../../../assets/scss/mixins' as mix;
+
+.page-body-wrapper {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex: 1;
+  padding-top: 70px;
+  position: relative;
+  background: #f9fafb;
+}
+
+.content-wrapper {
+  padding: 2rem;
+  width: 100%;
+  flex-grow: 1;
+}
+
+// Cards
+.card {
+  border: none;
+  border-radius: 0.625rem;
+  background-color: #fff;
+  margin-bottom: 1.875rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  &.card-statistics {
+    .highlight-icon {
+      height: 53px;
+      width: 53px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50px;
+      
+      i {
+        font-size: 27px;
+      }
+    }
+    
+    .card-col {
+      border-right: 1px solid #f2f2f2;
+      
+      &:last-child {
+        border-right: none;
+      }
+      
+      .statistics-value {
+        font-size: 26px;
+        font-weight: 500;
+        line-height: 1.2;
+      }
+      
+      .statistics-title {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Tables
+.table {
+  margin-bottom: 0;
+  
+  thead {
+    th {
+      border-top: 0;
+      border-bottom-width: 1px;
+      font-weight: 600;
+      font-size: .875rem;
+      padding: 1rem;
+      vertical-align: top;
+    }
+  }
+  
+  td {
+    font-size: 0.875rem;
+    padding: 1rem;
+    vertical-align: middle;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  
+  &.table-hover {
+    tbody {
+      tr {
+        &:hover {
+          background: #f8f9fa;
+        }
+      }
+    }
+  }
+}
+
+// Badges
+.badge {
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1;
+  padding: .375rem .5625rem;
+  font-weight: normal;
+  
+  &.badge-primary {
+    background-color: rgba(vars.$primary, .1);
+    color: vars.$primary;
+  }
+  
+  &.badge-success {
+    background-color: rgba(vars.$success, .1);
+    color: vars.$success;
+  }
+  
+  &.badge-info {
+    background-color: rgba(vars.$info, .1);
+    color: vars.$info;
+  }
+  
+  &.badge-warning {
+    background-color: rgba(vars.$warning, .1);
+    color: color.adjust(vars.$warning, $lightness: -20%);
+  }
+  
+  &.badge-danger {
+    background-color: rgba(vars.$danger, .1);
+    color: vars.$danger;
+  }
+}

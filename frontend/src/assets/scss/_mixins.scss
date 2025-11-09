@@ -1,0 +1,66 @@
+// Transitions
+@mixin transition-all {
+  transition: all 0.2s ease;
+  -webkit-transition: all 0.2s ease;
+  -moz-transition: all 0.2s ease;
+  -ms-transition: all 0.2s ease;
+}
+
+// Flexbox utilities
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// Card styles
+@mixin card-shadow {
+  box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+}
+
+// Responsive breakpoints
+@mixin respond-below($breakpoint) {
+  @media (max-width: #{$breakpoint}) {
+    @content;
+  }
+}
+
+@mixin respond-above($breakpoint) {
+  @media (min-width: #{$breakpoint}) {
+    @content;
+  }
+}
+
+// Typography
+@mixin font-size($size) {
+  font-size: $size;
+  line-height: $size * 1.5;
+}
+
+// Border radius
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+}
+
+// Grid system
+@mixin make-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+@mixin make-col($size) {
+  flex: 0 0 percentage($size / 12);
+  max-width: percentage($size / 12);
+  padding-right: 15px;
+  padding-left: 15px;
+}

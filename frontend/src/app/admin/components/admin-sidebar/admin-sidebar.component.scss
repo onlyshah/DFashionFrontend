@@ -1,0 +1,116 @@
+@use 'sass:color';
+@use '../../styles/variables' as vars;
+@use '../../../../assets/scss/mixins' as mix;
+
+.sidebar {
+  width: vars.$sidebar-width-lg;
+  min-height: calc(100vh - #{vars.$navbar-height});
+  background: #fff;
+  font-family: vars.$type1;
+  padding: 0;
+  z-index: 11;
+  transition: width 0.25s ease, background 0.25s ease;
+  -webkit-transition: width 0.25s ease, background 0.25s ease;
+  -moz-transition: width 0.25s ease, background 0.25s ease;
+  -ms-transition: width 0.25s ease, background 0.25s ease;
+
+  .nav {
+    overflow: hidden;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin-bottom: 60px;
+
+    .nav-item {
+      padding: 0 1rem;
+      
+      .nav-link {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        white-space: nowrap;
+        color: vars.$pollux-dark;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+
+        &:hover {
+          background: rgba(vars.$pollux-primary, 0.05);
+        }
+
+        &.active {
+          background: rgba(vars.$pollux-primary, 0.1);
+          color: vars.$pollux-primary;
+        }
+
+        .menu-icon {
+          margin-right: 0.875rem;
+          font-size: 1.25rem;
+          line-height: 1;
+          background: transparent;
+        }
+
+        .menu-title {
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+      }
+
+      &.nav-category {
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: color.adjust(vars.$pollux-secondary, $lightness: -10%);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}
+
+// Sidebar Mini
+@media (min-width: 992px) {
+  .sidebar-mini {
+    .sidebar {
+      width: vars.$sidebar-width-sm;
+
+      .nav {
+        .nav-item {
+          padding: 0;
+
+          .nav-link {
+            padding: 0.875rem 1rem;
+            text-align: center;
+            flex-direction: column;
+
+            .menu-icon {
+              margin: 0;
+              font-size: 1.25rem;
+            }
+
+            .menu-title {
+              display: none;
+            }
+          }
+        }
+
+        .nav-category {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Mobile view
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    max-height: 100%;
+    top: vars.$navbar-height;
+    left: -#{vars.$sidebar-width-lg};
+    transition: all 0.25s ease-out;
+
+    &.active {
+      left: 0;
+    }
+  }
+}

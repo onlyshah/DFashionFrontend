@@ -9,12 +9,13 @@ import { MaterialModule } from '../material.module';
 // Routing
 import { AdminRoutingModule } from './admin-routing.module';
 
-// Pollux UI Module
-import { PolluxUiModule } from './pollux-ui/pollux-ui.module';
+// Removed Pollux UI Module
 
 // Components
-import { PolluxAdminLayoutComponent } from '../admin/pollux-ui/layout/pollux-admin-layout.component';
-import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
+import { SuperAdminDashboardComponent } from './components/super-admin-dashboard/super-admin-dashboard.component';
+import { GeneralDashboardComponent } from './components/general-dashboard/general-dashboard.component';
+import { AdminHeaderComponent } from './components/admin-header/admin-header.component';
+import { AdminSidebarComponent } from './components/admin-sidebar/admin-sidebar.component';
 import { RoleManagementComponent } from './pages/role-management/role-management.component';
 import { AdminLoginComponent } from './auth/admin-login.component';
 import { UserManagementComponent } from './users/user-management.component';
@@ -25,8 +26,6 @@ import { OrderManagementComponent } from './orders/order-management.component';
 import { OrderDetailsComponent } from './orders/order-details.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { SettingsComponent } from './settings/settings.component';
-import { PolluxSidebarComponent } from '../admin/pollux-ui/components/pollux-sidebar/pollux-sidebar.component';
-// import { PolluxNavbarComponent } from './pollux-ui/components/pollux-navbar/pollux-navbar.component';
 import { AdminLoadingComponent } from './shared/components/loading/loading.component';
 
 // Services
@@ -73,13 +72,12 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     FormsModule,
     ReactiveFormsModule,
     AdminRoutingModule,
-    PolluxUiModule,
     MaterialModule,
-    PolluxSidebarComponent,
+    AdminHeaderComponent,
+    AdminSidebarComponent,
+    SuperAdminDashboardComponent,
+    GeneralDashboardComponent,
     AdminLoadingComponent,
-   PolluxAdminLayoutComponent,
-    AdminDashboardComponent,
-    RoleManagementComponent,
     
   ],
   providers: [

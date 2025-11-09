@@ -1,25 +1,28 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { AdminApiService } from '../../services/admin-api.service';
+import { AdminApiService, Category as ApiCategory } from '../../services/admin-api.service';
 
-interface Category {
-  _id: string;
-  name: string;
-  slug: string;
+interface ExtendedCategory extends Omit<ApiCategory, 'parent'> {
   description?: string;
-  parent?: Category;
-  status: 'active' | 'inactive';
   productCount?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  parent?: ExtendedCategory;
+  status: string;
 }
 
+type Category = ExtendedCategory;
+
 @Component({
-    selector: 'app-category-management',
-    templateUrl: './category-management.component.html',
-    styleUrls: ['../pollux-ui.scss', '../forms/pollux-form-controls.scss'],
-    standalone: false
+  selector: 'app-category-management',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    ReactiveFormsModule
+  ],
+  templateUrl: './category-management.component.html',
+  styleUrls: ['./category-management.component.scss']
 })
 export class CategoryManagementComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -72,8 +75,14 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (categories) => {
-          this.categories = categories;
-          this.parentCategories = categories.filter(cat => !cat.parent);
+          // Transform API categories to ExtendedCategory
+          const transformedCategories = categories.map(cat => ({
+            ...cat,
+            parent: cat.parent ? categories.find(p => p._id === cat.parent) : undefined
+          })) as ExtendedCategory[];
+
+          this.categories = transformedCategories;
+          this.parentCategories = transformedCategories.filter(cat => !cat.parent);
           this.isLoading = false;
         },
         error: (error) => {
@@ -98,7 +107,7 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
       this.categoryForm.patchValue({
         name: category.name,
         description: category.description,
-        parent: category.parent?._id || '',
+        parent: category.parent?._id || null,
         status: category.status
       });
     } else {

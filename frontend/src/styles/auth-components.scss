@@ -1,5 +1,5 @@
 // StyleHub Auth Components - Consistent Design System
-@import './design-tokens.scss';
+@use './design-tokens' as tokens;
 
 // Base Auth Container
 .auth-container {

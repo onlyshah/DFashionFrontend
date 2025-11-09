@@ -36,7 +36,7 @@ export interface LoginResponse {
   providedIn: 'root'
 })
 export class AdminAuthService {
-  private apiUrl = 'http://localhost:3001/api/v1'; // Updated to correct port and API version
+  private apiUrl = `${environment.apiUrl}/api`;
   private currentUserSubject = new BehaviorSubject<AdminUser | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
 

@@ -1,4 +1,5 @@
 export interface User {
+  lastLogin: string | number | Date;
   _id: string;
   username: string;
   email: string;

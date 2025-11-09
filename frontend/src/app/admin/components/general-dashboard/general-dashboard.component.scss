@@ -1,0 +1,194 @@
+@use 'sass:color';
+@use '../../styles/variables' as vars;
+@use '../../styles/layouts' as layouts;
+@use '../../styles/navbar' as navbar;
+@use '../../styles/sidebar' as sidebar;
+
+$action-transition-duration: 0.25s;
+$action-transition-timing-function: ease;
+
+.container-scroller {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.main-panel {
+  margin-left: vars.$sidebar-width-lg;
+  min-height: calc(100vh - #{vars.$navbar-height});
+  transition: margin $action-transition-duration $action-transition-timing-function;
+  width: calc(100% - #{vars.$sidebar-width-lg});
+  
+  .sidebar-icon-only & {
+    margin-left: vars.$sidebar-width-icon;
+    width: calc(100% - #{vars.$sidebar-width-icon});
+  }
+  
+  .content-wrapper {
+    padding: 2rem;
+  }
+}
+
+// Welcome Card
+.welcome-card {
+  background: linear-gradient(45deg, vars.$pollux-primary, color.adjust(vars.$pollux-primary, $lightness: 15%));
+  border: none;
+  border-radius: 10px;
+  
+  .card-body {
+    padding: 2rem;
+    
+    h3 {
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    
+    p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Card Stats
+.card-stat {
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .stat-content {
+    h4 {
+      color: vars.$pollux-secondary;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      color: vars.$pollux-dark;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+      font-size: 0.813rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      &.text-success {
+        color: vars.$pollux-success;
+      }
+
+      &.text-danger {
+        color: vars.$pollux-danger;
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .stat-icon {
+    i {
+      font-size: 2.5rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+// Table styles
+.table {
+  color: vars.$pollux-dark;
+  margin-bottom: 0;
+
+  thead {
+    th {
+      border-top: 0;
+      font-weight: 600;
+      padding: 1rem;
+      color: vars.$pollux-secondary;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      &:hover {
+        background-color: rgba(vars.$pollux-primary, 0.05);
+      }
+
+      td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #f3f3f3;
+      }
+    }
+  }
+}
+
+// Badges
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+
+  &.badge-success {
+    background-color: rgba(vars.$pollux-success, 0.1);
+    color: vars.$pollux-success;
+  }
+
+  &.badge-danger {
+    background-color: rgba(vars.$pollux-danger, 0.1);
+    color: vars.$pollux-danger;
+  }
+
+  &.badge-warning {
+    background-color: rgba(vars.$pollux-warning, 0.1);
+    color: color.adjust(vars.$pollux-warning, $lightness: -20%);
+  }
+
+  &.badge-info {
+    background-color: rgba(vars.$pollux-info, 0.1);
+    color: vars.$pollux-info;
+  }
+}
+
+// Buttons
+.btn-link {
+  color: vars.$pollux-primary;
+  text-decoration: none;
+  padding: 0;
+  
+  &:hover {
+    color: color.adjust(vars.$pollux-primary, $lightness: -10%);
+  }
+}
+
+// Responsive
+@media (max-width: 991px) {
+  .main-panel {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .welcome-card .card-body {
+    padding: 1.5rem;
+  }
+}

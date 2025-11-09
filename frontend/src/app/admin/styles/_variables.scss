@@ -1,0 +1,56 @@
+// Theme colors
+$pollux-primary: #7367f0;
+$pollux-secondary: #82868b;
+$pollux-success: #28c76f;
+$pollux-info: #00cfe8;
+$pollux-warning: #ff9f43;
+$pollux-danger: #ea5455;
+$pollux-light: #f8f9fa;
+$pollux-dark: #343a40;
+
+// UI Colors
+$pollux-border-color: #ebe9f1;
+$pollux-text-primary: #5e5873;
+$pollux-text-muted: #6e6b7b;
+
+// Typography
+$type1: 'Poppins', sans-serif;
+$type2: 'Open Sans', sans-serif;
+
+// Alias for compatibility
+$primary: $pollux-primary;
+$secondary: $pollux-secondary;
+$success: $pollux-success;
+$info: $pollux-info;
+$warning: $pollux-warning;
+$danger: $pollux-danger;
+
+// Layout variables
+$sidebar-width-lg: 260px;
+$sidebar-width-mini: 185px;
+$sidebar-width-icon: 70px;
+$sidebar-width-sm: 185px;  // Same as mini for consistency
+$navbar-height: 70px;
+$footer-height: 50px;
+
+// Font variables
+$font-family-base: 'Poppins', sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Spacing
+$spacer: 1rem;
+$grid-gutter-width: 24px;
+
+// Border radius
+$border-radius: 0.25rem;
+$border-radius-lg: 0.5rem;
+
+// Card
+$card-spacer-y: 1.5rem;
+$card-spacer-x: 1.5rem;
+$card-border-radius: $border-radius;
+$card-box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
+
+// Transitions
+$transition-base: all .2s ease-in-out;
