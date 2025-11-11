@@ -10,11 +10,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Check if this is an admin route
   if (req.url.includes('/api/admin/')) {
-    // Try to get admin token first
-    token = localStorage.getItem('admin_token');
+    // Try to get admin token first. If admin_token is missing (user logged in via regular auth),
+    // fall back to the regular token stored by AuthService (or sessionStorage).
+    token = localStorage.getItem('admin_token') || authService.getToken() || sessionStorage.getItem('token');
   } else {
     // For regular routes, use regular token
-    token = authService.getToken();
+    token = authService.getToken() || localStorage.getItem('token') || sessionStorage.getItem('token');
   }
 
   console.log('🔐 Auth Interceptor:', {

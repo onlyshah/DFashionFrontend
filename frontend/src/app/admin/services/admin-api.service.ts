@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AdminAuthService } from './admin-auth.service';
@@ -57,6 +57,14 @@ export class AdminApiService {
   private apiUrl = `${environment.apiUrl}/api/admin`;
 
   constructor(private http: HttpClient, private adminAuth: AdminAuthService) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    });
+  }
 
   getProducts(params: any = {}): Observable<any> {
     return this.http.get(`${this.apiUrl}/products`, { params });
@@ -119,6 +127,7 @@ export class AdminApiService {
   }
 
   getGeneralDashboardData(): Observable<DashboardMetrics> {
-    return this.http.get<DashboardMetrics>(`${this.apiUrl}/dashboard/general`);
+    const headers = this.getHeaders();
+    return this.http.get<DashboardMetrics>(`${this.apiUrl}/dashboard/metrics`, { headers });
   }
 }

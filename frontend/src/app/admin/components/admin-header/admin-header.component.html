@@ -2,10 +2,10 @@
   <div class="navbar-brand-wrapper d-flex justify-content-center">
     <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
       <a class="navbar-brand brand-logo" routerLink="/admin/dashboard" aria-label="DFashion dashboard">
-  <img src="/uploads/logo/logo.svg" alt="logo" onerror="this.onerror=null;this.src='/assets/images/default/logo-placeholder.svg'" />
+        <img [src]="apiUrl + '/uploads/logo/logo.svg'" alt="logo" (error)="handleImageError($event)" />
       </a>
       <a class="navbar-brand brand-logo-mini" routerLink="/admin/dashboard" aria-hidden="true">
-  <img src="/uploads/logo/logo-mini.svg" alt="logo-mini" onerror="this.onerror=null;this.src='/assets/images/default/logo-placeholder.svg'" />
+        <img [src]="apiUrl + '/uploads/logo/logo-mini.svg'" alt="logo-mini" (error)="handleImageError($event)" />
       </a>
       <button class="navbar-toggler navbar-toggler align-self-center" type="button" (click)="toggleSidebar()">
         <span class="typcn typcn-th-menu"></span>
@@ -14,17 +14,17 @@
   </div>
   <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
     <ul class="navbar-nav me-lg-2">
-      <li class="nav-item nav-profile dropdown">
-        <a class="nav-link" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || '/assets/images/default/default-avatar.svg'" alt="profile" onerror="this.onerror=null;this.src='/assets/images/default/default-avatar.svg'"/>
+      <li class="nav-item nav-profile" ngbDropdown>
+        <a class="nav-link" id="profileDropdown" role="button" ngbDropdownToggle>
+          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || (apiUrl + '/assets/images/default/default-avatar.svg')" alt="profile" (error)="handleImageError($event)"/>
           <span class="nav-profile-name">{{(currentUser$ | async)?.fullName || 'Super Admin'}}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-          <a class="dropdown-item" routerLink="/admin/settings">
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+          <a ngbDropdownItem routerLink="/admin/settings">
             <i class="typcn typcn-cog-outline text-primary"></i>
             Settings
           </a>
-          <a class="dropdown-item" (click)="logout()">
+          <a ngbDropdownItem (click)="logout()">
             <i class="typcn typcn-eject text-primary"></i>
             Logout
           </a>
@@ -41,16 +41,16 @@
           <i class="typcn typcn-calendar"></i>
         </a>
       </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-bs-toggle="dropdown">
+      <li class="nav-item" ngbDropdown>
+        <a class="nav-link count-indicator d-flex justify-content-center align-items-center" id="messageDropdown" ngbDropdownToggle>
           <i class="typcn typcn-mail mx-0"></i>
           <span class="count" *ngIf="messages > 0"></span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
           <p class="mb-0 fw-normal float-start dropdown-header">Messages</p>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-                <img src="/uploads/faces/face4.jpg" alt="image" class="profile-pic" onerror="this.onerror=null;this.src='/assets/images/default/default-avatar.svg'">
+                <img [src]="apiUrl + '/uploads/faces/face4.jpg'" alt="image" class="profile-pic" (error)="handleImageError($event)">
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis fw-normal">David Grey</h6>
@@ -59,7 +59,7 @@
           </a>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-                <img src="/uploads/faces/face2.jpg" alt="image" class="profile-pic" onerror="this.onerror=null;this.src='/assets/images/default/default-avatar.svg'">
+                <img [src]="apiUrl + '/uploads/faces/face2.jpg'" alt="image" class="profile-pic" (error)="handleImageError($event)">
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis fw-normal">Tim Cook</h6>
@@ -68,7 +68,7 @@
           </a>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-                <img src="/uploads/faces/face3.jpg" alt="image" class="profile-pic" onerror="this.onerror=null;this.src='/assets/images/default/default-avatar.svg'">
+                <img [src]="apiUrl + '/uploads/faces/face3.jpg'" alt="image" class="profile-pic" (error)="handleImageError($event)">
             </div>
             <div class="preview-item-content flex-grow">
               <h6 class="preview-subject ellipsis fw-normal">Johnson</h6>
@@ -77,12 +77,12 @@
           </a>
         </div>
       </li>
-      <li class="nav-item dropdown me-0">
-        <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+      <li class="nav-item me-0" ngbDropdown>
+        <a class="nav-link count-indicator d-flex align-items-center justify-content-center" id="notificationDropdown" ngbDropdownToggle>
           <i class="typcn typcn-bell mx-0"></i>
           <span class="count" *ngIf="notifications > 0"></span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+        <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
           <p class="mb-0 fw-normal float-start dropdown-header">Notifications</p>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
@@ -119,7 +119,50 @@
     </button>
   </div>
 </nav>
-
+ 
+<!-- Secondary sub-navbar (PolluxUI style) -->
+  <nav class="navbar-breadcrumb col-xl-12 col-12 d-flex flex-row p-0">
+      <div class="navbar-links-wrapper d-flex align-items-stretch">
+        <div class="nav-link">
+          <a href="javascript:;"><i class="typcn typcn-calendar-outline"></i></a>
+        </div>
+        <div class="nav-link">
+          <a href="javascript:;"><i class="typcn typcn-mail"></i></a>
+        </div>
+        <div class="nav-link">
+          <a href="javascript:;"><i class="typcn typcn-folder"></i></a>
+        </div>
+        <div class="nav-link">
+          <a href="javascript:;"><i class="typcn typcn-document-text"></i></a>
+        </div>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+        <ul class="navbar-nav me-lg-2">
+          <li class="nav-item ms-0">
+            <h4 class="mb-0">Dashboard</h4>
+          </li>
+          <li class="nav-item">
+            <div class="d-flex align-items-baseline">
+              <p class="mb-0">Home</p>
+              <i class="typcn typcn-chevron-right"></i>
+              <p class="mb-0">Main Dahboard</p>
+            </div>
+          </li>
+        </ul>
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item nav-search d-none d-md-block me-0">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search..." aria-label="search" aria-describedby="search">
+              <div class="input-group-prepend d-flex">
+                <span class="input-group-text" id="search">
+                  <i class="typcn typcn-zoom"></i>
+                </span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
 <div class="welcome-section">
   <h1>Welcome Back!</h1>
   <p>Here's what's happening with your store today.</p>

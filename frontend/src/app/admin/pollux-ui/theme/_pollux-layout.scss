@@ -1,21 +1,27 @@
-/* Theme overrides for Pollux UI */
+/* Theme overrides for Pollux UI - import local copy of Pollux variables */
+@use '../../../../assets/scss/_pollux-variables.scss' as pollux;
+
 :root {
-  --sidebar-width: 260px;
-  --navbar-height: 64px;
-  --sidebar-bg: #282f3a;
-  --sidebar-text: #d0cfcf;
-  --sidebar-hover-bg: #3b424c;
-  --sidebar-hover-text: #ffffff;
-  --submenu-bg: #1e2229;
+  --sidebar-width: #{pollux.$sidebar-width-lg};
+  --navbar-height: #{pollux.$navbar-height};
+  --sidebar-bg: #{pollux.$sidebar-dark-bg};
+  --sidebar-text: #{pollux.$sidebar-dark-menu-color};
+  --sidebar-hover-bg: #{pollux.$sidebar-dark-menu-hover-bg};
+  --sidebar-hover-text: #{pollux.$sidebar-dark-profile-name-color};
+  --submenu-bg: #{pollux.$sidebar-dark-bg};
 }
 
 /* Layout Container */
 .page-body-wrapper {
-  min-height: 100vh;
-  padding-top: var(--navbar-height);
-  display: flex;
-  overflow: hidden;
-  position: relative;
+     min-height: calc(100vh - 4.625rem);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1.875rem;
+    background: #f4f5fa;
 }
 
 /* Fixed Sidebar */
@@ -107,50 +113,94 @@
 
 /* Sidebar Icon Only State */
 .sidebar-icon-only {
+  .navbar-brand-wrapper {
+    width: var(--sidebar-mini-width) !important;
+    transition: width var(--transition-duration) var(--transition-timing);
+
+    .brand-logo {
+      display: none;
+    }
+    .brand-logo-mini {
+      display: inline-block;
+    }
+  }
+
+  .navbar-menu-wrapper {
+    width: calc(100% - var(--sidebar-mini-width)) !important;
+    transition: width var(--transition-duration) var(--transition-timing);
+  }
+
   .sidebar {
-    width: 70px;
+    width: var(--sidebar-mini-width);
+    transition: width var(--transition-duration) var(--transition-timing);
     
     .nav-item {
+      position: relative;
+      
       .nav-link {
-        padding: 15px 20px;
+        padding: 16px 22px;
         text-align: center;
+        transition: all var(--transition-duration) var(--transition-timing);
         
         .menu-title,
-        .menu-arrow {
+        .menu-arrow,
+        .menu-sub-title {
           display: none;
         }
         
-        i {
+        i.menu-icon {
           margin: 0;
+          font-size: 1.25rem;
         }
       }
       
       &:hover {
         .nav-link {
-          width: 260px;
-          background: var(--sidebar-bg);
+          position: relative;
+          width: var(--sidebar-width);
+          background: var(--sidebar-hover-bg);
+          padding-left: 22px;
           
           .menu-title {
             display: inline-block;
-            margin-left: 15px;
+            margin-left: 14px;
+            animation: slideInRight 0.3s ease;
+            color: var(--sidebar-hover-text);
+          }
+
+          &::after {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: var(--sidebar-hover-text);
+            content: '';
           }
         }
         
         .sub-menu {
           display: block;
           position: absolute;
-          left: 70px;
-          top: 100%;
-          width: 190px;
-          z-index: 1001;
-          background: var(--sidebar-bg);
-          padding: 5px 0;
-          border-radius: 0 0 4px 4px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+          left: var(--sidebar-mini-width);
+          top: 0;
+          width: calc(var(--sidebar-width) - var(--sidebar-mini-width));
+          z-index: 999;
+          background: var(--submenu-bg);
+          padding: 0;
+          box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15);
           
           .nav-link {
             width: 100%;
-            padding-left: 15px;
+            padding: 12px 20px;
+            border-left: 0;
+            position: relative;
+            opacity: 0.86;
+            
+            &:hover {
+              opacity: 1;
+              background: var(--sidebar-hover-bg);
+            }
           }
         }
       }
@@ -158,6 +208,20 @@
   }
   
   .main-panel {
-    margin-left: 70px;
+    margin-left: var(--sidebar-mini-width);
+    width: calc(100% - var(--sidebar-mini-width));
+    transition: margin var(--transition-duration) var(--transition-timing),
+                width var(--transition-duration) var(--transition-timing);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }

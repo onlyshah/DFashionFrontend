@@ -1,11 +1,21 @@
 /* Admin Panel CSS Fixes and Enhancements */
 
+// Import admin variables so we can use $navbar-height as a single source of truth
+@use "./_variables" as *;
 /* Global Layout Fixes */
 .container-scroller {
   min-height: 100vh;
   overflow-x: hidden;
 }
 
+/* Ensure the page content sits below the fixed header(s). This is a CSS-safe
+   fallback so pages are usable even before JS runs. We prefer setting padding
+   on page-specific containers rather than the global scroller. */
+.page-body-wrapper,
+.main-panel,
+.content-wrapper {
+  padding-top: $navbar-height !important;
+}
 /* Navbar Fixes */
 .navbar {
   z-index: 1030;

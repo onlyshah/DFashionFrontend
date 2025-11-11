@@ -10,9 +10,11 @@
 @import url('https://cdn.jsdelivr.net/npm/typicons.font@2.1.2/src/font/typicons.css');
 
 /* EXACT POLLUX UI VARIABLES - MATCHING ORIGINAL THEME */
+
 :root {
   /* Layout Variables */
   --navbar-height: 64px;
+  $navbar-menu-color: #001737;
   --sidebar-width: 280px;
   --sidebar-minimized-width: 70px;
   --content-padding: 2rem;

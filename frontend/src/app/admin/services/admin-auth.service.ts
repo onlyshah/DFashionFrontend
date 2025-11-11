@@ -60,9 +60,13 @@ export class AdminAuthService {
 
   // Admin Login
   login(email: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/admin/login`, {
-      email,
-      password
+    const loginData = { email, password };
+    console.log('Attempting login with:', { email });
+    
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/admin/login`, loginData, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
     }).pipe(
       tap(response => {
         if (response.success) {

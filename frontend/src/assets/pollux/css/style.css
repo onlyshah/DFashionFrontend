@@ -8849,8 +8849,6 @@ button,
 [type=reset],
 [type=submit] {
   -webkit-appearance: button;
-  -moz-appearance: button;
-  appearance: button;
 }
 button:not(:disabled),
 [type=button]:not(:disabled),
@@ -8908,7 +8906,6 @@ legend + * {
 
 [type=search] {
   -webkit-appearance: textfield;
-  appearance: textfield;
   outline-offset: -2px;
 }
 
@@ -8930,7 +8927,7 @@ legend + * {
 
 ::file-selector-button {
   font: inherit;
-  /* -webkit-appearance: button; */
+  -webkit-appearance: button;
 }
 
 output {
@@ -21239,8 +21236,8 @@ code {
   flex-direction: row;
   -webkit-flex-wrap: wrap;
   flex-wrap: wrap;
-  -webkit-justify-content: flex-start;
-  justify-content: flex-start;
+  -webkit-justify-content: start;
+  justify-content: start;
 }
 .chartjs-legend ul li {
   margin-right: 8%;
@@ -23901,17 +23898,10 @@ dl li {
   border: 1px solid #e4e4f4;
 }
 .sidebar .nav {
-  /* allow visible overflow so collapsible submenus can expand outside their parent flow
-     while the sidebar itself handles vertical scrolling */
+  overflow: hidden;
   flex-wrap: nowrap;
   flex-direction: column;
   margin-bottom: 60px;
-}
-
-/* Ensure the sidebar itself scrolls internally and matches viewport height */
-.sidebar {
-  max-height: 100vh;
-  overflow-y: auto;
 }
 .sidebar .nav .nav-item {
   -webkit-transition-duration: 0.25s;

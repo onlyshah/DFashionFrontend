@@ -1,80 +1,3 @@
-// Theme colors
-$pollux-primary: #7367f0;
-$pollux-secondary: #82868b;
-$pollux-success: #28c76f;
-$pollux-info: #00cfe8;
-$pollux-warning: #ff9f43;
-$pollux-danger: #ea5455;
-$pollux-light: #f8f9fa;
-$pollux-dark: #343a40;
-
-// UI Colors
-$pollux-border-color: #ebe9f1;
-$pollux-text-primary: #5e5873;
-$pollux-text-muted: #6e6b7b;
-
-// Typography
-$type1: 'Poppins', sans-serif;
-$type2: 'Open Sans', sans-serif;
-
-// Alias for compatibility
-$primary: $pollux-primary;
-$secondary: $pollux-secondary;
-$success: $pollux-success;
-$info: $pollux-info;
-$warning: $pollux-warning;
-$danger: $pollux-danger;
-
-// Layout variables
-$sidebar-width-lg: 260px;
-$sidebar-width-mini: 185px;
-$sidebar-width-icon: 70px;
-$sidebar-width-sm: 185px;  // Same as mini for consistency
-$navbar-height: 64px;
-$footer-height: 50px;
-
-// Font variables
-$font-family-base: 'Poppins', sans-serif;
-$font-size-base: 1rem;
-$line-height-base: 1.5;
-
-// Spacing
-$spacer: 1rem;
-$grid-gutter-width: 24px;
-
-// Border radius
-$border-radius: 0.25rem;
-$border-radius-lg: 0.5rem;
-
-// Card
-$card-spacer-y: 1.5rem;
-$card-spacer-x: 1.5rem;
-$card-border-radius: $border-radius;
-$card-box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
-
-// Transitions
-$transition-base: all .2s ease-in-out;
-$action-transition-duration: 0.2s;
-$action-transition-timing-function: ease-in-out;
-
-// Additional colors used in component SCSS
-$white: #ffffff;
-$gray-dark: #343a40;
-$border-color: #ebe9f1;
-$dark: #343a40;
-
-// Theme colors map for @each loops
-$theme-colors: (
-  'primary': $pollux-primary,
-  'secondary': $pollux-secondary,
-  'success': $pollux-success,
-  'danger': $pollux-danger,
-  'warning': $pollux-warning,
-  'info': $pollux-info,
-  'light': $pollux-light,
-  'dark': $pollux-dark
-);
-
 ////////// SIDEBAR ////////
 $sidebar-width-lg: 236px;
 $sidebar-width-mini: 185px;
@@ -149,44 +72,9 @@ $settings-panel-width: 300px;
 ///////// NAVBAR ////////
 
 $navbar-default-bg: #fff;
-$navbar-height: 64px;
+$navbar-height: 4.625rem;
 $navbar-menu-color: #001737;
 $navbar-font-size: 1rem;
 $navbar-icon-font-size: .9375rem;
-$navbar-breadcrumb-height: 64px;
+$navbar-breadcrumb-height: 4.062rem;
 ///////// NAVBAR ////////
-
-// Mixins and utilities
-@mixin display-flex {
-  display: flex;
-}
-
-@mixin flex-direction($direction) {
-  flex-direction: $direction;
-}
-
-@mixin align-items($align) {
-  align-items: $align;
-}
-
-@mixin placeholder {
-  &::placeholder {
-    @content;
-  }
-}
-
-// Helper classes and animations
-.dropdownAnimation {
-  animation: dropdownFade 0.3s ease-in-out;
-}
-
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
