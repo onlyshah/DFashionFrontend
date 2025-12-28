@@ -29,6 +29,11 @@ export class AuthService {
   public isSuperAdmin$ = this.currentUser$.pipe(map(user => user?.role === 'super_admin'));
   public userRole$ = this.currentUser$.pipe(map(user => user?.role));
 
+  // Synchronous access to current user for guards and components
+  get currentUser(): User | null {
+    return this.currentUserSubject.value;
+  }
+
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -474,14 +479,18 @@ export class AuthService {
       this.currentUserSubject.next(response.user);
       this.isAuthenticatedSubject.next(true);
 
-      // Redirect based on user role to prevent overlapping
-      this.redirectAfterLogin(response.user);
+      // Note: Redirect is now handled by the login component to ensure 
+      // consistency with role-based routing. Do not redirect here.
     }
 
     this.resetSessionTimeout();
   }
 
   private redirectAfterLogin(user: any): void {
+    // Note: This method is deprecated. Redirection is now handled by the login component.
+    // Keeping for backward compatibility but disabled.
+    return;
+    /*
     // Clear any existing navigation to prevent overlapping
     setTimeout(() => {
       const role = user.role;
@@ -503,6 +512,7 @@ export class AuthService {
           break;
       }
     }, 100); // Small delay to ensure proper navigation
+    */
   }
 
   // Token Management

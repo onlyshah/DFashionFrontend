@@ -31,6 +31,9 @@ export class AdminAuthGuard implements CanActivate, CanActivateChild {
 
   private checkAuth(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
     console.log('AdminAuthGuard.checkAuth - Checking route:', state.url);
+    console.log('AdminAuthGuard.checkAuth - isAuthenticated:', this.authService.isAuthenticated);
+    console.log('AdminAuthGuard.checkAuth - isAdmin():', this.authService.isAdmin());
+    console.log('AdminAuthGuard.checkAuth - currentUser:', this.authService.currentUser);
 
     // Simple and direct approach: Check if user is super admin through regular auth
     if (this.authService.isAuthenticated && this.authService.isAdmin()) {

@@ -59,6 +59,10 @@ export class LoginComponent {
           // Handle backend response format: { success: true, data: { token, user } }
           const userData = response.data?.user || response.user;
 
+          console.log('📱 Login component - received user data:', userData);
+          console.log('📱 Login component - user role:', userData?.role);
+          console.log('📱 Login component - authService.isAdmin():', this.authService.isAdmin());
+
           this.notificationService.success(
             'Login Successful!',
             `Welcome back, ${userData.fullName || userData.username}!`
@@ -67,8 +71,12 @@ export class LoginComponent {
           // Initialize RBAC with user data
           this.rbacService.initializeUser(userData);
 
-          // Unified role-based redirection
-          this.redirectBasedOnRole(userData.role);
+          // Add a small delay to ensure authService has processed the user before navigating
+          setTimeout(() => {
+            console.log('📱 Login component - about to redirect, authService.currentUser:', this.authService.currentUser);
+            // Unified role-based redirection
+            this.redirectBasedOnRole(userData.role);
+          }, 100);
         },
         error: (error) => {
           this.loading = false;
@@ -87,24 +95,32 @@ export class LoginComponent {
    * Handles all user types through a single method
    */
   private redirectBasedOnRole(userRole: string): void {
-    switch (userRole?.toLowerCase()) {
+    console.log('🔄 redirectBasedOnRole() called with role:', userRole);
+    const roleLC = userRole?.toLowerCase();
+    console.log('🔄 Role (lowercase):', roleLC);
+
+    switch (roleLC) {
       case 'super_admin':
       case 'super admin':
-        this.router.navigate(['/admin/dashboard']);
+        console.log('🔄 Navigating to admin dashboard for super_admin');
+        this.navigateOrReload(['/admin/dashboard']);
         break;
 
       case 'admin':
       case 'administrator':
-        this.router.navigate(['/admin/dashboard']);
+        console.log('🔄 Navigating to admin dashboard for admin');
+        this.navigateOrReload(['/admin/dashboard']);
         break;
 
       case 'manager':
-        this.router.navigate(['/admin/dashboard']);
+        console.log('🔄 Navigating to admin dashboard for manager');
+        this.navigateOrReload(['/admin/dashboard']);
         break;
 
       case 'vendor':
       case 'seller':
-        this.router.navigate(['/vendor/dashboard']);
+        console.log('🔄 Navigating to vendor dashboard');
+        this.navigateOrReload(['/vendor/dashboard']);
         break;
 
       case 'customer':
@@ -112,13 +128,30 @@ export class LoginComponent {
       case 'end_user':
       case 'enduser':
         // End users go to home page first (Instagram-like flow)
-        this.router.navigate(['/home']);
+        console.log('🔄 Navigating to home for customer');
+        this.navigateOrReload(['/home']);
         break;
 
       default:
         // Default to home page for unknown roles
-        this.router.navigate(['/home']);
+        console.log('🔄 Unknown role, navigating to home');
+        this.navigateOrReload(['/home']);
         break;
     }
+  }
+
+  // Attempt router navigation; on ChunkLoadError fall back to full reload to target URL
+  private navigateOrReload(commands: any[]): void {
+    const url = Array.isArray(commands) ? commands.join('/') : commands;
+    this.router.navigate(commands).then(success => {
+      console.log('🔄 Navigation result for', commands, success);
+    }).catch((error) => {
+      console.error('❌ Navigation failed, attempting full reload. Error:', error);
+      const isChunkError = error && (error.name === 'ChunkLoadError' || /Loading chunk/i.test(error.message || ''));
+      if (isChunkError) {
+        // Force full reload to fetch updated lazy chunks
+        window.location.href = url.startsWith('/') ? url : '/' + url;
+      }
+    });
   }
 }
