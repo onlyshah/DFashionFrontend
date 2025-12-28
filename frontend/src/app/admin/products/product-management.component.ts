@@ -19,6 +19,10 @@ import { ProductDialogComponent } from './product-dialog.component';
 export class ProductManagementComponent implements OnInit, OnDestroy {
     @ViewChild(MatPaginator) paginator!: MatPaginator;
     @ViewChild(MatSort) sort!: MatSort;
+    currentPage = 1;
+    currentLimit = 10;
+    currentSortBy = '';
+    currentSortOrder: 'asc' | 'desc' = 'desc';
 
     private destroy$ = new Subject<void>();
 
@@ -79,15 +83,22 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         });
     }
 
-    loadProducts(): void {
+    loadProducts(override?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'asc' | 'desc' }): void {
         this.isLoading = true;
+
+        const page = override?.page ?? this.currentPage;
+        const limit = override?.limit ?? this.currentLimit;
+        const sortBy = override?.sortBy ?? this.currentSortBy;
+        const sortOrder: 'asc' | 'desc' = override?.sortOrder ?? this.currentSortOrder;
 
         const filters = {
             search: this.searchControl.value || '',
             category: this.categoryFilter.value || '',
             status: this.statusFilter.value || '',
-            page: this.paginator?.pageIndex ? this.paginator.pageIndex + 1 : 1,
-            limit: this.paginator?.pageSize || 10
+            page,
+            limit,
+            sortBy,
+            sortOrder
         };
 
         this.productService.getProducts(filters).subscribe({
@@ -112,8 +123,20 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         });
     }
 
-    onPageChange(): void {
-        this.loadProducts();
+    onPageChange(event: any): void {
+        const page = (event && event.pageIndex != null) ? event.pageIndex + 1 : 1;
+        const limit = (event && event.pageSize) ? event.pageSize : this.currentLimit;
+        this.currentPage = page;
+        this.currentLimit = limit;
+        this.loadProducts({ page, limit });
+    }
+
+    onSortChange(event?: any): void {
+        if (event && event.active) {
+            this.currentSortBy = event.active;
+            this.currentSortOrder = event.direction || 'desc';
+        }
+        this.loadProducts({ sortBy: this.currentSortBy, sortOrder: this.currentSortOrder });
     }
 
     openProductDialog(product?: Product): void {

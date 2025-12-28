@@ -33,6 +33,11 @@ export interface User {
 export class UserManagementComponent implements OnInit, OnDestroy {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  // track last known pagination/sort when parent paginator is managed by child component
+  currentPage = 1;
+  currentLimit = 10;
+  currentSortBy = 'createdAt';
+  currentSortOrder: 'asc' | 'desc' = 'desc';
 
   private destroy$ = new Subject<void>();
   
@@ -113,18 +118,22 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     });
   }
 
-  loadUsers(): void {
+  loadUsers(override?: { page?: number; limit?: number; sortBy?: string; sortOrder?: string }): void {
     this.isLoading = true;
-    
+    const page = override?.page ?? this.currentPage;
+    const limit = override?.limit ?? this.currentLimit;
+    const sortBy = override?.sortBy ?? this.currentSortBy;
+    const sortOrder = override?.sortOrder ?? this.currentSortOrder;
+
     const params = {
-      page: this.paginator?.pageIndex ? this.paginator.pageIndex + 1 : 1,
-      limit: this.paginator?.pageSize || 10,
+      page,
+      limit,
       search: this.searchControl.value || '',
       role: this.roleFilter.value || '',
       department: this.departmentFilter.value || '',
       isActive: this.statusFilter.value || '',
-      sortBy: this.sort?.active || 'createdAt',
-      sortOrder: this.sort?.direction || 'desc'
+      sortBy,
+      sortOrder
     };
 
     this.apiService.getUsers(params).pipe(
@@ -152,13 +161,26 @@ export class UserManagementComponent implements OnInit, OnDestroy {
 
 
 
-  onPageChange(): void {
-    this.loadUsers();
+  
+
+  onPageChange(event: any): void {
+    // event expected { pageIndex, pageSize }
+    const page = (event && event.pageIndex != null) ? event.pageIndex + 1 : 1;
+    const limit = (event && event.pageSize) ? event.pageSize : this.currentLimit;
+    this.currentPage = page;
+    this.currentLimit = limit;
+    this.loadUsers({ page, limit });
   }
 
-  onSortChange(): void {
-    this.loadUsers();
+  onSortChange(event?: any): void {
+    if (event && event.active) {
+      this.currentSortBy = event.active;
+      this.currentSortOrder = event.direction || 'desc';
+    }
+    this.loadUsers({ sortBy: this.currentSortBy, sortOrder: this.currentSortOrder });
   }
+
+  
 
   clearFilters(): void {
     this.searchControl.setValue('');

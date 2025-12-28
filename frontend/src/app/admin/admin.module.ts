@@ -27,6 +27,7 @@ import { OrderDetailsComponent } from './orders/order-details.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AdminLoadingComponent } from './shared/components/loading/loading.component';
+import { AdminListComponent } from './shared/components/admin-list/admin-list.component';
 
 // Services
 import { AdminAuthService } from './services/admin-auth.service';
@@ -78,6 +79,7 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     SuperAdminDashboardComponent,
     GeneralDashboardComponent,
     AdminLoadingComponent,
+    AdminListComponent,
     
   ],
   providers: [
