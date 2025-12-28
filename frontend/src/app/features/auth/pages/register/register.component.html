@@ -1,141 +1,176 @@
-<div class="auth-container">
-  <div class="auth-card">
-    <!-- Logo -->
-    <div class="logo">
-      <div class="brand-icon">
-        <svg viewBox="0 0 40 40" class="logo-svg">
+<div class="login-container">
+  <!-- Left Side: Brand Section -->
+  <div class="brand-section">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" class="logo-svg">
           <defs>
-            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:#667eea"/>
-              <stop offset="100%" style="stop-color:#764ba2"/>
+            <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#FBBF24;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#F59E0B;stop-opacity:1" />
             </linearGradient>
           </defs>
-          <circle cx="20" cy="20" r="18" fill="url(#logoGradient)" opacity="0.1"/>
-          <path d="M12 16h16v2H12zm0 4h16v2H12zm0 4h12v2H12z" fill="url(#logoGradient)"/>
-          <circle cx="20" cy="12" r="3" fill="url(#logoGradient)"/>
+          <text x="20" y="50" font-size="48" font-weight="bold" fill="url(#brandGradient)">DF</text>
+          <text x="110" y="50" font-size="18" font-weight="300" fill="white" letter-spacing="2">ASHION</text>
         </svg>
       </div>
-      <h1 class="gradient-text">StyleHub</h1>
-      <p>Join the Style Revolution</p>
+      <h2 class="brand-tagline">Social E-Commerce</h2>
+      <p class="brand-description">Where Style Meets Community</p>
     </div>
+  </div>
 
-    <!-- Register Form -->
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
-      <div class="form-group">
-        <div class="input-container">
+  <!-- Right Side: Register Form -->
+  <div class="form-section">
+    <div class="form-container">
+      <!-- Welcome Header -->
+      <div class="welcome-header">
+        <h1>Create Account</h1>
+        <p>Join our style community</p>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Register Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Full Name Field -->
+        <div class="form-field">
+          <label for="fullName" class="form-label">Full Name</label>
           <input
+            id="fullName"
             type="text"
             formControlName="fullName"
-            placeholder="Full Name"
-            class="form-control"
-            [class.error]="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched"
-            [class.filled]="registerForm.get('fullName')?.value"
+            class="form-input"
+            placeholder="Enter your full name"
+            [class.input-error]="
+              registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched
+            "
+          />
+          <div
+            *ngIf="
+              registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched
+            "
+            class="field-error"
           >
-          <div class="input-icon">
-            <mat-icon>person</mat-icon>
+            <span *ngIf="registerForm.get('fullName')?.errors?.['required']">
+              Full name is required
+            </span>
           </div>
-          <div class="input-underline"></div>
         </div>
-        <div *ngIf="registerForm.get('fullName')?.invalid && registerForm.get('fullName')?.touched" class="error-message">
-          <mat-icon>error_outline</mat-icon>
-          Full name is required
-        </div>
-      </div>
 
-      <div class="form-group">
-        <div class="input-container">
+        <!-- Email Field -->
+        <div class="form-field">
+          <label for="email" class="form-label">Email Address</label>
           <input
-            type="text"
-            formControlName="username"
-            placeholder="Username"
-            class="form-control"
-            [class.error]="registerForm.get('username')?.invalid && registerForm.get('username')?.touched"
-            [class.filled]="registerForm.get('username')?.value"
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-input"
+            placeholder="Enter your email"
+            [class.input-error]="
+              registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+            "
+          />
+          <div
+            *ngIf="
+              registerForm.get('email')?.invalid && registerForm.get('email')?.touched
+            "
+            class="field-error"
           >
-          <div class="input-icon">
-            <mat-icon>alternate_email</mat-icon>
+            <span *ngIf="registerForm.get('email')?.errors?.['required']">
+              Email is required
+            </span>
+            <span *ngIf="registerForm.get('email')?.errors?.['email']">
+              Please enter a valid email
+            </span>
           </div>
-          <div class="input-underline"></div>
         </div>
-        <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error-message">
-          <mat-icon>error_outline</mat-icon>
-          <span *ngIf="registerForm.get('username')?.errors?.['required']">Username is required</span>
-          <span *ngIf="registerForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters</span>
-        </div>
-      </div>
 
-      <div class="form-group">
-        <input
-          type="email"
-          formControlName="email"
-          placeholder="Email"
-          class="form-control"
-          [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
-        >
-        <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="error-message">
-          <span *ngIf="registerForm.get('email')?.errors?.['required']">Email is required</span>
-          <span *ngIf="registerForm.get('email')?.errors?.['email']">Please enter a valid email</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <input
-          type="password"
-          formControlName="password"
-          placeholder="Password"
-          class="form-control"
-          [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
-        >
-        <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error-message">
-          <span *ngIf="registerForm.get('password')?.errors?.['required']">Password is required</span>
-          <span *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <select formControlName="role" class="form-control">
-          <option value="customer">Customer</option>
-          <option value="vendor">Vendor</option>
-        </select>
-      </div>
-
-      <!-- Vendor Info -->
-      <div *ngIf="registerForm.get('role')?.value === 'vendor'" class="vendor-info">
-        <div class="form-group">
-          <input
-            type="text"
-            formControlName="businessName"
-            placeholder="Business Name"
-            class="form-control"
+        <!-- Password Field -->
+        <div class="form-field">
+          <label for="password" class="form-label">Password</label>
+          <div class="password-input-wrapper">
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              class="form-input"
+              placeholder="Create a password"
+              [class.input-error]="
+                registerForm.get('password')?.invalid &&
+                registerForm.get('password')?.touched
+              "
+            />
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+            >
+              <mat-icon>{{ showPassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          <div
+            *ngIf="
+              registerForm.get('password')?.invalid &&
+              registerForm.get('password')?.touched
+            "
+            class="field-error"
           >
+            <span *ngIf="registerForm.get('password')?.errors?.['required']">
+              Password is required
+            </span>
+            <span *ngIf="registerForm.get('password')?.errors?.['minlength']">
+              Password must be at least 6 characters
+            </span>
+          </div>
         </div>
-        <div class="form-group">
-          <input
-            type="text"
-            formControlName="businessType"
-            placeholder="Business Type"
-            class="form-control"
-          >
+
+        <!-- Role Selection -->
+        <div class="form-field">
+          <label for="role" class="form-label">Account Type</label>
+          <select id="role" formControlName="role" class="form-input">
+            <option value="">Select account type</option>
+            <option value="customer">Customer</option>
+            <option value="vendor">Seller</option>
+          </select>
         </div>
+
+        <!-- Register Button -->
+        <button
+          type="submit"
+          class="btn-login"
+          [disabled]="registerForm.invalid || loading"
+        >
+          <span *ngIf="!loading">CREATE ACCOUNT</span>
+          <span *ngIf="loading">
+            <mat-icon class="spinner-icon">loop</mat-icon>
+            Creating...
+          </span>
+        </button>
+      </form>
+
+      <!-- Login Link -->
+      <div class="register-section">
+        <p>Already have an account?</p>
+        <button
+          type="button"
+          class="register-link"
+          (click)="goToLogin()"
+        >
+          Sign In
+        </button>
       </div>
 
-      <button 
-        type="submit" 
-        class="btn-primary auth-btn"
-        [disabled]="registerForm.invalid || loading"
-      >
-        <span *ngIf="loading" class="loading-spinner"></span>
-        {{ loading ? 'Creating Account...' : 'Create Account' }}
-      </button>
-
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+      <!-- Footer Links -->
+      <div class="footer-links">
+        <a href="/privacy-policy" target="_blank">Privacy Policy</a>
+        <span class="separator">•</span>
+        <a href="/terms" target="_blank">Terms of Service</a>
       </div>
-    </form>
-
-    <!-- Login Link -->
-    <div class="auth-link">
-      <p>Already have an account? <a routerLink="/auth/login">Sign in</a></p>
     </div>
   </div>
 </div>

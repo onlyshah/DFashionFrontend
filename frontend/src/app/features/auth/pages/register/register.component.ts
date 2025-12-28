@@ -16,6 +16,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   loading = false;
   errorMessage = '';
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -31,6 +32,14 @@ export class RegisterComponent {
       businessName: [''],
       businessType: ['']
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  goToLogin(): void {
+    this.router.navigate(['/auth/login']);
   }
 
   onSubmit() {

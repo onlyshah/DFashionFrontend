@@ -19,6 +19,7 @@ export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
   errorMessage = '';
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -32,6 +33,18 @@ export class LoginComponent {
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  goToRegister(): void {
+    this.router.navigate(['/auth/register']);
+  }
+
+  goToForgotPassword(): void {
+    this.router.navigate(['/auth/forgot-password']);
   }
 
 
