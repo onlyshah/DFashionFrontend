@@ -146,10 +146,10 @@ export class FeedComponent implements OnInit {
           const userObj = p.user || null;
           const userAvatar = userObj?.avatar
             ? `${base}${userObj.avatar}`
-            : `${base}/uploads/default-avatar.png`;
+            : `${base}/uploads/avatars/default-avatar.svg`;
           const mappedUser = userObj
             ? { ...userObj, avatar: userAvatar }
-            : { username: 'Unknown User', avatar: `${base}/uploads/default-avatar.png` };
+            : { username: 'Unknown User', avatar: `${base}/uploads/avatars/default-avatar.svg` };
           const mappedProducts = (p.products || []).map((pr: any) => {
             const prodData = pr.product || null;
             const prodImage = prodData?.image
@@ -262,10 +262,10 @@ loadPosts() {
         const userObj = p.user || null;
         const userAvatar = userObj?.avatar
           ? `${base}${userObj.avatar}`
-          : `${base}/uploads/default-avatar.png`;
+          : `${base}/uploads/avatars/default-avatar.svg`;
         const mappedUser = userObj
           ? { ...userObj, avatar: userAvatar }
-          : { username: 'Unknown User', avatar: `${base}/uploads/default-avatar.png` };
+          : { username: 'Unknown User', avatar: `${base}/uploads/avatars/default-avatar.svg` };
 
         // map product items so template can use product.image, product.name, product.price
         const mappedProducts = (p.products || []).map((pr: any) => {

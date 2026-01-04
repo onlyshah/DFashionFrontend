@@ -4,6 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocialFeedComponent } from '../posts/social-feed.component';
 //import { StoriesViewerComponent } from '../stories/stories-viewer.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-social-media',
@@ -451,6 +452,7 @@ export class SocialMediaComponent implements OnInit {
   cartCount = 0;
   wishlistCount = 0;
   isMobile = false;
+  apiUrl = environment.apiUrl;
 
   constructor(private router: Router) {}
 

@@ -4,12 +4,13 @@ import { RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { AuthService } from '../../../core/services/auth.service';
+import { StatisticsToggleComponent } from './statistics-toggle.component';
 import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-admin-header',
   standalone: true,
-  imports: [CommonModule, RouterModule, NgbDropdownModule],
+  imports: [CommonModule, RouterModule, NgbDropdownModule, StatisticsToggleComponent],
   templateUrl: './admin-header.component.html',
   styleUrls: ['./admin-header.component.scss']
 })
@@ -19,12 +20,13 @@ export class AdminHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   notifications = 0;
   messages = 0;
   apiUrl = environment.apiUrl;
+  showStatisticsPanel = false;
 
   // Handle image loading errors
   handleImageError(event: any) {
     const img = event.target;
     // Replace with default image from backend
-    img.src = this.apiUrl + '/assets/images/default/default-avatar.svg';
+    img.src = this.apiUrl + '/uploads/avatars/default-avatar.svg';
   }
   
   @Output() sidebarToggle = new EventEmitter<void>();
@@ -133,5 +135,9 @@ export class AdminHeaderComponent implements OnInit, OnDestroy, AfterViewInit {
   toggleMobileMenu(): void {
     document.body.classList.toggle('sidebar-open');
     this.mobileSidebarToggle.emit();
+  }
+
+  toggleStatisticsPanel(): void {
+    this.showStatisticsPanel = !this.showStatisticsPanel;
   }
 }

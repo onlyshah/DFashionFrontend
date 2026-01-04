@@ -212,7 +212,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
               _id: storyGroup.user?._id,
               username: storyGroup.user?.username || 'unknown',
               fullName: storyGroup.user?.fullName || 'Unknown User',
-              avatar: storyGroup.user?.avatar || 'http://localhost:9000/upload/avatars/default-avatar.png',
+              avatar: storyGroup.user?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg',
               isBrand: false,
               isVerified: false
             },
@@ -243,7 +243,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
                   _id: story.user._id,
                   username: story.user.username || 'unknown',
                   fullName: story.user.fullName || 'Unknown User',
-                  avatar: story.user.avatar || 'http://localhost:9000/upload/avatars/default-avatar.png',
+                  avatar: story.user.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg',
                   isBrand: false,
                   isVerified: false
                 },

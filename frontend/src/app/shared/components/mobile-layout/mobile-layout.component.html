@@ -14,7 +14,7 @@
 
       <!-- Logo -->
       <div class="header-logo" routerLink="/">
-        <img src="uploadslogo.svg" alt="DFashion" class="logo-image">
+        <img [src]="apiUrl + '/uploads/logo/logo.svg'" alt="DFashion" class="logo-image">
         <span class="logo-text">DFashion</span>
       </div>
 
@@ -65,7 +65,7 @@
       <!-- User Profile Section -->
       <div class="menu-profile" *ngIf="currentUser">
         <div class="profile-avatar">
-          <img [src]="currentUser.avatar || '/api/images/placeholder-avatar.png'"
+          <img [src]="currentUser.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')"
                [alt]="currentUser.fullName"
                (error)="onAvatarError($event)">
         </div>

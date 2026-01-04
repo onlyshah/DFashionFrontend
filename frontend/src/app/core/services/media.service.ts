@@ -28,7 +28,7 @@ export class MediaService {
 
   // Fallback images for different scenarios
   private readonly fallbackImages = {
-  user: 'http://localhost:9000/upload/avatars/default-avatar.png',
+  user: 'http://localhost:9000/uploads/avatars/default-avatar.svg',
     product: '/uploadsdefault-product.svg',
     post: '/uploadsdefault-post.svg',
     story: '/uploadsdefault-story.svg'

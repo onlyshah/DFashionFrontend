@@ -16,7 +16,7 @@
     <ul class="navbar-nav me-lg-2">
       <li class="nav-item nav-profile" ngbDropdown>
         <a class="nav-link" id="profileDropdown" role="button" ngbDropdownToggle>
-          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || (apiUrl + '/assets/images/default/default-avatar.svg')" alt="profile" (error)="handleImageError($event)"/>
+          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" alt="profile" (error)="handleImageError($event)"/>
           <span class="nav-profile-name">{{(currentUser$ | async)?.fullName || 'Super Admin'}}</span>
         </a>
         <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
@@ -149,7 +149,7 @@
             </div>
           </li>
         </ul>
-        <ul class="navbar-nav navbar-nav-right">
+      <ul class="navbar-nav navbar-nav-right">
           <li class="nav-item nav-search d-none d-md-block me-0">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="Search..." aria-label="search" aria-describedby="search">
@@ -160,10 +160,17 @@
               </div>
             </div>
           </li>
+          <li class="nav-item ms-2">
+            <button class="btn btn-sm btn-outline-secondary" (click)="toggleStatisticsPanel()" title="Toggle Statistics">
+              <i class="typcn typcn-chart-area-outline"></i>
+              <span class="d-none d-md-inline-block ms-2">Statistics</span>
+            </button>
+          </li>
         </ul>
       </div>
     </nav>
-<div class="welcome-section">
-  <h1>Welcome Back!</h1>
-  <p>Here's what's happening with your store today.</p>
+
+<!-- Statistics Panel -->
+<div class="statistics-panel-wrapper" *ngIf="showStatisticsPanel">
+  <app-statistics-toggle></app-statistics-toggle>
 </div>

@@ -17,7 +17,7 @@
   <!-- User Profile Summary -->
   <div class="profile-summary">
     <div class="profile-avatar">
-      <img src="http://localhost:9000/uploads/avatars/default-avatar.png" alt="Profile">
+      <img [src]="apiUrl + (currentUser?.avatar || '/uploads/avatars/default-avatar.svg')" alt="Profile">
       <div class="status-indicator online"></div>
     </div>
     <div class="profile-info">

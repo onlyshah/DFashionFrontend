@@ -22,7 +22,7 @@
                class="user-avatar"
                (click)="viewProfile(post.user._id)">
                 *ngIf="post.user"
-                [src]="post.user.image || post.user.avatar || '/uploads/default-avatar.svg'">
+                [src]="post.user.image || post.user.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')">
           <div class="user-details">
             <div class="username-row">
               <span class="username" (click)="viewProfile(post.user._id)">{{ post.user.username }}</span>

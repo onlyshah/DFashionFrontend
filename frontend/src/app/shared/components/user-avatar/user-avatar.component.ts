@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
 })
 export class UserAvatarComponent {
   @Input() avatarUrl?: string;
-  readonly BACKEND_AVATAR_PLACEHOLDER = '/uploads/placeholder-avatar.png';
+  readonly BACKEND_AVATAR_PLACEHOLDER = '/uploads/avatars/default-avatar.svg';
   @Input() displayName: string = '';
   @Input() size: 'small' | 'medium' | 'large' | 'xlarge' = 'medium';
   @Input() showStatus: boolean = false;

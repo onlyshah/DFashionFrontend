@@ -34,7 +34,7 @@ export class ViewAddStoriesComponent implements OnInit {
   @Input() stories: Story[] = [];
   @Input() showAddStory: boolean = true;
   @Input() addStoryText: string = 'Your Story';
-  @Input() defaultAvatar: string = 'http://localhost:9000/uploads/avatars/default-avatar.png';
+  @Input() defaultAvatar: string = 'http://localhost:9000/uploads/avatars/default-avatar.svg';
   @Input() currentUser: CurrentUser | null = null;
 
   @Output() storyClick = new EventEmitter<{story: Story, index: number}>();

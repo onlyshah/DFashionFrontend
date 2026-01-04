@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 //import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
 import { CustomerDashboardComponent } from '../customer-dashboard/customer-dashboard.component';
 
@@ -48,6 +49,7 @@ interface RecentActivity {
 export class UserDashboardComponent implements OnInit {
   currentUser: any = null;
   isMobile = false;
+  apiUrl = environment.apiUrl;
 
   userStats: UserStats = {
     postsCount: 0,

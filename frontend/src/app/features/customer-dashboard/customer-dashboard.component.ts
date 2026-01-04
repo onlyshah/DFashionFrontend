@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ApiService } from '../../core/services/api.service';
 import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
+import { environment } from '../../../environments/environment';
 
 interface CustomerStats {
   ordersCount: number;
@@ -61,6 +62,7 @@ export class CustomerDashboardComponent implements OnInit, OnDestroy {
   currentUser: any = null;
   isMobile = false;
   isTablet = false;
+    apiUrl = environment.apiUrl;
   
   customerStats: CustomerStats | null = null;
   recentOrders: RecentOrder[] = [];

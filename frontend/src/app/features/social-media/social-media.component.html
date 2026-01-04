@@ -43,7 +43,7 @@
         </button>
         
         <div class="user-menu" *ngIf="currentUser; else loginButton">
-          <img [src]="currentUser.avatar || '/uploadsdefault-avatar.png'" 
+          <img [src]="currentUser.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" 
                [alt]="currentUser.fullName" 
                class="user-avatar"
                (click)="toggleUserMenu()">

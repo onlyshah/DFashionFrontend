@@ -132,7 +132,7 @@ export class ProfilePage implements OnInit {
   }
 
   getUserAvatar(): string {
-    return this.user?.avatar || '/uploadsdefault-avatar.png';
+    return this.user?.avatar || '/uploads/avatars/default-avatar.svg';
   }
 
   getUserDisplayName(): string {

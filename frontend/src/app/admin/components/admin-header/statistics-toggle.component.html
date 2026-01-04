@@ -1,0 +1,109 @@
+<div class="statistics-toggle-wrapper">
+  <!-- Segment Control for Statistics Toggle -->
+  <div class="statistics-controls">
+    <div class="btn-group btn-group-sm" role="group">
+      <button 
+        *ngFor="let stat of statisticTypes"
+        type="button" 
+        class="btn btn-outline-secondary statistics-btn"
+        [class.active]="selectedStatistic.id === stat.id"
+        (click)="toggleStatistic(stat)"
+        [attr.aria-pressed]="selectedStatistic.id === stat.id">
+        <i [class]="'typcn ' + stat.icon"></i>
+        <span class="d-none d-md-inline-block ms-2">{{ stat.name }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Statistics Content -->
+  <div class="statistics-content" *ngIf="!isLoading && !error">
+    <!-- Sales Statistics -->
+    <div *ngIf="selectedStatistic.id === 'sales'" class="statistics-panel">
+      <div class="stat-item">
+        <h5>Today's Sales</h5>
+        <h2>${{ getSalesData().todaySales | number:'1.2-2' }}</h2>
+        <div [class]="'stat-change ' + (getSalesData().salesGrowth >= 0 ? 'text-success' : 'text-danger')">
+          <i [class]="getSalesData().salesGrowth >= 0 ? 'typcn typcn-arrow-up-thick' : 'typcn typcn-arrow-down-thick'"></i>
+          {{ getSalesData().salesGrowth }}% from yesterday
+        </div>
+      </div>
+      <div class="stat-item">
+        <h5>Total Revenue</h5>
+        <h2>${{ getSalesData().totalRevenue | number:'1.2-2' }}</h2>
+        <p class="text-muted">Lifetime revenue</p>
+      </div>
+    </div>
+
+    <!-- Stock Statistics -->
+    <div *ngIf="selectedStatistic.id === 'stock'" class="statistics-panel">
+      <div class="stat-item">
+        <h5>Total Products</h5>
+        <h2>{{ getStockData().totalProducts }}</h2>
+        <p class="text-muted">Active products</p>
+      </div>
+      <div class="stat-item">
+        <h5>Low Stock</h5>
+        <h2>{{ getStockData().lowStockProducts }}</h2>
+        <div class="text-warning">
+          <i class="typcn typcn-alert"></i>
+          Requires attention
+        </div>
+      </div>
+      <div class="stat-item">
+        <h5>Out of Stock</h5>
+        <h2>{{ getStockData().outOfStock }}</h2>
+        <p class="text-muted">Unavailable items</p>
+      </div>
+    </div>
+
+    <!-- Users Statistics -->
+    <div *ngIf="selectedStatistic.id === 'users'" class="statistics-panel">
+      <div class="stat-item">
+        <h5>Total Users</h5>
+        <h2>{{ getUsersData().totalUsers }}</h2>
+        <p class="text-muted">Registered users</p>
+      </div>
+      <div class="stat-item">
+        <h5>Active Users</h5>
+        <h2>{{ getUsersData().activeUsers }}</h2>
+        <p class="text-muted">Last 30 days</p>
+      </div>
+      <div class="stat-item">
+        <h5>New Users</h5>
+        <h2>{{ getUsersData().newUsers }}</h2>
+        <p class="text-muted">This month</p>
+      </div>
+    </div>
+
+    <!-- Vendors Statistics -->
+    <div *ngIf="selectedStatistic.id === 'vendors'" class="statistics-panel">
+      <div class="stat-item">
+        <h5>Total Vendors</h5>
+        <h2>{{ getVendorsData().totalVendors }}</h2>
+        <p class="text-muted">Registered vendors</p>
+      </div>
+      <div class="stat-item">
+        <h5>Active Vendors</h5>
+        <h2>{{ getVendorsData().activeVendors }}</h2>
+        <p class="text-muted">Currently active</p>
+      </div>
+      <div class="stat-item">
+        <h5>Approved Vendors</h5>
+        <h2>{{ getVendorsData().approvedVendors }}</h2>
+        <p class="text-muted">Verified & approved</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="text-center p-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="alert alert-danger m-0">
+    {{ error }}
+  </div>
+</div>

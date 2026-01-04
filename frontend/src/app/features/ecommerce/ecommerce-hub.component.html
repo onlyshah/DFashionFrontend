@@ -38,7 +38,7 @@
           <span class="notification-badge" *ngIf="notificationCount > 0">{{ notificationCount }}</span>
         </button>
         <div class="user-menu" *ngIf="currentUser; else loginButton">
-          <img [src]="currentUser.avatar || '/uploadsdefault-avatar.png'" [alt]="currentUser.fullName" class="user-avatar" (click)="toggleUserMenu()">
+          <img [src]="currentUser.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" [alt]="currentUser.fullName" class="user-avatar" (click)="toggleUserMenu()">
           <div class="user-dropdown" *ngIf="showUserMenu">
             <div class="dropdown-item" (click)="navigateTo('profile')">
               <i class="fas fa-user"></i>

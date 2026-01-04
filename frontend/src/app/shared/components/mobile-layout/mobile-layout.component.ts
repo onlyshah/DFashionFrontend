@@ -9,6 +9,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistNewService } from '../../../core/services/wishlist-new.service';
 import { TrendingProductsComponent } from '../../../features/home/components/trending-products/trending-products.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-mobile-layout',
@@ -18,6 +19,7 @@ import { TrendingProductsComponent } from '../../../features/home/components/tre
 })
 export class MobileLayoutComponent implements OnInit, OnDestroy {
   isTrendingOpen = false;
+  apiUrl = environment.apiUrl;
 
   openTrending() {
     this.isTrendingOpen = true;
@@ -322,7 +324,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   // Get current user avatar
   getCurrentUserAvatar(): string {
-  return this.currentUser?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.png';
+  return this.currentUser?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg';
   }
 
   // Performance Optimization
@@ -332,6 +334,6 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   onAvatarError(event: any) {
     // Fallback to default avatar if the current one fails to load
-  event.target.src = 'http://localhost:9000/uploads/avatars/default-avatar.png';
+  event.target.src = 'http://localhost:9000/uploads/avatars/default-avatar.svg';
   }
 }

@@ -3,10 +3,10 @@
   <div class="navbar-brand-wrapper d-flex justify-content-center">
     <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
       <a class="navbar-brand brand-logo" routerLink="/admin">
-        <img src="assets/images/logo.svg" alt="DFashion" />
+        <img [src]="imageUrl + '/uploads/logo/logo.svg'" alt="DFashion" />
       </a>
       <a class="navbar-brand brand-logo-mini" routerLink="/admin">
-        <img src="assets/images/logo-mini.svg" alt="DFashion" />
+        <img [src]="imageUrl + '/uploads/logo/logo-mini.svg'" alt="DFashion" />
       </a>
       <button mat-icon-button class="navbar-toggler" (click)="toggleSidebar()">
         <mat-icon>menu</mat-icon>
@@ -83,7 +83,7 @@
       </mat-menu>
 
       <button mat-icon-button [matMenuTriggerFor]="profileMenu">
-        <img [src]="currentUser?.avatar ? (imageUrl + currentUser?.avatar) : 'assets/images/default-avatar.png'" alt="profile" class="profile-pic" />
+        <img [src]="currentUser?.avatar ? (imageUrl + currentUser?.avatar) : (imageUrl + '/uploads/avatars/default-avatar.svg')" alt="profile" class="profile-pic" />
       </button>
       <mat-menu #profileMenu="matMenu">
         <button mat-menu-item routerLink="/admin/profile">

@@ -156,7 +156,7 @@
     <div class="sidebar-header">
       <div class="user-profile">
         <div class="profile-avatar">
-          <img src="http://localhost:9000/uploads/avatars/default-avatar.png" alt="Profile">
+          <img [src]="apiUrl + (currentUser?.avatar || '/uploads/avatars/default-avatar.svg')" alt="Profile">
         </div>
         <div class="profile-info">
           <h3>Your Profile</h3>
@@ -266,7 +266,7 @@
     </div>
     <div class="nav-item">
       <div class="profile-avatar-nav">
-  <img src="http://localhost:9000/uploads/avatars/default-avatar.png" alt="Profile">
+  <img [src]="apiUrl + (currentUser?.avatar || '/uploads/avatars/default-avatar.svg')" alt="Profile">
       </div>
     </div>
   </div>

@@ -14,24 +14,38 @@
       </a>
     </li>
 
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/products" routerLinkActive="active">
+    <!-- Product Module Dropdown -->
+    <li class="nav-item" [class.open]="isProductMenuOpen">
+      <a class="nav-link" (click)="toggleProductMenu()" [attr.aria-expanded]="isProductMenuOpen">
         <i class="typcn typcn-shopping-bag menu-icon"></i>
-        <span class="menu-title">Products</span>
+        <span class="menu-title">Product</span>
+        <i class="typcn typcn-chevron-right" [class.rotate]="isProductMenuOpen"></i>
       </a>
+      <div class="collapse" [class.show]="isProductMenuOpen">
+        <ul class="nav flex-column sub-menu">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/categories" routerLinkActive="active" (click)="closeProductMenu()">
+              <span class="menu-title">Category</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/sub-categories" routerLinkActive="active" (click)="closeProductMenu()">
+              <span class="menu-title">Sub-Category</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/admin/products" routerLinkActive="active" (click)="closeProductMenu()">
+              <span class="menu-title">Product</span>
+            </a>
+          </li>
+        </ul>
+      </div>
     </li>
 
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/orders" routerLinkActive="active">
         <i class="typcn typcn-shopping-cart menu-icon"></i>
         <span class="menu-title">Orders</span>
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/categories" routerLinkActive="active">
-        <i class="typcn typcn-th-large menu-icon"></i>
-        <span class="menu-title">Categories</span>
       </a>
     </li>
 

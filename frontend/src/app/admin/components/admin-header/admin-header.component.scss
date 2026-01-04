@@ -1,6 +1,7 @@
 
 // Import admin variables (use module system to avoid deprecated @import)
 @use "../../styles/_variables" as *;
+@use "sass:color";
 
 // @import "common/light/common"; (left intentionally commented)
 // @import "vertical-wrapper";
@@ -32,7 +33,7 @@
       margin-right: 1.3rem;
       margin-left: 1.8rem;
       .navbar-brand {
-        color: lighten($gray-dark, 20%);
+        color: color.adjust($gray-dark, $lightness: 20%);
         font-size: 1.5rem;
         margin-right: 0;
         padding: .25rem 0;
@@ -48,7 +49,7 @@
         &:active,
         &:focus,
         &:hover {
-          color: lighten($gray-dark, 10%);
+          color: color.adjust($gray-dark, $lightness: 10%);
         }
 
         img {
@@ -362,7 +363,7 @@
     }
     &.navbar-dark {
       .navbar-menu-wrapper {
-        border-left-color: darken($border-color, 50%);
+        border-left-color: color.adjust($border-color, $lightness: -50%);
       }
     }
     &.navbar-danger {
@@ -520,5 +521,29 @@
         margin-left: auto;
       }
     }
+  }
+}
+
+// Statistics Panel Styling
+.statistics-panel-wrapper {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 1rem;
+  animation: slideDown 0.3s ease-in-out;
+  
+  @media (max-width: 576px) {
+    padding: 0.75rem;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
   }
 }
