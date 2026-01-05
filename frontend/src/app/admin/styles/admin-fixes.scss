@@ -15,6 +15,15 @@
 .main-panel,
 .content-wrapper {
   padding-top: $navbar-height !important;
+  min-height: calc(100vh - 4.625rem);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1.875rem;
+    background: #f4f5fa
 }
 /* Navbar Fixes */
 .navbar {
@@ -221,9 +230,10 @@
 
 /* Main Panel Fixes */
 .main-panel {
-  margin-left: 260px;
+  margin-left:20px;
   min-height: 100vh;
   transition: all 0.3s ease;
+  box-shadow: none;
   
   .content-wrapper {
     padding: 20px;

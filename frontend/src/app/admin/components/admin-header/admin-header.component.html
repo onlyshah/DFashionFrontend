@@ -124,16 +124,24 @@
   <nav class="navbar-breadcrumb col-xl-12 col-12 d-flex flex-row p-0">
       <div class="navbar-links-wrapper d-flex align-items-stretch">
         <div class="nav-link">
-          <a href="javascript:;"><i class="typcn typcn-calendar-outline"></i></a>
+          <a class="nav-icon" routerLink="/admin/analytics/sales" title="Sales">
+            <i class="typcn typcn-chart-area-outline"></i>
+          </a>
         </div>
         <div class="nav-link">
-          <a href="javascript:;"><i class="typcn typcn-mail"></i></a>
+          <a class="nav-icon" routerLink="/admin/vendors" title="Vendors">
+            <i class="typcn typcn-user"></i>
+          </a>
         </div>
         <div class="nav-link">
-          <a href="javascript:;"><i class="typcn typcn-folder"></i></a>
+          <a class="nav-icon" routerLink="/admin/users" title="Users">
+            <i class="typcn typcn-contacts"></i>
+          </a>
         </div>
         <div class="nav-link">
-          <a href="javascript:;"><i class="typcn typcn-document-text"></i></a>
+          <a class="nav-icon" routerLink="/admin/stock" title="Stock">
+            <i class="typcn typcn-folder"></i>
+          </a>
         </div>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
@@ -160,12 +168,7 @@
               </div>
             </div>
           </li>
-          <li class="nav-item ms-2">
-            <button class="btn btn-sm btn-outline-secondary" (click)="toggleStatisticsPanel()" title="Toggle Statistics">
-              <i class="typcn typcn-chart-area-outline"></i>
-              <span class="d-none d-md-inline-block ms-2">Statistics</span>
-            </button>
-          </li>
+         
         </ul>
       </div>
     </nav>

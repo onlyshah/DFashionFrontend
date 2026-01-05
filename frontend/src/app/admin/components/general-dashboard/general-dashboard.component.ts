@@ -6,12 +6,14 @@ import { AdminApiService, DashboardMetrics } from '../../services/admin-api.serv
 import { AuthService } from '../../../core/services/auth.service';
 import { AdminHeaderComponent } from '../admin-header/admin-header.component';
 import { AdminSidebarComponent } from '../admin-sidebar/admin-sidebar.component';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-general-dashboard',
   standalone: true,
-  imports: [CommonModule, AdminHeaderComponent, AdminSidebarComponent],
+  imports: [CommonModule, AdminHeaderComponent, AdminSidebarComponent, RouterModule],
   templateUrl: './general-dashboard.component.html',
   styleUrls: ['./general-dashboard.component.scss']
 })
@@ -19,6 +21,7 @@ export class GeneralDashboardComponent implements OnInit, OnDestroy, AfterViewIn
   private destroy$ = new Subject<void>();
   
   isLoading = true;
+  isChildRoute = false;
   error: string | null = null;
   dashboardData: DashboardMetrics | null = null;
   userRole$ = this.authService.userRole$;
@@ -39,7 +42,22 @@ export class GeneralDashboardComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngOnInit(): void {
+    this.detectChildRoute();
     this.loadDashboardData();
+    
+    // Listen for route changes to update isChildRoute
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.detectChildRoute();
+    });
+  }
+
+  private detectChildRoute(): void {
+    const urlSegments = this.router.url.split('/').filter(s => s);
+    // If there's more than just /admin/dashboard, it's a child route
+    this.isChildRoute = urlSegments.length > 2 || (urlSegments.length === 2 && urlSegments[1] !== 'dashboard');
   }
 
   ngOnDestroy(): void {

@@ -101,7 +101,7 @@ export interface UserStats {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:3001/api/users'; // Updated to correct port and API version
+  private apiUrl = '/api/admin/users';
   private usersSubject = new BehaviorSubject<User[]>([]);
   public users$ = this.usersSubject.asObservable();
 

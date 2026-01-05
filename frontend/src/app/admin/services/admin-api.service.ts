@@ -61,28 +61,26 @@ export class AdminApiService {
   constructor(private http: HttpClient, private adminAuth: AdminAuthService) {}
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || sessionStorage.getItem('token');
     const headers: any = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    if (token) headers['Authorization'] = `Bearer ${token}`;
     return new HttpHeaders(headers);
   }
 
   getProducts(params: any = {}): Observable<any> {
-    return this.http.get(`${this.apiUrl}/products`, { params });
+    return this.http.get(`${this.apiUrl}/products`, { params, headers: this.getHeaders() });
   }
 
   createProduct(product: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/products`, product);
+    return this.http.post(`${this.apiUrl}/products`, product, { headers: this.getHeaders() });
   }
 
   updateProduct(id: string, product: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/products/${id}`, product);
+    return this.http.put(`${this.apiUrl}/products/${id}`, product, { headers: this.getHeaders() });
   }
 
   deleteProduct(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/products/${id}`);
+    return this.http.delete(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() });
   }
 
   getCategories(): Observable<Category[]> {
@@ -102,31 +100,31 @@ export class AdminApiService {
   }
 
   getBrands(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/brands`);
+    return this.http.get<any[]>(`${this.apiUrl}/brands`, { headers: this.getHeaders() });
   }
 
   getUsers(params: any = {}): Observable<any> {
-    return this.http.get(`${this.apiUrl}/users`, { params });
+    return this.http.get(`${this.apiUrl}/users`, { params, headers: this.getHeaders() });
   }
 
   createUser(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/users`, user);
+    return this.http.post(`${this.apiUrl}/users`, user, { headers: this.getHeaders() });
   }
 
   updateUser(id: string, user: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/users/${id}`, user);
+    return this.http.put(`${this.apiUrl}/users/${id}`, user, { headers: this.getHeaders() });
   }
 
   deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/users/${id}`);
+    return this.http.delete(`${this.apiUrl}/users/${id}`, { headers: this.getHeaders() });
   }
 
   activateUser(id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {});     
+    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {}, { headers: this.getHeaders() });     
   }
 
   getSuperAdminStats(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/dashboard/super-admin`);
+    return this.http.get(`${this.apiUrl}/dashboard/super-admin`, { headers: this.getHeaders() });
   }
 
   /**

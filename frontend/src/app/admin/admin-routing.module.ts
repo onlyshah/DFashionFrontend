@@ -34,6 +34,7 @@ const routes: Routes = [
   {
     path: '',
     canActivate: [AdminAuthGuard],
+    component: GeneralDashboardComponent,
     children: [
       {
         path: '',
@@ -42,19 +43,14 @@ const routes: Routes = [
       },
       {
         path: 'dashboard',
-        children: [
-          {
-            path: '',
-            component: GeneralDashboardComponent,
-            data: { title: 'Dashboard' }
-          },
-          {
-            path: 'super',
-            component: SuperAdminDashboardComponent,
-            canActivate: [SuperAdminGuard],
-            data: { title: 'Super Admin Dashboard' }
-          }
-        ]
+        component: GeneralDashboardComponent,
+        data: { title: 'Dashboard' }
+      },
+      {
+        path: 'dashboard/super',
+        component: SuperAdminDashboardComponent,
+        canActivate: [SuperAdminGuard],
+        data: { title: 'Super Admin Dashboard' }
       },
       {
         path: 'users',
@@ -106,6 +102,11 @@ const routes: Routes = [
         path: 'orders',
         component: OrderManagementComponent,
         data: { title: 'Order Management', permission: 'orders:view' }
+      },
+      {
+        path: 'stock',
+        component: ProductManagementComponent,
+        data: { title: 'Stock Management', permission: 'products:view', type: 'stock' }
       },
       {
         path: 'analytics',
