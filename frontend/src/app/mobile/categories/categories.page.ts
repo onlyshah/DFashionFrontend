@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
+import { CategoryService } from '../../core/services/category.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
 
@@ -46,6 +47,7 @@ export class CategoriesPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private productService: ProductService,
+    private categoryService: CategoryService,
     private cartService: CartService,
     private wishlistService: WishlistService
   ) {}
@@ -65,30 +67,54 @@ export class CategoriesPage implements OnInit {
 
   async loadCategories() {
     try {
-      // Load categories from API or use default ones
-      this.categories = [
-        { id: 'men', name: 'Men', icon: 'man', color: 'primary' },
-        { id: 'women', name: 'Women', icon: 'woman', color: 'secondary' },
-        { id: 'kids', name: 'Kids', icon: 'happy', color: 'tertiary' },
-        { id: 'accessories', name: 'Accessories', icon: 'bag', color: 'success' },
-        { id: 'shoes', name: 'Shoes', icon: 'footsteps', color: 'warning' },
-        { id: 'bags', name: 'Bags', icon: 'bag-handle', color: 'danger' }
-      ];
+      console.log('[CategoriesPage] Loading categories from CategoryService');
+      // Load categories from API - no mock data
+      const categories = await this.categoryService.getAllCategories().toPromise();
+      console.log('[CategoriesPage] Categories received:', categories?.length || 0);
+      this.categories = (categories || []).map(cat => ({
+        id: cat._id,
+        name: cat.name,
+        icon: cat.icon || 'bag', // Use icon from API or default
+        color: this.getColorForCategory(cat.name)
+      }));
+      console.log('[CategoriesPage] Categories mapped and set:', this.categories.length);
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('[CategoriesPage] Error loading categories:', error);
+      // Show error to user, don't use mock data
+      this.categories = [];
     }
+  }
+
+  /**
+   * Assign colors to categories dynamically based on their name
+   */
+  private getColorForCategory(categoryName: string): string {
+    const colorMap: { [key: string]: string } = {
+      'men': 'primary',
+      'women': 'secondary',
+      'kids': 'tertiary',
+      'accessories': 'success',
+      'shoes': 'warning',
+      'bags': 'danger',
+      'jewelry': 'info',
+      'watches': 'light'
+    };
+    return colorMap[categoryName.toLowerCase()] || 'medium';
   }
 
   async loadProducts() {
     try {
+      console.log('[CategoriesPage] Loading products from ProductService');
       this.isLoading = true;
-      const response = await this.productService.getAllProducts().toPromise();
-      this.products = response?.data || [];
+      const response = await this.productService.getProducts().toPromise();
+      console.log('[CategoriesPage] Products received:', response);
+      this.products = response?.products || [];
+      console.log('[CategoriesPage] Products set:', this.products.length);
       this.filteredProducts = [...this.products];
       this.extractBrands();
       this.filterProducts();
     } catch (error) {
-      console.error('Error loading products:', error);
+      console.error('[CategoriesPage] Error loading products:', error);
     } finally {
       this.isLoading = false;
     }

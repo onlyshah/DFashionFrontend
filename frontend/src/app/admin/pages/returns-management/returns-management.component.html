@@ -1,0 +1,101 @@
+<div class="returns-management-container">
+  <div class="header">
+    <h2>Returns Management</h2>
+    <p>Manage product returns and refunds</p>
+  </div>
+
+  <div class="filters">
+    <input 
+      type="text" 
+      [(ngModel)]="searchTerm" 
+      (keyup.enter)="onSearch()"
+      placeholder="Search by order ID or customer name..."
+      class="search-input"
+    />
+    <select 
+      [(ngModel)]="filterStatus" 
+      (change)="onFilterChange()"
+      class="filter-select"
+    >
+      <option value="">All Statuses</option>
+      <option *ngFor="let status of statuses" [value]="status">{{ status | titlecase }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="isLoading" class="loading">Loading returns...</div>
+
+  <div *ngIf="!isLoading && returns.length === 0" class="no-data">
+    No returns found
+  </div>
+
+  <table *ngIf="!isLoading && returns.length > 0" class="returns-table">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer</th>
+        <th>Product</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ret of returns" [class.selected]="selectedReturn?._id === ret._id">
+        <td (click)="selectReturn(ret)" class="clickable">{{ ret.orderId }}</td>
+        <td>{{ ret.customerName }}</td>
+        <td>{{ ret.productName }}</td>
+        <td>{{ ret.reason }}</td>
+        <td>
+          <select 
+            [(ngModel)]="ret.status"
+            (change)="onStatusChange(ret._id, ret.status)"
+            [class]="'status-' + ret.status"
+          >
+            <option *ngFor="let status of statuses" [value]="status">{{ status | titlecase }}</option>
+          </select>
+        </td>
+        <td class="actions">
+          <button *ngIf="ret.status !== 'refunded'" (click)="refundReturn(ret._id)" class="btn-refund">Refund</button>
+          <button *ngIf="ret.status !== 'approved'" (click)="approveReturn(ret._id)" class="btn-approve">Approve</button>
+          <button *ngIf="ret.status !== 'rejected'" (click)="rejectReturn(ret._id)" class="btn-reject">Reject</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="selectedReturn" class="details-panel">
+    <h3>Return Details</h3>
+    <div class="detail-grid">
+      <div class="detail-item">
+        <label>Order ID:</label>
+        <span>{{ selectedReturn.orderId }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Customer:</label>
+        <span>{{ selectedReturn.customerName }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Product:</label>
+        <span>{{ selectedReturn.productName }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Reason:</label>
+        <span>{{ selectedReturn.reason }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Status:</label>
+        <span [class]="'status-' + selectedReturn.status">{{ selectedReturn.status | titlecase }}</span>
+      </div>
+      <div class="detail-item">
+        <label>Refund Amount:</label>
+        <span>₹{{ selectedReturn.refundAmount }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button [disabled]="page === 1" (click)="previousPage()">Previous</button>
+    <span>Page {{ page }} of {{ Math.ceil(total / limit) }}</span>
+    <button [disabled]="page * limit >= total" (click)="nextPage()">Next</button>
+  </div>
+</div>

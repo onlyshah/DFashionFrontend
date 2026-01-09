@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 import { Product } from '../models/product.interface';
 
@@ -44,32 +45,75 @@ export class ProductService {
       }
     });
 
-    return this.http.get<ProductsResponse>(`${this.API_URL}/products`, { params });
+    console.log('[ProductService] Fetching products with filters:', filters, 'from API:', `${this.API_URL}/products`);
+    return this.http.get<ProductsResponse>(`${this.API_URL}/products`, { params })
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (getProducts):', response);
+          console.log('[ProductService] Total products:', response.total);
+        })
+      );
   }
 
   getProduct(id: string): Observable<{ product: Product }> {
-    return this.http.get<{ product: Product }>(`${this.API_URL}/products/${id}`);
+    console.log('[ProductService] Fetching product by ID:', id);
+    return this.http.get<{ product: Product }>(`${this.API_URL}/products/${id}`)
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (getProduct):', response);
+          console.log('[ProductService] Product loaded:', response.product?.name);
+        })
+      );
   }
 
   createProduct(productData: any): Observable<{ message: string; product: Product }> {
-    return this.http.post<{ message: string; product: Product }>(`${this.API_URL}/products`, productData);
+    console.log('[ProductService] Creating product:', productData);
+    return this.http.post<{ message: string; product: Product }>(`${this.API_URL}/products`, productData)
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (createProduct):', response);
+          console.log('[ProductService] Product created:', response.product?.name);
+        })
+      );
   }
 
   updateProduct(id: string, productData: any): Observable<{ message: string; product: Product }> {
-    return this.http.put<{ message: string; product: Product }>(`${this.API_URL}/products/${id}`, productData);
+    console.log('[ProductService] Updating product:', id, 'with data:', productData);
+    return this.http.put<{ message: string; product: Product }>(`${this.API_URL}/products/${id}`, productData)
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (updateProduct):', response);
+          console.log('[ProductService] Product updated:', response.product?.name);
+        })
+      );
   }
 
   deleteProduct(id: string): Observable<{ message: string }> {
-    return this.http.delete<{ message: string }>(`${this.API_URL}/products/${id}`);
+    console.log('[ProductService] Deleting product:', id);
+    return this.http.delete<{ message: string }>(`${this.API_URL}/products/${id}`)
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (deleteProduct):', response);
+          console.log('[ProductService] Product deleted');
+        })
+      );
   }
 
   addReview(productId: string, reviewData: any): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.API_URL}/products/${productId}/review`, reviewData);
+    console.log('[ProductService] Adding review for product:', productId, 'with data:', reviewData);
+    return this.http.post<{ message: string }>(`${this.API_URL}/products/${productId}/review`, reviewData)
+      .pipe(
+        tap(response => {
+          console.log('[ProductService] API Response (addReview):', response);
+          console.log('[ProductService] Review added');
+        })
+      );
   }
 
 
 
   searchProducts(query: string, filters: ProductFilters = {}): Observable<ProductsResponse> {
+    console.log('[ProductService] Searching products with query:', query, 'filters:', filters);
     const searchFilters = { ...filters, search: query };
     return this.getProducts(searchFilters);
   }

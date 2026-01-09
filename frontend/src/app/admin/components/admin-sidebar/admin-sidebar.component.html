@@ -1,5 +1,6 @@
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
   <ul class="nav">
+    <!-- Dashboard (hardcoded) -->
     <li class="nav-item">
       <a class="nav-link" routerLink="/admin/dashboard" routerLinkActive="active">
         <i class="typcn typcn-device-desktop menu-icon"></i>
@@ -7,60 +8,33 @@
       </a>
     </li>
     
-    <li class="nav-item" *ngIf="isSuperAdmin$ | async">
-      <a class="nav-link" routerLink="/admin/users" routerLinkActive="active">
-        <i class="typcn typcn-group menu-icon"></i>
-        <span class="menu-title">User Management</span>
-      </a>
-    </li>
-
-    <!-- Product Module Dropdown -->
-    <li class="nav-item" [class.open]="isProductMenuOpen">
-      <a class="nav-link" (click)="toggleProductMenu()" [attr.aria-expanded]="isProductMenuOpen">
-        <i class="typcn typcn-shopping-bag menu-icon"></i>
-        <span class="menu-title">Product</span>
-        <i class="typcn typcn-chevron-right" [class.rotate]="isProductMenuOpen"></i>
-      </a>
-      <div class="collapse" [class.show]="isProductMenuOpen">
-        <ul class="nav flex-column sub-menu">
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/admin/categories" routerLinkActive="active" (click)="closeProductMenu()">
-              <span class="menu-title">Category</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/admin/sub-categories" routerLinkActive="active" (click)="closeProductMenu()">
-              <span class="menu-title">Sub-Category</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/admin/products" routerLinkActive="active" (click)="closeProductMenu()">
-              <span class="menu-title">Product</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/orders" routerLinkActive="active">
-        <i class="typcn typcn-shopping-cart menu-icon"></i>
-        <span class="menu-title">Orders</span>
-      </a>
-    </li>
-
-    <li class="nav-item" *ngIf="isSuperAdmin$ | async">
-      <a class="nav-link" routerLink="/admin/settings" routerLinkActive="active">
-        <i class="typcn typcn-cog menu-icon"></i>
-        <span class="menu-title">Settings</span>
-      </a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link" routerLink="/admin/reports" routerLinkActive="active">
-        <i class="typcn typcn-chart-bar menu-icon"></i>
-        <span class="menu-title">Reports</span>
-      </a>
-    </li>
+    <!-- Dynamic Admin Menu (role-based filtered) -->
+    <ng-container *ngFor="let item of filteredMenu">
+      <!-- Simple items without children -->
+      <li class="nav-item" *ngIf="!item.children">
+        <a class="nav-link" [routerLink]="item.route" routerLinkActive="active">
+          <i *ngIf="item.icon" [class]="item.icon + ' menu-icon'"></i>
+          <span class="menu-title">{{ item.title }}</span>
+        </a>
+      </li>
+      
+      <!-- Parent items with children (dropdowns) -->
+      <li class="nav-item" *ngIf="item.children" [class.open]="isOpen(item.key)">
+        <a class="nav-link" (click)="toggleMenu(item.key)" [attr.aria-expanded]="isOpen(item.key)">
+          <i *ngIf="item.icon" [class]="item.icon + ' menu-icon'"></i>
+          <span class="menu-title">{{ item.title }}</span>
+          <i class="typcn typcn-chevron-right" [class.rotate]="isOpen(item.key)"></i>
+        </a>
+        <div class="collapse" [class.show]="isOpen(item.key)">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item" *ngFor="let child of item.children">
+              <a class="nav-link" [routerLink]="child.route" routerLinkActive="active" (click)="closeMenu(item.key)">
+                <span class="menu-title">{{ child.title }}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ng-container>
   </ul>
 </nav>

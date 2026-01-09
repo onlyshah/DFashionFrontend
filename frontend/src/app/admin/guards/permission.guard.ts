@@ -1,8 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AdminAuthService } from '../services/admin-auth.service';
+import { map, take } from 'rxjs/operators';
+import { AuthService } from '../../core/services/auth.service';
+import { RolePermissionsService } from '../services/role-permissions.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { User } from '../../core/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +13,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class PermissionGuard implements CanActivate {
 
   constructor(
-    private authService: AdminAuthService,
+    private authService: AuthService,
+    private rolePermissionsService: RolePermissionsService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
@@ -18,43 +22,59 @@ export class PermissionGuard implements CanActivate {
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<boolean> | Promise<boolean> | boolean {
+  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
     
-    const requiredPermission = route.data?.['permission'];
-    const requiredRole = route.data?.['role'];
+    return this.authService.currentUser$.pipe(
+      take(1),
+      map((user: User | null) => {
+        // Check if user is authenticated
+        if (!user) {
+          this.router.navigate(['/admin/login']);
+          return false;
+        }
 
-    // Check if user is authenticated
-    if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/admin/login']);
-      return false;
-    }
+        // Super Admin can access everything
+        if (user.role === 'super_admin') {
+          return true;
+        }
 
-    // Check role-based access
-    if (requiredRole) {
-      const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
-      if (!this.authService.hasRole(allowedRoles)) {
-        this.showAccessDeniedMessage('You do not have the required role to access this page.');
-        this.router.navigate(['/admin/dashboard']);
-        return false;
-      }
-    }
+        // Get the module requirement from route data
+        const requiredModule = route.data?.['module'] || this.extractModuleFromUrl(state.url);
+        const requiredAction = route.data?.['action'] || 'view';
 
-    // Check permission-based access
-    if (requiredPermission) {
-      const [module, action] = requiredPermission.split(':');
-      if (!this.authService.hasPermission(module, action)) {
-        this.showAccessDeniedMessage('You do not have permission to access this page.');
-        this.router.navigate(['/admin/dashboard']);
-        return false;
-      }
-    }
+        if (!requiredModule) {
+          return true; // No specific module requirement
+        }
 
-    return true;
+        // Check if user has the required permission for this module
+        const hasPermission = this.rolePermissionsService.hasModulePermission(
+          user.role || '',
+          requiredModule,
+          requiredAction as any
+        );
+
+        if (!hasPermission) {
+          this.showAccessDeniedMessage(`You do not have ${requiredAction} permission for this module.`);
+          this.router.navigate(['/admin/dashboard']);
+          return false;
+        }
+
+        return true;
+      })
+    );
+  }
+
+  private extractModuleFromUrl(url: string): string {
+    // Extract module from URL: /admin/products -> products
+    const match = url.match(/\/admin\/([a-z-]+)/);
+    return match ? match[1] : '';
   }
 
   private showAccessDeniedMessage(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
       panelClass: ['error-snackbar']
     });
   }

@@ -26,6 +26,8 @@ import { OrderManagementComponent } from './orders/order-management.component';
 import { OrderDetailsComponent } from './orders/order-details.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
 import { SettingsComponent } from './settings/settings.component';
+import { OverviewComponent } from './pages/overview/overview.component';
+import { ReturnsManagementComponent } from './pages/returns-management/returns-management.component';
 import { AdminLoadingComponent } from './shared/components/loading/loading.component';
 import { AdminListComponent } from './shared/components/admin-list/admin-list.component';
 
@@ -80,6 +82,8 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     GeneralDashboardComponent,
     AdminLoadingComponent,
     AdminListComponent,
+    OverviewComponent,
+    ReturnsManagementComponent,
     
   ],
   providers: [

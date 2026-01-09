@@ -2,6 +2,7 @@ import { NgModule, Injectable } from '@angular/core';
 import { RouterModule, Routes, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { AdminLoginComponent } from './auth/admin-login.component';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
+import { PermissionGuard } from './guards/permission.guard';
 
 // Components
 
@@ -18,6 +19,8 @@ export class SuperAdminGuard implements CanActivate {
 }
 import { SuperAdminDashboardComponent } from './components/super-admin-dashboard/super-admin-dashboard.component';
 import { GeneralDashboardComponent } from './components/general-dashboard/general-dashboard.component';
+import { OverviewComponent } from './pages/overview/overview.component';
+import { AdminPlaceholderComponent } from './pages/admin-placeholder/admin-placeholder.component';
 import { UserManagementComponent } from './users/user-management.component';
 import { OrderManagementComponent } from './orders/order-management.component';
 import { ProductManagementComponent } from './products/product-management.component';
@@ -25,6 +28,7 @@ import { CategoryManagementComponent } from './pollux-ui/categories/category-man
 import { RoleManagementComponent } from './roles/role-management.component';
 import { SettingsComponent } from './settings/settings.component';
 import { AnalyticsComponent } from './analytics/analytics.component';
+import { ReturnsManagementComponent } from './pages/returns-management/returns-management.component';
 
 const routes: Routes = [
   {
@@ -42,6 +46,11 @@ const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'overview',
+        component: OverviewComponent,
+        data: { title: 'Overview' }
+      },
+      {
         path: 'dashboard',
         component: GeneralDashboardComponent,
         data: { title: 'Dashboard' }
@@ -55,8 +64,8 @@ const routes: Routes = [
       {
         path: 'users',
         component: UserManagementComponent,
-        canActivate: [SuperAdminGuard],
-        data: { title: 'User Management' }
+        canActivate: [SuperAdminGuard, PermissionGuard],
+        data: { title: 'User Management', module: 'users' }
       },
       {
         path: 'customers',
@@ -81,7 +90,8 @@ const routes: Routes = [
       {
         path: 'products',
         component: ProductManagementComponent,
-        data: { title: 'Product Management', permission: 'products:view' }
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Management', module: 'products' }
       },
       {
         path: 'categories',
@@ -101,7 +111,8 @@ const routes: Routes = [
       {
         path: 'orders',
         component: OrderManagementComponent,
-        data: { title: 'Order Management', permission: 'orders:view' }
+        canActivate: [PermissionGuard],
+        data: { title: 'Order Management', module: 'orders' }
       },
       {
         path: 'stock',
@@ -111,7 +122,8 @@ const routes: Routes = [
       {
         path: 'analytics',
         component: AnalyticsComponent,
-        data: { title: 'Analytics', permission: 'analytics:view' }
+        canActivate: [PermissionGuard],
+        data: { title: 'Analytics', module: 'analytics' }
       },
       {
         path: 'analytics/sales',
@@ -131,7 +143,8 @@ const routes: Routes = [
       {
         path: 'settings',
         component: SettingsComponent,
-        data: { title: 'Settings', permission: 'settings:view' }
+        canActivate: [PermissionGuard],
+        data: { title: 'Settings', module: 'settings' }
       },
       {
         path: 'settings/general',
@@ -152,6 +165,17 @@ const routes: Routes = [
         path: 'settings/tax',
         component: SettingsComponent,
         data: { title: 'Tax Settings', permission: 'settings:view', type: 'tax' }
+      },
+      {
+        path: 'orders/returns',
+        component: ReturnsManagementComponent,
+        data: { title: 'Returns & Refunds', module: 'orders' }
+      },
+      // Catch-all placeholder for other admin pages not yet implemented
+      {
+        path: '**',
+        component: AdminPlaceholderComponent,
+        data: { title: 'Admin - Placeholder' }
       }
     ]
   }
