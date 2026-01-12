@@ -32,6 +32,9 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
   currentUser$: Observable<AdminUser | null>;
   currentUser: AdminUser | null = null;
   pageTitle = 'Dashboard';
+  
+  // Store dropdown state in a map to persist across navigation
+  private expandedItems = new Map<string, boolean>();
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
@@ -89,10 +92,21 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
     this.router.events.pipe(takeUntil(this.destroy$)).subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.updatePageTitle();
+        // Restore expanded state after navigation
+        this.restoreExpandedState();
       }
     });
 
     this.updatePageTitle();
+  }
+
+  // Restore expanded state for menu items from the stored map
+  private restoreExpandedState(): void {
+    this.navigationItems.forEach(item => {
+      if (item.id && this.expandedItems.has(item.id)) {
+        item.expanded = this.expandedItems.get(item.id) ?? false;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -124,7 +138,14 @@ export class PolluxSidebarComponent  implements OnInit, OnDestroy {
   // ─── UI Interaction ──────────────────────────────────────────────────────
 
   toggleSubmenu(item: any) {
-    item.expanded = !item.expanded;
+    // Use item ID to persist state across re-renders
+    if (item.id) {
+      const currentState = this.expandedItems.get(item.id) ?? false;
+      this.expandedItems.set(item.id, !currentState);
+      item.expanded = !currentState;
+    } else {
+      item.expanded = !item.expanded;
+    }
   }
 
   onMenuItemClick(item?: NavigationItem): void {

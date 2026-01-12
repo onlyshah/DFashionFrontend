@@ -47,6 +47,7 @@ export class ForgotPasswordComponent implements OnInit {
         const response = await this.authService.forgotPassword(email);
 
         if (response.success) {
+          console.log('Forgot password response:', response);
           this.successMessage = response.message || 'Password reset link sent to your email. Please check your inbox.';
           this.emailSent = true;
           this.forgotPasswordForm.reset();

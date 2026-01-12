@@ -1,0 +1,75 @@
+.admin-page { padding: 16px; }
+
+.loading, .error {
+  margin: 16px 0;
+  padding: 12px;
+  border-radius: 4px;
+}
+
+.error {
+  color: #b00020;
+  background-color: #ffebee;
+}
+
+.sellers-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th {
+    background-color: #f5f5f5;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #eee;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+}
+
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 3px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.actions {
+  text-align: center;
+
+  button {
+    margin: 0 4px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .btn-approve {
+    background-color: #4caf50;
+    color: white;
+
+    &:hover {
+      background-color: #45a049;
+    }
+  }
+
+  .btn-reject {
+    background-color: #f44336;
+    color: white;
+
+    &:hover {
+      background-color: #da190b;
+    }
+  }
+}

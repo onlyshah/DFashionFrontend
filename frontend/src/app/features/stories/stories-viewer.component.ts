@@ -209,7 +209,7 @@ export class StoriesViewerComponent implements OnInit, OnDestroy {
 
   loadStories() {
     // Load stories from real API
-    fetch('http://localhost:3001/api/stories') // Updated to correct port
+    fetch(`${environment.apiUrl}/api/stories`) // Updated to correct port
       .then(response => response.json())
       .then(data => {
         if (data.success) {

@@ -55,6 +55,7 @@ export class ReturnsManagementComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
+          console.log('Returns loaded:', response);
           this.returns = response.data || [];
           this.total = response.pagination?.total || 0;
           this.isLoading = false;

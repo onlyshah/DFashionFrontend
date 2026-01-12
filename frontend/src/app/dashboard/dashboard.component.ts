@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { RBACService } from '../core/services/rbac.service';
 import { AuthService } from '../auth/services/auth.service';
+import { AdminApiService } from '../admin/services/admin-api.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -15,6 +16,13 @@ interface DashboardModule {
   permissions?: string[];
   requiredRole?: string[];
   color: string;
+}
+
+interface DashboardStats {
+  totalUsers?: number | string;
+  totalOrders?: number | string;
+  totalProducts?: number | string;
+  totalRevenue?: number | string;
 }
 
 @Component({
@@ -82,19 +90,19 @@ interface DashboardModule {
           <h2>Dashboard Overview</h2>
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-value">—</div>
+              <div class="stat-value">{{ dashboardStats?.totalUsers || '—' }}</div>
               <div class="stat-label">Total Users</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">—</div>
+              <div class="stat-value">{{ dashboardStats?.totalOrders || '—' }}</div>
               <div class="stat-label">Active Orders</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">—</div>
+              <div class="stat-value">{{ dashboardStats?.totalRevenue || '—' }}</div>
               <div class="stat-label">Revenue</div>
             </div>
             <div class="stat-card">
-              <div class="stat-value">—</div>
+              <div class="stat-value">{{ dashboardStats?.growth || '—' }}</div>
               <div class="stat-label">Growth</div>
             </div>
           </div>
@@ -334,6 +342,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   userName: string = 'User';
   userRole: string = '';
   availableModules: DashboardModule[] = [];
+  dashboardStats: DashboardStats = {};
   isLoading = true;
   
   private destroy$ = new Subject<void>();
@@ -417,7 +426,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private rbacService: RBACService,
-    private authService: AuthService
+    private authService: AuthService,
+    private adminApiService: AdminApiService
   ) {}
 
   ngOnInit(): void {
@@ -443,7 +453,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return module.requiredRole.includes(this.userRole);
     });
 
+    // Fetch admin stats if user is admin
+    if (this.hasRole('admin') || this.hasRole('super_admin')) {
+      this.loadAdminStats();
+    }
+
     this.isLoading = false;
+  }
+
+  private loadAdminStats(): void {
+    this.adminApiService.getGeneralDashboardData()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: any) => {
+          this.dashboardStats = {
+            totalUsers: data?.totalUsers || 0,
+            totalOrders: data?.totalOrders || 0,
+            totalProducts: data?.totalProducts || 0,
+            totalRevenue: data?.totalRevenue || 0
+          };
+        },
+        error: (err) => {
+          console.warn('Failed to load admin stats:', err);
+          // Keep default '—' values on error
+        }
+      });
   }
 
   navigateToModule(route: string): void {

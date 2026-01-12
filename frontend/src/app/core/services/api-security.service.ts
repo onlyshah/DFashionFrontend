@@ -318,7 +318,7 @@ export class ApiSecurityService {
       // Check if URL is in allowed domains
       const allowedDomains = [
         environment.apiUrl,
-        'localhost:3001',
+        environment.apiUrl.replace(/^https?:\/\//, ''),
         '127.0.0.1:3001'
       ];
 

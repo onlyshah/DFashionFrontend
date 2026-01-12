@@ -5,14 +5,14 @@ import { AuthService } from '../../../core/services/auth.service';
 import { PolluxNavbarModule } from '../components/pollux-navbar/pollux-navbar.module';
 import { PolluxSidebarModule } from '../components/pollux-sidebar/pollux-sidebar.module';
 import { PolluxFooterModule } from '../components/pollux-footer/pollux-footer.module';
-import { DashboardRbacModule } from '../components/dashboard-rbac/dashboard-rbac.module';
-import { DashboardRbacService } from '../components/dashboard-rbac/dashboard-rbac.service';
-import { DashboardRbacGuard } from '../components/dashboard-rbac/dashboard-rbac.guard';
-import { dashboardRbacRoutes } from '../components/dashboard-rbac/dashboard-rbac.routes';
+import { DashboardRbacModule } from '../components/dashboard/dashboard-rbac/dashboard-rbac.module';
+import { DashboardRbacService } from '../components/dashboard/dashboard-rbac/dashboard-rbac.service';
+import { DashboardRbacGuard } from '../components/dashboard/dashboard-rbac/dashboard-rbac.guard';
+import { dashboardRbacRoutes } from '../components/dashboard/dashboard-rbac/dashboard-rbac.routes';
 import { dashboardAdminRoutes } from '../components/dashboard/dashboard-admin.routes';
-import { dashboardVendorRoutes } from '../components/dashboard-vendor/dashboard-vendor.routes';
-import { dashboardUserRoutes } from '../components/dashboard-user/dashboard-user.routes';
-import { dashboardInfluencerRoutes } from '../components/dashboard-influencer/dashboard-influencer.routes';
+import { dashboardVendorRoutes } from '../components/dashboard/dashboard-vendor/dashboard-vendor.routes';
+import { dashboardUserRoutes } from '../components/dashboard/dashboard-user/dashboard-user.routes';
+import { dashboardInfluencerRoutes } from '../components/dashboard/dashboard-influencer/dashboard-influencer.routes';
 
 import { NavigationItem } from '../models/navigation-item';
 
@@ -35,7 +35,7 @@ import { RouterModule } from '@angular/router';
 import { PolluxNavbarComponent } from '../components/pollux-navbar/pollux-navbar.component';
 import { PolluxSidebarComponent } from '../components/pollux-sidebar/pollux-sidebar.component';
 import { PolluxFooterComponent } from '../components/pollux-footer/pollux-footer.component';
-import { DashboardRbacComponent } from '../components/dashboard-rbac/dashboard-rbac.component';
+import { DashboardRbacComponent } from '../components/dashboard/dashboard-rbac/dashboard-rbac.component';
 
 @Component({
   selector: 'app-pollux-admin-layout',

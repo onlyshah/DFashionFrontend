@@ -1,0 +1,76 @@
+<div class="page-management">
+  <div class="header">
+    <h2>Pages</h2>
+    <button mat-raised-button color="primary" (click)="createPage()" [disabled]="isLoading || !canCreate">
+      <mat-icon>add</mat-icon> Create Page
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters">
+    <mat-form-field class="filter-field">
+      <mat-label>Search Title</mat-label>
+      <input matInput [(ngModel)]="searchQuery" placeholder="Search pages...">
+    </mat-form-field>
+
+    <mat-form-field class="filter-field">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="filterStatus">
+        <mat-option value="">All</mat-option>
+        <mat-option value="published">Published</mat-option>
+        <mat-option value="draft">Draft</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-button (click)="loadPages()">Filter</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <!-- Table -->
+  <div *ngIf="!isLoading && pages.length > 0" class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Slug</th>
+          <th>Status</th>
+          <th>Author</th>
+          <th>Updated</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let page of pages">
+          <td><strong>{{ page.title }}</strong></td>
+          <td>{{ page.slug }}</td>
+          <td>
+            <span [class.status-badge]="true" [class]="'status-' + page.status">
+              {{ page.status | uppercase }}
+            </span>
+          </td>
+          <td>{{ page.author }}</td>
+          <td>{{ page.updatedAt | date: 'short' }}</td>
+          <td>
+            <button mat-icon-button (click)="editPage(page)" [disabled]="!canEdit" matTooltip="Edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deletePage(page._id)" [disabled]="!canDelete" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && pages.length === 0" class="empty-state">
+    <mat-icon>description</mat-icon>
+    <h3>No Pages Found</h3>
+    <p>Create your first page to get started</p>
+  </div>
+</div>

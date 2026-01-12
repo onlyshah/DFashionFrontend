@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { Router } from '@angular/router';
 import { DashboardPerformanceService } from './services/dashboard-performance.service';
 
@@ -18,6 +19,8 @@ import { DashboardPerformanceService } from './services/dashboard-performance.se
   `],
     templateUrl: './dashboard-switcher.component.html'
 })
+// DEPRECATED: This is a DEBUG/TEST component marked for removal
+// It provides testing utilities and should be replaced with proper dashboard routing
 export class DashboardSwitcherComponent {
     showDebug = false;
     testResults: any[] = [];
@@ -99,7 +102,7 @@ export class DashboardSwitcherComponent {
         console.log('🔍 Testing backend connection...');
 
         try {
-            const response = await fetch('http://localhost:3001/api/health');
+            const response = await fetch(`${environment.apiUrl}/api/health`);
             if (response.ok) {
                 this.backendStatus = '✅ Connected';
                 this.addTestResult('Backend Connection', true, 'Backend server is running and accessible');
@@ -124,7 +127,7 @@ export class DashboardSwitcherComponent {
         }
 
         try {
-            const response = await fetch('http://localhost:3001/api/admin/dashboard/stats', {
+            const response = await fetch(`${environment.apiUrl}/api/admin/dashboard/stats`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'

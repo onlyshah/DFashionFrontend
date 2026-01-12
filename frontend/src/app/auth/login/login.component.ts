@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit {
         const response = await this.authService.login(email, password, rememberMe);
 
         if (response.success) {
+          console.log('Login response:', response);
           // Load user permissions
           const user = response.data?.user || response.user;
           this.rbacService.initializeUser(user);

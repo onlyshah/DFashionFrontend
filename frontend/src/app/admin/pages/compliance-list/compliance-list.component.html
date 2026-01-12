@@ -1,0 +1,14 @@
+<div class="admin-page">
+  <h2>Compliance Items</h2>
+  <div *ngIf="isLoading">Loading compliance items...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ul *ngIf="!isLoading && !error">
+    <li *ngFor="let it of items">
+      <strong>{{ it.title || it.name }}</strong>
+      <div class="meta">Status: {{ it.status }} • Updated: {{ it.updatedAt || it.createdAt }}</div>
+    </li>
+  </ul>
+
+  <div *ngIf="!isLoading && items.length === 0">No compliance records found.</div>
+</div>

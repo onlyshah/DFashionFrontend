@@ -1,0 +1,13 @@
+<div class="admin-placeholder">
+  <h2>{{ title }}</h2>
+  <div *ngIf="team.length; else loading">
+    <h4>Team Members</h4>
+    <ul>
+      <li *ngFor="let m of team">{{ m.name }} — {{ m.role }} — {{ m.email }}</li>
+    </ul>
+  </div>
+  <ng-template #loading>
+    <p>Loading team members...</p>
+  </ng-template>
+  <p><button class="btn" (click)="goToOverview()">Go to Overview</button></p>
+</div>

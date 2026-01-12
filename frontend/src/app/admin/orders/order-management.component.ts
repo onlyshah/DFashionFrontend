@@ -97,8 +97,9 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
             limit: this.paginator?.pageSize || 10
         };
 
-        this.orderService.getOrders(filters).subscribe({
+        this.orderService.getOrdersWithFallback(filters).subscribe({
             next: (response) => {
+                console.log('Orders loaded:', response);
                 if (response.success) {
                     this.dataSource.data = response.data.orders;
                     this.totalOrders = response.data.pagination.totalOrders;

@@ -58,7 +58,7 @@ export class ReelsPage implements OnInit, OnDestroy {
       console.log('📱 Reels: Loading reels...');
       this.isLoading = true;
 
-      const response = await this.http.get('http://localhost:3001/api/reels').toPromise() as any; // Updated to correct port
+      const response = await this.http.get(`${environment.apiUrl}/api/reels`).toPromise() as any;
       
       if (response.success) {
         this.reels = response.data.reels;

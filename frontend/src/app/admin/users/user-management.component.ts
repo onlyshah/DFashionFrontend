@@ -55,26 +55,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   departmentFilter = new FormControl('');
   statusFilter = new FormControl('');
   
-  roles = [
-    { value: '', label: 'All Roles' },
-    { value: 'super_admin', label: 'Super Admin' },
-    { value: 'admin', label: 'Admin' },
-    { value: 'sales_manager', label: 'Sales Manager' },
-    { value: 'marketing_manager', label: 'Marketing Manager' },
-    { value: 'account_manager', label: 'Account Manager' },
-    { value: 'support_manager', label: 'Support Manager' },
-    { value: 'customer', label: 'Customer' },
-    { value: 'vendor', label: 'Vendor' }
-  ];
-  
-  departments = [
-    { value: '', label: 'All Departments' },
-    { value: 'administration', label: 'Administration' },
-    { value: 'sales', label: 'Sales' },
-    { value: 'marketing', label: 'Marketing' },
-    { value: 'accounting', label: 'Accounting' },
-    { value: 'support', label: 'Support' }
-  ];
+  roles: any[] = [{ value: '', label: 'All Roles' }];
+  departments: any[] = [{ value: '', label: 'All Departments' }];
   
   statuses = [
     { value: '', label: 'All Statuses' },
@@ -89,6 +71,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.loadRoles();
+    this.loadDepartments();
     this.setupFilters();
     this.loadUsers();
   }
@@ -118,6 +102,36 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     });
   }
 
+  loadRoles(): void {
+    this.apiService.get('/admin/roles').subscribe({
+      next: (res: any) => {
+        const rolesList = (res?.data || []).map((r: any) => ({
+          value: r._id || r.name,
+          label: r.name || r.displayName
+        }));
+        this.roles = [{ value: '', label: 'All Roles' }, ...rolesList];
+      },
+      error: () => {
+        console.error('Failed to load roles');
+      }
+    });
+  }
+
+  loadDepartments(): void {
+    this.apiService.get('/admin/departments').subscribe({
+      next: (res: any) => {
+        const deptList = (res?.data || []).map((d: any) => ({
+          value: d._id || d.name,
+          label: d.name || d.displayName
+        }));
+        this.departments = [{ value: '', label: 'All Departments' }, ...deptList];
+      },
+      error: () => {
+        console.error('Failed to load departments');
+      }
+    });
+  }
+
   loadUsers(override?: { page?: number; limit?: number; sortBy?: string; sortOrder?: string }): void {
     this.isLoading = true;
     const page = override?.page ?? this.currentPage;
@@ -139,12 +153,13 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.apiService.getUsers(params).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
-      next: (response) => {
-        this.dataSource.data = response.data.users || [];
-        this.totalUsers = response.data.pagination.totalUsers || 0;
+      next: (response: any) => {
+        console.log('Users loaded:', response);
+        this.dataSource.data = response.data?.users || [];
+        this.totalUsers = response.data?.pagination?.totalUsers || 0;
         this.isLoading = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Failed to load users:', error);
         this.isLoading = false;
         this.snackBar.open('Failed to load users', 'Close', {

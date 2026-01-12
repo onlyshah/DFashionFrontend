@@ -1,4 +1,184 @@
 <div class="influencer-dashboard">
-  <h2>Influencer Dashboard</h2>
-  <!-- Add influencer-specific dashboard widgets and controls here -->
-</div>
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1>Influencer Dashboard</h1>
+      <p class="subtitle">Monitor your social media performance and engagement metrics</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" (click)="refreshData()">
+        <i class="material-icons">refresh</i> Refresh
+      </button>
+      <button class="btn btn-primary" (click)="exportData()">
+        <i class="material-icons">download</i> Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Error Alert -->
+    <div *ngIf="error" class="alert alert-warning">
+      <i class="material-icons">warning</i>
+      {{ error }}
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="metrics-grid">
+      <div *ngFor="let metric of metrics" class="metric-card">
+        <div class="metric-icon">
+          <i class="material-icons">{{ metric.icon }}</i>
+        </div>
+        <div class="metric-info">
+          <h3 class="metric-title">{{ metric.title }}</h3>
+          <p class="metric-value">{{ metric.value }}</p>
+          <span class="metric-trend" [ngClass]="'trend-' + metric.trend">
+            <i class="material-icons">{{ getTrendIcon(metric.trend) }}</i>
+            {{ metric.change >= 0 ? '+' : '' }}{{ metric.change }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>Platform</label>
+        <select [(ngModel)]="selectedPlatform" class="form-control">
+          <option *ngFor="let platform of platforms" [value]="platform.value">
+            {{ platform.label }}
+          </option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Period</label>
+        <select [(ngModel)]="selectedPeriod" class="form-control">
+          <option *ngFor="let period of periods" [value]="period.value">
+            {{ period.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Platform Statistics -->
+    <div class="section">
+      <h2 class="section-title">Platform Performance</h2>
+      <div class="table-responsive">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Followers</th>
+              <th>Engagement Rate</th>
+              <th>Posts</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let stat of platformStats" class="platform-row">
+              <td class="platform-name">
+                <span class="platform-badge" [style.background]="getPlatformColor(stat.platform)">
+                  {{ stat.platform }}
+                </span>
+              </td>
+              <td class="followers-count">{{ stat.followers | number }}</td>
+              <td class="engagement-rate">
+                <span class="badge badge-success">{{ stat.engagement }}%</span>
+              </td>
+              <td class="posts-count">{{ stat.posts }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Active Campaigns -->
+    <div class="section">
+      <h2 class="section-title">Active Campaigns</h2>
+      <div class="campaigns-grid">
+        <div *ngFor="let campaign of campaigns" class="campaign-card" [ngClass]="'status-' + campaign.status">
+          <div class="campaign-header">
+            <h3>{{ campaign.name }}</h3>
+            <span class="campaign-badge" [ngClass]="'badge-' + campaign.status">
+              {{ campaign.status | titlecase }}
+            </span>
+          </div>
+          <div class="campaign-meta">
+            <div class="meta-item">
+              <span class="label">Platform:</span>
+              <span class="value">{{ campaign.platform }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="label">Period:</span>
+              <span class="value">{{ campaign.startDate }} to {{ campaign.endDate || 'Ongoing' }}</span>
+            </div>
+          </div>
+          <div class="campaign-metrics">
+            <div class="metric">
+              <span class="label">Engagement</span>
+              <span class="value">{{ campaign.engagement | number }}</span>
+            </div>
+            <div class="metric">
+              <span class="label">Reach</span>
+              <span class="value">{{ campaign.reach | number }}</span>
+            </div>
+            <div class="metric">
+              <span class="label">Impressions</span>
+              <span class="value">{{ campaign.impressions | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Posts -->
+    <div class="section">
+      <h2 class="section-title">Recent Posts</h2>
+      <div class="posts-container">
+        <div *ngFor="let post of recentPosts" class="post-card">
+          <div class="post-header">
+            <h4>{{ post.title }}</h4>
+            <span class="platform-badge" [style.background]="getPlatformColor(post.platform)">
+              {{ post.platform }}
+            </span>
+          </div>
+          <div class="post-date">{{ post.postedDate }}</div>
+          <div class="post-metrics">
+            <div class="post-metric">
+              <i class="material-icons">favorite</i>
+              <span>{{ post.likes | number }}</span>
+            </div>
+            <div class="post-metric">
+              <i class="material-icons">comment</i>
+              <span>{{ post.comments | number }}</span>
+            </div>
+            <div class="post-metric">
+              <i class="material-icons">share</i>
+              <span>{{ post.shares | number }}</span>
+            </div>
+            <div class="post-metric engagement">
+              <i class="material-icons">trending_up</i>
+              <span>{{ post.engagement | number }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Follower Growth Chart Placeholder -->
+    <div class="section">
+      <h2 class="section-title">Follower Growth Trend</h2>
+      <div class="chart-container">
+        <div class="chart-placeholder">
+          <i class="material-icons">show_chart</i>
+          <p>Growth chart data available</p>
+          <small>{{ followerGrowthChart.length }} data points</small>
+        </div>
+      </div>
+    </div>
+  </div>

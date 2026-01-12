@@ -1,5 +1,144 @@
-<div class="admin-overview-page">
-  <h2>Overview</h2>
-  <p>This is a lightweight placeholder for the Admin Overview page.</p>
-  <!-- Replace with dashboard widgets / charts as needed -->
+<div class="admin-overview-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading overview data...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !isLoading" class="alert alert-warning alert-dismissible fade show">
+    <i class="material-icons">warning</i>
+    {{ error }}
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="overview-content">
+    <!-- Header -->
+    <div class="overview-header">
+      <h1>Dashboard Overview</h1>
+      <p class="subtitle">Real-time insights and key metrics of your business</p>
+    </div>
+
+    <!-- Key Metrics Grid -->
+    <div class="metrics-grid">
+      <div *ngFor="let metric of metrics" class="metric-card" [ngClass]="'metric-' + metric.color">
+        <div class="metric-header">
+          <span class="metric-icon">
+            <i class="material-icons">{{ metric.icon }}</i>
+          </span>
+          <div class="metric-trend" [ngClass]="'trend-' + metric.trend">
+            <i class="material-icons">{{ getTrendIcon(metric.trend) }}</i>
+            <span>{{ metric.change >= 0 ? '+' : '' }}{{ metric.change }}%</span>
+          </div>
+        </div>
+        <div class="metric-content">
+          <h3 class="metric-title">{{ metric.title }}</h3>
+          <p class="metric-value">{{ metric.value }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Statistics Section -->
+    <div class="summary-section">
+      <div class="summary-card">
+        <div class="summary-stat">
+          <span class="stat-label">Total Revenue</span>
+          <p class="stat-value">${{ totalRevenue | number }}</p>
+          <small class="stat-change" [ngClass]="revenueGrowth >= 0 ? 'positive' : 'negative'">
+            {{ revenueGrowth >= 0 ? '↑' : '↓' }} {{ revenueGrowth }}% this month
+          </small>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-stat">
+          <span class="stat-label">Total Orders</span>
+          <p class="stat-value">{{ totalOrders }}</p>
+          <small class="stat-change" [ngClass]="orderGrowth >= 0 ? 'positive' : 'negative'">
+            {{ orderGrowth >= 0 ? '↑' : '↓' }} {{ orderGrowth }}% this month
+          </small>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-stat">
+          <span class="stat-label">Total Customers</span>
+          <p class="stat-value">{{ totalCustomers }}</p>
+          <small class="stat-change" [ngClass]="customerGrowth >= 0 ? 'positive' : 'negative'">
+            {{ customerGrowth >= 0 ? '↑' : '↓' }} {{ customerGrowth }}% new this month
+          </small>
+        </div>
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-stat">
+          <span class="stat-label">Active Products</span>
+          <p class="stat-value">{{ totalProducts }}</p>
+          <small class="stat-change positive">
+            ↑ 2 new products this week
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Orders Section -->
+    <div class="recent-section">
+      <div class="section-header">
+        <h2>Recent Orders</h2>
+        <a routerLink="/admin/orders" class="view-all-link">View All</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of recentOrders" class="order-row">
+              <td class="order-id">
+                <strong>{{ order.id }}</strong>
+              </td>
+              <td class="customer-name">{{ order.customer }}</td>
+              <td class="order-amount">${{ order.amount | number }}</td>
+              <td class="order-date">{{ order.date }}</td>
+              <td class="order-status">
+                <span class="badge" [ngClass]="getStatusBadgeClass(order.status)">
+                  {{ order.status | titlecase }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+      <h2>Quick Actions</h2>
+      <div class="actions-grid">
+        <a routerLink="/admin/products/new" class="action-button action-primary">
+          <i class="material-icons">add_circle</i>
+          <span>Add New Product</span>
+        </a>
+        <a routerLink="/admin/users" class="action-button action-secondary">
+          <i class="material-icons">person_add</i>
+          <span>Manage Users</span>
+        </a>
+        <a routerLink="/admin/orders" class="action-button action-info">
+          <i class="material-icons">receipt_long</i>
+          <span>View Orders</span>
+        </a>
+        <a routerLink="/admin/products" class="action-button action-accent">
+          <i class="material-icons">inventory_2</i>
+          <span>Manage Products</span>
+        </a>
+      </div>
+    </div>
+  </div>
 </div>

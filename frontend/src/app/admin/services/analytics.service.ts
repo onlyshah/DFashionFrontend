@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface DashboardStats {
@@ -93,9 +94,24 @@ export class AnalyticsService {
 
   // Dashboard Statistics (Admin API)
   getDashboardStats(): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard`, {
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`, {
       headers: this.getAuthHeaders()
     });
+  }
+
+  // Fallback-friendly version used by components that must always display data
+  getDashboardStatsWithFallback(): Observable<{success: boolean; data: any}> {
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError((err: any) => {
+        // If unauthorized, fall back to public demo endpoint
+        if (err && err.status === 401) {
+          return this.http.get<{success: boolean; data: any}>(`/api/admin/demo/analytics/dashboard`);
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
 
@@ -142,6 +158,19 @@ export class AnalyticsService {
   // Order Analytics
   getOrderAnalytics(period: string = '30d'): Observable<{success: boolean; data: any}> {
     return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders?period=${period}`);
+  }
+
+  // Fallback-friendly version used by components that must always display data
+  getOrderAnalyticsWithFallback(period: string = '30d'): Observable<{success: boolean; data: any}> {
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders/recent`).pipe(
+      catchError((err: any) => {
+        // If unauthorized, fall back to public demo endpoint
+        if (err && err.status === 401) {
+          return this.http.get<{success: boolean; data: any}>(`/api/admin/demo/analytics/orders?period=${period}`);
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   getOrderTrends(period: string = '12m'): Observable<any[]> {

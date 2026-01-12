@@ -2,7 +2,6 @@
 // ✅ 1. Sass Modules: Must come FIRST
 // -------------------------------
 @use './styles/overlapping-fixes';
-@use './styles/admin-dashboard';
 @use './app/admin/styles/admin-theme';
 @use './styles/design-tokens';
 @use './styles/auth-components';

@@ -63,8 +63,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     // Load dashboard stats
-    this.analyticsService.getDashboardStats().subscribe({
+    this.analyticsService.getDashboardStatsWithFallback().subscribe({
       next: (response) => {
+        console.log('Dashboard stats loaded:', response);
         if (response.success) {
           const data = response.data;
 
@@ -98,7 +99,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     });
 
     // Load order analytics
-    this.analyticsService.getOrderAnalytics().subscribe({
+    this.analyticsService.getOrderAnalyticsWithFallback().subscribe({
       next: (response) => {
         if (response.success) {
           const data = response.data;

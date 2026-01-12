@@ -3,6 +3,7 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: $body-bg;
+  scroll-behavior: smooth;
 }
 
 .main-content {
@@ -10,6 +11,7 @@
   padding: 2rem;
   margin-left: $sidebar-width-lg;
   transition: margin .3s ease;
+   scroll-behavior: smooth;
   
   &.with-header {
     padding-top: 4.5rem;

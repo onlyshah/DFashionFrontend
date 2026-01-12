@@ -55,7 +55,7 @@ export class StoriesPage implements OnInit, OnDestroy {
 
   loadStories() {
     // Load stories from API with Instagram-like data structure
-    fetch('http://localhost:3001/api/stories') // Updated to correct port
+    fetch(`${environment.apiUrl}/api/stories`) // Updated to correct port
       .then(response => response.json())
       .then(data => {
         if (data.success) {

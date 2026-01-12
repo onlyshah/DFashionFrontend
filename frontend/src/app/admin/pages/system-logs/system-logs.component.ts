@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PermissionService } from '../../services/permission.service';
 import { UiAnimationService } from '../../services/ui-animation.service';
+import { AdminApiService } from '../../services/admin-api.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 declare var bootstrap: any;
 
@@ -27,7 +30,7 @@ export interface SystemLog {
   templateUrl: './system-logs.component.html',
   styleUrl: './system-logs.component.scss'
 })
-export class SystemLogsComponent implements OnInit {
+export class SystemLogsComponent implements OnInit, OnDestroy {
   logs: SystemLog[] = [];
   filteredLogs: SystemLog[] = [];
   selectedLog: SystemLog | null = null;
@@ -36,18 +39,27 @@ export class SystemLogsComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 50;
   totalPages = 1;
+  isLoading = false;
+  error: string | null = null;
 
   private logDetailsModal: any;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private permissionService: PermissionService,
-    private uiAnimationService: UiAnimationService
+    private uiAnimationService: UiAnimationService,
+    private adminApiService: AdminApiService
   ) {}
 
   ngOnInit() {
     this.checkPermissions();
     this.loadLogs();
     this.initializeModal();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private checkPermissions() {
@@ -67,14 +79,85 @@ export class SystemLogsComponent implements OnInit {
   }
 
   private loadLogs() {
-    // TODO: Replace with actual API call to get system logs
-    // this.adminApiService.getSystemLogs().subscribe(logs => {
-    //   this.logs = logs;
-    //   this.filterLogs();
-    // });
+    this.isLoading = true;
+    this.error = null;
 
-    // Empty logs until API is implemented
-    this.logs = [];
+    this.adminApiService.getSystemLogs({
+      level: this.selectedLogLevel,
+      module: this.selectedModule,
+      page: this.currentPage,
+      limit: this.itemsPerPage
+    })
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (response: any) => {
+        if (response.success && response.data) {
+          this.logs = response.data.logs || response.data;
+          this.totalPages = response.data.totalPages || Math.ceil(this.logs.length / this.itemsPerPage);
+        } else if (Array.isArray(response)) {
+          this.logs = response;
+          this.totalPages = Math.ceil(this.logs.length / this.itemsPerPage);
+        }
+        this.filterLogs();
+        this.isLoading = false;
+      },
+      error: (error: any) => {
+        console.error('Error loading logs:', error);
+        this.error = 'Failed to load system logs. Please try again.';
+        this.isLoading = false;
+        // Load demo data on error
+        this.loadDemoLogs();
+      }
+    });
+  }
+
+  private loadDemoLogs() {
+    this.logs = [
+      {
+        id: 'LOG-001',
+        timestamp: new Date(Date.now() - 60000),
+        level: 'info',
+        module: 'auth',
+        message: 'User logged in successfully',
+        user: 'admin@example.com',
+        ip: '192.168.1.100'
+      },
+      {
+        id: 'LOG-002',
+        timestamp: new Date(Date.now() - 120000),
+        level: 'warning',
+        module: 'products',
+        message: 'Low stock alert for product SKU-123',
+        details: 'Only 5 items remaining'
+      },
+      {
+        id: 'LOG-003',
+        timestamp: new Date(Date.now() - 180000),
+        level: 'error',
+        module: 'payment',
+        message: 'Payment processing failed',
+        details: 'Gateway timeout',
+        stackTrace: 'PaymentGateway.process() line 245'
+      },
+      {
+        id: 'LOG-004',
+        timestamp: new Date(Date.now() - 240000),
+        level: 'debug',
+        module: 'database',
+        message: 'Database query executed',
+        details: 'Query: SELECT * FROM users LIMIT 10',
+        metadata: { executionTime: 45 }
+      },
+      {
+        id: 'LOG-005',
+        timestamp: new Date(Date.now() - 300000),
+        level: 'info',
+        module: 'orders',
+        message: 'Order placed successfully',
+        details: 'Order #ORD-12345',
+        user: 'john@example.com'
+      }
+    ];
     this.filterLogs();
   }
 

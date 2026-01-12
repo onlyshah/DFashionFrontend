@@ -13,6 +13,11 @@ import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { CmsComponent } from './admin/pages/cms/cms.component';
+import { ComplianceComponent } from './admin/pages/compliance/compliance.component';
+import { PromotionListComponent } from './admin/pages/promotion-list/promotion-list.component';
+import { LogisticsComponent } from './admin/pages/logistics/logistics.component';
+import { SellerManagementComponent } from './admin/pages/seller-management/seller-management.component';
 
 // Core Services
 import { AuthService } from './core/services/auth.service';
@@ -22,13 +27,23 @@ import { TrendingService } from './core/services/trending.service';
 import { SocialInteractionsService } from './core/services/social-interactions.service';
 import { CartService } from './core/services/cart.service';
 import { WishlistService } from './core/services/wishlist.service';
+import { CmsService } from './admin/services/cms.service';
+import { ComplianceService } from './admin/services/compliance.service';
+import { PromotionService } from './admin/services/promotion.service';
+import { LogisticsService } from './admin/services/logistics.service';
+import { SellerManagementService } from './admin/services/seller-management.service';
 
 // Shared Components
 import { SharedModule } from './shared/shared.module';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CmsComponent,
+    ComplianceComponent,
+    PromotionListComponent,
+    LogisticsComponent,
+    SellerManagementComponent
   ],
   imports: [
     BrowserModule,
@@ -55,7 +70,8 @@ import { SharedModule } from './shared/shared.module';
     TrendingService,
     SocialInteractionsService,
     CartService,
-    WishlistService
+    WishlistService,
+    CmsService, ComplianceService, PromotionService, LogisticsService, SellerManagementService
   ],
   bootstrap: [AppComponent]
 })

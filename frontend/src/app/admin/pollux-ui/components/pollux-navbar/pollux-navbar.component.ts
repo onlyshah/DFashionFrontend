@@ -120,8 +120,7 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isMobile$ = merge(this.isHandset$, this.isTablet$)
       .pipe(map(isSmall => isSmall), shareReplay());
 
-    // Initialize analytics once
-    this.seedSalesTrends();
+    // Initialize analytics in ngOnInit
   }
 
   fetchAnalyticsData(): void {
@@ -241,13 +240,8 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private notificationRefreshTimeout: any;
 
-  private seedSalesTrends(): void {
-    this.salesTrends$.next([
-      { date: new Date(), value: 1200 },
-      { date: new Date(Date.now() - 86400000), value: 1900 },
-      { date: new Date(Date.now() - 172800000), value: 1600 }
-    ]);
-  }
+  // NOTE: Removed seedSalesTrends() - was generating mock data
+  // Real sales trends are loaded from API in loadAnalyticsData() method
 
   private initializeCharts(): void {
     try {
@@ -679,37 +673,79 @@ export class PolluxNavbarComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initializeAnalytics(): void {
-    // Initialize real-time analytics updates
+    // Load real analytics data from API
+    this.loadAnalyticsData();
+    
+    // Refresh analytics every 30 seconds
     this.analyticsInterval = setInterval(() => {
-      this.analyticsData.activeUsers = Math.floor(Math.random() * 100) + 50;
-      this.analyticsData.todaysSales = Math.floor(Math.random() * 10000);
-      this.analyticsData.conversionRate = Number((Math.random() * 5 + 1).toFixed(2));
-      this.analyticsData.averageOrderValue = Math.floor(Math.random() * 200) + 50;
-      this.analyticsData.weeklyRevenue = Array(7).fill(0).map(() => Math.floor(Math.random() * 5000));
-      this.analyticsData.monthlyGrowth = Number((Math.random() * 15).toFixed(1));
-      this.analyticsData.customerRetention = Number((Math.random() * 20 + 70).toFixed(1));
-      this.analyticsData.cartAbandonment = Number((Math.random() * 15 + 20).toFixed(1));
-      this.analyticsData.topProducts = [
-        { name: 'Summer Dress', sales: 156, revenue: 7800 },
-        { name: 'Denim Jacket', sales: 129, revenue: 9030 },
-        { name: 'Sneakers', sales: 187, revenue: 8415 }
-      ];
-      
-      this.updateCharts();
-      this.logPerformanceMetric('analytics-update', performance.now());
-    }, 5000);
+      this.loadAnalyticsData();
+    }, 30000);
 
-    // Simulate real-time order updates
+    // Load real order data from API
+    this.loadRecentOrders();
+    
+    // Refresh orders every 30 seconds
     this.orderUpdateInterval = setInterval(() => {
-      const newOrder = {
-        id: Math.floor(Math.random() * 1000000),
-        customer: 'Customer ' + Math.floor(Math.random() * 100),
-        amount: Math.floor(Math.random() * 1000),
-        status: ['Processing', 'Shipped', 'Delivered'][Math.floor(Math.random() * 3)],
-        timestamp: new Date()
-      };
-      this.recentOrders = [newOrder, ...this.recentOrders.slice(0, 4)];
-    }, 10000);
+      this.loadRecentOrders();
+    }, 30000);
+  }
+
+  private loadAnalyticsData(): void {
+    // Call real analytics API instead of generating mock data
+    this.adminApiService.get('/analytics/dashboard').subscribe({
+      next: (response: any) => {
+        if (response && response.data) {
+          const data = response.data;
+          this.analyticsData.activeUsers = data.activeUsers || 0;
+          this.analyticsData.todaysSales = data.todaysSales || 0;
+          this.analyticsData.conversionRate = data.conversionRate || 0;
+          this.analyticsData.averageOrderValue = data.averageOrderValue || 0;
+          this.analyticsData.weeklyRevenue = data.weeklyRevenue || [];
+          this.analyticsData.monthlyGrowth = data.monthlyGrowth || 0;
+          this.analyticsData.customerRetention = data.customerRetention || 0;
+          this.analyticsData.cartAbandonment = data.cartAbandonment || 0;
+          this.analyticsData.topProducts = data.topProducts || [];
+          this.updateCharts();
+          this.logPerformanceMetric('analytics-update', performance.now());
+        }
+      },
+      error: (error: any) => {
+        console.error('Failed to load analytics data:', error);
+        // Show empty data instead of mock data on error
+        this.analyticsData = {
+          activeUsers: 0,
+          todaysSales: 0,
+          conversionRate: 0,
+          averageOrderValue: 0,
+          monthlyGrowth: 0,
+          weeklyRevenue: [],
+          customerRetention: 0,
+          cartAbandonment: 0,
+          topProducts: []
+        };
+      }
+    });
+  }
+
+  private loadRecentOrders(): void {
+    // Load real orders from API
+    this.adminApiService.get('/orders', { params: { limit: 5, sort: '-createdAt' } }).subscribe({
+      next: (response: any) => {
+        if (response && response.data && Array.isArray(response.data)) {
+          this.recentOrders = response.data.map((order: any) => ({
+            id: order._id || order.id,
+            customer: order.customerName || order.customer?.fullName || 'Unknown',
+            amount: order.totalAmount || order.amount || 0,
+            status: order.status || 'Pending',
+            timestamp: order.createdAt ? new Date(order.createdAt) : new Date()
+          }));
+        }
+      },
+      error: (error: any) => {
+        console.error('Failed to load recent orders:', error);
+        this.recentOrders = [];
+      }
+    });
   }
 
   toggleTheme(): void {

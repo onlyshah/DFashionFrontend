@@ -6,6 +6,7 @@ interface DashboardStats {
   _isFallback?: boolean;
 }
 import { Injectable } from '@angular/core';
+import { environment } from 'src/environments/environment';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject, of, timer } from 'rxjs';
 import { map, catchError, retry, timeout, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -20,7 +21,7 @@ interface CacheItem<T> {
   providedIn: 'root'
 })
 export class DashboardPerformanceService {
-  private apiUrl = 'http://localhost:3001/api/v1';
+  private apiUrl = `${environment.apiUrl}/api/v1`;
   private cache = new Map<string, CacheItem<any>>();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
   private readonly REQUEST_TIMEOUT = 10000; // 10 seconds

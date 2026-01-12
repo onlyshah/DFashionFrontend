@@ -2,6 +2,7 @@ import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 
 // Angular Material Modules
 import { MaterialModule } from '../material.module';
@@ -12,8 +13,8 @@ import { AdminRoutingModule } from './admin-routing.module';
 // Removed Pollux UI Module
 
 // Components
-import { SuperAdminDashboardComponent } from './components/super-admin-dashboard/super-admin-dashboard.component';
-import { GeneralDashboardComponent } from './components/general-dashboard/general-dashboard.component';
+import { SuperAdminDashboardComponent } from './pollux-ui/components/super-admin-dashboard/super-admin-dashboard.component';
+import { GeneralDashboardComponent } from './pollux-ui/components/dashboard/general-dashboard/general-dashboard.component';
 import { AdminHeaderComponent } from './components/admin-header/admin-header.component';
 import { AdminSidebarComponent } from './components/admin-sidebar/admin-sidebar.component';
 import { RoleManagementComponent } from './pages/role-management/role-management.component';
@@ -67,13 +68,14 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
   // AdminLayoutComponent, // Standalone, import instead
   // AdminDashboardComponent, // Standalone, import instead
   // RoleManagementComponent, // Standalone, import instead
-  
+    
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    RouterModule,
     AdminRoutingModule,
     MaterialModule,
     AdminHeaderComponent,

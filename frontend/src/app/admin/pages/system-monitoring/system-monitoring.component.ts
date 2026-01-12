@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 import { PermissionService } from '../../services/permission.service';
 import { UiAnimationService } from '../../services/ui-animation.service';
+import { AdminApiService } from '../../services/admin-api.service';
 
 Chart.register(...registerables);
 
@@ -98,7 +99,8 @@ export class SystemMonitoringComponent implements OnInit, OnDestroy {
 
   constructor(
     private permissionService: PermissionService,
-    private uiAnimationService: UiAnimationService
+    private uiAnimationService: UiAnimationService,
+    private apiService: AdminApiService
   ) {}
 
   ngOnInit() {
@@ -154,20 +156,20 @@ export class SystemMonitoringComponent implements OnInit, OnDestroy {
     };
   }
 
-  private loadPerformanceMetrics() {
-    // TODO: Replace with actual API call to get performance metrics
-    // this.adminApiService.getPerformanceMetrics().subscribe(metrics => {
-    //   this.performanceMetrics = metrics;
-    // });
+  // private loadPerformanceMetrics() {
+  //   // TODO: Replace with actual API call to get performance metrics
+  //   // this.adminApiService.getPerformanceMetrics().subscribe(metrics => {
+  //   //   this.performanceMetrics = metrics;
+  //   // });
 
-    // Default values until API is implemented
-    this.performanceMetrics = {
-      cpu: 0,
-      memory: 0,
-      disk: 0,
-      network: 0
-    };
-  }
+  //   // Default values until API is implemented
+  //   this.performanceMetrics = {
+  //     cpu: 0,
+  //     memory: 0,
+  //     disk: 0,
+  //     network: 0
+  //   };
+  // }
 
   private loadRecentAlerts() {
     const alertTypes: ('error' | 'warning' | 'info')[] = ['error', 'warning', 'info'];
@@ -271,20 +273,71 @@ export class SystemMonitoringComponent implements OnInit, OnDestroy {
     const ctx = this.performanceChart.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    // Generate mock time series data
-    const labels = [];
-    const cpuData = [];
-    const memoryData = [];
-    const diskData = [];
+    // Load real time series data from API
+    this.loadPerformanceMetrics();
+  }
 
-    for (let i = 23; i >= 0; i--) {
-      const time = new Date();
-      time.setHours(time.getHours() - i);
-      labels.push(time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+  private loadPerformanceMetrics(): void {
+    // Call real system metrics API instead of generating mock data
+    this.apiService.get('/admin/system/metrics').subscribe({
+      next: (response: any) => {
+        if (response && response.data) {
+          const data = response.data;
+          const labels = [];
+          const cpuData = [];
+          const memoryData = [];
+          const diskData = [];
 
-      cpuData.push(Math.floor(Math.random() * 40) + 20);
-      memoryData.push(Math.floor(Math.random() * 30) + 40);
-      diskData.push(Math.floor(Math.random() * 20) + 60);
+          // Process time series data from API
+          if (data.timeSeries && Array.isArray(data.timeSeries)) {
+            data.timeSeries.forEach((point: any) => {
+              const time = new Date(point.timestamp);
+              labels.push(time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+              cpuData.push(point.cpu || 0);
+              memoryData.push(point.memory || 0);
+              diskData.push(point.disk || 0);
+            });
+          }
+
+          // If no time series data, create empty labels (last 24 hours)
+          if (labels.length === 0) {
+            for (let i = 23; i >= 0; i--) {
+              const time = new Date();
+              time.setHours(time.getHours() - i);
+              labels.push(time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+              cpuData.push(0);
+              memoryData.push(0);
+              diskData.push(0);
+            }
+          }
+
+          this.updatePerformanceChart(labels, cpuData, memoryData, diskData);
+        }
+      },
+      error: (error: any) => {
+        console.error('Failed to load performance metrics:', error);
+        // Show empty chart on error instead of mock data
+        const labels = [];
+        for (let i = 23; i >= 0; i--) {
+          const time = new Date();
+          time.setHours(time.getHours() - i);
+          labels.push(time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+        }
+        const emptyData = Array(24).fill(0);
+        this.updatePerformanceChart(labels, emptyData, emptyData, emptyData);
+      }
+    });
+  }
+
+  private updatePerformanceChart(labels: string[], cpuData: number[], memoryData: number[], diskData: number[]): void {
+    if (!this.performanceChart?.nativeElement) return;
+
+    const ctx = this.performanceChart.nativeElement.getContext('2d');
+    if (!ctx) return;
+
+    // Destroy existing chart if it exists
+    if (this.chart) {
+      this.chart.destroy();
     }
 
     this.chart = new Chart(ctx, {

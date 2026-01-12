@@ -46,7 +46,9 @@ export class RoleManagementComponent implements OnInit {
 
   private loadData() {
     this.roles = this.permissionService.getAllRoles();
+    console.log('Roles loaded:', this.roles);
     this.permissions = this.permissionService.getAllPermissions();
+    console.log('Permissions loaded:', this.permissions);
   }
 
   private checkPermissions() {

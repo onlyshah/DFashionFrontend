@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Order {
@@ -129,6 +130,28 @@ export class OrderService {
     });
 
     return this.http.get<AdminOrderResponse>(`${this.apiUrl}/orders`, { params });
+  }
+
+  // Fallback-friendly version used by components that must always display data
+  getOrdersWithFallback(filters: OrderFilters = {}): Observable<AdminOrderResponse> {
+    let params = new HttpParams();
+
+    Object.keys(filters).forEach(key => {
+      const value = (filters as any)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http.get<AdminOrderResponse>(`${this.apiUrl}/orders`, { params }).pipe(
+      catchError((err: any) => {
+        // If unauthorized or server denies access, fall back to public demo endpoint
+        if (err && err.status === 401) {
+          return this.http.get<AdminOrderResponse>(`/api/admin/demo/orders`, { params });
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   // Get order by ID (Admin API)

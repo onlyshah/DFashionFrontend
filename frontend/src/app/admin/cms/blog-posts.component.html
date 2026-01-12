@@ -1,0 +1,35 @@
+<div class="admin-container">
+  <h2>Blog Posts</h2>
+  <mat-form-field class="search-field">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Search by title..." (keyup)="applyFilter($event)">
+  </mat-form-field>
+
+  <div *ngIf="isLoading" class="loading"><mat-spinner></mat-spinner></div>
+
+  <div *ngIf="!isLoading" class="table-container">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+        <td mat-cell *matCellDef="let p">{{ p.title }}</td>
+      </ng-container>
+      <ng-container matColumnDef="author">
+        <th mat-header-cell *matHeaderCellDef>Author</th>
+        <td mat-cell *matCellDef="let p">{{ p.author }}</td>
+      </ng-container>
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+        <td mat-cell *matCellDef="let p">{{ p.createdAt | date:'short' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let p">
+          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="delete(p._id)">delete</mat-icon></button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

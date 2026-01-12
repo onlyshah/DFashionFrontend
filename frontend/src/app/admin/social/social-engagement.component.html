@@ -1,0 +1,173 @@
+<div class="social-engagement-container">
+  <!-- Header with Stats -->
+  <div class="header">
+    <h2>Social Engagement Dashboard</h2>
+    <p>Monitor user posts, reels, and engagement metrics</p>
+  </div>
+
+  <!-- Stats Cards -->
+  <div *ngIf="statsLoading" class="loading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div *ngIf="!statsLoading" class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalPosts }}</div>
+        <div class="stat-label">Total Posts</div>
+        <mat-icon class="stat-icon">image</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalReels }}</div>
+        <div class="stat-label">Total Reels</div>
+        <mat-icon class="stat-icon">videocam</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.totalEngagement | number:'0.0-0' }}</div>
+        <div class="stat-label">Total Engagement</div>
+        <mat-icon class="stat-icon">favorite</mat-icon>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-value">{{ stats.avgEngagementRate | number:'0.0-1' }}%</div>
+        <div class="stat-label">Avg Engagement Rate</div>
+        <mat-icon class="stat-icon">trending_up</mat-icon>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Tabs for Posts and Reels -->
+  <mat-tab-group [(selectedIndex)]="selectedTab" class="content-tabs">
+    <!-- Posts Tab -->
+    <mat-tab label="User Posts">
+      <div class="tab-content">
+        <mat-form-field class="search-field">
+          <mat-label>Search</mat-label>
+          <input matInput placeholder="Search by caption or user..." (keyup)="applyPostFilter($event)">
+        </mat-form-field>
+
+        <div *ngIf="postsLoading" class="loading">
+          <mat-spinner></mat-spinner>
+        </div>
+
+        <div *ngIf="!postsLoading && postsDataSource.data.length === 0" class="empty-state">
+          <mat-icon>image</mat-icon>
+          <p>No posts found</p>
+        </div>
+
+        <div *ngIf="!postsLoading && postsDataSource.data.length > 0" class="table-container">
+          <table mat-table [dataSource]="postsDataSource" matSort>
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
+              <td mat-cell *matCellDef="let p">{{ p.user?.username || p.user?.name || 'Anonymous' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="caption">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Caption</th>
+              <td mat-cell *matCellDef="let p">{{ p.caption | slice:0:50 }}{{ p.caption?.length > 50 ? '...' : '' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="likes">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Likes</th>
+              <td mat-cell *matCellDef="let p">
+                <mat-chip>{{ p.likes?.length || 0 }} <mat-icon>favorite</mat-icon></mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="comments">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Comments</th>
+              <td mat-cell *matCellDef="let p">
+                <mat-chip>{{ p.comments?.length || 0 }} <mat-icon>chat</mat-icon></mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Posted</th>
+              <td mat-cell *matCellDef="let p">{{ p.createdAt | date:'short' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let p">
+                <button mat-icon-button matTooltip="Approve/Reject" (click)="togglePostApproval(p._id, p.approved)">
+                  <mat-icon [class.approved]="p.approved">{{ p.approved ? 'check_circle' : 'cancel' }}</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deletePost(p._id)">delete</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="postsDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: postsDisplayedColumns;"></tr>
+          </table>
+          <mat-paginator #postsPaginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- Reels Tab -->
+    <mat-tab label="Video Reels">
+      <div class="tab-content">
+        <mat-form-field class="search-field">
+          <mat-label>Search</mat-label>
+          <input matInput placeholder="Search by title or user..." (keyup)="applyReelFilter($event)">
+        </mat-form-field>
+
+        <div *ngIf="reelsLoading" class="loading">
+          <mat-spinner></mat-spinner>
+        </div>
+
+        <div *ngIf="!reelsLoading && reelsDataSource.data.length === 0" class="empty-state">
+          <mat-icon>videocam</mat-icon>
+          <p>No reels found</p>
+        </div>
+
+        <div *ngIf="!reelsLoading && reelsDataSource.data.length > 0" class="table-container">
+          <table mat-table [dataSource]="reelsDataSource" matSort>
+            <ng-container matColumnDef="user">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Creator</th>
+              <td mat-cell *matCellDef="let r">{{ r.user?.username || r.user?.name || 'Anonymous' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+              <td mat-cell *matCellDef="let r">{{ r.title | slice:0:40 }}{{ r.title?.length > 40 ? '...' : '' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="duration">
+              <th mat-header-cell *matHeaderCellDef>Duration</th>
+              <td mat-cell *matCellDef="let r">{{ r.media?.duration || 0 }}s</td>
+            </ng-container>
+            <ng-container matColumnDef="views">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Views</th>
+              <td mat-cell *matCellDef="let r">
+                <mat-chip>{{ r.views || 0 }} <mat-icon>visibility</mat-icon></mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="likes">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Likes</th>
+              <td mat-cell *matCellDef="let r">
+                <mat-chip>{{ r.likes?.length || 0 }} <mat-icon>favorite</mat-icon></mat-chip>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="createdAt">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Posted</th>
+              <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'short' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let r">
+                <button mat-icon-button matTooltip="Approve/Reject" (click)="toggleReelApproval(r._id, r.approved)">
+                  <mat-icon [class.approved]="r.approved">{{ r.approved ? 'check_circle' : 'cancel' }}</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deleteReel(r._id)">delete</mat-icon></button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="reelsDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: reelsDisplayedColumns;"></tr>
+          </table>
+          <mat-paginator #reelsPaginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

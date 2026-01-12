@@ -7,7 +7,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
-import { AdminProductService, Product } from '../services/product.service';
+import { AdminProductService, Product, AdminProductResponse } from '../services/product.service';
 import { ProductDialogComponent } from './product-dialog.component';
 
 @Component({
@@ -37,10 +37,8 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     statusFilter = new FormControl('');
 
     categories = [
-        { value: '', label: 'All Categories' },
-        { value: 'men', label: 'Men' },
-        { value: 'women', label: 'Women' },
-        { value: 'children', label: 'Children' }
+        { value: '', label: 'All Categories' }
+        // Will be populated from API
     ];
 
     statuses = [
@@ -56,6 +54,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     ) { }
 
     ngOnInit(): void {
+        this.loadCategories();
         this.setupFilters();
         this.loadProducts();
     }
@@ -83,6 +82,36 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         });
     }
 
+    /**
+     * Load categories from database
+     */
+    private loadCategories(): void {
+        this.productService.getCategoriesWithFallback()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: (categories: any[]) => {
+                    // Transform categories to dropdown format
+                    this.categories = [
+                        { value: '', label: 'All Categories' },
+                        ...categories.map(cat => ({
+                            value: cat.slug || cat._id,
+                            label: cat.name
+                        }))
+                    ];
+                },
+                error: (error: any) => {
+                    console.error('Error loading categories:', error);
+                    // Keep default categories on error
+                    this.categories = [
+                        { value: '', label: 'All Categories' },
+                        { value: 'men', label: 'Men' },
+                        { value: 'women', label: 'Women' },
+                        { value: 'children', label: 'Children' }
+                    ];
+                }
+            });
+    }
+
     loadProducts(override?: { page?: number; limit?: number; sortBy?: string; sortOrder?: 'asc' | 'desc' }): void {
         this.isLoading = true;
 
@@ -101,8 +130,9 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
             sortOrder
         };
 
-        this.productService.getProducts(filters).subscribe({
-            next: (response) => {
+        this.productService.getProductsWithFallback(filters).subscribe({
+            next: (response: AdminProductResponse) => {
+                console.log('Products loaded:', response);
                 if (response.success) {
                     this.dataSource.data = response.data.products;
                     this.totalProducts = response.data.pagination.totalProducts;
@@ -156,7 +186,8 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         const newStatus = !product.isActive;
 
         this.productService.updateProductStatus(product._id!, newStatus).subscribe({
-            next: (response) => {
+            next: (response: { success: boolean; message: string; data: Product }) => {
+                console.log('Product status updated:', response);
                 if (response.success) {
                     product.isActive = newStatus;
                     this.snackBar.open(response.message, 'Close', { duration: 3000 });
@@ -164,7 +195,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
                     this.snackBar.open('Failed to update product status', 'Close', { duration: 3000 });
                 }
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error updating product status:', error);
                 this.snackBar.open('Error updating product status', 'Close', { duration: 3000 });
             }
@@ -174,7 +205,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
     deleteProduct(product: Product): void {
         if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
             this.productService.deleteProduct(product._id!).subscribe({
-                next: (response) => {
+                next: (response: { success: boolean; message: string }) => {
                     if (response.success) {
                         this.snackBar.open(response.message, 'Close', { duration: 3000 });
                         this.loadProducts();
@@ -182,7 +213,7 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
                         this.snackBar.open('Failed to delete product', 'Close', { duration: 3000 });
                     }
                 },
-                error: (error) => {
+                error: (error: any) => {
                     console.error('Error deleting product:', error);
                     this.snackBar.open('Error deleting product', 'Close', { duration: 3000 });
                 }

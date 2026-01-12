@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -119,6 +120,28 @@ export class UserService {
     });
 
     return this.http.get<UserResponse>(this.apiUrl, { params });
+  }
+
+  // Fallback-friendly version used by components that must always display data
+  getUsersWithFallback(filters: UserFilters = {}): Observable<UserResponse> {
+    let params = new HttpParams();
+    
+    Object.keys(filters).forEach(key => {
+      const value = (filters as any)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http.get<UserResponse>(this.apiUrl, { params }).pipe(
+      catchError((err: any) => {
+        // If unauthorized, fall back to public demo endpoint
+        if (err && err.status === 401) {
+          return this.http.get<UserResponse>(`/api/admin/demo/users`, { params });
+        }
+        return throwError(() => err);
+      })
+    );
   }
 
   // Get user by ID

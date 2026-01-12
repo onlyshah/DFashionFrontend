@@ -1,0 +1,12 @@
+<div class="admin-media">
+  <h2>Media Library</h2>
+
+  <div *ngIf="isLoading" class="loading"><mat-spinner></mat-spinner></div>
+
+  <div class="grid" *ngIf="!isLoading">
+    <div class="item" *ngFor="let m of items">
+      <img *ngIf="m.url" [src]="m.url" alt="media" />
+      <div class="meta">{{ m.name || m.filename }}</div>
+    </div>
+  </div>
+</div>

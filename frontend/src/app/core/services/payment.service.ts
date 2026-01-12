@@ -79,7 +79,7 @@ export interface PaymentHistory {
   providedIn: 'root'
 })
 export class PaymentService {
-  private apiUrl = 'http://localhost:3001/api/payments'; // Updated to correct port
+  private apiUrl = `${environment.apiUrl}/api/payments`; // Updated to correct port
   private paymentMethodsSubject = new BehaviorSubject<PaymentMethod[]>([]);
   public paymentMethods$ = this.paymentMethodsSubject.asObservable();
 

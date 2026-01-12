@@ -1,0 +1,32 @@
+<div class="admin-page">
+  <h2>Seller Management</h2>
+
+  <div *ngIf="isLoading" class="loading">Loading sellers...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="!isLoading && !error" class="sellers-table">
+    <thead>
+      <tr>
+        <th>Shop Name</th>
+        <th>Contact Email</th>
+        <th>Status</th>
+        <th>Rating</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let seller of sellers">
+        <td><strong>{{ seller.shopName }}</strong></td>
+        <td>{{ seller.email }}</td>
+        <td><span class="status-badge" [style.background-color]="getStatusColor(seller.status)">{{ seller.status }}</span></td>
+        <td>{{ seller.rating || 'N/A' }}</td>
+        <td class="actions">
+          <button *ngIf="seller.status === 'pending'" (click)="approveSeller(seller._id)" class="btn-approve">Approve</button>
+          <button (click)="rejectSeller(seller._id)" class="btn-reject">Reject</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoading && sellers.length === 0">No sellers found.</div>
+</div>

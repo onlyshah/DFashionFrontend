@@ -1,0 +1,29 @@
+<div class="admin-page">
+  <h2>Shipment Management</h2>
+
+  <div *ngIf="isLoading" class="loading">Loading shipments...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table *ngIf="!isLoading && !error" class="shipments-table">
+    <thead>
+      <tr>
+        <th>Tracking ID</th>
+        <th>Order ID</th>
+        <th>Destination</th>
+        <th>Status</th>
+        <th>Est. Delivery</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ship of shipments">
+        <td><strong>{{ ship.trackingId }}</strong></td>
+        <td>{{ ship.orderId }}</td>
+        <td>{{ ship.destination }}</td>
+        <td><span class="status-badge" [style.background-color]="getStatusColor(ship.status)">{{ ship.status }}</span></td>
+        <td>{{ ship.estimatedDelivery }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="!isLoading && shipments.length === 0">No shipments found.</div>
+</div>
