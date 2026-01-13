@@ -32,22 +32,21 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/assets/pollux/vendors/typicons/typicons.css",
-              "src/assets/pollux/vendors/font-awesome/css/font-awesome.min.css",
-              "src/assets/pollux/vendors/mdi/css/materialdesignicons.min.css",
-              "src/assets/pollux/vendors/simple-line-icons/css/simple-line-icons.css",
-              "src/assets/pollux/vendors/css/vendor.bundle.base.css",
-              "src/app/admin/styles/admin-fixes.scss"
-            ],
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              // "src/assets/styles/admin/pollux/vendors/typicons/typicons.css",
+              // "src/assets/styles/admin/pollux/vendors/font-awesome/css/font-awesome.min.css",
+              // "src/assets/styles/admin/pollux/vendors/mdi/css/materialdesignicons.min.css",
+              // "src/assets/styles/admin/pollux/vendors/simple-line-icons/css/simple-line-icons.css",
+              // "src/assets/styles/admin/pollux/vendors/css/vendor.bundle.base.css"
+              ],
             "scripts": [
-              "src/assets/pollux/vendors/js/vendor.bundle.base.js",
-              "src/assets/pollux/vendors/chart.js/chart.umd.js",
-              "src/assets/pollux/js/off-canvas.js",
-              "src/assets/pollux/js/hoverable-collapse.js",
-              "src/assets/pollux/js/template.js",
-              "src/assets/pollux/js/settings.js",
-              "src/assets/pollux/js/todolist.js"
+              // "src/assets/styles/admin/pollux/vendors/js/vendor.bundle.base.js",
+              // "src/assets/styles/admin/pollux/vendors/chart.js/chart.umd.js",
+              // "src/assets/styles/admin/pollux/js/off-canvas.js",
+              // "src/assets/styles/admin/pollux/js/hoverable-collapse.js",
+              // "src/assets/styles/admin/pollux/js/template.js",
+              // "src/assets/styles/admin/pollux/js/settings.js",
+              // "src/assets/styles/admin/pollux/js/todolist.js"
             ],
             "allowedCommonJsDependencies": [
               "localforage"
@@ -115,9 +114,9 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/assets/pollux/vendors/typicons/typicons.css",
-              "src/assets/pollux/vendors/css/vendor.bundle.base.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css"
+              // "src/assets/styles/admin/pollux/vendors/typicons/typicons.css",
+              // "src/assets/styles/admin/pollux/vendors/css/vendor.bundle.base.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"

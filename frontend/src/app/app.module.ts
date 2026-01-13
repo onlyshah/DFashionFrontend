@@ -15,7 +15,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { CmsComponent } from './admin/pages/cms/cms.component';
 import { ComplianceComponent } from './admin/pages/compliance/compliance.component';
-import { PromotionListComponent } from './admin/pages/promotion-list/promotion-list.component';
+import { PromotionListComponent } from './admin/pages/promotions/promotion-list/promotion-list.component';
 import { LogisticsComponent } from './admin/pages/logistics/logistics.component';
 import { SellerManagementComponent } from './admin/pages/seller-management/seller-management.component';
 

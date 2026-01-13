@@ -1,0 +1,181 @@
+@use 'sass:color';
+@use '../../../styles/_variables' as vars;
+// @use '../../../../assets/scss/mixins' as mix;  // TODO: Create mixins.scss
+
+.sidebar {
+min-height: calc(100vh - 4.625rem);
+    background: #ffffff;
+    font-family: "Poppins", sans-serif;
+    font-weight: normal;
+    padding: 0;
+    width: 236px;
+    z-index: 11;
+    transition: width 0.25s ease, background 0.25s ease;
+    -webkit-transition: width 0.25s ease, background 0.25s ease;
+    -moz-transition: width 0.25s ease, background 0.25s ease;
+    -ms-transition: width 0.25s ease, background 0.25s ease;
+    box-shadow: 0 5px 10px 0 rgba(230, 230, 243, 0.88);
+    -webkit-box-shadow: 0 5px 10px 0 rgba(230, 230, 243, 0.88);
+    -moz-box-shadow: 0 5px 10px 0 rgba(230, 230, 243, 0.88);
+    -ms-box-shadow: 0 5px 10px 0 rgba(230, 230, 243, 0.88);
+    margin-left: 0.5rem;
+    margin-bottom: 2.062rem;
+    border-radius: 6px;
+    border: 1px solid #e4e4f4;
+
+  .nav {
+    overflow: hidden;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin-bottom: 60px;
+
+    .nav-item {
+      padding: 0 1rem;
+      
+      .nav-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        white-space: nowrap;
+        color: vars.$pollux-dark;
+        border-radius: 8px;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        position: relative;
+
+        &:hover {
+          background: rgba(vars.$pollux-primary, 0.05);
+        }
+
+        &.active {
+          background: rgba(vars.$pollux-primary, 0.1);
+          color: vars.$pollux-primary;
+        }
+
+        .menu-icon {
+          margin-right: 0.875rem;
+          font-size: 1.25rem;
+          line-height: 1;
+          background: transparent;
+          flex-shrink: 0;
+        }
+
+        .menu-title {
+          font-size: 0.875rem;
+          font-weight: 500;
+          flex: 1;
+        }
+
+        // Chevron icon for dropdown
+        .typcn-chevron-right {
+          font-size: 0.875rem;
+          margin-left: auto;
+          transition: transform 0.2s ease;
+          flex-shrink: 0;
+
+          &.rotate {
+            transform: rotate(90deg);
+          }
+        }
+      }
+
+      // Dropdown menu styles
+      .collapse {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+
+        &.show {
+          max-height: 500px;
+        }
+      }
+
+      .sub-menu {
+        padding: 0.5rem 0;
+        background: rgba(vars.$pollux-primary, 0.02);
+        margin-top: 0.5rem;
+        border-radius: 4px;
+
+        .nav-item {
+          padding: 0;
+          
+          .nav-link {
+            padding-left: 3rem;
+            font-size: 0.8rem;
+
+            .menu-title {
+              margin-left: 0;
+            }
+          }
+        }
+      }
+
+      &.nav-category {
+        padding: 0.5rem 1rem 0.5rem 2.5rem;
+        color: color.adjust(vars.$pollux-secondary, $lightness: -10%);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+}
+
+// Sidebar Mini
+@media (min-width: 992px) {
+  .sidebar-mini {
+    .sidebar {
+      width: vars.$sidebar-width-sm;
+
+      .nav {
+        .nav-item {
+          padding: 0;
+
+          .nav-link {
+            padding: 0.875rem 1rem;
+            text-align: center;
+            flex-direction: column;
+
+            .menu-icon {
+              margin: 0;
+              font-size: 1.25rem;
+            }
+
+            .menu-title {
+              display: none;
+            }
+
+            .typcn-chevron-right {
+              display: none;
+            }
+          }
+
+          .collapse {
+            display: none;
+          }
+        }
+
+        .nav-category {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+// Mobile view
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    max-height: 100%;
+    top: vars.$navbar-height;
+    left: -#{vars.$sidebar-width-lg};
+    transition: all 0.25s ease-out;
+
+    &.active {
+      left: 0;
+    }
+  }
+}

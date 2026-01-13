@@ -10,35 +10,35 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    loadChildren: () => import('./features/home/home.routes').then(m => m.homeRoutes)
+    loadChildren: () => import('./enduser-app/features/home/home.routes').then(m => m.homeRoutes)
   },
   {
     path: 'auth',
-    loadChildren: () => import('./features/auth/auth.routes').then(m => m.authRoutes)
+    loadChildren: () => import('./enduser-app/features/auth/auth.routes').then(m => m.authRoutes)
   },
   {
     path: 'shop',
-    loadChildren: () => import('./features/shop/shop.routes').then(m => m.shopRoutes)
+    loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
   },
   {
     path: 'category/:category',
-    loadComponent: () => import('./features/category/category.component').then(m => m.CategoryComponent)
+    loadComponent: () => import('./enduser-app/features/category/category.component').then(m => m.CategoryComponent)
   },
   {
     path: 'products',
-    loadChildren: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+    loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
   },
   {
     path: 'search',
-    loadChildren: () => import('./features/search/search.routes').then(m => m.searchRoutes)
+    loadChildren: () => import('./enduser-app/features/search/search.routes').then(m => m.searchRoutes)
   },
   {
     path: 'profile',
-    loadChildren: () => import('./features/profile/profile.routes').then(m => m.profileRoutes)
+    loadChildren: () => import('./enduser-app/features/profile/profile.routes').then(m => m.profileRoutes)
   },
   {
     path: 'story',
-    loadChildren: () => import('./features/story/story.routes').then(m => m.storyRoutes)
+    loadChildren: () => import('./enduser-app/features/story/story.routes').then(m => m.storyRoutes)
   },
   // Mobile routes (for mobile app compatibility)
   {
@@ -48,10 +48,6 @@ const routes: Routes = [
   {
     path: 'mobile-cart',
     loadChildren: () => import('./mobile/cart/cart.module').then(m => m.CartPageModule)
-  },
-  {
-    path: 'mobile-checkout',
-    loadChildren: () => import('./mobile/checkout/checkout.module').then(m => m.CheckoutPageModule)
   },
   {
     path: 'mobile-orders',
@@ -105,7 +101,7 @@ const routes: Routes = [
   // Unified Dashboard Route
   {
     path: 'dashboard',
-    loadComponent: () => import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
+    loadComponent: () => import('./admin/pages/components/dashboard/general-dashboard/general-dashboard.component').then(m => m.GeneralDashboardComponent),
     canActivate: [AuthGuard]
   },
 

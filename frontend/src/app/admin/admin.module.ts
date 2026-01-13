@@ -13,24 +13,24 @@ import { AdminRoutingModule } from './admin-routing.module';
 // Removed Pollux UI Module
 
 // Components
-import { SuperAdminDashboardComponent } from './pollux-ui/components/super-admin-dashboard/super-admin-dashboard.component';
-import { GeneralDashboardComponent } from './pollux-ui/components/dashboard/general-dashboard/general-dashboard.component';
-import { AdminHeaderComponent } from './components/admin-header/admin-header.component';
-import { AdminSidebarComponent } from './components/admin-sidebar/admin-sidebar.component';
+import { SuperAdminDashboardComponent } from './pages/components/super-admin-dashboard/super-admin-dashboard.component';
+import { GeneralDashboardComponent } from './pages/components/dashboard/general-dashboard/general-dashboard.component';
+import { AdminHeaderComponent } from './pages/components/admin-header/admin-header.component';
+import { AdminSidebarComponent } from './pages/components/admin-sidebar/admin-sidebar.component';
 import { RoleManagementComponent } from './pages/role-management/role-management.component';
-import { AdminLoginComponent } from './auth/admin-login.component';
-import { UserManagementComponent } from './users/user-management.component';
-import { UserDialogComponent } from './users/user-dialog.component';
-import { ProductManagementComponent } from './products/product-management.component';
-import { ProductDialogComponent } from './products/product-dialog.component';
-import { OrderManagementComponent } from './orders/order-management.component';
-import { OrderDetailsComponent } from './orders/order-details.component';
-import { AnalyticsComponent } from './analytics/analytics.component';
-import { SettingsComponent } from './settings/settings.component';
+import { AdminLoginComponent } from './pages/auth/admin-login.component';
+import { UserManagementComponent } from './pages/users/user-management.component';
+import { UserDialogComponent } from './pages/users/user-dialog.component';
+import { ProductManagementComponent } from './pages/products/product-management.component';
+import { ProductDialogComponent } from './pages/products/product-dialog.component';
+import { OrderManagementComponent } from './pages/orders/order-management.component';
+import { OrderDetailsComponent } from './pages/orders/order-details.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 import { OverviewComponent } from './pages/overview/overview.component';
 import { ReturnsManagementComponent } from './pages/returns-management/returns-management.component';
 import { AdminLoadingComponent } from './shared/components/loading/loading.component';
-import { AdminListComponent } from './shared/components/admin-list/admin-list.component';
+import { AdminListComponent } from './pages/admin-list/admin-list.component';
 
 // Services
 import { AdminAuthService } from './services/admin-auth.service';
@@ -50,17 +50,14 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
 
 @NgModule({
   declarations: [
-  // PolluxSidebarComponent, // Standalone, import instead
-  // PolluxNavbarComponent,
     AdminLoginComponent,
-    UserManagementComponent,
+    // UserManagementComponent is now standalone
     UserDialogComponent,
     ProductManagementComponent,
     ProductDialogComponent,
     OrderManagementComponent,
     OrderDetailsComponent,
     AnalyticsComponent,
-    SettingsComponent,
     RolePipe,
     StatusPipe,
     AdminCurrencyFormatPipe,
@@ -86,6 +83,7 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     AdminListComponent,
     OverviewComponent,
     ReturnsManagementComponent,
+    SettingsComponent,
     
   ],
   providers: [

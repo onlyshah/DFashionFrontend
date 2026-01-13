@@ -51,10 +51,6 @@ const routes: Routes = [
     loadChildren: () => import('../vendor/vendor.module').then(m => m.VendorPageModule)
   },
   {
-    path: 'checkout',
-    loadChildren: () => import('../checkout/checkout.module').then(m => m.CheckoutPageModule)
-  },
-  {
     path: 'wishlist',
     loadChildren: () => import('../wishlist/wishlist.module').then(m => m.WishlistPageModule)
   },

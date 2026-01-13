@@ -1,86 +1,14 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { FormsModule } from '@angular/forms';
 
-// Angular Material Modules
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
-
-// Pipes
-import { RolePipe } from './pipes/role.pipe';
-
-// Components
-import { StoriesViewerComponent } from './components/stories-viewer/stories-viewer.component';
-import { CreateContentModalComponent } from './components/create-content-modal/create-content-modal.component';
-
-// Ionic Module
-import { IonicModule } from '@ionic/angular';
-
-const MATERIAL_MODULES = [
-  MatButtonModule,
-  MatCardModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatIconModule,
-  MatInputModule,
-  MatSelectModule,
-  MatSnackBarModule,
-  MatTableModule,
-  MatPaginatorModule,
-  MatSortModule,
-  MatProgressSpinnerModule,
-  MatSlideToggleModule,
-  MatChipsModule,
-  MatTooltipModule,
-  MatMenuModule,
-  MatToolbarModule,
-  MatSidenavModule,
-  MatListModule
-];
+// Standalone shared components
+import { HeaderComponent } from '../enduser-app/shared/components/header/header.component';
+import { NotificationComponent } from '../enduser-app/shared/components/notification/notification.component';
+import { MobileLayoutComponent } from '../enduser-app/shared/components/mobile-layout/mobile-layout.component';
 
 @NgModule({
-  declarations: [
-    RolePipe,
-    StoriesViewerComponent,
-    CreateContentModalComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonicModule,
-    FontAwesomeModule,
-    ...MATERIAL_MODULES
-  ],
-  exports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonicModule,
-    FontAwesomeModule,
-    ...MATERIAL_MODULES,
-    RolePipe,
-    StoriesViewerComponent,
-    CreateContentModalComponent
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA]
+  imports: [CommonModule, FormsModule, HeaderComponent, NotificationComponent, MobileLayoutComponent],
+  exports: [CommonModule, FormsModule, HeaderComponent, NotificationComponent, MobileLayoutComponent]
 })
-export class SharedModule { }
+export class SharedModule {}

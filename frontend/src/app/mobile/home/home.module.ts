@@ -11,8 +11,7 @@ import { HomePage } from './home.page';
 // Import Swiper modules
 import { register } from 'swiper/element/bundle';
 
-// Import PolluxSidebarModule and SharedModule
-import { PolluxSidebarModule } from '../../admin/pollux-ui/components/pollux-sidebar/pollux-sidebar.module';
+// Import SharedModule
 import { SharedModule } from '../../shared/shared.module';
 
 const routes: Routes = [
@@ -28,7 +27,6 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    PolluxSidebarModule,
     SharedModule
   ],
   declarations: [HomePage],

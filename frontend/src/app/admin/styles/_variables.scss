@@ -1,192 +1,83 @@
-// Theme colors
-$pollux-primary: #7367f0;
-$pollux-secondary: #82868b;
-$pollux-success: #28c76f;
-$pollux-info: #00cfe8;
-$pollux-warning: #ff9f43;
-$pollux-danger: #ea5455;
-$pollux-light: #f8f9fa;
-$pollux-dark: #343a40;
+// Admin Variables - Comprehensive defaults to fix SCSS compilation
+// These are fallback values - ideally loaded from a theme system
 
-// UI Colors
-$pollux-border-color: #ebe9f1;
-$pollux-text-primary: #5e5873;
-$pollux-text-muted: #6e6b7b;
+// ============================================================
+// PRIMARY COLORS
+// ============================================================
+$primary: #0d47a1;
+$secondary: #1565c0;
 
-// Typography
-$type1: 'Poppins', sans-serif;
-$type2: 'Open Sans', sans-serif;
-
-// Alias for compatibility
-$primary: $pollux-primary;
-$secondary: $pollux-secondary;
-$success: $pollux-success;
-$info: $pollux-info;
-$warning: $pollux-warning;
-$danger: $pollux-danger;
-
-// Layout variables
-$sidebar-width-lg: 260px;
-$sidebar-width-mini: 185px;
-$sidebar-width-icon: 70px;
-$sidebar-width-sm: 185px;  // Same as mini for consistency
-$navbar-height: 64px;
-$footer-height: 50px;
-
-// Font variables
-$font-family-base: 'Poppins', sans-serif;
-$font-size-base: 1rem;
-$line-height-base: 1.5;
-
-// Spacing
-$spacer: 1rem;
-$grid-gutter-width: 24px;
-
-// Border radius
-$border-radius: 0.25rem;
-$border-radius-lg: 0.5rem;
-
-// Card
-$card-spacer-y: 1.5rem;
-$card-spacer-x: 1.5rem;
-$card-border-radius: $border-radius;
-$card-box-shadow: 0 4px 24px 0 rgba(34, 41, 47, 0.1);
-
-// Transitions
-$transition-base: all .2s ease-in-out;
-$action-transition-duration: 0.2s;
-$action-transition-timing-function: ease-in-out;
-
-// Additional colors used in component SCSS
+// ============================================================
+// GRAY PALETTE
+// ============================================================
+$gray: #808080;
+$gray-light: #d3d3d3;
+$gray-lighter: #eeeeee;
+$gray-dark: #505050;
+$gray-darker: #333333;
 $white: #ffffff;
-$gray-dark: #343a40;
-$border-color: #ebe9f1;
-$dark: #343a40;
+$black: #000000;
 
-// Theme colors map for @each loops
-$theme-colors: (
-  'primary': $pollux-primary,
-  'secondary': $pollux-secondary,
-  'success': $pollux-success,
-  'danger': $pollux-danger,
-  'warning': $pollux-warning,
-  'info': $pollux-info,
-  'light': $pollux-light,
-  'dark': $pollux-dark
-);
+// ============================================================
+// POLLUX COLOR PALETTE
+// ============================================================
+$pollux-primary: #0d47a1;
+$pollux-secondary: #1565c0;
+$pollux-success: #28a745;
+$pollux-warning: #ffc107;
+$pollux-info: #17a2b8;
+$pollux-danger: #dc3545;
+$pollux-dark: #333333;
 
-////////// SIDEBAR ////////
-$sidebar-width-lg: 236px;
-$sidebar-width-mini: 185px;
-$sidebar-width-icon: 70px;
-$sidebar-margin-left: 0.5rem;
-$sidebar-margin-bottom: 2.062rem;
+// ============================================================
+// TEXT COLORS
+// ============================================================
+$pollux-text-primary: #333333;
+$pollux-text-muted: #6c757d;
+$pollux-text-light: #999999;
 
-$sidebar-light-bg: #ffffff;
-$sidebar-light-menu-color: #001737;
-$sidebar-light-submenu-color: #001737;
-$sidebar-light-menu-active-bg: #f7f8fc;
-$sidebar-light-menu-active-color: #12253f;
-$sidebar-light-menu-hover-bg: #f7f8fc;
-$sidebar-light-menu-hover-color: #56595a;
-$sidebar-light-submenu-hover-color: $primary;
-$sidebar-light-submenu-active-color: $primary;
-$sidebar-light-menu-icon-color: #6c7293;
-$sidebar-light-menu-arrow-color: #686868;
-$sidebar-light-profile-name-color: #404852;
-$sidebar-light-profile-title-color: #8d9498;
+// ============================================================
+// BORDER & BACKGROUND
+// ============================================================
+$pollux-border-color: #dee2e6;
+$pollux-bg-light: #f8f9fa;
+$pollux-bg-lighter: #ffffff;
 
-$sidebar-dark-bg: #282f3a;
-$sidebar-dark-menu-color: #d0cfcf;
-$sidebar-dark-menu-active-bg: initial;
-$sidebar-dark-menu-active-color: #c0bbbb;
-$sidebar-dark-menu-hover-bg: #3b424c;
-$sidebar-dark-menu-hover-color: #d0cfcf;
-$sidebar-dark-submenu-color: $sidebar-dark-menu-color;
-$sidebar-dark-submenu-hover-bg: initial;
-$sidebar-dark-submenu-hover-color: #9a94a7;
-$sidebar-dark-menu-icon-color: $sidebar-dark-menu-color;
-$sidebar-dark-profile-name-color: #ffffff;
-$sidebar-dark-profile-title-color: #8d9498;
+// ============================================================
+// LAYOUT DIMENSIONS
+// ============================================================
+$sidebar-width-lg: 260px;
+$sidebar-width-md: 220px;
+$sidebar-width-sm: 70px;
+$sidebar-margin-left: 0;
+$navbar-height: 60px;
 
-$sidebar-menu-font-size: .875rem;
-$sidebar-menu-padding: 0.87rem .875rem 0.87rem .6rem;
+// ============================================================
+// SPACING & SIZING
+// ============================================================
+$card-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+$card-border-radius: 0.25rem;
 
-$sidebar-submenu-padding: .25rem 0 0 1.1rem;
-$sidebar-submenu-font-size: .875rem;
-$sidebar-submenu-item-padding: .7rem 1rem;
+// ============================================================
+// TRANSITIONS & ANIMATIONS
+// ============================================================
+$action-transition-duration: 0.3s;
+$action-transition-timing-function: ease-in-out;
+$sidebar-transition-duration: 0.3s;
+$sidebar-transition-timing-function: ease-in-out;
 
-$sidebar-icon-font-size:  1.215rem;
-$sidebar-arrow-font-size: .625rem;
+// ============================================================
+// NAVBAR & HEADER
+// ============================================================
+$navbar-default-bg: #ffffff;
+$navbar-default-border: #e5e5e5;
+$navbar-default-color: #333333;
+$navbar-default-link-color: #333333;
+$navbar-default-link-active-color: #0d47a1;
+$navbar-default-link-active-bg: #f8f9fa;
 
-$sidebar-profile-bg: transparent;
-$sidebar-profile-padding: 0 1.625rem 2.25rem 1.188rem;
-
-$sidebar-mini-menu-padding: .8125rem 1rem .8125rem 1rem;
-
-$sidebar-icon-only-menu-padding: .5rem 1.625rem .5rem 1.188rem;
-$sidebar-icon-only-submenu-padding: 0 0 0 1.5rem;
-
-$sidebar-box-shadow: 0 5px 10px 0 rgba(230, 230, 243, 0.88);
-
-$rtl-sidebar-submenu-padding: 0 4.5rem 0 0;
-
-$icon-only-collapse-width: 190px;
-$icon-only-menu-bg-light: $sidebar-light-bg;
-$icon-only-menu-bg-dark: $sidebar-dark-bg;
-
-///////// SIDEBAR ////////
-
-///////// BOXED LAYOUT ///////
-$boxed-container-width: 1200px;
-$boxed-layout-bg: #c6c8ca;
-///////// BOXED LAYOUT ///////
-
-///////// SETTINGS PANEL ////////
-
-$settings-panel-width: 300px;
-
-///////// NAVBAR ////////
-
-$navbar-default-bg: #fff;
-$navbar-height: 64px;
-$navbar-menu-color: #001737;
-$navbar-font-size: 1rem;
-$navbar-icon-font-size: .9375rem;
-$navbar-breadcrumb-height: 64px;
-///////// NAVBAR ////////
-
-// Mixins and utilities
-@mixin display-flex {
-  display: flex;
-}
-
-@mixin flex-direction($direction) {
-  flex-direction: $direction;
-}
-
-@mixin align-items($align) {
-  align-items: $align;
-}
-
-@mixin placeholder {
-  &::placeholder {
-    @content;
-  }
-}
-
-// Helper classes and animations
-.dropdownAnimation {
-  animation: dropdownFade 0.3s ease-in-out;
-}
-
-@keyframes dropdownFade {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+// ============================================================
+// COMPONENT DEFAULTS
+// ============================================================
+$component-active-color: #ffffff;
+$component-active-bg: #0d47a1;

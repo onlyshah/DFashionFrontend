@@ -1,0 +1,215 @@
+@use 'sass:color';
+// @use '../../styles/variables' as vars;
+// @use '../../styles/layouts' as layouts;
+// @use '../../styles/navbar' as navbar;
+// @use '../../styles/sidebar' as sidebar;
+
+// Default color variables (fallback)
+$pollux-primary: #667eea;
+$pollux-secondary: #999;
+$pollux-dark: #333;
+$pollux-success: #28a745;
+$pollux-danger: #dc3545;
+$pollux-warning: #ffc107;
+$pollux-info: #17a2b8;
+$sidebar-width-lg: 250px;
+$sidebar-width-icon: 80px;
+
+$action-transition-duration: 0.25s;
+$action-transition-timing-function: ease;
+
+.container-scroller {
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-body-wrapper {
+ min-height: calc(100vh - 4.625rem);
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    padding-left: 0;
+    padding-right: 0;
+    padding-top: 1.875rem;
+    background: #f4f5fa;
+}
+
+.main-panel {
+  
+  .sidebar-icon-only & {
+    margin-left: $sidebar-width-icon;
+    width: calc(100% - #{$sidebar-width-icon});
+  }
+  
+  .content-wrapper {
+    padding: 2rem;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    
+    // Smooth scrolling
+    scroll-behavior: smooth;
+    
+    // Custom scrollbar styling - visible
+    &::-webkit-scrollbar {
+      width: 12px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 10px;
+      
+      &:hover {
+        background: #555;
+      }
+    }
+  }
+}
+// Card Stats
+.card-stat {
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  .stat-content {
+    h4 {
+      color: $pollux-secondary;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    h2 {
+      color: $pollux-dark;
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+      font-size: 0.813rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+
+      &.text-success {
+        color: $pollux-success;
+      }
+
+      &.text-danger {
+        color: $pollux-danger;
+      }
+
+      i {
+        font-size: 1rem;
+      }
+    }
+  }
+
+  .stat-icon {
+    i {
+      font-size: 2.5rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+// Table styles
+.table {
+  color: $pollux-dark;
+  margin-bottom: 0;
+
+  thead {
+    th {
+      border-top: 0;
+      font-weight: 600;
+      padding: 1rem;
+      color: $pollux-secondary;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr {
+      &:hover {
+        background-color: rgba($pollux-primary, 0.05);
+      }
+
+      td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #f3f3f3;
+      }
+    }
+  }
+}
+
+// Badges
+.badge {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+
+  &.badge-success {
+    background-color: rgba($pollux-success, 0.1);
+    color: $pollux-success;
+  }
+
+  &.badge-danger {
+    background-color: rgba($pollux-danger, 0.1);
+    color: $pollux-danger;
+  }
+
+  &.badge-warning {
+    background-color: rgba($pollux-warning, 0.1);
+    color: color.adjust($pollux-warning, $lightness: -20%);
+  }
+
+  &.badge-info {
+    background-color: rgba($pollux-info, 0.1);
+    color: $pollux-info;
+  }
+}
+
+// Buttons
+.btn-link {
+  color: $pollux-primary;
+  text-decoration: none;
+  padding: 0;
+  
+  &:hover {
+    color: color.adjust($pollux-primary, $lightness: -10%);
+  }
+}
+
+// Responsive
+@media (max-width: 991px) {
+  .main-panel {
+    margin-left: 0;
+    width: 100%;
+  }
+}

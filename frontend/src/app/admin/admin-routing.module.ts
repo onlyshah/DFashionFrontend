@@ -1,7 +1,7 @@
 import { NgModule, Injectable } from '@angular/core';
 import { RouterModule, Routes, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Router } from '@angular/router';
-import { AdminLoginComponent } from './auth/admin-login.component';
+import { AdminLoginComponent } from './pages/auth/admin-login.component';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { RoleGuard } from './guards/role.guard';
@@ -33,35 +33,35 @@ export class SuperAdminGuard implements CanActivate {
     return false;
   }
 }
-import { SuperAdminDashboardComponent } from './pollux-ui/components/super-admin-dashboard/super-admin-dashboard.component';
-import { GeneralDashboardComponent } from './pollux-ui/components/dashboard/general-dashboard/general-dashboard.component';
+import { SuperAdminDashboardComponent } from './pages/components/super-admin-dashboard/super-admin-dashboard.component';
+import { GeneralDashboardComponent } from './pages/components/dashboard/general-dashboard/general-dashboard.component';
 import { OverviewComponent } from './pages/overview/overview.component';
-import { NewslettersComponent } from './marketing/newsletters.component';
-import { BlogPostsComponent } from './cms/blog-posts.component';
-import { MediaLibraryComponent } from './cms/media-library.component';
-import { SuppliersComponent } from './inventory/suppliers.component';
-import { WarehousesComponent } from './inventory/warehouses.component';
-import { SystemLogsComponent } from './system/system-logs.component';
-import { BackupsComponent } from './system/backups.component';
-import { MaintenanceComponent } from './system/maintenance.component';
-import { UserManagementComponent } from './users/user-management.component';
-import { OrderManagementComponent } from './orders/order-management.component';
-import { ProductManagementComponent } from './products/product-management.component';
-import { CategoryManagementComponent } from './pollux-ui/categories/category-management.component';
-import { RoleManagementComponent } from './roles/role-management.component';
-import { SettingsComponent } from './settings/settings.component';
-import { AnalyticsComponent } from './analytics/analytics.component';
+import { NewslettersComponent } from './pages/marketing/newsletters.component';
+import { BlogPostsComponent } from './pages/cms/blog-posts.component';
+import { MediaLibraryComponent } from './pages/cms/media-library.component';
+import { SuppliersComponent } from './pages/inventory/suppliers.component';
+import { WarehousesComponent } from './pages/inventory/warehouses.component';
+import { SystemLogsComponent } from './pages/system/system-logs.component';
+import { BackupsComponent } from './pages/system/backups.component';
+import { MaintenanceComponent } from './pages/system/maintenance.component';
+import { UserManagementComponent } from './pages/users/user-management.component';
+import { OrderManagementComponent } from './pages/orders/order-management.component';
+import { ProductManagementComponent } from './pages/products/product-management.component';
+import { CategoryManagementComponent } from './pages/categories/category-management.component';
+import { RoleManagementComponent } from './pages/roles/role-management.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { AnalyticsComponent } from './pages/analytics/analytics.component';
 import { ReturnsManagementComponent } from './pages/returns-management/returns-management.component';
-import { CouponManagementComponent } from './marketing/coupon-management.component';
-import { PageManagementComponent } from './cms/page-management.component';
-import { CampaignManagementComponent } from './marketing/campaign-management.component';
-import { SocialEngagementComponent } from './social/social-engagement.component';
-import { CustomersComponent } from './users/customers.component';
-import { VendorsComponent } from './users/vendors.component';
-import { CreatorsComponent } from './users/creators.component';
-import { AdminsComponent } from './users/admins.component';
-import { ActivityLogsComponent } from './users/activity-logs.component';
-import { AlertsComponent } from './pages/alerts.component';
+import { CouponManagementComponent } from './pages/marketing/coupon-management.component';
+import { PageManagementComponent } from './pages/cms/page-management.component';
+import { CampaignManagementComponent } from './pages/marketing/campaign-management.component';
+import { SocialEngagementComponent } from './pages/social/social-engagement.component';
+import { CustomersComponent } from './pages/users/customers.component';
+import { VendorsComponent } from './pages/users/vendors.component';
+import { CreatorsComponent } from './pages/users/creators.component';
+import { AdminsComponent } from './pages/users/admins.component';
+import { ActivityLogsComponent } from './pages/users/activity-logs.component';
+import { AlertsComponent } from './pages/alerts/alerts.component';
 
 const routes: Routes = [
   {
@@ -202,11 +202,12 @@ const routes: Routes = [
         canActivate: [PermissionGuard],
         data: { title: 'Alerts & Notifications', module: 'alerts' }
       },
-      {
-        path: 'profile',
-        loadComponent: () => import('../features/profile/pages/profile/profile.component').then(m => m.ProfileComponent),
-        data: { title: 'Profile' }
-      },
+      // TODO: Implement admin profile page
+      // {
+      //   path: 'profile',
+      //   loadComponent: () => import('./pages/features/profile/pages/profile/profile.component').then(m => m.ProfileComponent),
+      //   data: { title: 'Profile' }
+      // },
       {
         path: 'analytics/sales',
         component: AnalyticsComponent,

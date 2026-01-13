@@ -1,22 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
-import { HeaderComponent } from './shared/components/header/header.component';
-import { NotificationComponent } from './shared/components/notification/notification.component';
-import { MobileLayoutComponent } from './shared/components/mobile-layout/mobile-layout.component';
+import { SharedModule } from './shared/shared.module';
 import { AuthService } from './core/services/auth.service';
 import { DataFlowService } from './core/services/data-flow.service';
 import { MobileOptimizationService } from './core/services/mobile-optimization.service';
 import { LayoutService } from './core/services/layout.service';
 
 @Component({
-    selector: 'app-root',
-    imports: [CommonModule, RouterOutlet, HeaderComponent, NotificationComponent, MobileLayoutComponent],
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss']
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterModule, SharedModule],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
   title = 'DFashion';

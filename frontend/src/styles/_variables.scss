@@ -1,0 +1,45 @@
+// Global SCSS Variables
+// This file is auto-generated as a placeholder
+
+// Colors
+$primary-color: #1976d2;
+$secondary-color: #f50057;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$danger-color: #f44336;
+$info-color: #2196f3;
+
+// Typography
+$base-font-size: 14px;
+$heading-font-size: 24px;
+$line-height: 1.5;
+
+// Spacing
+$spacing-unit: 8px;
+$spacing-xs: $spacing-unit;
+$spacing-sm: $spacing-unit * 2;
+$spacing-md: $spacing-unit * 3;
+$spacing-lg: $spacing-unit * 4;
+$spacing-xl: $spacing-unit * 5;
+
+// Breakpoints
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 1024px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// Shadows
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+$shadow-md: 0 3px 6px rgba(0, 0, 0, 0.16);
+$shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.19);
+
+// Borders
+$border-radius: 4px;
+$border-color: #ccc;
+$border-width: 1px;
+
+// Transitions
+$transition-default: all 0.3s ease;
+$transition-short: all 0.15s ease;
+$transition-long: all 0.6s ease;
