@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 
 interface Category {
   _id: string;

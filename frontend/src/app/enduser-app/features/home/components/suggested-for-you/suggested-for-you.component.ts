@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
-import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { environment } from '../../../../../../environments/environment';
+import { ImageFallbackDirective } from '../../../../shared/directives/directives/image-fallback.directive';
 
 interface SuggestedUser {
   id: string;

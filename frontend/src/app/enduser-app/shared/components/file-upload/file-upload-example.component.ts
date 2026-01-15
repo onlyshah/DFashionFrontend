@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileUploadComponent } from './file-upload.component';
-import { UploadProgress } from '../../../core/services/file-upload.service';
+import { UploadProgress } from '../../../../core/services/file-upload.service';
 
 @Component({
     selector: 'app-file-upload-example',

@@ -1,17 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule]
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage: string = '';
+  apiUrl = '/api';
 
   constructor(
     private fb: FormBuilder,
@@ -32,7 +36,7 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     // Check if already logged in
-    if (this.authService.isLoggedIn()) {
+    if (this.authService.isAuthenticated) {
       this.router.navigate(['/admin/dashboard']);
     }
   }
@@ -56,12 +60,17 @@ export class RegisterComponent implements OnInit {
 
       try {
         const formData = this.registerForm.value;
-        await this.authService.register(formData);
-        this.router.navigate(['/auth/login'], { 
-          queryParams: { registered: 'true' }
-        });
+        const response = await this.authService.register(formData).toPromise();
+        
+        if (response?.success || response?.data) {
+          this.router.navigate(['/auth/login'], { 
+            queryParams: { registered: 'true' }
+          });
+        } else {
+          this.errorMessage = response?.message || 'Registration failed. Please try again.';
+        }
       } catch (error: any) {
-        this.errorMessage = error.message || 'Registration failed. Please try again.';
+        this.errorMessage = error.error?.message || error.message || 'Registration failed. Please try again.';
       } finally {
         this.isLoading = false;
       }

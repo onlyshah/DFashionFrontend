@@ -6,8 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
-import { ProductService } from '../../../../core/services/product.service';
-import { SearchService, SearchFilters, SearchSuggestion } from '../../../../core/services/search.service';
+import { ProductService } from '../../../../../core/services/product.service';
+import { SearchService, SearchFilters, SearchSuggestion } from '../../../../../core/services/search.service';
 import { AdvancedSearchComponent } from '../../../../shared/components/advanced-search/advanced-search.component';
 
 @Component({

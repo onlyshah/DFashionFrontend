@@ -12,8 +12,8 @@ import { VendorPage } from './vendor.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    VendorPageRoutingModule
-  ],
-  declarations: [VendorPage]
+    VendorPageRoutingModule,
+    VendorPage
+  ]
 })
 export class VendorPageModule {}

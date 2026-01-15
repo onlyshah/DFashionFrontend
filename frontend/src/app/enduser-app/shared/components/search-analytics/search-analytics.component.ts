@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Subject, takeUntil } from 'rxjs';
-import { SearchService } from '../../../core/services/search.service';
+import { SearchService } from '../../../../core/services/search.service';
 
 interface SearchInsight {
     totalSearches: number;

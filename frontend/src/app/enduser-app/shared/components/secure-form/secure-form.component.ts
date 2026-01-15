@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { ValidationService } from '../../../core/services/validation.service';
+import { ValidationService } from '../../../../core/services/validation.service';
 
 export interface SecureFormField {
     name: string;

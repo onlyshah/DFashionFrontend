@@ -1,7 +1,7 @@
 import { Component, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { SearchService } from '../../../core/services/search.service';
+import { SearchService } from '../../../../core/services/search.service';
 
 @Component({
     selector: 'app-visual-search',

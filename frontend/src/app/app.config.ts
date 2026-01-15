@@ -7,12 +7,12 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { IonicModule } from '@ionic/angular';
 import { IonicStorageModule } from '@ionic/storage-angular';
 
-import { routes } from './app.routes';
+import { AppRoutingModule } from './app-routing.module';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    importProvidersFrom(AppRoutingModule),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideAnimations(),
     importProvidersFrom(

@@ -5,8 +5,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
-import { ProductService } from '../../../../core/services/product.service';
-import { Product } from '../../../../core/models/product.interface';
+import { ProductService } from '../../../../../core/services/product.service';
+import { Product } from '../../../../../core/models/product.interface';
 import { TrendingProductsComponent } from '../trending-products/trending-products.component';
 import { FeaturedBrandsComponent } from '../featured-brands/featured-brands.component';
 import { NewArrivalsComponent } from '../new-arrivals/new-arrivals.component';

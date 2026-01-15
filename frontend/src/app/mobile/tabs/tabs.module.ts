@@ -13,8 +13,8 @@ import { SharedModule } from '../../shared/shared.module';
     FormsModule,
     IonicModule,
     SharedModule,
-    TabsPageRoutingModule
-  ],
-  declarations: [TabsPage]
+    TabsPageRoutingModule,
+    TabsPage
+  ]
 })
 export class TabsPageModule {}

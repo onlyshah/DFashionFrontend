@@ -10,9 +10,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { UnifiedApiService } from '../../../../core/services/unified-api.service';
-import { Product } from '../../../../core/models/product.interface';
-import { SocialInteractionsService } from '../../../../core/services/social-interactions.service';
+import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
+import { Product } from '../../../../../core/models/product.interface';
+import { SocialInteractionsService } from '../../../../../core/services/social-interactions.service';
 import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 

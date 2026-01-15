@@ -1,9 +1,9 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
-import { RecommendationService, RecommendationProduct } from '../../../core/services/recommendation.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { DataFlowService } from '../../../core/services/data-flow.service';
+import { RecommendationService, RecommendationProduct } from '../../../../core/services/recommendation.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { DataFlowService } from '../../../../core/services/data-flow.service';
 
 @Component({
   selector: 'app-recommendation-widget',

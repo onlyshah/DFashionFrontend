@@ -18,8 +18,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
-  ],
-  declarations: [PostsPage]
+    RouterModule.forChild(routes),
+    PostsPage
+  ]
 })
 export class PostsPageModule {}

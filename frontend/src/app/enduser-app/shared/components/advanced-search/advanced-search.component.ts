@@ -4,8 +4,8 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angul
 import { IonicModule } from '@ionic/angular';
 import { Subject, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
-import { SearchService, SearchSuggestion, SearchFilters, TrendingSearch } from '../../../core/services/search.service';
-import { ProductService } from '../../../core/services/product.service';
+import { SearchService, SearchSuggestion, SearchFilters, TrendingSearch } from '../../../../core/services/search.service';
+import { ProductService } from '../../../../core/services/product.service';
 import { VisualSearchComponent } from '../visual-search/visual-search.component';
 
 @Component({

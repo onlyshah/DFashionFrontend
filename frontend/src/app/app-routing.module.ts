@@ -3,18 +3,23 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 
 const routes: Routes = [
+  // Default redirect to login
   {
     path: '',
-    redirectTo: '/home',
+    redirectTo: '/auth/login',
     pathMatch: 'full'
   },
+  
+  // Auth routes - layout managed by LayoutService (no header)
+  {
+    path: 'auth',
+    loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
+  },
+
+  // Main routes - layout managed by LayoutService (with header)
   {
     path: 'home',
     loadChildren: () => import('./enduser-app/features/home/home.routes').then(m => m.homeRoutes)
-  },
-  {
-    path: 'auth',
-    loadChildren: () => import('./enduser-app/features/auth/auth.routes').then(m => m.authRoutes)
   },
   {
     path: 'shop',
@@ -25,8 +30,8 @@ const routes: Routes = [
     loadComponent: () => import('./enduser-app/features/category/category.component').then(m => m.CategoryComponent)
   },
   {
-    path: 'products',
-    loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
+    path: 'products/:id',
+    loadComponent: () => import('./enduser-app/features/shop/pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
     path: 'search',
@@ -38,13 +43,17 @@ const routes: Routes = [
   },
   {
     path: 'story',
-    loadChildren: () => import('./enduser-app/features/story/story.routes').then(m => m.storyRoutes)
+    loadChildren: () => import('./enduser-app/features/stories/stories.module').then(m => m.StoriesModule)
   },
-  // Mobile routes (for mobile app compatibility)
+  /*
   {
     path: 'tabs',
     loadChildren: () => import('./mobile/tabs/tabs.module').then(m => m.TabsPageModule)
   },
+  */
+  // MOBILE ROUTES TEMPORARILY DISABLED DUE TO COMPILATION ISSUES
+  // TODO: Fix standalone component declarations in mobile modules
+  /*
   {
     path: 'mobile-cart',
     loadChildren: () => import('./mobile/cart/cart.module').then(m => m.CartPageModule)
@@ -77,34 +86,23 @@ const routes: Routes = [
     path: 'mobile-vendor',
     loadChildren: () => import('./mobile/vendor/vendor.module').then(m => m.VendorPageModule)
   },
-
-  // Vendor dashboard route
+  */
   {
     path: 'vendor/dashboard',
-    loadComponent: () => import('./vendor/dashboard/vendor-dashboard.component').then(m => m.VendorDashboardComponent),
+    loadComponent: () => import('./enduser-app/features/vendor/pages/dashboard/vendor-dashboard.component').then(m => m.VendorDashboardComponent),
     canActivate: [AuthGuard]
   },
-
-  // Influencer dashboard route
   {
-    path: 'influencer/dashboard',
-    loadComponent: () => import('./influencer/dashboard/influencer-dashboard.component').then(m => m.InfluencerDashboardComponent),
+    path: 'dashboard',
+    loadComponent: () => import('./enduser-app/features/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent),
     canActivate: [AuthGuard]
   },
-
-  // Admin routes (web-only)
+  // Admin routes - separate
   {
     path: 'admin',
     loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule)
   },
-
-  // Unified Dashboard Route
-  {
-    path: 'dashboard',
-    loadComponent: () => import('./admin/pages/components/dashboard/general-dashboard/general-dashboard.component').then(m => m.GeneralDashboardComponent),
-    canActivate: [AuthGuard]
-  },
-
+  // Wildcard
   {
     path: '**',
     redirectTo: '/home'

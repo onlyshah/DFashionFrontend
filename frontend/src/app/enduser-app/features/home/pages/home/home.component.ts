@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../../../../environments/environment';
-import { AuthService } from '../../../../core/services/auth.service';
+import { environment } from '../../../../../../environments/environment';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 import { ViewAddStoriesComponent } from '../../../../shared/components/view-add-stories/view-add-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';

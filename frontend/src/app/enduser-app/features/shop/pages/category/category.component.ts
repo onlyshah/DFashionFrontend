@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ProductService } from '../../../../core/services/product.service';
+import { ProductService } from '../../../../../core/services/product.service';
 
 @Component({
     selector: 'app-category',

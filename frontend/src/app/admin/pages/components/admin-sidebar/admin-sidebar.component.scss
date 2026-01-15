@@ -1,5 +1,6 @@
 @use 'sass:color';
 @use '../../../styles/_variables' as vars;
+@use '../../../styles/_mixins' as *;
 // @use '../../../../assets/scss/mixins' as mix;  // TODO: Create mixins.scss
 
 .sidebar {

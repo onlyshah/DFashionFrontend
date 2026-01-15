@@ -7,9 +7,6 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { ReelsPage } from './reels.page';
 
-// Import Swiper modules
-import { register } from 'swiper/element/bundle';
-
 const routes: Routes = [
   {
     path: '',
@@ -22,14 +19,9 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    ReelsPage
   ],
-  declarations: [ReelsPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class ReelsPageModule {
-  constructor() {
-    // Register Swiper custom elements
-    register();
-  }
-}
+export class ReelsPageModule {}

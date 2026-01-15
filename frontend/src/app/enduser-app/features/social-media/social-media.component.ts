@@ -4,7 +4,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { SocialFeedComponent } from '../posts/social-feed.component';
 //import { StoriesViewerComponent } from '../stories/stories-viewer.component';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-social-media',

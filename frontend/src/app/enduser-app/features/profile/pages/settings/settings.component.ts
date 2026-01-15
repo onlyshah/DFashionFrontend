@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
-import { AuthService } from '../../../../core/services/auth.service';
-import { User } from '../../../../core/models/user.model';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { User } from '../../../../../core/models/user.model';
 
 @Component({
     selector: 'app-settings',

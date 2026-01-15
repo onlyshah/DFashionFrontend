@@ -7,7 +7,7 @@
   <router-outlet></router-outlet>
 </app-mobile-layout>
 
-<!-- Desktop Layout for Desktop/Tablet -->
+<!-- Desktop Layout for Desktop/Tablet (also fallback if isMobile not yet determined) -->
 <div *ngIf="!isMobile" class="app-container">
   <app-header *ngIf="showHeader"></app-header>
   <main class="main-content" [class.with-header]="showHeader">

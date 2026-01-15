@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UploadProgress } from '../../../core/services/upload.service';
+import { UploadProgress } from '../../../../core/services/upload.service';
 
 @Component({
     selector: 'app-upload-progress',

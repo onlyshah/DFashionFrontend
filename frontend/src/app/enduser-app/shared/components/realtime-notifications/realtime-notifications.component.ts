@@ -7,7 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RealtimeNotificationService, RealtimeNotification } from '../../../core/services/realtime-notification.service';
+import { RealtimeNotificationService, RealtimeNotification } from '../../../../core/services/realtime-notification.service';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 

@@ -1,0 +1,63 @@
+// Admin Mixins - Fallback defaults
+// These are temporary placeholders to fix SCSS compilation
+
+@mixin display-flex() {
+  display: flex;
+}
+
+@mixin flex-row() {
+  display: flex;
+  flex-direction: row;
+}
+
+@mixin flex-column() {
+  display: flex;
+  flex-direction: column;
+}
+
+@mixin justify-content($value) {
+  justify-content: $value;
+}
+
+@mixin align-items($value) {
+  align-items: $value;
+}
+
+@mixin flex-direction($direction) {
+  flex-direction: $direction;
+}
+
+@mixin box-shadow($shadow) {
+  box-shadow: $shadow;
+  -webkit-box-shadow: $shadow;
+  -moz-box-shadow: $shadow;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+}
+
+@mixin transition($transition) {
+  transition: $transition;
+  -webkit-transition: $transition;
+  -moz-transition: $transition;
+  -ms-transition: $transition;
+  -o-transition: $transition;
+}
+
+@mixin placeholder {
+  &::placeholder {
+    @content;
+  }
+  &::-webkit-input-placeholder {
+    @content;
+  }
+  &::-moz-placeholder {
+    @content;
+  }
+  &:-ms-input-placeholder {
+    @content;
+  }
+}

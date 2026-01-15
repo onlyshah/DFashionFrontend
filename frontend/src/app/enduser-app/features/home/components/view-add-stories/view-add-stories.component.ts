@@ -6,7 +6,7 @@ import { WishlistService } from '../../../../core/services/wishlist.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../../environments/environment';
 import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 
 export interface Story {

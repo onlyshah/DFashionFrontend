@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 interface Post {
   _id: string;

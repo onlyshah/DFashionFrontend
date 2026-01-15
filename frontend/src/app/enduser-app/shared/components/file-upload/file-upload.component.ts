@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileUploadService, UploadProgress, UploadResponse, MultipleUploadResponse } from '../../../core/services/file-upload.service';
+import { FileUploadService, UploadProgress, UploadResponse, MultipleUploadResponse } from '../../../../core/services/file-upload.service';
 import { Subscription } from 'rxjs';
 
 @Component({

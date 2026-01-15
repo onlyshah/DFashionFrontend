@@ -18,8 +18,8 @@ const routes: Routes = [
     CommonModule,
     FormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
-  ],
-  declarations: [WishlistPage]
+    RouterModule.forChild(routes),
+    WishlistPage
+  ]
 })
 export class WishlistPageModule {}

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../../core/services/auth.service';
-import { VendorService, VendorStats, MonthlyRevenue } from '../../../../core/services/vendor.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { VendorService, VendorStats, MonthlyRevenue } from '../../../../../core/services/vendor.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

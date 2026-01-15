@@ -6,6 +6,14 @@
 // ============================================================
 $primary: #0d47a1;
 $secondary: #1565c0;
+$success: #28a745;
+$info: #17a2b8;
+$warning: #ffc107;
+$danger: #dc3545;
+$dark: #333333;
+$light: #f8f9fa;
+$white: #ffffff;
+$black: #000000;
 
 // ============================================================
 // GRAY PALETTE
@@ -75,9 +83,22 @@ $navbar-default-color: #333333;
 $navbar-default-link-color: #333333;
 $navbar-default-link-active-color: #0d47a1;
 $navbar-default-link-active-bg: #f8f9fa;
+$navbar-height: 60px;
+$navbar-breadcrumb-height: 40px;
+$navbar-font-size: 14px;
+$navbar-menu-color: #333333;
 
 // ============================================================
 // COMPONENT DEFAULTS
 // ============================================================
 $component-active-color: #ffffff;
 $component-active-bg: #0d47a1;
+$border-color: #dee2e6;
+$theme-colors: (
+  primary: #0d47a1,
+  secondary: #1565c0,
+  success: #28a745,
+  info: #17a2b8,
+  warning: #ffc107,
+  danger: #dc3545
+);

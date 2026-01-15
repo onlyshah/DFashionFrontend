@@ -2,9 +2,9 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angu
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { CartService } from '../../../core/services/cart.service';
-import { WishlistService } from '../../../core/services/wishlist.service';
-import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../../core/services/cart.service';
+import { WishlistService } from '../../../../core/services/wishlist.service';
+import { AuthService } from '../../../../core/services/auth.service';
 // import { ToastrService } from 'ngx-toastr';
 
 export interface Product {

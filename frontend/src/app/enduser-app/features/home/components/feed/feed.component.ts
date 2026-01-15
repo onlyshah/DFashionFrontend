@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CartService } from '../../../../core/services/cart.service';
-import { WishlistService } from '../../../../core/services/wishlist.service';
+import { CartService } from '../../../../../core/services/cart.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 

@@ -1,19 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { RBACService } from '../../core/services/rbac.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule]
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage: string = '';
   showPassword = false;
+  apiUrl = '/api';
 
   constructor(
     private fb: FormBuilder,
@@ -30,9 +34,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     // Check if already logged in
-    if (this.authService.isLoggedIn()) {
-      const user = this.authService.getCurrentUser();
-      this.redirectBasedOnRole(user?.user?.role || user?.role);
+    if (this.authService.isAuthenticated) {
+      const user = this.authService.currentUser;
+      this.redirectBasedOnRole(user?.role);
     }
   }
 
@@ -43,9 +47,11 @@ export class LoginComponent implements OnInit {
 
       try {
         const { email, password, rememberMe } = this.loginForm.value;
-        const response = await this.authService.login(email, password, rememberMe);
+        const credentials = { email, password, rememberMe };
+        
+        const response = await this.authService.login(credentials).toPromise();
 
-        if (response.success) {
+        if (response?.success || response?.data) {
           console.log('Login response:', response);
           // Load user permissions
           const user = response.data?.user || response.user;
@@ -54,7 +60,7 @@ export class LoginComponent implements OnInit {
           // Redirect based on role
           this.redirectBasedOnRole(user?.role);
         } else {
-          this.errorMessage = response.message || 'Login failed. Please try again.';
+          this.errorMessage = response?.message || 'Login failed. Please try again.';
         }
       } catch (error: any) {
         this.errorMessage = error.error?.message || error.message || 'Login failed. Please try again.';

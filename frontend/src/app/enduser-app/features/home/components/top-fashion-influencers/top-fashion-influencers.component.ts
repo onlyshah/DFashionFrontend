@@ -5,8 +5,8 @@ import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
-import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { environment } from '../../../../../../environments/environment';
+import { ImageFallbackDirective } from '../../../../shared/directives/directives/image-fallback.directive';
 
 interface Influencer {
   _id: string;

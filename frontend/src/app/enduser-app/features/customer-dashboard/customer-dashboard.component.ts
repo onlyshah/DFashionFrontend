@@ -10,10 +10,10 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { IonicModule } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
-import { AuthService } from '../../core/services/auth.service';
-import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { ApiService } from '../../../core/services/api.service';
 import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 
 interface CustomerStats {
   ordersCount: number;

@@ -1,6 +1,7 @@
 
 // Import admin variables (use module system to avoid deprecated @import)
 @use "../../../styles/_variables" as *;
+@use "../../../styles/_mixins" as *;
 @use "sass:color";
 
 // @import "common/light/common"; (left intentionally commented)

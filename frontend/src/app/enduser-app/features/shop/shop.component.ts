@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { UnifiedApiService } from '../../core/services/unified-api.service';
-import { Product } from '../../core/models/product.interface';
+import { UnifiedApiService } from '../../../core/services/unified-api.service';
+import { Product } from '../../../core/models/product.interface';
 import { environment } from 'src/environments/environment';
 
 interface Category {

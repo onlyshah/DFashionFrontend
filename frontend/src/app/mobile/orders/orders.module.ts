@@ -11,8 +11,8 @@ import { OrdersPage } from './orders.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    OrdersPageRoutingModule
-  ],
-  declarations: [OrdersPage]
+    OrdersPageRoutingModule,
+    OrdersPage
+  ]
 })
 export class OrdersPageModule {}

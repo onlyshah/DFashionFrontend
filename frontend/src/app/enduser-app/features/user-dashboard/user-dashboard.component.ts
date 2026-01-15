@@ -7,8 +7,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AuthService } from '../../core/services/auth.service';
-import { environment } from '../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 //import { RewardDashboardComponent } from '../../shared/components/reward-dashboard/reward-dashboard.component';
 import { CustomerDashboardComponent } from '../customer-dashboard/customer-dashboard.component';
 

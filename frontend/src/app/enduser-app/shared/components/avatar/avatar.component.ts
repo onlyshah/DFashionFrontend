@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AvatarService, AvatarData } from '../../../core/services/avatar.service';
+import { AvatarService, AvatarData } from '../../../../core/services/avatar.service';
 
 @Component({
   selector: 'app-avatar',
