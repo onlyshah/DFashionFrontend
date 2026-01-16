@@ -245,7 +245,7 @@ export class AuthService {
     );
   }
 
-  private rememberMe: boolean = true;
+  private rememberMe: boolean = false;
 
   setRememberMe(remember: boolean) {
     this.rememberMe = remember;

@@ -40,7 +40,7 @@
 		border: 1px solid $primary;
 		@include border-radius(0px 5px 5px 5px);
 		overflow: hidden;
-		background: color(white-smoke);
+		background: $white-smoke;
 		margin-bottom: 45px;
 		padding-top: 3.5rem;
 

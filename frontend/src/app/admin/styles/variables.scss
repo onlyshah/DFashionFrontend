@@ -1,0 +1,4 @@
+// Re-export variables from the admin theme's variables file
+// This allows components to import variables more easily using @use syntax
+@forward "./scss/common/light/variables";
+

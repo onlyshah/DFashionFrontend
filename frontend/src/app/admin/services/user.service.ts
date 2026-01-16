@@ -102,7 +102,7 @@ export interface UserStats {
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = '/api/admin/users';
+  private apiUrl = `${environment.apiUrl}/api/admin/users`;
   private usersSubject = new BehaviorSubject<User[]>([]);
   public users$ = this.usersSubject.asObservable();
 

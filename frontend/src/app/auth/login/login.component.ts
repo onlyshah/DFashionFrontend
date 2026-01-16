@@ -47,12 +47,18 @@ export class LoginComponent implements OnInit {
 
       try {
         const { email, password, rememberMe } = this.loginForm.value;
-        const credentials = { email, password, rememberMe };
         
-        const response = await this.authService.login(credentials).toPromise();
+        console.log('📝 Login attempt with:', { email, rememberMe });
+        
+        // Set the rememberMe flag in the auth service before login
+        this.authService.setRememberMe(rememberMe);
+        
+        const response = await this.authService.login({ email, password }).toPromise();
+
+        console.log('📨 Login response received:', response);
 
         if (response?.success || response?.data) {
-          console.log('Login response:', response);
+          console.log('✅ Login successful, response:', response);
           // Load user permissions
           const user = response.data?.user || response.user;
           this.rbacService.initializeUser(user);
@@ -61,8 +67,10 @@ export class LoginComponent implements OnInit {
           this.redirectBasedOnRole(user?.role);
         } else {
           this.errorMessage = response?.message || 'Login failed. Please try again.';
+          console.error('❌ Login response invalid:', response);
         }
       } catch (error: any) {
+        console.error('❌ Login error caught:', error);
         this.errorMessage = error.error?.message || error.message || 'Login failed. Please try again.';
       } finally {
         this.isLoading = false;

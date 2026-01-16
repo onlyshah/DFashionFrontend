@@ -22,10 +22,13 @@
   border: 1px solid #e4e4f4;
 
   .nav {
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
     flex-wrap: nowrap;
     flex-direction: column;
     margin-bottom: 60px;
+    max-height: calc(100vh - #{$navbar-height} - 100px);
 
     .nav-item {
       @include transition-duration(0.25s);

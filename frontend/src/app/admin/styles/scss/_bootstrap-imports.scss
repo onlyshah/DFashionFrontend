@@ -1,0 +1,13 @@
+// Bootstrap functions, variables, and main SCSS imports
+// These are imported once at the beginning to ensure they're available to all files
+
+// === Import Bootstrap functions and variables ===
+@import "../../../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../../../node_modules/bootstrap/scss/variables";
+
+// === SCSS Compass Functions ===
+@import "../../../../../../node_modules/compass-mixins/lib/compass";
+@import "../../../../../../node_modules/compass-mixins/lib/animate";
+
+// === Boostrap Main SCSS ===
+@import "../../../../../../node_modules/bootstrap/scss/bootstrap";

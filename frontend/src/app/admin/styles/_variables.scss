@@ -1,104 +1,32 @@
-// Admin Variables - Comprehensive defaults to fix SCSS compilation
-// These are fallback values - ideally loaded from a theme system
+// Re-export variables and mixins from the admin theme
+// This includes both common/light variables and admin-specific variables
+@import "./scss/common/light/variables";
+@import "./scss/variables";
 
-// ============================================================
-// PRIMARY COLORS
-// ============================================================
-$primary: #0d47a1;
-$secondary: #1565c0;
-$success: #28a745;
-$info: #17a2b8;
-$warning: #ffc107;
-$danger: #dc3545;
-$dark: #333333;
-$light: #f8f9fa;
-$white: #ffffff;
-$black: #000000;
+// Define Compass mixins that were used but are not available
+@mixin display-flex() {
+  display: flex;
+}
 
-// ============================================================
-// GRAY PALETTE
-// ============================================================
-$gray: #808080;
-$gray-light: #d3d3d3;
-$gray-lighter: #eeeeee;
-$gray-dark: #505050;
-$gray-darker: #333333;
-$white: #ffffff;
-$black: #000000;
+@mixin flex-direction($direction) {
+  flex-direction: $direction;
+}
 
-// ============================================================
-// POLLUX COLOR PALETTE
-// ============================================================
-$pollux-primary: #0d47a1;
-$pollux-secondary: #1565c0;
-$pollux-success: #28a745;
-$pollux-warning: #ffc107;
-$pollux-info: #17a2b8;
-$pollux-danger: #dc3545;
-$pollux-dark: #333333;
+@mixin align-items($value) {
+  align-items: $value;
+}
 
-// ============================================================
-// TEXT COLORS
-// ============================================================
-$pollux-text-primary: #333333;
-$pollux-text-muted: #6c757d;
-$pollux-text-light: #999999;
+@mixin justify-content($value) {
+  justify-content: $value;
+}
 
-// ============================================================
-// BORDER & BACKGROUND
-// ============================================================
-$pollux-border-color: #dee2e6;
-$pollux-bg-light: #f8f9fa;
-$pollux-bg-lighter: #ffffff;
+@mixin flex-wrap($value) {
+  flex-wrap: $value;
+}
 
-// ============================================================
-// LAYOUT DIMENSIONS
-// ============================================================
-$sidebar-width-lg: 260px;
-$sidebar-width-md: 220px;
-$sidebar-width-sm: 70px;
-$sidebar-margin-left: 0;
-$navbar-height: 60px;
+@mixin placeholder {
+  &::placeholder {
+    @content;
+  }
+}
 
-// ============================================================
-// SPACING & SIZING
-// ============================================================
-$card-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-$card-border-radius: 0.25rem;
-
-// ============================================================
-// TRANSITIONS & ANIMATIONS
-// ============================================================
-$action-transition-duration: 0.3s;
-$action-transition-timing-function: ease-in-out;
-$sidebar-transition-duration: 0.3s;
-$sidebar-transition-timing-function: ease-in-out;
-
-// ============================================================
-// NAVBAR & HEADER
-// ============================================================
-$navbar-default-bg: #ffffff;
-$navbar-default-border: #e5e5e5;
-$navbar-default-color: #333333;
-$navbar-default-link-color: #333333;
-$navbar-default-link-active-color: #0d47a1;
-$navbar-default-link-active-bg: #f8f9fa;
-$navbar-height: 60px;
-$navbar-breadcrumb-height: 40px;
-$navbar-font-size: 14px;
-$navbar-menu-color: #333333;
-
-// ============================================================
-// COMPONENT DEFAULTS
-// ============================================================
-$component-active-color: #ffffff;
-$component-active-bg: #0d47a1;
-$border-color: #dee2e6;
-$theme-colors: (
-  primary: #0d47a1,
-  secondary: #1565c0,
-  success: #28a745,
-  info: #17a2b8,
-  warning: #ffc107,
-  danger: #dc3545
-);

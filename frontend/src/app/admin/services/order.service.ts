@@ -112,7 +112,7 @@ export interface OrderStats {
   providedIn: 'root'
 })
 export class OrderService {
-  private apiUrl = '/api/admin';
+  private apiUrl = `${environment.apiUrl}/api/admin`;
   private ordersSubject = new BehaviorSubject<Order[]>([]);
   public orders$ = this.ordersSubject.asObservable();
 

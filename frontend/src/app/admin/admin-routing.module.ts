@@ -1,7 +1,6 @@
 import { NgModule, Injectable } from '@angular/core';
 import { RouterModule, Routes, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Router } from '@angular/router';
-import { AdminLoginComponent } from './pages/auth/admin-login.component';
 import { AdminAuthGuard } from './guards/admin-auth.guard';
 import { PermissionGuard } from './guards/permission.guard';
 import { RoleGuard } from './guards/role.guard';
@@ -64,10 +63,6 @@ import { ActivityLogsComponent } from './pages/users/activity-logs.component';
 import { AlertsComponent } from './pages/alerts/alerts.component';
 
 const routes: Routes = [
-  {
-    path: 'login',
-    component: AdminLoginComponent
-  },
   {
     path: '',
     canActivate: [AdminAuthGuard],

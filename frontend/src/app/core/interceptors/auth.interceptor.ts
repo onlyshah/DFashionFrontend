@@ -10,12 +10,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Check if this is an admin route
   if (req.url.includes('/api/admin/')) {
-    // Try to get admin token first. If admin_token is missing (user logged in via regular auth),
-    // fall back to the regular token stored by AuthService (or sessionStorage).
-    token = localStorage.getItem('admin_token') || authService.getToken() || sessionStorage.getItem('token');
+    // Try sessionStorage first (session-based), then localStorage (persistent)
+    token = sessionStorage.getItem('admin_token') || 
+            localStorage.getItem('admin_token') || 
+            authService.getToken() || 
+            sessionStorage.getItem('token');
   } else {
-    // For regular routes, use regular token
-    token = authService.getToken() || localStorage.getItem('token') || sessionStorage.getItem('token');
+    // For regular routes, check sessionStorage first, then localStorage
+    token = sessionStorage.getItem('token') || 
+            localStorage.getItem('token') || 
+            authService.getToken();
   }
 
   console.log('🔐 Auth Interceptor:', {
@@ -23,8 +27,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     isAdminRoute: req.url.includes('/admin/'),
     hasToken: !!token,
     tokenPreview: token ? token.substring(0, 20) + '...' : 'none',
-    adminToken: !!localStorage.getItem('admin_token'),
-    regularToken: !!localStorage.getItem('token')
+    storage: token ? (
+      sessionStorage.getItem('admin_token') || 
+      sessionStorage.getItem('token') ? 'sessionStorage' : 'localStorage'
+    ) : 'none'
   });
 
   if (token) {

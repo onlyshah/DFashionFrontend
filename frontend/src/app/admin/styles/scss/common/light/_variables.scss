@@ -130,7 +130,7 @@ $body-color: #001737;
 ///////// FOOTER ////////
 $footer-height: 75px;
 $footer-bg: $content-bg;
-$footer-color: color(dark);
+$footer-color: $dark;
 ///////// FOOTER ////////
 
 ///////// BUTTONS ////////
@@ -255,8 +255,8 @@ $breadcrumb-margin-bottom:          1rem;
 $breadcrumb-font-size:              $default-font-size;
 $breadcrumb-bg:                     transparent;
 $breadcrumb-border-color:           $border-color;
-$breadcrumb-divider-color:          $gray-600;
-$breadcrumb-active-color:           $gray-700;
+$breadcrumb-divider-color:          $gray-light;
+$breadcrumb-active-color:           $gray;
 $breadcrumb-divider:                "/";
 
 // custom styles
@@ -276,7 +276,7 @@ $breadcrumb-item-bg:                #dbe3e6;
 $modal-inner-padding:               0.9375rem;
 $modal-dialog-margin:               10px;
 $modal-dialog-margin-y-sm-up:       30px;
-$modal-title-line-height:           $line-height-base;
+$modal-title-line-height:           1.5;
 $modal-content-bg:                  $white;
 $modal-content-box-shadow-xs:       0 3px 9px rgba($black,.5);
 $modal-content-box-shadow-sm-up:    0 5px 15px rgba($black,.5);
@@ -288,6 +288,7 @@ $modal-header-border-color:         $border-color;
 $modal-content-border-color:        $border-color;
 $modal-footer-border-color:         $border-color;
 
+$border-width:                      1px;
 $modal-header-border-width:         $border-width;
 $modal-content-border-width:        $border-width;
 $modal-footer-border-width:         $border-width;

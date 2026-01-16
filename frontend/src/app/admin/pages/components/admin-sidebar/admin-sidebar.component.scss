@@ -39,19 +39,19 @@ min-height: calc(100vh - 4.625rem);
         justify-content: space-between;
         padding: 1rem;
         white-space: nowrap;
-        color: vars.$pollux-dark;
+        color: vars.$dark;
         border-radius: 8px;
         transition: all 0.2s ease-in-out;
         cursor: pointer;
         position: relative;
 
         &:hover {
-          background: rgba(vars.$pollux-primary, 0.05);
+          background: rgba(vars.$primary, 0.05);
         }
 
         &.active {
-          background: rgba(vars.$pollux-primary, 0.1);
-          color: vars.$pollux-primary;
+          background: rgba(vars.$primary, 0.1);
+          color: vars.$primary;
         }
 
         .menu-icon {
@@ -94,7 +94,7 @@ min-height: calc(100vh - 4.625rem);
 
       .sub-menu {
         padding: 0.5rem 0;
-        background: rgba(vars.$pollux-primary, 0.02);
+        background: rgba(vars.$primary, 0.02);
         margin-top: 0.5rem;
         border-radius: 4px;
 
@@ -114,7 +114,7 @@ min-height: calc(100vh - 4.625rem);
 
       &.nav-category {
         padding: 0.5rem 1rem 0.5rem 2.5rem;
-        color: color.adjust(vars.$pollux-secondary, $lightness: -10%);
+        color: color.adjust(vars.$secondary, $lightness: -10%);
         font-size: 0.75rem;
         font-weight: 500;
         text-transform: uppercase;
@@ -128,7 +128,7 @@ min-height: calc(100vh - 4.625rem);
 @media (min-width: 992px) {
   .sidebar-mini {
     .sidebar {
-      width: vars.$sidebar-width-sm;
+      width: vars.$sidebar-width-mini;
 
       .nav {
         .nav-item {

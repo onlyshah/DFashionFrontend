@@ -28,16 +28,17 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/svg"
+              "src/svg",
+              "src/app/admin/styles/fonts",
+              "src/app/admin/styles/images"
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
-              // "src/assets/styles/admin/pollux/vendors/typicons/typicons.css",
-              // "src/assets/styles/admin/pollux/vendors/font-awesome/css/font-awesome.min.css",
-              // "src/assets/styles/admin/pollux/vendors/mdi/css/materialdesignicons.min.css",
-              // "src/assets/styles/admin/pollux/vendors/simple-line-icons/css/simple-line-icons.css",
-              // "src/assets/styles/admin/pollux/vendors/css/vendor.bundle.base.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/app/admin/styles/vendors/mdi/css/materialdesignicons.min.css",
+              "src/app/admin/styles/vendors/font-awesome/css/font-awesome.min.css",
+              "src/app/admin/styles/vendors/typicons/typicons.css",
+              "src/app/admin/styles/vendors/simple-line-icons/css/simple-line-icons.css"
               ],
             "scripts": [
               // "src/assets/styles/admin/pollux/vendors/js/vendor.bundle.base.js",
@@ -48,6 +49,12 @@
               // "src/assets/styles/admin/pollux/js/settings.js",
               // "src/assets/styles/admin/pollux/js/todolist.js"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src",
+                "node_modules"
+              ]
+            },
             "allowedCommonJsDependencies": [
               "localforage"
             ]
@@ -114,18 +121,29 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
-              // "src/assets/styles/admin/pollux/vendors/typicons/typicons.css",
-              // "src/assets/styles/admin/pollux/vendors/css/vendor.bundle.base.css"
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/app/admin/styles/vendors/mdi/css/materialdesignicons.min.css",
+              "src/app/admin/styles/vendors/font-awesome/css/font-awesome.min.css",
+              "src/app/admin/styles/vendors/typicons/typicons.css",
+              "src/app/admin/styles/vendors/simple-line-icons/css/simple-line-icons.css"
             ],
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "src",
+                "node_modules"
+              ]
+            },
             "karmaConfig": "karma.conf.js"
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "buildTarget": "dfashion-frontend:build:production"

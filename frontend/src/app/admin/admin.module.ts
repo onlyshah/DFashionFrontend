@@ -18,7 +18,6 @@ import { GeneralDashboardComponent } from './pages/components/dashboard/general-
 import { AdminHeaderComponent } from './pages/components/admin-header/admin-header.component';
 import { AdminSidebarComponent } from './pages/components/admin-sidebar/admin-sidebar.component';
 import { RoleManagementComponent } from './pages/role-management/role-management.component';
-import { AdminLoginComponent } from './pages/auth/admin-login.component';
 import { UserManagementComponent } from './pages/users/user-management.component';
 import { UserDialogComponent } from './pages/users/user-dialog.component';
 import { ProductManagementComponent } from './pages/products/product-management.component';
@@ -50,7 +49,6 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
 
 @NgModule({
   declarations: [
-    AdminLoginComponent,
     // UserManagementComponent is now standalone
     UserDialogComponent,
     ProductManagementComponent,

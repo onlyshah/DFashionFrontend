@@ -279,24 +279,24 @@ export class CartService {
 
     this.getTotalCount().subscribe({
       next: (response) => {
-        if (response.success) {
+        if (response.success && response.data) {
           const data = response.data;
 
           // Update cart count with TOTAL QUANTITY (not just item count)
-          this.cartItemCount.next(data.cart.quantityTotal || 0);
-          this.cartTotalAmount.next(data.cart.totalAmount || 0);
-          this.showCartTotalPrice.next(data.showCartTotalPrice || false);
+          this.cartItemCount.next(data?.cart?.quantityTotal || 0);
+          this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
+          this.showCartTotalPrice.next(data?.showCartTotalPrice || false);
 
           // Update TOTAL COUNT (cart + wishlist)
-          this.totalItemCount.next(data.totalCount || 0);
+          this.totalItemCount.next(data?.totalCount || 0);
 
           console.log('🔢 Total count refreshed for user:', response.username, {
-            cartQuantityTotal: data.cart.quantityTotal,
-            cartItemCount: data.cart.itemCount,
-            wishlistItems: data.wishlist.itemCount,
-            totalCount: data.totalCount,
-            cartTotal: data.cart.totalAmount,
-            showPrice: data.showCartTotalPrice
+            cartQuantityTotal: data?.cart?.quantityTotal,
+            cartItemCount: data?.cart?.itemCount,
+            wishlistItems: data?.wishlist?.itemCount,
+            totalCount: data?.totalCount,
+            cartTotal: data?.cart?.totalAmount,
+            showPrice: data?.showCartTotalPrice
           });
         }
       },

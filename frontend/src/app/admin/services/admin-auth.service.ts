@@ -39,6 +39,7 @@ export class AdminAuthService {
   private apiUrl = `${environment.apiUrl}/api`;
   private currentUserSubject = new BehaviorSubject<AdminUser | null>(null);
   private tokenSubject = new BehaviorSubject<string | null>(null);
+  private rememberMe = false; // Track "Remember Me" preference
 
   public currentUser$ = this.currentUserSubject.asObservable();
   public token$ = this.tokenSubject.asObservable();
@@ -48,20 +49,91 @@ export class AdminAuthService {
     private router: Router,
     private authService: AuthService
   ) {
-    // Check for existing token on service initialization
-    const token = localStorage.getItem('admin_token');
-    const user = localStorage.getItem('admin_user');
-    
-    if (token && user) {
-      this.tokenSubject.next(token);
-      this.currentUserSubject.next(JSON.parse(user));
+    // Initialize from session/local storage
+    this.initializeAuth();
+  }
+
+  /**
+   * Initialize authentication state from storage
+   * Check both sessionStorage (session-based) and localStorage (persistent)
+   */
+  private initializeAuth(): void {
+    // Check for all login types in both storage methods
+    const storageOptions = [
+      { key: 'admin_token', userKey: 'admin_user' },
+      { key: 'vendor_token', userKey: 'vendor_user' },
+      { key: 'customer_token', userKey: 'customer_user' },
+      { key: 'influencer_token', userKey: 'influencer_user' }
+    ];
+
+    for (const option of storageOptions) {
+      // Check sessionStorage first (session-based)
+      let token = sessionStorage.getItem(option.key);
+      let user = sessionStorage.getItem(option.userKey);
+
+      // Fall back to localStorage (persistent)
+      if (!token) {
+        token = localStorage.getItem(option.key);
+      }
+      if (!user) {
+        user = localStorage.getItem(option.userKey);
+      }
+
+      if (token && user) {
+        this.tokenSubject.next(token);
+        this.currentUserSubject.next(JSON.parse(user));
+        return; // Found a valid session
+      }
     }
   }
 
+  /**
+   * Store token and user data with optional persistence
+   */
+  private storeAuth(tokenKey: string, userKey: string, token: string, user: AdminUser, rememberMe: boolean = false): void {
+    if (rememberMe) {
+      // Persistent storage (Remember Me is checked)
+      localStorage.setItem(tokenKey, token);
+      localStorage.setItem(userKey, JSON.stringify(user));
+      sessionStorage.removeItem(tokenKey);
+      sessionStorage.removeItem(userKey);
+    } else {
+      // Session-based storage (Remember Me is unchecked)
+      sessionStorage.setItem(tokenKey, token);
+      sessionStorage.setItem(userKey, JSON.stringify(user));
+      localStorage.removeItem(tokenKey);
+      localStorage.removeItem(userKey);
+    }
+
+    this.tokenSubject.next(token);
+    this.currentUserSubject.next(user);
+  }
+
+  /**
+   * Clear all authentication data
+   */
+  private clearAllAuth(): void {
+    // Clear all possible storage keys
+    const keys = [
+      'admin_token', 'admin_user',
+      'vendor_token', 'vendor_user',
+      'customer_token', 'customer_user',
+      'influencer_token', 'influencer_user'
+    ];
+
+    keys.forEach(key => {
+      sessionStorage.removeItem(key);
+      localStorage.removeItem(key);
+    });
+
+    this.tokenSubject.next(null);
+    this.currentUserSubject.next(null);
+  }
+
   // Admin Login
-  login(email: string, password: string): Observable<LoginResponse> {
+  login(email: string, password: string, rememberMe: boolean = false): Observable<LoginResponse> {
     const loginData = { email, password };
-    console.log('Attempting login with:', { email });
+    console.log('🔐 Attempting admin login:', { email, rememberMe });
     
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/admin/login`, loginData, {
       headers: new HttpHeaders({
@@ -70,80 +142,84 @@ export class AdminAuthService {
     }).pipe(
       tap(response => {
         if (response.success) {
-          localStorage.setItem('admin_token', response.data.token);
-          localStorage.setItem('admin_user', JSON.stringify(response.data.user));
-          this.tokenSubject.next(response.data.token);
-          this.currentUserSubject.next(response.data.user);
+          this.storeAuth('admin_token', 'admin_user', response.data.token, response.data.user, rememberMe);
+          console.log('✅ Admin login successful, stored in', rememberMe ? 'localStorage' : 'sessionStorage');
         }
       }),
-      catchError((error: any) => throwError(() => error))
+      catchError((error: any) => {
+        console.error('❌ Admin login failed:', error);
+        return throwError(() => error);
+      })
     );
   }
 
   // Vendor Login
-  loginVendor(email: string, password: string): Observable<LoginResponse> {
+  loginVendor(email: string, password: string, rememberMe: boolean = false): Observable<LoginResponse> {
+    console.log('🔐 Attempting vendor login:', { email, rememberMe });
+    
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/vendor/login`, {
       email,
       password
     }).pipe(
       tap(response => {
         if (response.success) {
-          localStorage.setItem('vendor_token', response.data.token);
-          localStorage.setItem('vendor_user', JSON.stringify(response.data.user));
-          this.tokenSubject.next(response.data.token);
-          this.currentUserSubject.next(response.data.user);
+          this.storeAuth('vendor_token', 'vendor_user', response.data.token, response.data.user, rememberMe);
+          console.log('✅ Vendor login successful, stored in', rememberMe ? 'localStorage' : 'sessionStorage');
         }
       }),
-      catchError((error: any) => throwError(() => error))
+      catchError((error: any) => {
+        console.error('❌ Vendor login failed:', error);
+        return throwError(() => error);
+      })
     );
   }
 
   // Customer Login
-  loginCustomer(email: string, password: string): Observable<LoginResponse> {
+  loginCustomer(email: string, password: string, rememberMe: boolean = false): Observable<LoginResponse> {
+    console.log('🔐 Attempting customer login:', { email, rememberMe });
+    
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/customer/login`, {
       email,
       password
     }).pipe(
       tap(response => {
         if (response.success) {
-          localStorage.setItem('customer_token', response.data.token);
-          localStorage.setItem('customer_user', JSON.stringify(response.data.user));
-          this.tokenSubject.next(response.data.token);
-          this.currentUserSubject.next(response.data.user);
+          this.storeAuth('customer_token', 'customer_user', response.data.token, response.data.user, rememberMe);
+          console.log('✅ Customer login successful, stored in', rememberMe ? 'localStorage' : 'sessionStorage');
         }
       }),
-      catchError((error: any) => throwError(() => error))
+      catchError((error: any) => {
+        console.error('❌ Customer login failed:', error);
+        return throwError(() => error);
+      })
     );
   }
 
   // Influencer Login
-  loginInfluencer(email: string, password: string): Observable<LoginResponse> {
+  loginInfluencer(email: string, password: string, rememberMe: boolean = false): Observable<LoginResponse> {
+    console.log('🔐 Attempting influencer login:', { email, rememberMe });
+    
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/influencer/login`, {
       email,
       password
     }).pipe(
       tap(response => {
         if (response.success) {
-          localStorage.setItem('influencer_token', response.data.token);
-          localStorage.setItem('influencer_user', JSON.stringify(response.data.user));
-          this.tokenSubject.next(response.data.token);
-          this.currentUserSubject.next(response.data.user);
+          this.storeAuth('influencer_token', 'influencer_user', response.data.token, response.data.user, rememberMe);
+          console.log('✅ Influencer login successful, stored in', rememberMe ? 'localStorage' : 'sessionStorage');
         }
       }),
-      catchError((error: any) => throwError(() => error))
+      catchError((error: any) => {
+        console.error('❌ Influencer login failed:', error);
+        return throwError(() => error);
+      })
     );
   }
-// ...existing code...
 
   // Logout
   logout(): void {
-    // Clear local storage
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_user');
-    
-    // Clear subjects
-    this.tokenSubject.next(null);
-    this.currentUserSubject.next(null);
+    console.log('🚪 Logging out user');
+    this.clearAllAuth();
     
     // Redirect to login
     this.router.navigate(['/admin/login']);

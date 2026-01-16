@@ -114,11 +114,82 @@
     + Horizontal
 -------------------------------------------------------------------*/
 
+/*-------------------------------------------------------------------*/
+/* === Define Compass mixins (since compass-mixins is not installed) === */
+@mixin display-flex() {
+  display: flex;
+}
+
+@mixin flex-direction($direction) {
+  flex-direction: $direction;
+}
+
+@mixin align-items($value) {
+  align-items: $value;
+}
+
+@mixin justify-content($value) {
+  justify-content: $value;
+}
+
+@mixin flex-wrap($value) {
+  flex-wrap: $value;
+}
+
+@mixin flex-grow($value) {
+  flex-grow: $value;
+}
+
+@mixin flex-shrink($value) {
+  flex-shrink: $value;
+}
+
+@mixin placeholder {
+  &::placeholder {
+    @content;
+  }
+}
+
+@mixin transition-duration($duration) {
+  transition-duration: $duration;
+}
+
+@mixin transition-timing-function($timing) {
+  transition-timing-function: $timing;
+}
+
+@mixin transition-property($properties...) {
+  transition-property: $properties;
+}
+
+@mixin transition($value) {
+  transition: $value;
+}
+
+@mixin transform($value) {
+  transform: $value;
+}
+
+@mixin border-radius($radius) {
+  border-radius: $radius;
+}
+
+@mixin animation-duration($duration) {
+  animation-duration: $duration;
+}
+
+@mixin animation-fill-mode($fill) {
+  animation-fill-mode: $fill;
+}
+
+@mixin animation-delay($delay) {
+  animation-delay: $delay;
+}
 
 /*-------------------------------------------------------------------*/
 /* === Import Bootstrap functions and variables === */
-@import "../../../../../node_modules/bootstrap/scss/functions";
-@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../../../../node_modules/bootstrap/scss/_functions";
+@import "../../../../../../../node_modules/bootstrap/scss/_variables";
 
 /*-------------------------------------------------------------------*/
 /* === Import template variables === */
@@ -126,12 +197,13 @@
 
 /*-------------------------------------------------------------------*/
 /* === SCSS Compass Functions === */
-@import "../../../../../node_modules/compass-mixins/lib/compass";
-@import "../../../../../node_modules/compass-mixins/lib/animate";
+// Compass is deprecated and not installed - commenting out
+// @import "../../../../../../../node_modules/compass-mixins/lib/compass";
+// @import "../../../../../../../node_modules/compass-mixins/lib/animate";
 
 /*-------------------------------------------------------------------*/
 /* === Boostrap Main SCSS === */
-@import "../../../../../node_modules/bootstrap/scss/bootstrap";
+@import "../../../../../../../node_modules/bootstrap/scss/bootstrap";
 
 /*-------------------------------------------------------------------*/
 /* === Template mixins === */

@@ -71,7 +71,7 @@ export interface TrafficAnalytics {
   providedIn: 'root'
 })
 export class AnalyticsService {
-  private apiUrl = '/api/admin';
+  private apiUrl = `${environment.apiUrl}/api/admin`;
 
   constructor(private http: HttpClient) {}
 
@@ -107,7 +107,7 @@ export class AnalyticsService {
       catchError((err: any) => {
         // If unauthorized, fall back to public demo endpoint
         if (err && err.status === 401) {
-          return this.http.get<{success: boolean; data: any}>(`/api/admin/demo/analytics/dashboard`);
+          return this.http.get<{success: boolean; data: any}>(`${environment.apiUrl}/api/admin/demo/analytics/dashboard`);
         }
         return throwError(() => err);
       })
@@ -166,7 +166,7 @@ export class AnalyticsService {
       catchError((err: any) => {
         // If unauthorized, fall back to public demo endpoint
         if (err && err.status === 401) {
-          return this.http.get<{success: boolean; data: any}>(`/api/admin/demo/analytics/orders?period=${period}`);
+          return this.http.get<{success: boolean; data: any}>(`${environment.apiUrl}/api/admin/demo/analytics/orders?period=${period}`);
         }
         return throwError(() => err);
       })

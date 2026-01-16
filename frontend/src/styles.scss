@@ -1,11 +1,8 @@
 // -------------------------------
-// ✅ 1. Sass Modules: Must come FIRST
+// ✅ 1. Admin Theme Styles - MUST COME FIRST
 // -------------------------------
-// @use './assets/styles/global';
-// @use './assets/styles/admin';
-// @use './app/admin/styles/admin-theme';  // TODO: Create admin-theme.scss
-// @use './styles/design-tokens';  // TODO: Create design-tokens.scss
-// @use './styles/auth-components';  // TODO: Create auth-components.scss
+// Import the complete admin theme from existing theme folder
+@import './app/admin/styles/scss/style.scss';
 
 // -------------------------------
 // ✅ 2. Google Fonts (CSS imports)

@@ -472,9 +472,9 @@
       padding-right: 15px;
     }
     .navbar-nav {
-      @include display-flex;
-      @include flex-direction(row);
-      @include align-items(center);
+      display: flex;
+      flex-direction: row;
+      align-items: center;
 
       .nav-item {
         margin-left: 0.593rem;
@@ -498,7 +498,8 @@
               height: 2.312rem;
               padding: 0 .4rem;
               width: 13.375rem;
-              @include placeholder {
+              
+              &::placeholder {
                 color: #a5abcc;
               }
             }

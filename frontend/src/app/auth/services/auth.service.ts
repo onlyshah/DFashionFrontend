@@ -26,7 +26,7 @@ export class AuthService {
   }
 
   login(email: string, password: string, rememberMe: boolean = false): Promise<any> {
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, { email, password })
+    return this.http.post<any>(`${environment.apiUrl}/api/auth/login`, { email, password })
       .pipe(
         tap(response => {
           if (response.data && response.data.token) {
@@ -35,13 +35,44 @@ export class AuthService {
               user: response.data.user,
               data: response.data
             };
+
+            // Store in appropriate storage based on rememberMe
             if (rememberMe) {
               localStorage.setItem('currentUser', JSON.stringify(userData));
+              localStorage.setItem('token', response.data.token);
+              sessionStorage.removeItem('currentUser');
+              sessionStorage.removeItem('token');
             } else {
               sessionStorage.setItem('currentUser', JSON.stringify(userData));
+              sessionStorage.setItem('token', response.data.token);
+              localStorage.removeItem('currentUser');
+              localStorage.removeItem('token');
             }
+
+            // Also store admin_token if user is admin or super_admin
+            if (response.data.user.role === 'admin' || response.data.user.role === 'super_admin') {
+              if (rememberMe) {
+                localStorage.setItem('admin_token', response.data.token);
+                localStorage.setItem('admin_user', JSON.stringify(response.data.user));
+                sessionStorage.removeItem('admin_token');
+                sessionStorage.removeItem('admin_user');
+              } else {
+                sessionStorage.setItem('admin_token', response.data.token);
+                sessionStorage.setItem('admin_user', JSON.stringify(response.data.user));
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+              }
+            }
+
             this.currentUserSubject.next(userData);
             this.isAuthenticatedSubject.next(true);
+
+            console.log('✅ Login successful:', {
+              email: response.data.user.email,
+              role: response.data.user.role,
+              storage: rememberMe ? 'localStorage (Remember Me)' : 'sessionStorage',
+              tokenStored: true
+            });
           }
         })
       ).toPromise();

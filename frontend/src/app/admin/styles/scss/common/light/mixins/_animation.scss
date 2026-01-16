@@ -14,8 +14,8 @@
 
 .dropdownAnimation {
   animation-name: dropdownAnimation;
-  @include animation-duration($action-transition-duration);
-  @include animation-fill-mode(both);
+  animation-duration: $action-transition-duration;
+  animation-fill-mode: both;
 }
 @mixin transition($settings) {
   -webkit-transition: $settings;
