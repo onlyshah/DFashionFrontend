@@ -11,12 +11,22 @@
   width: 613px;
   max-height: 100%;
 
-
   // Desktop only - hide on mobile and tablet to not disturb responsive design
   @media (max-width: 768px) {
     display: none !important;
   }
 }
+
+// Styling for the components in sidebar
+app-view-add-stories,
+app-trending-products,
+app-featured-brands,
+app-new-arrivals {
+  width: 100%;
+  display: block;
+  margin-bottom: 24px;
+}
+
 
 // Styling for the new components in sidebar
 app-view-add-stories,

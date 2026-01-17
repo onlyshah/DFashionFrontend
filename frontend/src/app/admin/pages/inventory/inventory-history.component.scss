@@ -1,0 +1,152 @@
+.history-container {
+  padding: 24px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 500;
+    color: #1976d2;
+  }
+}
+
+.search-section {
+  display: flex;
+  margin-bottom: 24px;
+
+  .search-field {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+
+  p {
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.history-table {
+  width: 100%;
+
+  th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  code {
+    background: #f5f5f5;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+  }
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  &.type-in,
+  &.type-receipt {
+    background-color: #e3f2fd;
+    color: #1976d2;
+  }
+
+  &.type-out,
+  &.type-sale {
+    background-color: #ffebee;
+    color: #d32f2f;
+  }
+
+  &.type-adjustment {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+
+  &.type-return {
+    background-color: #e0f2f1;
+    color: #00796b;
+  }
+}
+
+.quantity-in {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.quantity-out {
+  color: #f44336;
+  font-weight: 600;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: white;
+  border-radius: 8px;
+  color: #999;
+
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: #ddd;
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}

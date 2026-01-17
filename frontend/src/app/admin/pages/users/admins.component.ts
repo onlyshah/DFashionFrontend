@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
-import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatPaginatorModule, MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,6 +10,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
 import { AdminApiService } from '../../services/admin-api.service';
 
 @Component({
@@ -17,7 +19,8 @@ import { AdminApiService } from '../../services/admin-api.service';
   standalone: true,
   imports: [
     CommonModule, MatTableModule, MatPaginatorModule, MatSortModule, MatProgressSpinnerModule,
-    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatTooltipModule, MatChipsModule
+    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatTooltipModule, 
+    MatChipsModule, MatDialogModule, FormsModule
   ],
   templateUrl: './admins.component.html',
   styleUrls: ['./admins.component.scss']
@@ -26,9 +29,13 @@ export class AdminsComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns = ['username', 'email', 'role', 'department', 'lastLogin', 'status', 'actions'];
+  displayedColumns = ['name', 'email', 'role', 'lastLogin', 'status', 'actions'];
   dataSource = new MatTableDataSource<any>([]);
   isLoading = false;
+  searchFilter = '';
+  pageSize = 10;
+  pageSizeOptions = [5, 10, 25, 50];
+  totalAdmins = 0;
 
   constructor(private api: AdminApiService) {}
 
@@ -41,38 +48,87 @@ export class AdminsComponent implements OnInit {
     this.dataSource.sort = this.sort;
   }
 
-  load(): void {
+  load(page: number = 1): void {
     this.isLoading = true;
-    this.api.getAdmins().subscribe({
+    this.api.getAdmins(page, this.pageSize).subscribe({
       next: (res: any) => {
-        console.log('Admins loaded:', res);
-        this.dataSource.data = res?.data || [];
+        console.log('✅ Admins loaded:', res);
+        this.dataSource.data = res?.data?.users || res?.data || [];
+        this.totalAdmins = res?.data?.pagination?.total || res?.data?.length || 0;
         this.isLoading = false;
       },
-      error: () => {
+      error: (err) => {
+        console.error('❌ Error loading admins:', err);
         this.dataSource.data = [];
         this.isLoading = false;
       }
     });
   }
 
-  applyFilter(e: any): void {
-    this.dataSource.filter = e.target.value.trim().toLowerCase();
+  onPageChange(event: PageEvent): void {
+    this.pageSize = event.pageSize;
+    this.load(event.pageIndex + 1);
   }
 
-  deleteUser(id: string): void {
-    if (confirm('Delete this admin user?')) {
-      this.api.delete(`/admin/users/${id}`).subscribe({
-        next: () => this.load(),
-        error: () => {}
+  applyFilter(e: any): void {
+    this.searchFilter = e.target.value.trim().toLowerCase();
+    this.dataSource.filter = this.searchFilter;
+  }
+
+  deleteAdmin(id: string, name: string): void {
+    if (confirm(`Are you sure you want to delete admin: ${name}?`)) {
+      this.isLoading = true;
+      this.api.deleteUser(id).subscribe({
+        next: () => {
+          console.log('✅ Admin deleted');
+          this.load(1);
+        },
+        error: (err) => {
+          console.error('❌ Error deleting admin:', err);
+          this.isLoading = false;
+        }
       });
     }
   }
 
   toggleStatus(id: string, currentStatus: boolean): void {
-    this.api.patch(`/admin/users/${id}`, { isActive: !currentStatus }).subscribe({
-      next: () => this.load(),
-      error: () => {}
+    const newStatus = !currentStatus;
+    this.api.updateUserStatus(id, newStatus).subscribe({
+      next: () => {
+        console.log(`✅ Status updated to ${newStatus ? 'Active' : 'Inactive'}`);
+        this.load(1);
+      },
+      error: (err) => {
+        console.error('❌ Error updating status:', err);
+      }
     });
+  }
+
+  exportAdmins(): void {
+    const csvContent = this.generateCSV();
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `admins-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  }
+
+  private generateCSV(): string {
+    const headers = ['Name', 'Email', 'Role', 'Last Login', 'Status'];
+    const rows = this.dataSource.data.map(a => [
+      a.fullName || a.username || '-',
+      a.email,
+      a.role || '-',
+      a.lastLogin ? new Date(a.lastLogin).toLocaleDateString() : '-',
+      a.isActive ? 'Active' : 'Inactive'
+    ]);
+    
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+    
+    return csv;
   }
 }

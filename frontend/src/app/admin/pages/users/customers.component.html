@@ -1,71 +1,140 @@
 <div class="container">
   <div class="header">
-    <h2>Customer Management</h2>
-    <p>View and manage all customer accounts</p>
+    <div class="header-title">
+      <h2>Customer Management</h2>
+      <p>View and manage all customer accounts</p>
+    </div>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="exportCustomers()" [disabled]="isLoading">
+        <mat-icon>download</mat-icon>
+        <span>Export</span>
+      </button>
+    </div>
   </div>
 
-  <mat-form-field class="search-field">
-    <mat-label>Search</mat-label>
-    <input matInput placeholder="Search by name or email..." (keyup)="applyFilter($event)">
-  </mat-form-field>
+  <div class="toolbar">
+    <mat-form-field class="search-field" appearance="outline">
+      <mat-label>Search Customers</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput placeholder="Name, email, phone..." (keyup)="applyFilter($event)">
+      <button mat-icon-button matSuffix *ngIf="searchFilter" (click)="searchFilter = ''; applyFilter({target: {value: ''}})">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <div class="toolbar-info">
+      <span class="total-count">Total: {{ totalCustomers }}</span>
+    </div>
+  </div>
 
   <div *ngIf="isLoading" class="loading">
     <mat-spinner></mat-spinner>
+    <p>Loading customers...</p>
   </div>
 
   <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
     <mat-icon>people_outline</mat-icon>
-    <p>No customers found</p>
+    <h3>No Customers Found</h3>
+    <p>Start by creating new customer accounts</p>
   </div>
 
-  <div *ngIf="!isLoading && dataSource.data.length > 0" class="table-container">
-    <table mat-table [dataSource]="dataSource" matSort>
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
-        <td mat-cell *matCellDef="let c">{{ c.username }}</td>
+  <div *ngIf="!isLoading && dataSource.data.length > 0" class="table-wrapper">
+    <table mat-table [dataSource]="dataSource" matSort class="customers-table">
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <span>Name</span>
+        </th>
+        <td mat-cell *matCellDef="let c" class="name-cell">
+          <div class="customer-info">
+            <div class="avatar">{{ (c.fullName || c.name || 'C').charAt(0).toUpperCase() }}</div>
+            <div class="info">
+              <span class="name">{{ c.fullName || c.name || '-' }}</span>
+              <span class="email">{{ c.email }}</span>
+            </div>
+          </div>
+        </td>
       </ng-container>
+
+      <!-- Email Column -->
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
         <td mat-cell *matCellDef="let c">{{ c.email }}</td>
       </ng-container>
+
+      <!-- Phone Column -->
       <ng-container matColumnDef="phone">
         <th mat-header-cell *matHeaderCellDef>Phone</th>
         <td mat-cell *matCellDef="let c">{{ c.phone || '-' }}</td>
       </ng-container>
+
+      <!-- Orders Column -->
       <ng-container matColumnDef="totalOrders">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Orders</th>
-        <td mat-cell *matCellDef="let c">
-          <mat-chip>{{ c.totalOrders || 0 }}</mat-chip>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Orders</th>
+        <td mat-cell *matCellDef="let c" class="centered">
+          <span class="chip" [ngClass]="{'chip-active': c.totalOrders > 0}">
+            {{ c.totalOrders || 0 }}
+          </span>
         </td>
       </ng-container>
+
+      <!-- Total Spent Column -->
       <ng-container matColumnDef="totalSpent">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Spent</th>
-        <td mat-cell *matCellDef="let c">${{ (c.totalSpent || 0) | number:'1.2-2' }}</td>
+        <td mat-cell *matCellDef="let c" class="currency">
+          ${{ (c.totalSpent || 0) | number:'1.2-2' }}
+        </td>
       </ng-container>
+
+      <!-- Joined Date Column -->
       <ng-container matColumnDef="createdAt">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
-        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'short' }}</td>
+        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'MMM dd, yyyy' }}</td>
       </ng-container>
+
+      <!-- Status Column -->
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let c">
-          <span [class]="'status-badge ' + (c.isActive ? 'active' : 'inactive')">
+          <span class="status-badge" [ngClass]="c.isActive ? 'active' : 'inactive'">
+            <mat-icon>{{ c.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
             {{ c.isActive ? 'Active' : 'Inactive' }}
           </span>
         </td>
       </ng-container>
+
+      <!-- Actions Column -->
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let c">
-          <button mat-icon-button matTooltip="Toggle Status" (click)="toggleStatus(c._id, c.isActive)">
+        <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+        <td mat-cell *matCellDef="let c" class="actions-cell">
+          <button mat-icon-button matTooltip="View Details" (click)="viewDetails(c)">
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Edit Customer" (click)="editCustomer(c)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Toggle Status" (click)="toggleStatus(c._id || c.id, c.isActive)">
             <mat-icon>{{ c.isActive ? 'block' : 'check_circle' }}</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deleteUser(c._id)">delete</mat-icon></button>
+          <button mat-icon-button matTooltip="Delete Customer" (click)="deleteCustomer(c._id || c.id, c.fullName || c.name)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <!-- Header and Data Rows -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="header-row"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="data-row"></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+
+    <!-- Paginator -->
+    <mat-paginator
+      #paginator
+      [length]="totalCustomers"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

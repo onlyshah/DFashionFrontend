@@ -74,11 +74,15 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
     this.adminApiService.getCategories()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (categories) => {
+        next: (apiResponse: any) => {
+          // Handle both direct array and wrapped response format
+          const categoriesData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
+          
           // Transform API categories to ExtendedCategory
-          const transformedCategories = categories.map(cat => ({
+          const transformedCategories = categoriesData.map((cat: any) => ({
             ...cat,
-            parent: cat.parent ? categories.find(p => p._id === cat.parent) : undefined
+            status: cat.isActive ? 'active' : 'inactive',
+            parent: cat.parent ? categoriesData.find((p: any) => p._id === cat.parent) : undefined
           })) as ExtendedCategory[];
 
           this.categories = transformedCategories;
@@ -88,7 +92,6 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Error loading categories:', error);
           this.isLoading = false;
-          // Show error message instead of mock data
           this.categories = [];
           this.parentCategories = [];
         }

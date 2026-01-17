@@ -89,11 +89,13 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
         this.productService.getCategoriesWithFallback()
             .pipe(takeUntil(this.destroy$))
             .subscribe({
-                next: (categories: any[]) => {
+                next: (apiResponse: any) => {
+                    // Handle both direct array and wrapped response format
+                    const categoriesData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
                     // Transform categories to dropdown format
                     this.categories = [
                         { value: '', label: 'All Categories' },
-                        ...categories.map(cat => ({
+                        ...categoriesData.map((cat: any) => ({
                             value: cat.slug || cat._id,
                             label: cat.name
                         }))

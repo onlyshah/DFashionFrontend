@@ -22,7 +22,7 @@
     <table mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="user">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
-        <td mat-cell *matCellDef="let l">{{ l.user?.username || l.userId || 'System' }}</td>
+        <td mat-cell *matCellDef="let l">{{ l.user?.username || l.userId || l.user || 'System' }}</td>
       </ng-container>
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
@@ -34,7 +34,7 @@
       </ng-container>
       <ng-container matColumnDef="resource">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Resource</th>
-        <td mat-cell *matCellDef="let l">{{ l.resource || l.module || '-' }}</td>
+        <td mat-cell *matCellDef="let l">{{ l.resource || l.module || l.type || '-' }}</td>
       </ng-container>
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
@@ -47,7 +47,7 @@
       </ng-container>
       <ng-container matColumnDef="ipAddress">
         <th mat-header-cell *matHeaderCellDef>IP Address</th>
-        <td mat-cell *matCellDef="let l">{{ l.ipAddress || l.ip || '-' }}</td>
+        <td mat-cell *matCellDef="let l">{{ l.ipAddress || l.ip || l.clientIp || '-' }}</td>
       </ng-container>
       <ng-container matColumnDef="timestamp">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Timestamp</th>
@@ -56,6 +56,13 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    
+    <mat-paginator 
+      [length]="totalLogs"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

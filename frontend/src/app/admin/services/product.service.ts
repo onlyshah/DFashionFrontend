@@ -165,23 +165,20 @@ export class AdminProductService {
   }
 
   getCategories(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/categories`);
+    return this.http.get<any[]>(`${environment.apiUrl}/api/categories`);
   }
 
   getCategoriesWithFallback(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/categories`).pipe(
-      catchError(() => of([
-        { _id: '1', name: 'Men', slug: 'men' },
-        { _id: '2', name: 'Women', slug: 'women' },
-        { _id: '3', name: 'Children', slug: 'children' },
-        { _id: '4', name: 'Accessories', slug: 'accessories' },
-        { _id: '5', name: 'Shoes', slug: 'shoes' }
-      ]))
+    return this.http.get<any[]>(`${environment.apiUrl}/api/categories`).pipe(
+      catchError(error => {
+        console.error('Error loading categories:', error);
+        return throwError(() => error);
+      })
     );
   }
 
   getSubcategories(category: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/categories/${category}/subcategories`);
+    return this.http.get<any[]>(`${environment.apiUrl}/api/categories/${category}/subcategories`);
   }
 
   getBrands(): Observable<string[]> {

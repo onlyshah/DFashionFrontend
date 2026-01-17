@@ -40,6 +40,9 @@ import { BlogPostsComponent } from './pages/cms/blog-posts.component';
 import { MediaLibraryComponent } from './pages/cms/media-library.component';
 import { SuppliersComponent } from './pages/inventory/suppliers.component';
 import { WarehousesComponent } from './pages/inventory/warehouses.component';
+import { InventoryComponent } from './pages/inventory/inventory.component';
+import { InventoryAlertsComponent } from './pages/inventory/inventory-alerts.component';
+import { InventoryHistoryComponent } from './pages/inventory/inventory-history.component';
 import { SystemLogsComponent } from './pages/system/system-logs.component';
 import { BackupsComponent } from './pages/system/backups.component';
 import { MaintenanceComponent } from './pages/system/maintenance.component';
@@ -47,7 +50,7 @@ import { UserManagementComponent } from './pages/users/user-management.component
 import { OrderManagementComponent } from './pages/orders/order-management.component';
 import { ProductManagementComponent } from './pages/products/product-management.component';
 import { CategoryManagementComponent } from './pages/categories/category-management.component';
-import { RoleManagementComponent } from './pages/roles/role-management.component';
+import { RoleManagementComponent } from './pages/role-management/role-management.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { AnalyticsComponent } from './pages/analytics/analytics.component';
 import { ReturnsManagementComponent } from './pages/returns-management/returns-management.component';
@@ -298,6 +301,27 @@ const routes: Routes = [
         component: MediaLibraryComponent,
         canActivate: [PermissionGuard],
         data: { title: 'Media Library', permission: 'content:view' }
+      },
+      // Inventory (Main)
+      {
+        path: 'inventory',
+        component: InventoryComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Inventory', permission: 'inventory:view' }
+      },
+      // Inventory Alerts
+      {
+        path: 'inventory/alerts',
+        component: InventoryAlertsComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Inventory Alerts', permission: 'inventory:view' }
+      },
+      // Inventory History
+      {
+        path: 'inventory/history',
+        component: InventoryHistoryComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Inventory History', permission: 'inventory:view' }
       },
       // Suppliers (Inventory)
       {

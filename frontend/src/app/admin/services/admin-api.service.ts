@@ -84,19 +84,19 @@ export class AdminApiService {
   }
 
   getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrlPublic}/categories`);
+    return this.http.get<Category[]>(`${this.apiUrlPublic}/categories`, { headers: this.getHeaders() });
   }
 
   createCategory(category: any): Observable<Category> {
-    return this.http.post<Category>(`${this.apiUrlPublic}/categories`, category);
+    return this.http.post<Category>(`${this.apiUrlPublic}/categories`, category, { headers: this.getHeaders() });
   }
 
   updateCategory(id: string, category: any): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrlPublic}/categories/${id}`, category);
+    return this.http.put<Category>(`${this.apiUrlPublic}/categories/${id}`, category, { headers: this.getHeaders() });
   }
 
   deleteCategory(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`);
+    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`, { headers: this.getHeaders() });
   }
 
   getBrands(): Observable<any[]> {
@@ -393,22 +393,6 @@ export class AdminApiService {
   }
 
   /**
-   * Get all roles for dropdowns and management
-   */
-  getRoles(page: number = 1, limit: number = 100): Observable<any> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
-
-    return this.http.get<any>(`${this.apiUrl}/roles`, { params, headers: this.getHeaders() }).pipe(
-      catchError(error => {
-        console.error('Error fetching roles:', error);
-        return throwError(() => error);
-      })
-    );
-  }
-
-  /**
    * Get all departments for dropdowns and management
    */
   getDepartments(page: number = 1, limit: number = 100): Observable<any> {
@@ -425,6 +409,149 @@ export class AdminApiService {
   }
 
   /**
+   * Update user status (activate/deactivate)
+   */
+  updateUserStatus(id: string, isActive: boolean): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/${id}/status`, { isActive }, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error updating user status:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Approve vendor
+   */
+  approveVendor(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/${id}/approve`, {}, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error approving vendor:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Reject vendor
+   */
+  rejectVendor(id: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/users/${id}/reject`, {}, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error rejecting vendor:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  // ==================== ROLES AND PERMISSIONS ====================
+
+  /**
+   * Get all roles
+   */
+  getRoles(page: number = 1, limit: number = 100): Observable<any> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    return this.http.get<any>(`${this.apiUrl}/roles`, { params, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error fetching roles:', error);
+        return of({ success: false, data: [], pagination: {} });
+      })
+    );
+  }
+
+  /**
+   * Get all permissions
+   */
+  getPermissions(page: number = 1, limit: number = 100, module?: string): Observable<any> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+    if (module) {
+      params = params.set('module', module);
+    }
+    return this.http.get<any>(`${this.apiUrl}/permissions`, { params, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error fetching permissions:', error);
+        return of({ success: false, data: [], pagination: {} });
+      })
+    );
+  }
+
+  /**
+   * Create new role
+   */
+  createRole(role: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/roles`, role, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error creating role:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update role
+   */
+  updateRole(roleId: string, role: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/roles/${roleId}`, role, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error updating role:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete role
+   */
+  deleteRole(roleId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/roles/${roleId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error deleting role:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Create new permission
+   */
+  createPermission(permission: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/permissions`, permission, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error creating permission:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update permission
+   */
+  updatePermission(permissionId: string, permission: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/permissions/${permissionId}`, permission, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error updating permission:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete permission
+   */
+  deletePermission(permissionId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/permissions/${permissionId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error deleting permission:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Generic DELETE method for flexible API calls
    */
   delete(endpoint: string, options?: any): Observable<any> {
@@ -434,3 +561,4 @@ export class AdminApiService {
     });
   }
 }
+

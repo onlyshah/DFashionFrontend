@@ -1,20 +1,26 @@
 <div class="container">
   <div class="header">
-    <h2>Creators & Influencers Management</h2>
+    <h2>Creators & Influencers</h2>
     <p>Manage content creators and social media influencers</p>
   </div>
 
-  <mat-form-field class="search-field">
-    <mat-label>Search</mat-label>
-    <input matInput placeholder="Search by username or email..." (keyup)="applyFilter($event)">
-  </mat-form-field>
+  <div class="controls">
+    <mat-form-field class="search-field">
+      <mat-label>Search</mat-label>
+      <input matInput placeholder="Search by username, email, or name..." (keyup)="applyFilter($event)">
+    </mat-form-field>
+    
+    <button mat-raised-button color="accent" (click)="exportCreators()" [disabled]="isLoading">
+      <mat-icon>download</mat-icon> Export CSV
+    </button>
+  </div>
 
   <div *ngIf="isLoading" class="loading">
     <mat-spinner></mat-spinner>
   </div>
 
   <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
-    <mat-icon>star</mat-icon>
+    <mat-icon>star_outline</mat-icon>
     <p>No creators found</p>
   </div>
 
@@ -22,48 +28,68 @@
     <table mat-table [dataSource]="dataSource" matSort>
       <ng-container matColumnDef="username">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
-        <td mat-cell *matCellDef="let c">{{ c.username }}</td>
+        <td mat-cell *matCellDef="let c">
+          <strong>{{ c.username }}</strong>
+        </td>
       </ng-container>
+
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
         <td mat-cell *matCellDef="let c">{{ c.email }}</td>
       </ng-container>
-      <ng-container matColumnDef="followers">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Followers</th>
-        <td mat-cell *matCellDef="let c">
-          <mat-chip>{{ (c.followers || 0) | number }}</mat-chip>
-        </td>
+
+      <ng-container matColumnDef="fullName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+        <td mat-cell *matCellDef="let c">{{ c.fullName || '—' }}</td>
       </ng-container>
-      <ng-container matColumnDef="content">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Content Pieces</th>
-        <td mat-cell *matCellDef="let c">
-          <mat-chip>{{ c.totalContent || 0 }}</mat-chip>
-        </td>
-      </ng-container>
-      <ng-container matColumnDef="engagement">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Engagement Rate</th>
-        <td mat-cell *matCellDef="let c">{{ (c.engagementRate || 0) | number:'1.2-2' }}%</td>
-      </ng-container>
+
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let c">
           <span [class]="'status-badge ' + (c.isActive ? 'active' : 'inactive')">
-            {{ c.isActive ? 'Active' : 'Inactive' }}
+            {{ c.isActive ? '✓ Active' : '✗ Inactive' }}
           </span>
         </td>
       </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
+        <td mat-cell *matCellDef="let c">
+          {{ c.createdAt | date:'short' }}
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let c">
-          <button mat-icon-button matTooltip="Toggle Status" (click)="toggleStatus(c._id, c.isActive)">
+          <button 
+            mat-icon-button 
+            matTooltip="Toggle Status" 
+            (click)="toggleStatus(c.id, c.isActive, c.username)"
+            [disabled]="isLoading">
             <mat-icon>{{ c.isActive ? 'block' : 'check_circle' }}</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deleteUser(c._id)">delete</mat-icon></button>
+          <button 
+            mat-icon-button 
+            matTooltip="Delete" 
+            color="warn"
+            (click)="deleteCreator(c.id, c.username)"
+            [disabled]="isLoading">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
+
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-    <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+
+    <mat-paginator 
+      [length]="totalCreators"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

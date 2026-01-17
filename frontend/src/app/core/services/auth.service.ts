@@ -256,12 +256,19 @@ export class AuthService {
   }
 
   private setToken(token: string): void {
+    if (!token) {
+      console.warn('⚠️ setToken called with empty/null token!');
+      return;
+    }
+    
     if (this.rememberMe) {
       localStorage.setItem('token', token);
       sessionStorage.removeItem('token');
+      console.log('✅ Token stored in localStorage (Remember Me enabled)');
     } else {
       sessionStorage.setItem('token', token);
       localStorage.removeItem('token');
+      console.log('✅ Token stored in sessionStorage');
     }
   }
 
@@ -470,14 +477,23 @@ export class AuthService {
   }
 
   private handleSuccessfulLogin(response: any): void {
-    if (response.token) {
-      this.setToken(response.token);
-      this.setupTokenRefresh(response.token);
+    // Handle both response formats: { data: { token, user } } and { token, user }
+    const authData = response.data || response;
+    
+    if (authData.token) {
+      this.setToken(authData.token);
+      this.setupTokenRefresh(authData.token);
+      console.log('✅ Token stored successfully in handleSuccessfulLogin');
     }
 
-    if (response.user) {
-      this.currentUserSubject.next(response.user);
+    if (authData.user) {
+      this.currentUserSubject.next(authData.user);
       this.isAuthenticatedSubject.next(true);
+      console.log('✅ User subject updated:', {
+        email: authData.user.email,
+        role: authData.user.role,
+        storage: this.rememberMe ? 'localStorage' : 'sessionStorage'
+      });
 
       // Note: Redirect is now handled by the login component to ensure 
       // consistency with role-based routing. Do not redirect here.
