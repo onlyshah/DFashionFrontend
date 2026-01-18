@@ -63,10 +63,11 @@ export class InventoryHistoryComponent implements OnInit, OnDestroy {
 
   loadHistory(): void {
     this.isLoading = true;
-    this.api.get('/admin/inventory/history')
+    this.api.get('/inventory/history')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          console.log('Inventory history loaded:', response);
           this.dataSource.data = response?.data || [];
           this.isLoading = false;
         },

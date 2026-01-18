@@ -221,7 +221,7 @@ export class AdminApiService {
    * Generic GET method for flexible API calls
    */
   get(endpoint: string, options?: any): Observable<any> {
-    return this.http.get(`${environment.apiUrl}${endpoint}`, {
+    return this.http.get(`${this.apiUrl}${endpoint}`, {
       ...options,
       headers: this.getHeaders()
     });
@@ -231,7 +231,7 @@ export class AdminApiService {
    * Generic POST method for flexible API calls
    */
   post(endpoint: string, body: any, options?: any): Observable<any> {
-    return this.http.post(`${environment.apiUrl}${endpoint}`, body, {
+    return this.http.post(`${this.apiUrl}${endpoint}`, body, {
       ...options,
       headers: this.getHeaders()
     });
@@ -241,7 +241,7 @@ export class AdminApiService {
    * Generic PUT method for flexible API calls
    */
   put(endpoint: string, body: any, options?: any): Observable<any> {
-    return this.http.put(`${environment.apiUrl}${endpoint}`, body, {
+    return this.http.put(`${this.apiUrl}${endpoint}`, body, {
       ...options,
       headers: this.getHeaders()
     });
@@ -251,7 +251,7 @@ export class AdminApiService {
    * Generic PATCH method for flexible API calls
    */
   patch(endpoint: string, body: any, options?: any): Observable<any> {
-    return this.http.patch(`${environment.apiUrl}${endpoint}`, body, {
+    return this.http.patch(`${this.apiUrl}${endpoint}`, body, {
       ...options,
       headers: this.getHeaders()
     });
@@ -555,7 +555,7 @@ export class AdminApiService {
    * Generic DELETE method for flexible API calls
    */
   delete(endpoint: string, options?: any): Observable<any> {
-    return this.http.delete(`${environment.apiUrl}${endpoint}`, {
+    return this.http.delete(`${this.apiUrl}${endpoint}`, {
       ...options,
       headers: this.getHeaders()
     });

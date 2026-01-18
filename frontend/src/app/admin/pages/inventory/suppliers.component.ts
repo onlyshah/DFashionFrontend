@@ -38,6 +38,7 @@ export class SuppliersComponent implements OnInit {
   load(): void {
     this.isLoading = true;
     this.api.get('/inventory/suppliers').subscribe({ next: (r:any) => { this.dataSource.data = r?.data || []; this.isLoading=false; }, error: ()=> { this.dataSource.data = []; this.isLoading=false; } });
+        console.log('Suppliers loaded:', this.dataSource.data);
   }
 
   applyFilter(e:any): void { this.dataSource.filter = e.target.value.trim().toLowerCase(); }

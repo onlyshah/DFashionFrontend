@@ -68,6 +68,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          console.log('Inventory stats loaded:', response);
           this.inventoryStats = response?.data || {
             totalItems: 0,
             lowStock: 0,
@@ -93,6 +94,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          console.log('Inventory loaded:', response);
           this.dataSource.data = response?.data || [];
           this.isLoading = false;
         },

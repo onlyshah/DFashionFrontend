@@ -69,7 +69,7 @@ export class SocialEngagementComponent implements OnInit {
 
   loadStats(): void {
     this.statsLoading = true;
-    this.api.get('/api/admin/social/stats').subscribe({
+    this.api.get('/social/stats').subscribe({
       next: (res: any) => {
         this.stats = res?.data || {
           totalPosts: 0,
@@ -87,7 +87,7 @@ export class SocialEngagementComponent implements OnInit {
 
   loadPosts(): void {
     this.postsLoading = true;
-    this.api.get('/api/admin/social/posts').subscribe({
+    this.api.get('/social/posts').subscribe({
       next: (res: any) => {
         this.postsDataSource.data = res?.data || [];
         this.postsLoading = false;
@@ -101,7 +101,7 @@ export class SocialEngagementComponent implements OnInit {
 
   loadReels(): void {
     this.reelsLoading = true;
-    this.api.get('/api/admin/social/reels').subscribe({
+    this.api.get('/social/reels').subscribe({
       next: (res: any) => {
         this.reelsDataSource.data = res?.data || [];
         this.reelsLoading = false;

@@ -27,7 +27,7 @@ export class NotImplementedComponent implements OnInit {
     this.title = dataTitle || this.title;
 
     // Load quick actions to ensure the page shows real data
-    this.api.get('/api/admin/demo/quick-actions').subscribe({
+    this.api.get('/demo/quick-actions').subscribe({
       next: (resp: any) => {
         if (resp && resp.data) {
           this.actions = resp.data;

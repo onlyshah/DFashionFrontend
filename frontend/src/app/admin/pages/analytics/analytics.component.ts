@@ -66,27 +66,27 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     this.analyticsService.getDashboardStatsWithFallback().subscribe({
       next: (response) => {
         console.log('Dashboard stats loaded:', response);
-        if (response.success) {
+        if (response.success && response.data) {
           const data = response.data;
 
           // Update overview stats
-          this.totalCustomers = data.overview.users.total || 0;
-          this.totalOrders = data.overview.orders.total || 0;
-          this.totalRevenue = data.revenue.totalRevenue || 0;
-          this.averageOrderValue = data.revenue.averageOrderValue || 0;
+          this.totalCustomers = data?.overview?.users?.total || 0;
+          this.totalOrders = data?.overview?.orders?.total || 0;
+          this.totalRevenue = data?.revenue?.totalRevenue || 0;
+          this.averageOrderValue = data?.revenue?.averageOrderValue || 0;
 
           // Calculate growth rates from backend data
-          this.customerGrowth = data.growthRates?.customerGrowth || 0;
-          this.orderGrowth = data.growthRates?.orderGrowth || 0;
-          this.revenueGrowth = data.growthRates?.revenueGrowth || 0;
-          this.conversionRate = data.growthRates?.conversionRate || 0;
+          this.customerGrowth = data?.growthRates?.customerGrowth || 0;
+          this.orderGrowth = data?.growthRates?.orderGrowth || 0;
+          this.revenueGrowth = data?.growthRates?.revenueGrowth || 0;
+          this.conversionRate = data?.growthRates?.conversionRate || 0;
 
           // Update top products from analytics
-          if (data.analytics.topPerformingProducts) {
+          if (data?.analytics?.topPerformingProducts) {
             this.topProducts = data.analytics.topPerformingProducts;
           }
           // Update traffic sources from analytics
-          if (data.analytics.trafficSources) {
+          if (data?.analytics?.trafficSources) {
             this.trafficSources = data.analytics.trafficSources;
           }
         }

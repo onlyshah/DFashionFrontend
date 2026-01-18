@@ -70,6 +70,7 @@ export class InventoryAlertsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          console.log('Alert summary loaded:', response);
           this.alertSummary = response?.data || {
             critical: 0,
             warning: 0,
@@ -84,7 +85,7 @@ export class InventoryAlertsComponent implements OnInit, OnDestroy {
 
   loadAlerts(): void {
     this.isLoading = true;
-    this.api.get('/admin/inventory/alerts')
+    this.api.get('/inventory/alerts')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -115,7 +116,7 @@ export class InventoryAlertsComponent implements OnInit, OnDestroy {
   }
 
   acknowledgeAlert(id: string): void {
-    this.api.put(`/admin/inventory/alerts/${id}`, { acknowledged: true })
+    this.api.put(`/inventory/alerts/${id}`, { acknowledged: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -129,7 +130,7 @@ export class InventoryAlertsComponent implements OnInit, OnDestroy {
 
   deleteAlert(id: string): void {
     if (confirm('Delete this alert?')) {
-      this.api.delete(`/admin/inventory/alerts/${id}`)
+      this.api.delete(`/inventory/alerts/${id}`)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {

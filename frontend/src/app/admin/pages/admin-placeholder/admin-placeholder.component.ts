@@ -27,7 +27,7 @@ export class AdminPlaceholderComponent {
 
   private loadTeamData(): void {
     // Load real team members data from backend
-    this.api.get('/api/admin/team').subscribe({
+    this.api.get('/team').subscribe({
       next: (resp: any) => {
         if (resp && resp.data && Array.isArray(resp.data)) {
           this.team = resp.data;
