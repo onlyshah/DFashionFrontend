@@ -20,12 +20,14 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AdminApiService } from '../../services/admin-api.service';
 import { AdminAuthService } from '../../services/admin-auth.service';
+import { CouponDialogComponent } from './coupon-dialog.component';
 
 export interface Coupon {
   _id: string;
@@ -65,7 +67,9 @@ export interface Coupon {
     MatDialogModule,
     MatProgressSpinnerModule,
     MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSnackBarModule,
+    CouponDialogComponent
   ],
   templateUrl: './coupon-management.component.html',
   styleUrls: ['./coupon-management.component.scss']
@@ -155,13 +159,69 @@ export class CouponManagementComponent implements OnInit, OnDestroy {
   }
 
   openCouponDialog(): void {
-    // TODO: Implement coupon dialog
-    this.snackBar.open('Coming soon', 'Close', { duration: 3000 });
+    const dialogRef = this.dialog.open(CouponDialogComponent, {
+      width: '500px',
+      data: null,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(result => {
+      if (result) {
+        this.createCoupon(result);
+      }
+    });
+  }
+
+  createCoupon(formData: any): void {
+    this.isLoading = true;
+    this.apiService.post('/marketing/coupons', formData).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        this.snackBar.open('Coupon created successfully', 'Close', { duration: 3000 });
+        this.loadCoupons();
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error('Failed to create coupon:', error);
+        this.isLoading = false;
+        this.snackBar.open(error.error?.message || 'Failed to create coupon', 'Close', { duration: 5000 });
+      }
+    });
   }
 
   editCoupon(coupon: Coupon): void {
-    // TODO: Implement edit dialog
-    this.snackBar.open('Edit coming soon', 'Close', { duration: 3000 });
+    const dialogRef = this.dialog.open(CouponDialogComponent, {
+      width: '500px',
+      data: coupon,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(result => {
+      if (result) {
+        this.updateCoupon(coupon._id, result);
+      }
+    });
+  }
+
+  updateCoupon(couponId: string, formData: any): void {
+    this.isLoading = true;
+    this.apiService.put(`/marketing/coupons/${couponId}`, formData).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        this.snackBar.open('Coupon updated successfully', 'Close', { duration: 3000 });
+        this.loadCoupons();
+      },
+      error: (error: HttpErrorResponse) => {
+        console.error('Failed to update coupon:', error);
+        this.isLoading = false;
+        this.snackBar.open(error.error?.message || 'Failed to update coupon', 'Close', { duration: 5000 });
+      }
+    });
   }
 
   toggleCouponStatus(couponId: string, isActive: boolean): void {

@@ -159,10 +159,46 @@ const routes: Routes = [
         data: { title: 'Product Management', module: 'products' }
       },
       {
+        path: 'products/new',
+        loadComponent: () => import('./pages/products/product-create.component').then(m => m.ProductCreateComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Create Product', permission: 'products:create' }
+      },
+      {
+        path: 'products/:id',
+        loadComponent: () => import('./pages/products/product-detail.component').then(m => m.ProductDetailComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Details', permission: 'products:view' }
+      },
+      {
+        path: 'products/variants',
+        loadComponent: () => import('./pages/products/product-variants.component').then(m => m.ProductVariantsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Variants', permission: 'products:view' }
+      },
+      {
+        path: 'products/media',
+        loadComponent: () => import('./pages/products/product-media.component').then(m => m.ProductMediaComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Media', permission: 'products:edit' }
+      },
+      {
+        path: 'products/tagging',
+        loadComponent: () => import('./pages/products/product-tagging.component').then(m => m.ProductTaggingComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Tagging', permission: 'products:edit' }
+      },
+      {
         path: 'categories',
         component: CategoryManagementComponent,
         canActivate: [PermissionGuard],
         data: { title: 'Category Management', permission: 'categories:view' }
+      },
+      {
+        path: 'sub-categories',
+        loadComponent: () => import('./pages/categories/sub-category-management.component').then(m => m.SubCategoryManagementComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Sub-Category Management', permission: 'categories:view' }
       },
       {
         path: 'brands',
@@ -262,21 +298,21 @@ const routes: Routes = [
       },
       // Campaigns (Marketing)
       {
-        path: 'campaigns',
+        path: 'marketing/campaigns',
         component: CampaignManagementComponent,
         canActivate: [PermissionGuard],
         data: { title: 'Campaigns', permission: 'marketing:view' }
       },
       // Coupons & Promotions (Marketing)
       {
-        path: 'coupons',
+        path: 'marketing/coupons',
         component: CouponManagementComponent,
         canActivate: [PermissionGuard],
         data: { title: 'Coupons & Promotions', permission: 'marketing:view' }
       },
       // Newsletters (Marketing)
       {
-        path: 'newsletters',
+        path: 'marketing/newsletters',
         component: NewslettersComponent,
         canActivate: [PermissionGuard],
         data: { title: 'Newsletters', permission: 'marketing:view' }
@@ -365,6 +401,363 @@ const routes: Routes = [
         canActivate: [PermissionGuard],
         data: { title: 'Social Engagement', permission: 'social:view' }
       },
+
+      // Social Feed Sub-routes
+      {
+        path: 'social/posts',
+        loadComponent: () => import('./pages/social/social-posts.component').then(m => m.SocialPostsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'All Posts', permission: 'social:view' }
+      },
+      {
+        path: 'social/videos',
+        loadComponent: () => import('./pages/social/social-videos.component').then(m => m.SocialVideosComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Video Feed', permission: 'social:view' }
+      },
+      {
+        path: 'social/tagged',
+        loadComponent: () => import('./pages/social/social-tagged-products.component').then(m => m.SocialTaggedProductsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product-Tagged Posts', permission: 'social:view' }
+      },
+      {
+        path: 'social/hashtags',
+        loadComponent: () => import('./pages/social/social-hashtags.component').then(m => m.SocialHashtagsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Hashtags', permission: 'social:view' }
+      },
+      {
+        path: 'social/reported',
+        loadComponent: () => import('./pages/social/social-reported-content.component').then(m => m.SocialReportedContentComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Reported Content', permission: 'social:view' }
+      },
+      {
+        path: 'social/comments',
+        loadComponent: () => import('./pages/social/social-comment-moderation.component').then(m => m.SocialCommentModerationComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Comment Moderation', permission: 'social:view' }
+      },
+
+      // Payments Sub-routes
+      {
+        path: 'payments/transactions',
+        loadComponent: () => import('./pages/payments/payment-transactions.component').then(m => m.PaymentTransactionsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Transactions', permission: 'payments:view' }
+      },
+      {
+        path: 'payments/methods',
+        loadComponent: () => import('./pages/payments/payment-methods.component').then(m => m.PaymentMethodsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Payment Methods', permission: 'payments:view' }
+      },
+      {
+        path: 'payments/refunds',
+        loadComponent: () => import('./pages/payments/refund-management.component').then(m => m.RefundManagementComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Refund Management', permission: 'payments:view' }
+      },
+      {
+        path: 'payments/payouts',
+        loadComponent: () => import('./pages/payments/seller-payouts.component').then(m => m.SellerPayoutsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Seller Payouts', permission: 'payments:view' }
+      },
+      {
+        path: 'payments/wallet',
+        loadComponent: () => import('./pages/payments/wallet-cod.component').then(m => m.WalletCodComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Wallet & COD', permission: 'payments:view' }
+      },
+
+      // Orders Sub-routes
+      {
+        path: 'orders/pending',
+        loadComponent: () => import('./pages/orders/pending-orders.component').then(m => m.PendingOrdersComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Pending Orders', permission: 'orders:view' }
+      },
+      {
+        path: 'orders/completed',
+        loadComponent: () => import('./pages/orders/completed-orders.component').then(m => m.CompletedOrdersComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Completed Orders', permission: 'orders:view' }
+      },
+      {
+        path: 'orders/cancelled',
+        loadComponent: () => import('./pages/orders/cancelled-orders.component').then(m => m.CancelledOrdersComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Cancelled Orders', permission: 'orders:view' }
+      },
+      {
+        path: 'invoices',
+        loadComponent: () => import('./pages/orders/invoices.component').then(m => m.InvoicesComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Invoices', permission: 'orders:view' }
+      },
+
+      // Live Commerce Routes
+      {
+        path: 'live',
+        loadComponent: () => import('./pages/live-commerce/live-streams.component').then(m => m.LiveStreamsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Live Streams', permission: 'live:view' }
+      },
+      {
+        path: 'live/schedule',
+        loadComponent: () => import('./pages/live-commerce/live-schedule.component').then(m => m.LiveScheduleComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Schedule Live', permission: 'live:view' }
+      },
+      {
+        path: 'live/pinned',
+        loadComponent: () => import('./pages/live-commerce/live-pinned-products.component').then(m => m.LivePinnedProductsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Pinned Products', permission: 'live:view' }
+      },
+      {
+        path: 'live/orders',
+        loadComponent: () => import('./pages/live-commerce/live-orders.component').then(m => m.LiveOrdersComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Live Orders', permission: 'live:view' }
+      },
+      {
+        path: 'live/chat',
+        loadComponent: () => import('./pages/live-commerce/live-chat-moderation.component').then(m => m.LiveChatModerationComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Live Chat Moderation', permission: 'live:view' }
+      },
+      {
+        path: 'live/analytics',
+        loadComponent: () => import('./pages/live-commerce/live-analytics.component').then(m => m.LiveAnalyticsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Stream Analytics', permission: 'live:view' }
+      },
+
+      // Creators Sub-routes
+      {
+        path: 'creators/verification',
+        loadComponent: () => import('./pages/users/creator-verification.component').then(m => m.CreatorVerificationComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Verification Requests', permission: 'creators:view' }
+      },
+      {
+        path: 'creators/affiliate',
+        loadComponent: () => import('./pages/users/creator-affiliate.component').then(m => m.CreatorAffiliateComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Affiliate Products', permission: 'creators:view' }
+      },
+      {
+        path: 'creators/commissions',
+        loadComponent: () => import('./pages/users/creator-commissions.component').then(m => m.CreatorCommissionsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Commissions', permission: 'creators:view' }
+      },
+      {
+        path: 'creators/analytics',
+        loadComponent: () => import('./pages/users/creator-analytics.component').then(m => m.CreatorAnalyticsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Performance Analytics', permission: 'creators:view' }
+      },
+      {
+        path: 'creators/sponsored',
+        loadComponent: () => import('./pages/users/creator-sponsored.component').then(m => m.CreatorSponsoredComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Sponsored Content', permission: 'creators:view' }
+      },
+
+      // Reviews Routes
+      {
+        path: 'reviews/products',
+        loadComponent: () => import('./pages/reviews/product-reviews.component').then(m => m.ProductReviewsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Reviews', permission: 'reviews:view' }
+      },
+      {
+        path: 'reviews/creators',
+        loadComponent: () => import('./pages/reviews/creator-ratings.component').then(m => m.CreatorRatingsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Creator Ratings', permission: 'reviews:view' }
+      },
+      {
+        path: 'reviews/reported',
+        loadComponent: () => import('./pages/reviews/reported-reviews.component').then(m => m.ReportedReviewsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Reported Reviews', permission: 'reviews:view' }
+      },
+      {
+        path: 'reviews/disputes',
+        loadComponent: () => import('./pages/reviews/review-disputes.component').then(m => m.ReviewDisputesComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Disputes', permission: 'reviews:view' }
+      },
+
+      // Reports Routes
+      {
+        path: 'reports/sales',
+        loadComponent: () => import('./pages/reports/sales-reports.component').then(m => m.SalesReportsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Sales Reports', permission: 'reports:view' }
+      },
+      {
+        path: 'reports/products',
+        loadComponent: () => import('./pages/reports/product-performance-report.component').then(m => m.ProductPerformanceReportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Product Performance', permission: 'reports:view' }
+      },
+      {
+        path: 'reports/users',
+        loadComponent: () => import('./pages/reports/user-behavior-report.component').then(m => m.UserBehaviorReportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'User Behavior', permission: 'reports:view' }
+      },
+      {
+        path: 'reports/social',
+        loadComponent: () => import('./pages/reports/social-engagement-report.component').then(m => m.SocialEngagementReportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Social Engagement Reports', permission: 'reports:view' }
+      },
+      {
+        path: 'reports/creators',
+        loadComponent: () => import('./pages/reports/creator-performance-report.component').then(m => m.CreatorPerformanceReportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Creator Performance', permission: 'reports:view' }
+      },
+
+      // Security Routes
+      {
+        path: 'security/auth',
+        loadComponent: () => import('./pages/security/authentication-settings.component').then(m => m.AuthenticationSettingsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Authentication', permission: 'security:view' }
+      },
+      {
+        path: 'security/sessions',
+        loadComponent: () => import('./pages/security/session-management.component').then(m => m.SessionManagementComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Session Management', permission: 'security:view' }
+      },
+      {
+        path: 'security/privacy',
+        loadComponent: () => import('./pages/security/privacy-compliance.component').then(m => m.PrivacyComplianceComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Privacy & Compliance', permission: 'security:view' }
+      },
+      {
+        path: 'security/audit-logs',
+        loadComponent: () => import('./pages/security/audit-logs.component').then(m => m.AuditLogsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Audit Logs', permission: 'security:view' }
+      },
+
+      // Support Routes
+      {
+        path: 'support/tickets',
+        loadComponent: () => import('./pages/support/support-tickets.component').then(m => m.SupportTicketsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Support Tickets', permission: 'support:view' }
+      },
+      {
+        path: 'support/customers',
+        loadComponent: () => import('./pages/support/customer-support.component').then(m => m.CustomerSupportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Customer Queries', permission: 'support:view' }
+      },
+      {
+        path: 'support/sellers',
+        loadComponent: () => import('./pages/support/seller-support.component').then(m => m.SellerSupportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Seller Support', permission: 'support:view' }
+      },
+      {
+        path: 'support/creators',
+        loadComponent: () => import('./pages/support/creator-support.component').then(m => m.CreatorSupportComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Creator Support', permission: 'support:view' }
+      },
+
+      // AI & Automation Routes
+      {
+        path: 'ai/recommendations',
+        loadComponent: () => import('./pages/ai-automation/recommendations.component').then(m => m.RecommendationsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Recommendations', permission: 'ai:view' }
+      },
+      {
+        path: 'ai/moderation',
+        loadComponent: () => import('./pages/ai-automation/content-moderation.component').then(m => m.ContentModerationComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Content Moderation', permission: 'ai:view' }
+      },
+      {
+        path: 'ai/trends',
+        loadComponent: () => import('./pages/ai-automation/trend-analysis.component').then(m => m.TrendAnalysisComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Trend Analysis', permission: 'ai:view' }
+      },
+      {
+        path: 'ai/chatbot',
+        loadComponent: () => import('./pages/ai-automation/chatbot-settings.component').then(m => m.ChatbotSettingsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Chatbot Settings', permission: 'ai:view' }
+      },
+
+      // Additional Settings Routes
+      {
+        path: 'settings/branding',
+        component: SettingsComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Branding', permission: 'settings:view', type: 'branding' }
+      },
+      {
+        path: 'settings/currency',
+        component: SettingsComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Currency & Localization', permission: 'settings:view', type: 'currency' }
+      },
+      {
+        path: 'settings/notifications',
+        component: SettingsComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'Notification Settings', permission: 'settings:view', type: 'notifications' }
+      },
+      {
+        path: 'settings/api',
+        component: SettingsComponent,
+        canActivate: [PermissionGuard],
+        data: { title: 'API & Webhooks', permission: 'settings:view', type: 'api' }
+      },
+
+      // Additional Marketing Routes
+      {
+        path: 'marketing/flash-sales',
+        loadComponent: () => import('./pages/marketing/flash-sales.component').then(m => m.FlashSalesComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Flash Sales', permission: 'marketing:view' }
+      },
+      {
+        path: 'marketing/push',
+        loadComponent: () => import('./pages/marketing/push-notifications.component').then(m => m.PushNotificationsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Push Notifications', permission: 'marketing:view' }
+      },
+      {
+        path: 'marketing/email-sms',
+        loadComponent: () => import('./pages/marketing/email-sms.component').then(m => m.EmailSmsComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Email & SMS Marketing', permission: 'marketing:view' }
+      },
+
+      // CMS Help Center
+      {
+        path: 'cms/help',
+        loadComponent: () => import('./pages/cms/help-center.component').then(m => m.HelpCenterComponent),
+        canActivate: [PermissionGuard],
+        data: { title: 'Help Center', permission: 'content:view' }
+      },
+
       // Catch-all: redirect to dashboard
       {
         path: '**',

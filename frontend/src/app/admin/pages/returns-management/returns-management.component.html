@@ -1,7 +1,13 @@
 <div class="returns-management-container">
   <div class="header">
-    <h2>Returns Management</h2>
-    <p>Manage product returns and refunds</p>
+    <div class="header-content">
+      <h2>Returns Management</h2>
+      <p>Manage product returns and refunds</p>
+    </div>
+    <button class="btn-create" (click)="openReturnDialog()">
+      <mat-icon>add</mat-icon>
+      Create Return Request
+    </button>
   </div>
 
   <div class="filters">
@@ -35,6 +41,7 @@
         <th>Customer</th>
         <th>Product</th>
         <th>Reason</th>
+        <th>Amount</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -45,6 +52,7 @@
         <td>{{ ret.customerName }}</td>
         <td>{{ ret.productName }}</td>
         <td>{{ ret.reason }}</td>
+        <td>${{ ret.returnAmount | number:'1.2-2' }}</td>
         <td>
           <select 
             [(ngModel)]="ret.status"
@@ -55,9 +63,12 @@
           </select>
         </td>
         <td class="actions">
-          <button *ngIf="ret.status !== 'refunded'" (click)="refundReturn(ret._id)" class="btn-refund">Refund</button>
-          <button *ngIf="ret.status !== 'approved'" (click)="approveReturn(ret._id)" class="btn-approve">Approve</button>
-          <button *ngIf="ret.status !== 'rejected'" (click)="rejectReturn(ret._id)" class="btn-reject">Reject</button>
+          <button mat-icon-button color="primary" (click)="openReturnDialog(ret)" matTooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteReturn(ret._id)" matTooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </tr>
     </tbody>

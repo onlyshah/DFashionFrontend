@@ -1,5 +1,12 @@
 <div class="admin-container">
-  <h2>Blog Posts</h2>
+  <div class="header-section">
+    <h2>Blog Posts</h2>
+    <button mat-raised-button color="primary" (click)="openBlogDialog()">
+      <mat-icon>add</mat-icon>
+      Create Blog Post
+    </button>
+  </div>
+
   <mat-form-field class="search-field">
     <mat-label>Search</mat-label>
     <input matInput placeholder="Search by title..." (keyup)="applyFilter($event)">
@@ -24,7 +31,12 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let p">
-          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="delete(p._id)">delete</mat-icon></button>
+          <button mat-icon-button matTooltip="Edit" (click)="openBlogDialog(p)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete" (click)="delete(p._id)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -104,64 +104,12 @@ export class SystemLogsComponent implements OnInit, OnDestroy {
       error: (error: any) => {
         console.error('Error loading logs:', error);
         this.error = 'Failed to load system logs. Please try again.';
+        this.logs = [];
+        this.filterLogs();
         this.isLoading = false;
-        // Load demo data on error
-        this.loadDemoLogs();
       }
     });
   }
-
-  private loadDemoLogs() {
-    this.logs = [
-      {
-        id: 'LOG-001',
-        timestamp: new Date(Date.now() - 60000),
-        level: 'info',
-        module: 'auth',
-        message: 'User logged in successfully',
-        user: 'admin@example.com',
-        ip: '192.168.1.100'
-      },
-      {
-        id: 'LOG-002',
-        timestamp: new Date(Date.now() - 120000),
-        level: 'warning',
-        module: 'products',
-        message: 'Low stock alert for product SKU-123',
-        details: 'Only 5 items remaining'
-      },
-      {
-        id: 'LOG-003',
-        timestamp: new Date(Date.now() - 180000),
-        level: 'error',
-        module: 'payment',
-        message: 'Payment processing failed',
-        details: 'Gateway timeout',
-        stackTrace: 'PaymentGateway.process() line 245'
-      },
-      {
-        id: 'LOG-004',
-        timestamp: new Date(Date.now() - 240000),
-        level: 'debug',
-        module: 'database',
-        message: 'Database query executed',
-        details: 'Query: SELECT * FROM users LIMIT 10',
-        metadata: { executionTime: 45 }
-      },
-      {
-        id: 'LOG-005',
-        timestamp: new Date(Date.now() - 300000),
-        level: 'info',
-        module: 'orders',
-        message: 'Order placed successfully',
-        details: 'Order #ORD-12345',
-        user: 'john@example.com'
-      }
-    ];
-    this.filterLogs();
-  }
-
-
 
   filterLogs() {
     this.filteredLogs = this.logs.filter(log => {

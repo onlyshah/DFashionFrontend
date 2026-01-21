@@ -11,9 +11,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AdminApiService } from '../../services/admin-api.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { InventoryDialogComponent } from './inventory-dialog.component';
 
 @Component({
   selector: 'app-inventory',
@@ -30,7 +33,9 @@ import { takeUntil } from 'rxjs/operators';
     MatInputModule,
     MatTooltipModule,
     MatTabsModule,
-    MatCardModule
+    MatCardModule,
+    MatDialogModule,
+    MatSnackBarModule
   ],
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss']
@@ -41,12 +46,16 @@ export class InventoryComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
   
-  displayedColumns = ['sku', 'product', 'quantity', 'warehouse', 'lastUpdated', 'actions'];
+  displayedColumns = ['sku', 'product', 'quantity', 'warehouse', 'reorderLevel', 'lastUpdated', 'actions'];
   dataSource = new MatTableDataSource<any>([]);
   isLoading = false;
   inventoryStats: any = {};
 
-  constructor(private api: AdminApiService) {}
+  constructor(
+    private api: AdminApiService,
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
+  ) {}
 
   ngOnInit(): void {
     this.loadInventoryStats();
@@ -102,6 +111,7 @@ export class InventoryComponent implements OnInit, OnDestroy {
           console.error('Failed to load inventory:', err);
           this.dataSource.data = [];
           this.isLoading = false;
+          this.snackBar.open('Failed to load inventory', 'Close', { duration: 3000 });
         }
       });
   }
@@ -110,21 +120,77 @@ export class InventoryComponent implements OnInit, OnDestroy {
     this.dataSource.filter = event.target.value.trim().toLowerCase();
   }
 
-  editInventory(id: string): void {
-    console.log('Edit inventory item:', id);
-    // TODO: Implement edit functionality
+  openInventoryDialog(item?: any): void {
+    const dialogRef = this.dialog.open(InventoryDialogComponent, {
+      width: '600px',
+      data: item || null,
+      disableClose: false
+    });
+
+    dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+          if (item) {
+            this.updateInventory(item._id, result);
+          } else {
+            this.createInventory(result);
+          }
+        }
+      });
+  }
+
+  createInventory(formData: any): void {
+    this.isLoading = true;
+    this.api.post('/inventory', formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.snackBar.open('Inventory item created successfully', 'Close', { duration: 3000 });
+          this.loadInventory();
+          this.loadInventoryStats();
+        },
+        error: (err) => {
+          console.error('Error creating inventory item:', err);
+          this.isLoading = false;
+          this.snackBar.open(err.error?.message || 'Failed to create inventory item', 'Close', { duration: 3000 });
+        }
+      });
+  }
+
+  updateInventory(id: string, formData: any): void {
+    this.isLoading = true;
+    this.api.put(`/inventory/${id}`, formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          this.snackBar.open('Inventory item updated successfully', 'Close', { duration: 3000 });
+          this.loadInventory();
+          this.loadInventoryStats();
+        },
+        error: (err) => {
+          console.error('Error updating inventory item:', err);
+          this.isLoading = false;
+          this.snackBar.open(err.error?.message || 'Failed to update inventory item', 'Close', { duration: 3000 });
+        }
+      });
   }
 
   deleteInventory(id: string): void {
-    if (confirm('Delete this inventory item?')) {
+    if (confirm('Delete this inventory item? This action cannot be undone.')) {
+      this.isLoading = true;
       this.api.delete(`/inventory/${id}`)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
+            this.snackBar.open('Inventory item deleted successfully', 'Close', { duration: 3000 });
             this.loadInventory();
+            this.loadInventoryStats();
           },
           error: (err) => {
             console.error('Failed to delete inventory item:', err);
+            this.isLoading = false;
+            this.snackBar.open(err.error?.message || 'Failed to delete inventory item', 'Close', { duration: 3000 });
           }
         });
     }

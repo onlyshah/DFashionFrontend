@@ -99,6 +99,102 @@ export class AdminApiService {
     return this.http.delete(`${this.apiUrlPublic}/categories/${id}`, { headers: this.getHeaders() });
   }
 
+  /**
+   * Get all categories with nested sub-categories (Admin view)
+   */
+  getAdminCategories(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/categories`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error fetching admin categories:', error);
+        return of({ success: false, data: [], error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Get sub-categories for a specific category
+   */
+  getSubCategories(categoryId: number | string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/categories/${categoryId}/sub-categories`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error fetching sub-categories for category ${categoryId}:`, error);
+        return of({ success: false, data: [], categoryId, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Create a new category
+   */
+  createAdminCategory(category: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/categories`, category, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('Error creating category:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Create a new sub-category
+   */
+  createSubCategory(categoryId: number | string, subCategory: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/categories/${categoryId}/sub-categories`, subCategory, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error creating sub-category for category ${categoryId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update a category
+   */
+  updateAdminCategory(categoryId: number | string, category: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/categories/${categoryId}`, category, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error updating category ${categoryId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete a category
+   */
+  deleteAdminCategory(categoryId: number | string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/categories/${categoryId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error deleting category ${categoryId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Update a sub-category
+   */
+  updateSubCategory(categoryId: number | string, subCategoryId: number | string, subCategory: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`, subCategory, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error updating sub-category ${subCategoryId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Delete a sub-category
+   */
+  deleteSubCategory(categoryId: number | string, subCategoryId: number | string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`Error deleting sub-category ${subCategoryId}:`, error);
+        return throwError(() => error);
+      })
+    );
+  }
+
   getBrands(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/brands`, { headers: this.getHeaders() });
   }

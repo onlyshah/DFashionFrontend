@@ -1,5 +1,12 @@
 <div class="admin-container">
-  <h2>Warehouses</h2>
+  <div class="header-section">
+    <h2>Warehouses Management</h2>
+    <button mat-raised-button color="primary" (click)="openWarehouseDialog()">
+      <mat-icon>add</mat-icon>
+      Add New Warehouse
+    </button>
+  </div>
+
   <mat-form-field class="search-field">
     <mat-label>Search</mat-label>
     <input matInput placeholder="Search by name..." (keyup)="applyFilter($event)">
@@ -13,23 +20,50 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
         <td mat-cell *matCellDef="let w">{{ w.name }}</td>
       </ng-container>
-      <ng-container matColumnDef="location">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Location</th>
-        <td mat-cell *matCellDef="let w">{{ w.location || w.address || '-' }}</td>
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>City</th>
+        <td mat-cell *matCellDef="let w">{{ w.city || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="state">
+        <th mat-header-cell *matHeaderCellDef>State</th>
+        <td mat-cell *matCellDef="let w">{{ w.state || '-' }}</td>
       </ng-container>
       <ng-container matColumnDef="capacity">
-        <th mat-header-cell *matHeaderCellDef>Capacity</th>
-        <td mat-cell *matCellDef="let w">{{ w.capacity || '-' }}</td>
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Capacity</th>
+        <td mat-cell *matCellDef="let w">{{ w.capacity || '-' }} units</td>
+      </ng-container>
+      <ng-container matColumnDef="manager">
+        <th mat-header-cell *matHeaderCellDef>Manager</th>
+        <td mat-cell *matCellDef="let w">{{ w.manager || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Type</th>
+        <td mat-cell *matCellDef="let w">
+          <span class="type-badge" [class]="w.type || 'primary'">
+            {{ (w.type | titlecase) || 'Primary' }}
+          </span>
+        </td>
       </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let w">
-          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="delete(w._id)">delete</mat-icon></button>
+          <button mat-icon-button matTooltip="Edit" (click)="editWarehouse(w)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete" (click)="delete(w._id)" color="warn">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+
+    <div *ngIf="dataSource.data.length === 0" class="no-data">
+      <mat-icon>warehouse</mat-icon>
+      <h3>No warehouses found</h3>
+      <p>Add your first warehouse to get started.</p>
+    </div>
   </div>
 </div>

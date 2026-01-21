@@ -361,20 +361,17 @@ export class RecommendationService {
 
   // Category-based Recommendations
   getCategoryRecommendations(category: string, limit: number = 8): Observable<RecommendationProduct[]> {
-    // For demo purposes, return fallback data immediately to avoid API calls
-    console.log(`🏷️ Loading ${category} recommendations (offline mode)`);
-    return this.getFallbackCategoryProducts(category, limit);
-
-    /* API version - uncomment when backend is available
     return this.http.get<any>(`${this.apiUrl}/recommendations/category/${category}?limit=${limit}`)
       .pipe(
         map(response => response.success ? response.data : []),
         catchError(error => {
           console.error('Error fetching category recommendations:', error);
-          return this.getFallbackCategoryProducts(category, limit);
+          return new Observable(observer => {
+            observer.next([]);
+            observer.complete();
+          });
         })
       );
-    */
   }
 
   // Fallback methods for offline/error scenarios - removed mock data

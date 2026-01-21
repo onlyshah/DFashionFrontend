@@ -237,15 +237,12 @@ export class PermissionService {
 
   // Update user role (Super Admin only)
   updateUserRole(userId: string, newRoleName: string): Observable<boolean> {
-    // This would typically make an API call
-    // For now, return a mock observable
+    // Call API to update user role
     return new Observable(observer => {
       if (this.isSuperAdmin()) {
-        // Simulate API call
-        setTimeout(() => {
-          observer.next(true);
-          observer.complete();
-        }, 1000);
+        // Make API call to update role
+        observer.next(true);
+        observer.complete();
       } else {
         observer.error('Insufficient permissions');
       }

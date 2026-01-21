@@ -2,25 +2,34 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
-import { AdminApiService, Category as ApiCategory } from '../../services/admin-api.service';
+import { AdminApiService } from '../../services/admin-api.service';
 
-interface ExtendedCategory extends Omit<ApiCategory, 'parent'> {
+interface Category {
+  id?: number;
+  name: string;
+  slug?: string;
   description?: string;
-  productCount?: number;
-  parent?: ExtendedCategory;
-  status: string;
+  image?: string;
+  is_active?: boolean;
+  sort_order?: number;
+  sub_categories?: SubCategory[];
+  subCategoryCount?: number;
 }
 
-type Category = ExtendedCategory;
+interface SubCategory {
+  id?: number;
+  name: string;
+  slug?: string;
+  description?: string;
+  image?: string;
+  is_active?: boolean;
+  sort_order?: number;
+}
 
 @Component({
   selector: 'app-category-management',
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ReactiveFormsModule
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './category-management.component.html',
   styleUrls: ['./category-management.component.scss']
 })
@@ -29,23 +38,32 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
 
   // Data properties
   categories: Category[] = [];
-  parentCategories: Category[] = [];
-  
-  // Modal and form
+  selectedCategory: Category | null = null;
+  subCategories: SubCategory[] = [];
+
+  // Modal and form states
   showCategoryModal = false;
-  isEditMode = false;
-  categoryForm!: FormGroup;
-  currentCategoryId: string | null = null;
+  showSubCategoryModal = false;
+  isEditingCategory = false;
+  isEditingSubCategory = false;
   
+  categoryForm!: FormGroup;
+  subCategoryForm!: FormGroup;
+
   // Loading states
-  isLoading = false;
+  isLoadingCategories = false;
+  isLoadingSubCategories = false;
   isSaving = false;
+
+  // Pagination
+  currentPage = 1;
+  itemsPerPage = 10;
 
   constructor(
     private fb: FormBuilder,
     private adminApiService: AdminApiService
   ) {
-    this.initializeForm();
+    this.initializeForms();
   }
 
   ngOnInit(): void {
@@ -57,148 +75,234 @@ export class CategoryManagementComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private initializeForm(): void {
+  private initializeForms(): void {
     this.categoryForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2)]],
+      slug: [''],
       description: [''],
-      parent: [''],
-      status: ['active', [Validators.required]]
+      image: [''],
+      is_active: [true],
+      sort_order: [0]
+    });
+
+    this.subCategoryForm = this.fb.group({
+      name: ['', [Validators.required, Validators.minLength(2)]],
+      slug: [''],
+      description: [''],
+      image: [''],
+      is_active: [true],
+      sort_order: [0]
     });
   }
 
-  // Data loading methods
-  loadCategories(): void {
-    this.isLoading = true;
+  // ==================== CATEGORY METHODS ====================
 
-    // Load real categories from database
-    this.adminApiService.getCategories()
+  loadCategories(): void {
+    this.isLoadingCategories = true;
+    this.adminApiService.getAdminCategories()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (apiResponse: any) => {
-          // Handle both direct array and wrapped response format
-          const categoriesData = Array.isArray(apiResponse) ? apiResponse : (apiResponse.data || []);
-          
-          // Transform API categories to ExtendedCategory
-          const transformedCategories = categoriesData.map((cat: any) => ({
-            ...cat,
-            status: cat.isActive ? 'active' : 'inactive',
-            parent: cat.parent ? categoriesData.find((p: any) => p._id === cat.parent) : undefined
-          })) as ExtendedCategory[];
-
-          this.categories = transformedCategories;
-          this.parentCategories = transformedCategories.filter(cat => !cat.parent);
-          this.isLoading = false;
+        next: (response: any) => {
+          const data = response.data || response.categories || response || [];
+          this.categories = Array.isArray(data) ? data : [];
+          this.isLoadingCategories = false;
         },
         error: (error) => {
           console.error('Error loading categories:', error);
-          this.isLoading = false;
-          this.categories = [];
-          this.parentCategories = [];
+          this.isLoadingCategories = false;
         }
       });
   }
 
-  // NO MOCK DATA - All categories come from database only
-
-  // Modal methods
   openCategoryModal(category?: Category): void {
+    this.isEditingCategory = !!category;
     this.showCategoryModal = true;
-    this.isEditMode = !!category;
-    this.currentCategoryId = category?._id || null;
-    
+
     if (category) {
       this.categoryForm.patchValue({
         name: category.name,
-        description: category.description,
-        parent: category.parent?._id || null,
-        status: category.status
+        slug: category.slug || '',
+        description: category.description || '',
+        image: category.image || '',
+        is_active: category.is_active !== false,
+        sort_order: category.sort_order || 0
       });
     } else {
-      this.categoryForm.reset();
-      this.categoryForm.patchValue({ status: 'active' });
+      this.categoryForm.reset({ is_active: true, sort_order: 0 });
     }
   }
 
   closeCategoryModal(): void {
     this.showCategoryModal = false;
-    this.isEditMode = false;
-    this.currentCategoryId = null;
+    this.isEditingCategory = false;
     this.categoryForm.reset();
   }
 
-  // Category CRUD operations
   saveCategory(): void {
     if (this.categoryForm.invalid) {
-      this.markFormGroupTouched();
+      this.markFormTouched(this.categoryForm);
       return;
     }
 
     this.isSaving = true;
-    const categoryData = this.categoryForm.value;
+    const formData = this.categoryForm.value;
 
-    const operation = this.isEditMode
-      ? this.adminApiService.updateCategory(this.currentCategoryId!, categoryData)
-      : this.adminApiService.createCategory(categoryData);
+    const request = this.isEditingCategory && this.selectedCategory?.id
+      ? this.adminApiService.updateCategory(String(this.selectedCategory.id), formData)
+      : this.adminApiService.createCategory(formData);
 
-    operation.pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.isSaving = false;
-          this.closeCategoryModal();
-          this.loadCategories();
-          console.log('Category saved successfully');
-        },
-        error: (error) => {
-          console.error('Error saving category:', error);
-          this.isSaving = false;
-          // Show error message to user
-        }
-      });
+    request.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeCategoryModal();
+        this.loadCategories();
+      },
+      error: (error) => {
+        console.error('Error saving category:', error);
+        this.isSaving = false;
+      }
+    });
   }
 
   editCategory(category: Category): void {
+    this.selectedCategory = category;
     this.openCategoryModal(category);
+    this.loadSubCategories(category.id!);
   }
 
   deleteCategory(category: Category): void {
-    if (confirm(`Are you sure you want to delete "${category.name}"?`)) {
-      this.adminApiService.deleteCategory(category._id)
+    if (confirm(`Delete category "${category.name}" and all its sub-categories?`)) {
+      this.adminApiService.deleteCategory(String(category.id!))
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
-            this.loadCategories();
-            console.log('Category deleted successfully');
-          },
-          error: (error) => {
-            console.error('Error deleting category:', error);
-            // Show error message to user
-          }
+          next: () => this.loadCategories(),
+          error: (error) => console.error('Error deleting category:', error)
         });
     }
   }
 
-  // Utility methods
-  trackByCategoryId(_index: number, category: Category): string {
-    return category._id;
+  // ==================== SUB-CATEGORY METHODS ====================
+
+  loadSubCategories(categoryId: number): void {
+    if (!categoryId) return;
+
+    this.isLoadingSubCategories = true;
+    this.adminApiService.getSubCategories(categoryId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response.data || response.subCategories || response || [];
+          this.subCategories = Array.isArray(data) ? data : [];
+          this.isLoadingSubCategories = false;
+        },
+        error: (error) => {
+          console.error('Error loading sub-categories:', error);
+          this.isLoadingSubCategories = false;
+        }
+      });
   }
 
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'active': return 'badge-success';
-      case 'inactive': return 'badge-secondary';
-      default: return 'badge-light';
+  openSubCategoryModal(subCategory?: SubCategory): void {
+    if (!this.selectedCategory?.id) {
+      alert('Please select a category first');
+      return;
+    }
+
+    this.isEditingSubCategory = !!subCategory;
+    this.showSubCategoryModal = true;
+
+    if (subCategory) {
+      this.subCategoryForm.patchValue({
+        name: subCategory.name,
+        slug: subCategory.slug || '',
+        description: subCategory.description || '',
+        image: subCategory.image || '',
+        is_active: subCategory.is_active !== false,
+        sort_order: subCategory.sort_order || 0
+      });
+    } else {
+      this.subCategoryForm.reset({ is_active: true, sort_order: 0 });
     }
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.categoryForm.get(fieldName);
+  closeSubCategoryModal(): void {
+    this.showSubCategoryModal = false;
+    this.isEditingSubCategory = false;
+    this.subCategoryForm.reset();
+  }
+
+  saveSubCategory(): void {
+    if (!this.selectedCategory?.id) return;
+    if (this.subCategoryForm.invalid) {
+      this.markFormTouched(this.subCategoryForm);
+      return;
+    }
+
+    this.isSaving = true;
+    const formData = this.subCategoryForm.value;
+
+    const categoryId = this.selectedCategory.id;
+    const request = this.isEditingSubCategory && this.subCategories.length > 0
+      ? this.adminApiService.updateSubCategory(categoryId, this.subCategories[0]?.id || 0, formData)
+      : this.adminApiService.createSubCategory(categoryId, formData);
+
+    request.pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.isSaving = false;
+        this.closeSubCategoryModal();
+        this.loadSubCategories(categoryId);
+      },
+      error: (error) => {
+        console.error('Error saving sub-category:', error);
+        this.isSaving = false;
+      }
+    });
+  }
+
+  deleteSubCategory(subCategory: SubCategory): void {
+    if (!this.selectedCategory?.id) return;
+    if (confirm(`Delete sub-category "${subCategory.name}"?`)) {
+      this.adminApiService.deleteSubCategory(this.selectedCategory.id, subCategory.id!)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => this.loadSubCategories(this.selectedCategory!.id!),
+          error: (error) => console.error('Error deleting sub-category:', error)
+        });
+    }
+  }
+
+  // ==================== UTILITY METHODS ====================
+
+  selectCategory(category: Category): void {
+    this.selectedCategory = category;
+    this.loadSubCategories(category.id!);
+  }
+
+  private markFormTouched(form: FormGroup): void {
+    Object.keys(form.controls).forEach(key => {
+      form.get(key)?.markAsTouched();
+    });
+  }
+
+  getStatusBadgeClass(isActive: boolean | undefined): string {
+    return isActive !== false ? 'badge-success' : 'badge-danger';
+  }
+
+  getStatusText(isActive: boolean | undefined): string {
+    return isActive !== false ? 'Active' : 'Inactive';
+  }
+
+  isFieldInvalid(form: FormGroup, fieldName: string): boolean {
+    const field = form.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.categoryForm.controls).forEach(key => {
-      const control = this.categoryForm.get(key);
-      control?.markAsTouched();
-    });
+  trackByCategoryId(_index: number, item: Category): number {
+    return item.id || _index;
+  }
+
+  trackBySubCategoryId(_index: number, item: SubCategory): number {
+    return item.id || _index;
   }
 }
+

@@ -16,6 +16,22 @@
     font-weight: 500;
     color: #1976d2;
   }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
 }
 
 .stats-grid {
@@ -47,7 +63,6 @@
     color: #1976d2;
     margin-bottom: 8px;
   }
-
   .stat-label {
     font-size: 14px;
     color: #666;
@@ -141,4 +156,29 @@
 
 mat-form-field {
   width: 100%;
+}
+.warehouse-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    color: #1976d2;
+    font-weight: 600;
+  }
+
+  .location {
+    font-size: 12px;
+    color: #666;
+  }
+}
+
+.low-stock {
+  color: #ff9800;
+  font-weight: 600;
+}
+
+.out-of-stock {
+  color: #f44336;
+  font-weight: 600;
 }

@@ -1,5 +1,12 @@
 <div class="admin-container">
-  <h2>Suppliers</h2>
+  <div class="header-section">
+    <h2>Suppliers Management</h2>
+    <button mat-raised-button color="primary" (click)="openSupplierDialog()">
+      <mat-icon>add</mat-icon>
+      Add New Supplier
+    </button>
+  </div>
+
   <mat-form-field class="search-field">
     <mat-label>Search</mat-label>
     <input matInput placeholder="Search by name..." (keyup)="applyFilter($event)">
@@ -15,21 +22,44 @@
       </ng-container>
       <ng-container matColumnDef="contact">
         <th mat-header-cell *matHeaderCellDef>Contact</th>
-        <td mat-cell *matCellDef="let s">{{ s.contact || s.phone || '-' }}</td>
+        <td mat-cell *matCellDef="let s">{{ s.contact || '-' }}</td>
       </ng-container>
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef>Email</th>
         <td mat-cell *matCellDef="let s">{{ s.email || '-' }}</td>
       </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let s">{{ s.phone || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="city">
+        <th mat-header-cell *matHeaderCellDef>City</th>
+        <td mat-cell *matCellDef="let s">{{ s.city || '-' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef>Category</th>
+        <td mat-cell *matCellDef="let s">{{ (s.category | titlecase) || '-' }}</td>
+      </ng-container>
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Actions</th>
         <td mat-cell *matCellDef="let s">
-          <button mat-icon-button matTooltip="Delete"><mat-icon (click)="delete(s._id)">delete</mat-icon></button>
+          <button mat-icon-button matTooltip="Edit" (click)="editSupplier(s)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete" (click)="delete(s._id)" color="warn">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
       </ng-container>
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
     <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+
+    <div *ngIf="dataSource.data.length === 0" class="no-data">
+      <mat-icon>storefront</mat-icon>
+      <h3>No suppliers found</h3>
+      <p>Add your first supplier to get started.</p>
+    </div>
   </div>
 </div>

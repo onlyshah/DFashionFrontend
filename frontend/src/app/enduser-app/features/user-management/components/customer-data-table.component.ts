@@ -69,55 +69,13 @@ export class CustomerDataTableComponent implements OnInit {
     }
 
     private loadCustomerOrders(): void {
-        // Mock order data - replace with actual API call
-        this.orders = [
-            {
-                _id: '1',
-                orderNumber: 'ORD-2024-001',
-                date: new Date('2024-01-15'),
-                status: 'delivered',
-                total: 129.99,
-                items: [
-                    { productName: 'Summer Dress', quantity: 1, price: 89.99 },
-                    { productName: 'Sandals', quantity: 1, price: 40.00 }
-                ]
-            },
-            {
-                _id: '2',
-                orderNumber: 'ORD-2024-002',
-                date: new Date('2024-01-20'),
-                status: 'shipped',
-                total: 75.50,
-                items: [
-                    { productName: 'T-Shirt', quantity: 2, price: 25.00 },
-                    { productName: 'Jeans', quantity: 1, price: 25.50 }
-                ]
-            }
-        ];
+        // Load orders from API - no mock data
+        this.orders = [];
     }
 
     private loadRecentActivity(): void {
-        // Mock activity data - replace with actual API call
-        this.recentActivity = [
-            {
-                type: 'login',
-                description: 'Logged into account',
-                timestamp: new Date(),
-                icon: 'login'
-            },
-            {
-                type: 'order',
-                description: 'Placed order #ORD-2024-002',
-                timestamp: new Date(Date.now() - 86400000),
-                icon: 'shopping_cart'
-            },
-            {
-                type: 'profile',
-                description: 'Updated profile information',
-                timestamp: new Date(Date.now() - 172800000),
-                icon: 'person'
-            }
-        ];
+        // Load activity from API - no mock data
+        this.recentActivity = [];
     }
 
     getInitials(fullName: string): string {

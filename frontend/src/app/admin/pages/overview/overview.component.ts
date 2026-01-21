@@ -96,8 +96,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
         },
         error: (error: any) => {
           console.error('Error loading overview data:', error);
-          this.error = 'Failed to load overview data. Using demo data.';
-          this.loadDemoData();
+          this.error = 'Failed to load overview data. Please try again.';
           this.isLoading = false;
         }
       });
@@ -112,13 +111,13 @@ export class OverviewComponent implements OnInit, OnDestroy {
           if (response.success && response.data.recentOrders) {
             this.recentOrders = response.data.recentOrders.slice(0, 5);
           } else {
-            this.loadDemoOrders();
+            this.recentOrders = [];
           }
           this.isLoading = false;
         },
         error: (error: any) => {
-          console.warn('Error loading analytics, using demo data:', error);
-          this.loadDemoOrders();
+          console.warn('Error loading analytics:', error);
+          this.recentOrders = [];
           this.isLoading = false;
         }
       });
@@ -157,58 +156,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
         trend: 'up',
         icon: 'inventory_2',
         color: 'warning'
-      }
-    ];
-  }
-
-  private loadDemoData(): void {
-    this.totalRevenue = 1250000;
-    this.totalOrders = 200;
-    this.totalCustomers = 64;
-    this.totalProducts = 120;
-    this.revenueGrowth = 8.5;
-    this.orderGrowth = 5.2;
-    this.customerGrowth = 3.8;
-    this.buildMetrics();
-    this.loadDemoOrders();
-  }
-
-  private loadDemoOrders(): void {
-    this.recentOrders = [
-      {
-        id: 'ORD-001',
-        customer: 'John Smith',
-        amount: 2500,
-        date: '2024-01-10',
-        status: 'completed'
-      },
-      {
-        id: 'ORD-002',
-        customer: 'Jane Doe',
-        amount: 1800,
-        date: '2024-01-10',
-        status: 'processing'
-      },
-      {
-        id: 'ORD-003',
-        customer: 'Mike Wilson',
-        amount: 3200,
-        date: '2024-01-09',
-        status: 'completed'
-      },
-      {
-        id: 'ORD-004',
-        customer: 'Sarah Johnson',
-        amount: 1500,
-        date: '2024-01-09',
-        status: 'pending'
-      },
-      {
-        id: 'ORD-005',
-        customer: 'Alex Brown',
-        amount: 2100,
-        date: '2024-01-08',
-        status: 'completed'
       }
     ];
   }

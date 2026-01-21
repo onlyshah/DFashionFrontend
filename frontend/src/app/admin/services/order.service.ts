@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { AdminAuthService } from './admin-auth.service';
 
 export interface Order {
   _id?: string;
@@ -116,7 +117,14 @@ export class OrderService {
   private ordersSubject = new BehaviorSubject<Order[]>([]);
   public orders$ = this.ordersSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private adminAuth: AdminAuthService) {}
+
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || sessionStorage.getItem('token');
+    const headers: any = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return new HttpHeaders(headers);
+  }
 
   // Get all orders with filters (Admin API)
   getOrders(filters: OrderFilters = {}): Observable<AdminOrderResponse> {
@@ -143,7 +151,7 @@ export class OrderService {
       }
     });
 
-    return this.http.get<AdminOrderResponse>(`${this.apiUrl}/orders`, { params }).pipe(
+    return this.http.get<AdminOrderResponse>(`${this.apiUrl}/orders`, { params, headers: this.getHeaders() }).pipe(
       catchError((err: any) => {
         // If unauthorized or server denies access, fall back to public demo endpoint
         if (err && err.status === 401) {
@@ -156,32 +164,37 @@ export class OrderService {
 
   // Get order by ID (Admin API)
   getOrderById(id: string): Observable<{success: boolean; data: {order: Order; payment?: any}}> {
-    return this.http.get<{success: boolean; data: {order: Order; payment?: any}}>(`${this.apiUrl}/orders/${id}`);
+    return this.http.get<{success: boolean; data: {order: Order; payment?: any}}>(`${this.apiUrl}/orders/${id}`, { headers: this.getHeaders() });
   }
 
   // Update order status (Admin API)
   updateOrderStatus(id: string, status: string): Observable<{success: boolean; message: string; data: Order}> {
-    return this.http.put<{success: boolean; message: string; data: Order}>(`${this.apiUrl}/orders/${id}/status`, { status });
+    return this.http.put<{success: boolean; message: string; data: Order}>(`${this.apiUrl}/orders/${id}/status`, { status }, { headers: this.getHeaders() });
   }
 
   // Get order analytics (Admin API)
   getOrderAnalytics(): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/analytics/orders`);
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/analytics/orders`, { headers: this.getHeaders() });
   }
 
   // Update payment status
   updatePaymentStatus(id: string, paymentStatus: string): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${id}/payment-status`, { paymentStatus });
+    return this.http.patch<Order>(`${this.apiUrl}/${id}/payment-status`, { paymentStatus }, { headers: this.getHeaders() });
   }
 
   // Add tracking number
   addTrackingNumber(id: string, trackingNumber: string): Observable<Order> {
-    return this.http.patch<Order>(`${this.apiUrl}/${id}/tracking`, { trackingNumber });
+    return this.http.patch<Order>(`${this.apiUrl}/${id}/tracking`, { trackingNumber }, { headers: this.getHeaders() });
   }
 
   // Cancel order
   cancelOrder(id: string, reason: string): Observable<Order> {
     return this.http.patch<Order>(`${this.apiUrl}/${id}/cancel`, { reason });
+  }
+
+  // Delete order
+  deleteOrder(id: string): Observable<{success: boolean; message: string}> {
+    return this.http.delete<{success: boolean; message: string}>(`${this.apiUrl}/orders/${id}`);
   }
 
   // Process refund

@@ -26,23 +26,8 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
   currentStream: MediaStream | null = null;
   facingMode: 'user' | 'environment' = 'user';
 
-  // Mock drafts data
-  drafts = [
-    {
-      id: '1',
-      type: 'post',
-      title: 'Summer Collection Preview',
-      thumbnail: '/uploadsdefault-post.svg',
-      updatedAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
-    },
-    {
-      id: '2',
-      type: 'story',
-      title: 'Behind the Scenes',
-      thumbnail: '/uploadsdefault-post.svg',
-      updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000) // 5 hours ago
-    }
-  ];
+  // Drafts data - loaded from database
+  drafts: any[] = [];
 
   get isMobile(): boolean {
     return this.platform.is('mobile') || this.platform.is('mobileweb');

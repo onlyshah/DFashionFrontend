@@ -22,6 +22,12 @@ import { UserManagementComponent } from './pages/users/user-management.component
 import { UserDialogComponent } from './pages/users/user-dialog.component';
 import { ProductManagementComponent } from './pages/products/product-management.component';
 import { ProductDialogComponent } from './pages/products/product-dialog.component';
+import { ProductCreateComponent } from './pages/products/product-create.component';
+import { ProductDetailComponent } from './pages/products/product-detail.component';
+import { ProductVariantsComponent } from './pages/products/product-variants.component';
+import { ProductMediaComponent } from './pages/products/product-media.component';
+import { ProductTaggingComponent } from './pages/products/product-tagging.component';
+import { SubCategoryManagementComponent } from './pages/categories/sub-category-management.component';
 import { OrderManagementComponent } from './pages/orders/order-management.component';
 import { OrderDetailsComponent } from './pages/orders/order-details.component';
 import { AnalyticsComponent } from './pages/analytics/analytics.component';
@@ -50,10 +56,10 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
 @NgModule({
   declarations: [
     // UserManagementComponent is now standalone
+    // OrderManagementComponent is now standalone, import instead
     UserDialogComponent,
     ProductManagementComponent,
     ProductDialogComponent,
-    OrderManagementComponent,
     OrderDetailsComponent,
     AnalyticsComponent,
     RolePipe,
@@ -82,7 +88,12 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     OverviewComponent,
     ReturnsManagementComponent,
     SettingsComponent,
-    
+    ProductCreateComponent,
+    ProductDetailComponent,
+    ProductVariantsComponent,
+    ProductMediaComponent,
+    ProductTaggingComponent,
+    SubCategoryManagementComponent,
   ],
   providers: [
     AdminAuthService,

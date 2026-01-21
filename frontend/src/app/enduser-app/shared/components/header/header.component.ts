@@ -609,11 +609,12 @@ export class HeaderComponent implements OnInit {
     // Simulate API call for search suggestions
     const query = this.searchQuery.toLowerCase();
 
-    // Mock suggestions based on query
+    // Generate suggestions based on query
+    // These are generic search suggestions - actual product searches use the search API
     this.searchSuggestions = [
-      { text: `${this.searchQuery} in Products`, type: 'product', icon: 'fa-shopping-bag' },
-      { text: `${this.searchQuery} in Brands`, type: 'brand', icon: 'fa-tags' },
-      { text: `${this.searchQuery} in Categories`, type: 'category', icon: 'fa-list' }
+      { text: `Search Products for "${this.searchQuery}"`, type: 'product', icon: 'fa-shopping-bag' },
+      { text: `Search Brands for "${this.searchQuery}"`, type: 'brand', icon: 'fa-tags' },
+      { text: `Search Categories for "${this.searchQuery}"`, type: 'category', icon: 'fa-list' }
     ];
 
     this.showSuggestions = true;

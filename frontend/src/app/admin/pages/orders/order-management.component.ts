@@ -1,18 +1,45 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { CommonModule } from '@angular/common';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ReactiveFormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { OrderService, Order } from '../../services/order.service';
+import { OrderDialogComponent } from './order-dialog.component';
 
 @Component({
     selector: 'app-order-management',
     styleUrls: ['./order-management.component.scss'],
-    standalone: false,
+    standalone: true,
+    imports: [
+        CommonModule,
+        MatTableModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatDialogModule,
+        MatSnackBarModule,
+        MatButtonModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        MatCardModule,
+        MatTooltipModule,
+        ReactiveFormsModule,
+        OrderDialogComponent
+    ],
     templateUrl: './order-management.component.html'
 })
 export class OrderManagementComponent implements OnInit, OnDestroy {
@@ -143,23 +170,57 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     }
 
     updateOrderStatus(order: Order): void {
-        // For now, cycle through statuses - in real implementation, show a dialog
-        const statuses = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
-        const currentIndex = statuses.indexOf(order.status);
-        const nextStatus = statuses[(currentIndex + 1) % statuses.length];
+        const dialogRef = this.dialog.open(OrderDialogComponent, {
+            width: '500px',
+            data: order
+        });
 
-        this.orderService.updateOrderStatus(order._id!, nextStatus).subscribe({
+        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+            if (result) {
+                this.updateOrder(order._id!, result);
+            }
+        });
+    }
+
+    updateOrder(orderId: string, formData: any): void {
+        this.isLoading = true;
+        this.orderService.updateOrderStatus(orderId, formData.status).subscribe({
             next: (response) => {
                 if (response.success) {
-                    order.status = nextStatus as any;
-                    this.snackBar.open(response.message, 'Close', { duration: 3000 });
+                    this.snackBar.open('Order updated successfully', 'Close', { duration: 3000 });
+                    this.loadOrders();
                 } else {
-                    this.snackBar.open('Failed to update order status', 'Close', { duration: 3000 });
+                    this.isLoading = false;
+                    this.snackBar.open('Failed to update order', 'Close', { duration: 3000 });
                 }
             },
             error: (error) => {
-                console.error('Error updating order status:', error);
-                this.snackBar.open('Error updating order status', 'Close', { duration: 3000 });
+                console.error('Error updating order:', error);
+                this.isLoading = false;
+                this.snackBar.open(error.error?.message || 'Error updating order', 'Close', { duration: 3000 });
+            }
+        });
+    }
+
+    deleteOrder(order: Order): void {
+        const confirmed = window.confirm(`Are you sure you want to delete order ${order.orderNumber}?`);
+        if (!confirmed) return;
+
+        this.isLoading = true;
+        this.orderService.deleteOrder(order._id!).subscribe({
+            next: (response) => {
+                if (response.success) {
+                    this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
+                    this.loadOrders();
+                } else {
+                    this.isLoading = false;
+                    this.snackBar.open('Failed to delete order', 'Close', { duration: 3000 });
+                }
+            },
+            error: (error) => {
+                console.error('Error deleting order:', error);
+                this.isLoading = false;
+                this.snackBar.open(error.error?.message || 'Error deleting order', 'Close', { duration: 3000 });
             }
         });
     }
