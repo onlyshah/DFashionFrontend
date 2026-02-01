@@ -34,7 +34,7 @@ export class PermissionGuard implements CanActivate {
         }
 
         // Super Admin can access everything
-        if (user.role === 'super_admin') {
+        if (user.role === 'super_admin' || user.role === 'Super Admin') {
           return true;
         }
 

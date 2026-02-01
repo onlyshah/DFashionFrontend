@@ -136,7 +136,7 @@ export class SearchPage implements OnInit {
   }
 
   goBack() {
-    this.router.back();
+    this.router.navigate(['../']);
   }
 
   private loadRecentSearches() {

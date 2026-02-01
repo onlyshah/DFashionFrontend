@@ -105,15 +105,15 @@ export class HomePage implements OnInit {
       // Load all data in parallel
       console.log('📱 Mobile Home: Loading featured products, stories, and posts...');
       const [products, stories, posts] = await Promise.all([
-        this.productService.getFeaturedProducts().toPromise(),
-        this.storyService.getActiveStories().toPromise(),
-        this.postService.getTrendingPosts().toPromise()
+        this.productService.getNewArrivals().toPromise(),
+        this.storyService.getStories().toPromise(),
+        this.postService.getPosts().toPromise()
       ]);
 
       console.log('📱 Mobile Home: Received data:', { products, stories, posts });
       this.featuredProducts = products?.data || [];
-      this.recentStories = stories?.data || [];
-      this.trendingPosts = posts?.data || [];
+      this.recentStories = stories?.stories || [];
+      this.trendingPosts = posts?.posts || [];
 
       console.log('📱 Mobile Home: Assigned data:', {
         featuredProducts: this.featuredProducts.length,
@@ -200,7 +200,7 @@ export class HomePage implements OnInit {
 
   async loadTrendingProducts() {
     try {
-      const response = await this.productService.getTrendingProducts().toPromise();
+      const response = await this.productService.getNewArrivals().toPromise();
       this.trendingProducts = response?.data?.slice(0, 10) || [];
     } catch (error) {
       console.error('Error loading trending products:', error);
@@ -211,8 +211,8 @@ export class HomePage implements OnInit {
   async loadFeaturedBrands() {
     try {
       // Load featured brands from API
-      const brands = await this.ecommerceService.getFeaturedBrands().toPromise();
-      this.featuredBrands = brands || [];
+      const brands = await this.productService.getBrands().toPromise();
+      this.featuredBrands = brands?.brands || [];
     } catch (error) {
       console.error('Error loading featured brands:', error);
       this.featuredBrands = [];

@@ -49,9 +49,9 @@ export class RecommendationWidgetComponent implements OnInit, OnDestroy {
     }
 
     // Subscribe to auth changes
-    this.authService.getCurrentUser$()
+    this.authService.getCurrentUser()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
+      .subscribe((user: any) => {
         this.currentUser = user;
         if (user && this.type === 'suggested') {
           this.loadRecommendations();
@@ -200,7 +200,7 @@ export class RecommendationWidgetComponent implements OnInit, OnDestroy {
     }).subscribe();
 
     // Add to cart logic
-    this.dataFlowService.addToCart(product).subscribe({
+    this.dataFlowService.addToCart(product._id).subscribe({
       next: () => {
         console.log('Product added to cart');
         // Show success message
@@ -228,7 +228,7 @@ export class RecommendationWidgetComponent implements OnInit, OnDestroy {
     }).subscribe();
 
     // Add to wishlist logic
-    this.dataFlowService.addToWishlist(product).subscribe({
+    this.dataFlowService.addToWishlist(product._id).subscribe({
       next: () => {
         console.log('Product added to wishlist');
         // Show success message

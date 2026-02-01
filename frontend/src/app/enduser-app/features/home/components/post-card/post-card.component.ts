@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { Post } from '../../../../core/models/post.model';
-import { CartService } from '../../../../core/services/cart.service';
-import { WishlistService } from '../../../../core/services/wishlist.service';
-import { MediaService, MediaItem } from '../../../../core/services/media.service';
+import { Post } from '../../../../../core/models/post.model';
+import { CartService } from '../../../../../core/services/cart.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { MediaService, MediaItem } from '../../../../../core/services/media.service';
 
 @Component({
   selector: 'app-post-card',
@@ -78,7 +78,7 @@ export class PostCardComponent implements OnInit {
 
   private preloadCurrentMedia() {
     if (this.currentMedia) {
-      this.mediaService.preloadMedia([this.currentMedia]).catch(error => {
+      this.mediaService.preloadMedia([this.currentMedia]).catch((error: any) => {
         console.warn('Failed to preload media:', error);
       });
     }
@@ -148,14 +148,14 @@ export class PostCardComponent implements OnInit {
 
   addToWishlist(productId: string) {
     this.wishlistService.toggleWishlist(productId).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (this.isInWishlist(productId)) {
           this.showNotification('Removed from wishlist', 'info');
         } else {
           this.showNotification('Added to wishlist ❤️', 'success');
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Wishlist error:', error);
         // Fallback to toggling wishlist again
         this.wishlistService.toggleWishlist(productId).subscribe();
@@ -166,7 +166,7 @@ export class PostCardComponent implements OnInit {
 
   addToCart(productId: string) {
     this.cartService.addToCart(productId, 1).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           this.showNotification('Added to cart 🛒', 'success');
         }
@@ -180,7 +180,7 @@ export class PostCardComponent implements OnInit {
 
   buyNow(productId: string) {
     this.cartService.addToCart(productId, 1).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           this.showNotification('Redirecting to checkout...', 'info');
           this.router.navigate(['/shop/checkout']);
@@ -195,7 +195,7 @@ export class PostCardComponent implements OnInit {
 
   private getProductById(productId: string): any {
     // Find product in post's products array
-    const productTag = this.post.products.find(p => p.product._id === productId);
+    const productTag = this.post.products.find((p: any) => p.product._id === productId);
     return productTag ? productTag.product : null;
   }
 

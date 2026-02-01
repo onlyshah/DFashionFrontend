@@ -16,9 +16,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { UserManagementService } from './services/user-management.service';
-import { NotificationService } from '../../core/services/notification.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import { SuperAdminPanelComponent } from './components/super-admin-panel.component';
 import { CustomerDataTableComponent } from './components/customer-data-table.component';
 
@@ -119,7 +119,7 @@ export class UserManagementComponent implements OnInit, OnDestroy {
   private loadCurrentUser(): void {
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
+      .subscribe((user: any) => {
         if (user) {
           this.currentUser = user;
           this.setupPermissions();

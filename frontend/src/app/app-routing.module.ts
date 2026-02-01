@@ -22,6 +22,10 @@ const routes: Routes = [
     loadChildren: () => import('./enduser-app/features/home/home.routes').then(m => m.homeRoutes)
   },
   {
+    path: 'explore',
+    loadComponent: () => import('./enduser-app/features/explore/explore.component').then(m => m.ExploreComponent)
+  },
+  {
     path: 'shop',
     loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
   },
@@ -38,8 +42,23 @@ const routes: Routes = [
     loadChildren: () => import('./enduser-app/features/search/search.routes').then(m => m.searchRoutes)
   },
   {
+    path: 'cart',
+    redirectTo: '/shop/cart',
+    pathMatch: 'full'
+  },
+  {
+    path: 'wishlist',
+    redirectTo: '/shop/wishlist',
+    pathMatch: 'full'
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./enduser-app/features/profile/profile.routes').then(m => m.profileRoutes)
+  },
+  {
+    path: 'settings',
+    redirectTo: '/profile/settings',
+    pathMatch: 'full'
   },
   {
     path: 'story',
@@ -96,6 +115,11 @@ const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./enduser-app/features/user-dashboard/user-dashboard.component').then(m => m.UserDashboardComponent),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'customer/dashboard',
+    redirectTo: '/dashboard',
+    pathMatch: 'full'
   },
   // Admin routes - separate
   {

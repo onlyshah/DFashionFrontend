@@ -65,9 +65,11 @@ export class PostsPage implements OnInit {
   }
 
   loadSavedPosts() {
-    this.socialService.savedPosts$.subscribe(savedPosts => {
-      this.savedPosts = savedPosts;
-    });
+    // TODO: Implement saved posts functionality
+    // this.socialService.savedPosts$.subscribe((savedPosts: any) => {
+    //   this.savedPosts = savedPosts;
+    // });
+    this.savedPosts = new Set(); // Initialize as empty set for now
   }
 
   async loadPosts(refresh = false) {
@@ -80,10 +82,10 @@ export class PostsPage implements OnInit {
     this.isLoading = true;
 
     try {
-      const response = await this.postService.getAllPosts(this.currentPage, 10).toPromise();
+      const response = await this.postService.getPosts(this.currentPage, 10).toPromise();
 
-      if (response?.success) {
-        const newPosts = response.data.map((post: any) => ({
+      if (response?.posts) {
+        const newPosts = response.posts.map((post: any) => ({
           ...post,
           isLiked: this.likedPosts.has(post._id),
           isSaved: this.savedPosts.has(post._id),
@@ -97,7 +99,7 @@ export class PostsPage implements OnInit {
           this.posts = [...this.posts, ...newPosts];
         }
 
-        this.hasMorePosts = response.data.length === 10;
+        this.hasMorePosts = response.posts.length === 10;
         this.currentPage++;
       }
     } catch (error) {
@@ -132,21 +134,21 @@ export class PostsPage implements OnInit {
     post.isLiked = !post.isLiked;
     if (post.isLiked) {
       post.analytics.likes++;
-      this.socialService.likePost(post._id);
     } else {
       post.analytics.likes--;
-      this.socialService.unlikePost(post._id);
     }
+    this.socialService.likePost(post._id);
   }
 
   toggleSave(post: any) {
-    post.isSaved = !post.isSaved;
-
-    if (post.isSaved) {
-      this.socialService.savePost(post._id);
-    } else {
-      this.socialService.unsavePost(post._id);
-    }
+    // TODO: Implement save/unsave functionality
+    // post.isSaved = !post.isSaved;
+    // if (post.isSaved) {
+    //   this.socialService.savePost(post._id);
+    // } else {
+    //   this.socialService.unsavePost(post._id);
+    // }
+    console.log('Save functionality not yet implemented');
   }
 
   toggleComments(post: any) {

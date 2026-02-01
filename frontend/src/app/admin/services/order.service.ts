@@ -153,10 +153,7 @@ export class OrderService {
 
     return this.http.get<AdminOrderResponse>(`${this.apiUrl}/orders`, { params, headers: this.getHeaders() }).pipe(
       catchError((err: any) => {
-        // If unauthorized or server denies access, fall back to public demo endpoint
-        if (err && err.status === 401) {
-          return this.http.get<AdminOrderResponse>(`/api/admin/demo/orders`, { params });
-        }
+        // Return error - no fallback to demo data
         return throwError(() => err);
       })
     );

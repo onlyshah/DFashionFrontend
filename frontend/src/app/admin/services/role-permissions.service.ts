@@ -36,6 +36,29 @@ export class RolePermissionsService {
       { module: 'support', actions: ['view', 'create', 'update', 'delete'] },
       { module: 'ai', actions: ['view', 'create', 'update', 'delete'] }
     ],
+    'super admin': [
+      // Super Admin has full access to all modules (alias for 'Super Admin' role)
+      { module: 'overview', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'analytics', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'social', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'alerts', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'users', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'products', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'inventory', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'orders', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'payments', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'socialFeed', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'creators', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'live', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'marketing', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'reviews', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'reports', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'cms', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'settings', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'security', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'support', actions: ['view', 'create', 'update', 'delete'] },
+      { module: 'ai', actions: ['view', 'create', 'update', 'delete'] }
+    ],
     admin: [
       { module: 'overview', actions: ['view'] },
       { module: 'analytics', actions: ['view'] },

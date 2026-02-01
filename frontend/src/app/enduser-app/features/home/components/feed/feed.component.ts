@@ -6,6 +6,8 @@ import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
+import { PostService } from '../../../../../core/services/post.service';
+import { StoryService } from '../../../../../core/services/story.service';
 
 import { StoriesListComponent } from '../../../stories/stories-list.component';
 @Component({
@@ -46,11 +48,10 @@ export class FeedComponent implements OnInit {
 
   // Like/unlike post
   toggleLike(post: any) {
-    const url = `${environment.apiUrl}/api/posts/${post.id}/like`;
-    this.http.post(url, {}).subscribe({
-      next: () => {
+    this.postService.likePost(post.id).subscribe({
+      next: (response) => {
         post.isLiked = !post.isLiked;
-        post.likes = post.isLiked ? post.likes + 1 : post.likes - 1;
+        post.likes = response.likesCount;
       },
       error: () => {}
     });
@@ -89,8 +90,7 @@ export class FeedComponent implements OnInit {
   addComment(post: any) {
     const commentText = this.newComment.trim();
     if (!commentText) return;
-    const url = `${environment.apiUrl}/api/posts/${post.id}/comment`;
-    this.http.post(url, { text: commentText }).subscribe({
+    this.postService.addComment(post.id, commentText).subscribe({
       next: (res: any) => {
         post.comments = post.comments || [];
         post.comments.push({ text: commentText, createdAt: new Date(), user: 'You' });
@@ -206,8 +206,9 @@ export class FeedComponent implements OnInit {
     private router: Router,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private http: HttpClient
-
+    private http: HttpClient,
+    private postService: PostService,
+    private storyService: StoryService
   ) {}
 
 
@@ -243,7 +244,7 @@ export class FeedComponent implements OnInit {
 
 loadPosts() {
   this.loading = true;
-  this.http.get<any>(`${environment.apiUrl}/api/posts`).subscribe({
+  this.postService.getPosts(this.currentPage, 10).subscribe({
     next: (res: any) => {
       const base = environment.apiUrl.replace(/\/$/, ''); // remove trailing slash
       if (!res?.posts || !Array.isArray(res.posts)) {

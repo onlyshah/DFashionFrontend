@@ -99,16 +99,13 @@ export class AnalyticsService {
     });
   }
 
-  // Fallback-friendly version used by components that must always display data
+  // Use real API endpoint - no fallback to demo
   getDashboardStatsWithFallback(): Observable<{success: boolean; data: any}> {
     return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`, {
       headers: this.getAuthHeaders()
     }).pipe(
       catchError((err: any) => {
-        // If unauthorized, fall back to public demo endpoint
-        if (err && err.status === 401) {
-          return this.http.get<{success: boolean; data: any}>(`${environment.apiUrl}/api/admin/demo/analytics/dashboard`);
-        }
+        // Return error - no fallback to demo data
         return throwError(() => err);
       })
     );
@@ -160,14 +157,11 @@ export class AnalyticsService {
     return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders?period=${period}`);
   }
 
-  // Fallback-friendly version used by components that must always display data
+  // Use real API endpoint - no fallback to demo
   getOrderAnalyticsWithFallback(period: string = '30d'): Observable<{success: boolean; data: any}> {
     return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders/recent`).pipe(
       catchError((err: any) => {
-        // If unauthorized, fall back to public demo endpoint
-        if (err && err.status === 401) {
-          return this.http.get<{success: boolean; data: any}>(`${environment.apiUrl}/api/admin/demo/analytics/orders?period=${period}`);
-        }
+        // Return error - no fallback to demo data
         return throwError(() => err);
       })
     );

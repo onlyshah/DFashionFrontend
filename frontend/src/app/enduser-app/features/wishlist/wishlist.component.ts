@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { WishlistNewService, WishlistItem } from '../../core/services/wishlist-new.service';
-import { CartNewService } from '../../core/services/cart-new.service';
-import { AuthService } from '../../core/services/auth.service';
+import { WishlistNewService, WishlistItem } from '../../../core/services/wishlist-new.service';
+import { CartNewService } from '../../../core/services/cart-new.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { environment } from 'src/environments/environment';
 
 // WishlistItem interface is now imported from the service
@@ -453,7 +453,7 @@ export class WishlistComponent implements OnInit {
   }
 
   subscribeToWishlistUpdates() {
-    this.wishlistService.wishlist$.subscribe(wishlist => {
+    this.wishlistService.wishlist$.subscribe((wishlist: any) => {
       this.wishlistItems = wishlist?.items || [];
       this.sortWishlist();
     });
@@ -517,13 +517,13 @@ export class WishlistComponent implements OnInit {
 
   addToCart(item: WishlistItem) {
     this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           // Optionally remove from wishlist after adding to cart
           // this.removeFromWishlist(item);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error adding to cart:', error);
       }
     });
@@ -531,14 +531,14 @@ export class WishlistComponent implements OnInit {
 
   removeFromWishlist(item: WishlistItem) {
     this.wishlistService.removeFromWishlist(item._id).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response.success) {
           // Refresh the wishlist to get updated data and count
           this.loadWishlist();
           console.log('✅ Item removed from wishlist successfully');
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error removing from wishlist:', error);
       }
     });
@@ -556,12 +556,12 @@ export class WishlistComponent implements OnInit {
       // Move items one by one
       activeItems.forEach(item => {
         this.wishlistService.moveToCart(item._id, 1).subscribe({
-          next: (response) => {
+          next: (response: any) => {
             if (response.success) {
               this.loadWishlist(); // Refresh wishlist
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error moving to cart:', error);
           }
         });

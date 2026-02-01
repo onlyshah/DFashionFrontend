@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { Post, PostsResponse, CreatePostRequest } from '../models/post.model';
 import { environment } from '../../../environments/environment';
 
+export { PostsResponse };
+
 @Injectable({
   providedIn: 'root'
 })

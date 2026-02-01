@@ -56,14 +56,14 @@ export class CustomersComponent implements OnInit {
 
   load(page: number = 1): void {
     this.isLoading = true;
-    this.api.getCustomers(page, this.pageSize).subscribe({
+    this.api.getUsers({ page, limit: this.pageSize }).subscribe({
       next: (res: any) => {
         console.log('✅ Customers loaded:', res);
         this.dataSource.data = res?.data?.users || res?.data || [];
         this.totalCustomers = res?.data?.total || res?.data?.length || 0;
         this.isLoading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('❌ Error loading customers:', err);
         this.dataSource.data = [];
         this.isLoading = false;

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { UploadService, UploadProgress } from '../../../../core/services/upload.service';
+import { UploadService, UploadProgress } from '../../../../../core/services/upload.service';
 
 @Component({
     selector: 'app-create-post',
@@ -334,7 +334,7 @@ export class CreatePostComponent implements OnInit {
 
     ngOnInit() {
         // Subscribe to upload progress
-        this.uploadService.getUploadProgress().subscribe(progress => {
+        this.uploadService.getUploadProgress().subscribe((progress: any) => {
             this.uploadProgress = progress;
             this.isUploading = progress?.status === 'uploading';
         });
@@ -400,7 +400,7 @@ export class CreatePostComponent implements OnInit {
 
             if (response?.success && response.data.media) {
                 // Update selected files with upload results
-                response.data.media.forEach((uploadedMedia, index) => {
+                response.data.media.forEach((uploadedMedia: any, index: any) => {
                     const fileIndex = this.selectedFiles.findIndex(file => !file.uploaded);
                     if (fileIndex !== -1) {
                         this.selectedFiles[fileIndex].uploaded = true;
@@ -408,7 +408,7 @@ export class CreatePostComponent implements OnInit {
                     }
                 });
 
-                return response.data.media.map(media => ({
+                return response.data.media.map((media: any) => ({
                     url: media.url,
                     type: media.type || 'image'
                 }));

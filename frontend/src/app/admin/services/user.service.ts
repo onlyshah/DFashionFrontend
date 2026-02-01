@@ -135,10 +135,7 @@ export class UserService {
 
     return this.http.get<UserResponse>(this.apiUrl, { params }).pipe(
       catchError((err: any) => {
-        // If unauthorized, fall back to public demo endpoint
-        if (err && err.status === 401) {
-          return this.http.get<UserResponse>(`/api/admin/demo/users`, { params });
-        }
+        // Return error - no fallback to demo data
         return throwError(() => err);
       })
     );

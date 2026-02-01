@@ -68,35 +68,83 @@ export class AdminApiService {
   }
 
   getProducts(params: any = {}): Observable<any> {
-    return this.http.get(`${this.apiUrl}/products`, { params, headers: this.getHeaders() });
+    console.log('📡 API Call: GET /api/admin/products', params);
+    return this.http.get(`${this.apiUrl}/products`, { params, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error fetching products:', error);
+        return of({ success: false, data: [] });
+      })
+    );
   }
 
   createProduct(product: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/products`, product, { headers: this.getHeaders() });
+    console.log('📡 API Call: POST /api/admin/products', product);
+    return this.http.post(`${this.apiUrl}/products`, product, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error creating product:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   updateProduct(id: string, product: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/products/${id}`, product, { headers: this.getHeaders() });
+    console.log(`📡 API Call: PUT /api/admin/products/${id}`, product);
+    return this.http.put(`${this.apiUrl}/products/${id}`, product, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error updating product:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   deleteProduct(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() });
+    console.log(`📡 API Call: DELETE /api/admin/products/${id}`);
+    return this.http.delete(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error deleting product:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrlPublic}/categories`, { headers: this.getHeaders() });
+  getCategories(): Observable<any[]> {
+    console.log('📡 API Call: GET /api/categories');
+    return this.http.get<any[]>(`${this.apiUrlPublic}/categories`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error fetching categories:', error);
+        return of([]);
+      })
+    );
   }
 
-  createCategory(category: any): Observable<Category> {
-    return this.http.post<Category>(`${this.apiUrlPublic}/categories`, category, { headers: this.getHeaders() });
+  createCategory(category: any): Observable<any> {
+    console.log('📡 API Call: POST /api/categories', category);
+    return this.http.post<any>(`${this.apiUrlPublic}/categories`, category, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error creating category:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
-  updateCategory(id: string, category: any): Observable<Category> {
-    return this.http.put<Category>(`${this.apiUrlPublic}/categories/${id}`, category, { headers: this.getHeaders() });
+  updateCategory(id: string, category: any): Observable<any> {
+    console.log(`📡 API Call: PUT /api/categories/${id}`, category);
+    return this.http.put<any>(`${this.apiUrlPublic}/categories/${id}`, category, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error updating category:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   deleteCategory(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`, { headers: this.getHeaders() });
+    console.log(`📡 API Call: DELETE /api/categories/${id}`);
+    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error deleting category:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   /**
@@ -199,31 +247,78 @@ export class AdminApiService {
     return this.http.get<any[]>(`${this.apiUrl}/brands`, { headers: this.getHeaders() });
   }
 
-  getUsers(params: any = {}): Observable<any> {
-    return this.http.get(`${this.apiUrl}/users`, { params, headers: this.getHeaders() });
-  }
-
   // NOTE: Removed getUsersWithFallback() - use getUsers() instead
   // Demo endpoint fallback has been removed - only real API endpoints are supported
 
   createUser(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/users`, user, { headers: this.getHeaders() });
+    console.log('📡 API Call: POST /api/admin/users', user);
+    return this.http.post(`${this.apiUrl}/users`, user, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error creating user:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   updateUser(id: string, user: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/users/${id}`, user, { headers: this.getHeaders() });
+    console.log(`📡 API Call: PUT /api/admin/users/${id}`, user);
+    return this.http.put(`${this.apiUrl}/users/${id}`, user, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error updating user:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   deleteUser(id: string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/users/${id}`, { headers: this.getHeaders() });
+    console.log(`📡 API Call: DELETE /api/admin/users/${id}`);
+    return this.http.delete(`${this.apiUrl}/users/${id}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error deleting user:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   activateUser(id: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {}, { headers: this.getHeaders() });     
+    console.log(`📡 API Call: PUT /api/admin/users/${id}/activate`);
+    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {}, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error activating user:', error);
+        return of({ success: false, error: error.message });
+      })
+    );
   }
 
   getSuperAdminStats(): Observable<any> {
+    console.log('📡 API Call: GET /api/admin/dashboard/super-admin');
     return this.http.get(`${this.apiUrl}/dashboard/super-admin`, { headers: this.getHeaders() });
+  }
+
+  /**
+   * Get dashboard metrics
+   */
+  getDashboardMetrics(): Observable<any> {
+    console.log('📡 API Call: GET /api/admin/dashboard/metrics');
+    return this.http.get<any>(`${this.apiUrl}/dashboard/metrics`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error fetching dashboard metrics:', error);
+        return of({ success: false, data: {} });
+      })
+    );
+  }
+
+  /**
+   * Get orders list
+   */
+  getOrders(params: any = {}): Observable<any> {
+    console.log('📡 API Call: GET /api/admin/orders', params);
+    return this.http.get<any>(`${this.apiUrl}/orders`, { params, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error fetching orders:', error);
+        return of({ success: false, data: [] });
+      })
+    );
   }
 
   /**
@@ -400,24 +495,30 @@ export class AdminApiService {
   }
 
   /**
-   * Get customers list
+   * Get all users list
    */
-  getCustomers(page: number = 1, limit: number = 25): Observable<any> {
+  getUsers(options: { page?: number; limit?: number; search?: string; role?: string; department?: string; isActive?: string; sortBy?: string; sortOrder?: string } = {}): Observable<any> {
     const params = new HttpParams()
-      .set('page', page.toString())
-      .set('limit', limit.toString());
+      .set('page', (options.page || 1).toString())
+      .set('limit', (options.limit || 25).toString())
+      .set('search', options.search || '')
+      .set('role', options.role || '')
+      .set('department', options.department || '')
+      .set('isActive', options.isActive || '')
+      .set('sortBy', options.sortBy || '')
+      .set('sortOrder', options.sortOrder || '');
 
-    return this.http.get<any>(`${this.apiUrl}/users/customers`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users`, { params, headers: this.getHeaders() }).pipe(
       map(response => {
-        // Normalize response structure: wrap in data if needed
+        // Normalize response structure: wrap users in data property for consistency
         if (response.success && response.data) {
-          return { success: true, data: { users: response.data.users || response.data, pagination: response.data.pagination || {} } };
+          return { success: true, data: response.data.users || response.data };
         }
         return response;
       }),
       catchError(error => {
-        console.error('Error fetching customers:', error);
-        return of({ success: false, data: { users: [], pagination: {} } });
+        console.error('Error fetching users:', error);
+        return of({ success: false, data: [] });
       })
     );
   }

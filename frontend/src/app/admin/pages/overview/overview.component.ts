@@ -61,15 +61,18 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    console.log('🚀 Overview Component Initialized');
     this.loadOverviewData();
   }
 
   ngOnDestroy(): void {
+    console.log('🔌 Overview Component Destroyed');
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   private loadOverviewData(): void {
+    console.log('📊 Loading overview data...');
     this.isLoading = true;
     this.error = null;
 
@@ -78,8 +81,13 @@ export class OverviewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data: DashboardMetrics) => {
+          console.log('✅ Dashboard Data Received:', data);
           this.dashboardData = data;
-          console.log('Overview data loaded:', data);
+          console.log('📈 Metrics - Revenue:', data.totalRevenue);
+          console.log('📈 Metrics - Orders:', data.totalOrders);
+          console.log('📈 Metrics - Customers:', data.totalCustomers);
+          console.log('📈 Metrics - Products:', data.totalProducts);
+          
           this.totalRevenue = data.totalRevenue;
           this.totalOrders = data.totalOrders;
           this.totalCustomers = data.totalCustomers;
@@ -95,7 +103,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
           this.loadAnalyticsData();
         },
         error: (error: any) => {
-          console.error('Error loading overview data:', error);
+          console.error('❌ Error loading overview data:', error);
           this.error = 'Failed to load overview data. Please try again.';
           this.isLoading = false;
         }
@@ -103,20 +111,23 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private loadAnalyticsData(): void {
+    console.log('📡 Loading analytics data...');
     // Fetch order analytics for recent orders
     this.analyticsService.getOrderAnalyticsWithFallback()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          console.log('✅ Analytics Response:', response);
           if (response.success && response.data.recentOrders) {
             this.recentOrders = response.data.recentOrders.slice(0, 5);
+            console.log('📋 Recent Orders:', this.recentOrders);
           } else {
             this.recentOrders = [];
           }
           this.isLoading = false;
         },
         error: (error: any) => {
-          console.warn('Error loading analytics:', error);
+          console.warn('⚠️ Error loading analytics:', error);
           this.recentOrders = [];
           this.isLoading = false;
         }

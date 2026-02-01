@@ -1,0 +1,355 @@
+<div class="admin-users-container">
+  <!-- Header -->
+  <div class="users-header">
+    <h1>Admin Users</h1>
+    <button mat-raised-button color="primary" (click)="openCreateAdmin()" [disabled]="isLoading">
+      <mat-icon>add_circle</mat-icon>
+      Add Admin User
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !showDetailView" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading admin users...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading || showDetailView" class="users-content">
+    
+    <!-- Create Admin Form (Modal) -->
+    <mat-dialog-container *ngIf="showCreateForm" class="form-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add Admin User</h2>
+          <button mat-icon-button (click)="closeCreateForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="createAdminForm" (ngSubmit)="submitCreateAdmin()" class="modal-body">
+          <mat-form-field appearance="outline">
+            <mat-label>Email Address</mat-label>
+            <input matInput formControlName="email" type="email" 
+                   placeholder="admin@example.com">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Full Name</mat-label>
+            <input matInput formControlName="name" placeholder="John Doe">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option *ngFor="let role of availableRoles" [value]="role.id">
+                {{ role.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Department (Optional)</mat-label>
+            <input matInput formControlName="department" placeholder="e.g., Operations">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Phone (Optional)</mat-label>
+            <input matInput formControlName="phone" placeholder="+1234567890">
+          </mat-form-field>
+
+          <mat-checkbox formControlName="sendInvitation">
+            Send invitation email to user
+          </mat-checkbox>
+
+          <div class="form-actions">
+            <button mat-button (click)="closeCreateForm()">Cancel</button>
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="!createAdminForm.valid || isLoading">
+              Create Admin User
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-dialog-container>
+
+    <!-- Permissions Manager Modal -->
+    <mat-dialog-container *ngIf="showPermissionsManager && selectedUser" class="form-modal">
+      <div class="modal-content modal-large">
+        <div class="modal-header">
+          <h2>Manage Permissions - {{ selectedUser.name }}</h2>
+          <button mat-icon-button (click)="closePermissionsManager()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="permissionsForm" class="modal-body permissions-form">
+          <p class="permissions-hint">Select permissions for this admin user:</p>
+          
+          <div class="permissions-grid">
+            <mat-checkbox *ngFor="let permission of allPermissions" 
+                         [checked]="isPermissionSelected(permission)"
+                         (change)="togglePermission(permission)"
+                         class="permission-checkbox">
+              {{ permission.replace(/_/g, ' ') | titlecase }}
+            </mat-checkbox>
+          </div>
+
+          <div class="form-actions">
+            <button mat-button (click)="closePermissionsManager()">Cancel</button>
+            <button mat-raised-button color="primary" type="button" 
+                    (click)="updatePermissions(selectedUser)"
+                    [disabled]="isLoading">
+              Update Permissions
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-dialog-container>
+
+    <!-- Filters -->
+    <div *ngIf="!showDetailView" class="filter-section">
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select [(ngModel)]="selectedRole" (change)="onFilterChange()">
+          <mat-option value="all">All Roles</mat-option>
+          <mat-option *ngFor="let role of availableRoles" [value]="role.id">
+            {{ role.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (change)="onFilterChange()" 
+               placeholder="Name or email...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Admin Users Table -->
+    <div class="users-table-container" *ngIf="!showDetailView">
+      <table mat-table [dataSource]="adminUsers" class="users-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="user-cell">
+              <div class="user-avatar">{{ element.name.charAt(0) | uppercase }}</div>
+              <div>
+                <span class="user-name">{{ element.name }}</span>
+                <span class="user-department">{{ element.department || 'N/A' }}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let element">
+            <a href="mailto:{{ element.email }}" class="email-link">{{ element.email }}</a>
+          </td>
+        </ng-container>
+
+        <!-- Role Column -->
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef>Role</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="role-badge">{{ element.role }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-badge" [ngClass]="getStatusClass(element.status)">
+              {{ element.status | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Last Login Column -->
+        <ng-container matColumnDef="lastLogin">
+          <th mat-header-cell *matHeaderCellDef>Last Login</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.lastLogin ? (element.lastLogin | date: 'short') : 'Never' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button matTooltip="View Details" (click)="viewUserDetails(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="adminUsers.length === 0" class="empty-state">
+        <mat-icon>person_add</mat-icon>
+        <p>No admin users found</p>
+        <button mat-raised-button color="primary" (click)="openCreateAdmin()">
+          Add Your First Admin User
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [length]="totalUsers" [pageSize]="pageSize" 
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="onPageChange($event.pageIndex + 1); onPageSizeChange($event.pageSize)">
+      </mat-paginator>
+    </div>
+
+    <!-- User Details View -->
+    <div *ngIf="showDetailView && selectedUser" class="detail-view">
+      <div class="detail-header">
+        <button mat-icon-button (click)="closeDetailView()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>{{ selectedUser.name }}</h2>
+      </div>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <!-- User Info -->
+          <div class="detail-section">
+            <h3>User Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Name</label>
+                <p>{{ selectedUser.name }}</p>
+              </div>
+              <div class="info-item">
+                <label>Email</label>
+                <p>
+                  <a href="mailto:{{ selectedUser.email }}">{{ selectedUser.email }}</a>
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Phone</label>
+                <p>{{ selectedUser.phone || 'Not provided' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Department</label>
+                <p>{{ selectedUser.department || 'Not assigned' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Role & Status -->
+          <div class="detail-section">
+            <h3>Role & Status</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Role</label>
+                <p class="role-badge">{{ selectedUser.role }}</p>
+              </div>
+              <div class="info-item">
+                <label>Status</label>
+                <p>
+                  <span class="status-badge" [ngClass]="getStatusClass(selectedUser.status)">
+                    {{ selectedUser.status | titlecase }}
+                  </span>
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Two-Factor Auth</label>
+                <p>
+                  <mat-icon class="2fa-icon" [class.enabled]="selectedUser.twoFactorEnabled">
+                    {{ selectedUser.twoFactorEnabled ? 'verified_user' : 'person' }}
+                  </mat-icon>
+                  {{ selectedUser.twoFactorEnabled ? 'Enabled' : 'Disabled' }}
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Login Attempts</label>
+                <p>{{ selectedUser.loginAttempts || 0 }}/5</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Permissions -->
+          <div class="detail-section">
+            <div class="section-header">
+              <h3>Permissions</h3>
+              <button mat-button (click)="openPermissionsManager(selectedUser)">
+                <mat-icon>edit</mat-icon>
+                Manage
+              </button>
+            </div>
+            <div class="permissions-list">
+              <mat-chip-set>
+                <mat-chip *ngFor="let permission of selectedUser.permissions">
+                  {{ permission.replace(/_/g, ' ') | titlecase }}
+                </mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+
+          <!-- Activity -->
+          <div class="detail-section">
+            <h3>Activity</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Created</label>
+                <p>{{ selectedUser.createdAt | date: 'medium' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Last Updated</label>
+                <p>{{ selectedUser.updatedAt | date: 'medium' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Last Login</label>
+                <p>{{ selectedUser.lastLogin ? (selectedUser.lastLogin | date: 'medium') : 'Never' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="detail-actions">
+            <button mat-raised-button (click)="resetPassword(selectedUser)">
+              <mat-icon>vpn_key</mat-icon>
+              Reset Password
+            </button>
+            <button mat-raised-button 
+                    *ngIf="selectedUser.status === 'active'"
+                    color="warn"
+                    (click)="suspendUser(selectedUser)">
+              <mat-icon>block</mat-icon>
+              Suspend User
+            </button>
+            <button mat-raised-button 
+                    *ngIf="selectedUser.status === 'suspended'"
+                    color="accent"
+                    (click)="reactivateUser(selectedUser)">
+              <mat-icon>check_circle</mat-icon>
+              Reactivate User
+            </button>
+            <button mat-raised-button color="warn" (click)="deleteUser(selectedUser)">
+              <mat-icon>delete</mat-icon>
+              Delete User
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

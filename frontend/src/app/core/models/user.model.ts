@@ -7,7 +7,7 @@ export interface User {
   avatar: string;
   image?: string; // ✅ Add this line
   bio?: string;
-  role: 'customer' | 'vendor' | 'admin' | 'super_admin' | 'end_user';
+  role: 'customer' | 'vendor' | 'admin' | 'super_admin' | 'Super Admin' | 'end_user';
   isVerified: boolean;
   isActive: boolean;
   followers: string[];
@@ -61,7 +61,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   fullName: string;
-  role: 'customer' | 'vendor' | 'end_user';
+  role: 'customer' | 'vendor' | 'admin' | 'super_admin' | 'Super Admin' | 'end_user';
   vendorInfo?: {
     businessName: string;
     businessType: string;

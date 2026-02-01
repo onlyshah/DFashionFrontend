@@ -24,6 +24,8 @@ export interface ProductFilters {
   rating?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  limit?: number;
+  page?: number;
 }
 import { environment } from '../../../environments/environment';
 

@@ -49,11 +49,10 @@ export class RoleGuard implements CanActivate, CanActivateChild {
     // Check if user is authenticated first
     const isAdminRoute = state.url.startsWith('/admin');
     const authCheck = isAdminRoute 
-      ? this.adminAuthService.isAuthenticated()
-      : this.authService.isAuthenticated();
+      ? of(this.adminAuthService.isAuthenticated())
+      : of(this.authService.isAuthenticated);
 
     return authCheck.pipe(
-      take(1),
       map(isAuthenticated => {
         if (!isAuthenticated) {
           this.redirectToLogin(isAdminRoute);

@@ -1,0 +1,344 @@
+<div class="support-container">
+  <!-- Header -->
+  <div class="support-header">
+    <h1>Support Tickets</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openCreateTicket()" [disabled]="isLoading">
+        <mat-icon>add_circle</mat-icon>
+        Create Ticket
+      </button>
+      <button mat-icon-button matTooltip="Export Tickets" (click)="exportTickets()">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !showDetailView" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading tickets...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading || showDetailView" class="support-content">
+    
+    <!-- Create Ticket Form (Modal) -->
+    <mat-dialog-container *ngIf="showCreateForm" class="form-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create Support Ticket</h2>
+          <button mat-icon-button (click)="closeCreateForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="createTicketForm" (ngSubmit)="submitCreateTicket()" class="modal-body">
+          <mat-form-field appearance="outline">
+            <mat-label>Subject</mat-label>
+            <input matInput formControlName="subject" 
+                   placeholder="Brief description of your issue">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Category</mat-label>
+            <mat-select formControlName="category">
+              <mat-option *ngFor="let cat of categoryOptions" [value]="cat.value">
+                {{ cat.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Priority</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option value="low">Low</mat-option>
+              <mat-option value="medium">Medium</mat-option>
+              <mat-option value="high">High</mat-option>
+              <mat-option value="urgent">Urgent</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="6" 
+                      placeholder="Please provide detailed information about your issue..."></textarea>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button (click)="closeCreateForm()">Cancel</button>
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="!createTicketForm.valid || isLoading">
+              Create Ticket
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-dialog-container>
+
+    <!-- Filters & Search -->
+    <div *ngIf="!showDetailView" class="filters-section">
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+          <mat-option *ngFor="let filter of statusFilters" [value]="filter.value">
+            {{ filter.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Priority</mat-label>
+        <mat-select [(ngModel)]="selectedPriority" (change)="onFilterChange()">
+          <mat-option *ngFor="let filter of priorityFilters" [value]="filter.value">
+            {{ filter.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="selectedCategory" (change)="onFilterChange()">
+          <mat-option *ngFor="let cat of categoryOptions" [value]="cat.value">
+            {{ cat.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (change)="onFilterChange()" 
+               placeholder="Search by ticket number or subject...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Tickets Table -->
+    <div class="tickets-table-container" *ngIf="!showDetailView">
+      <table mat-table [dataSource]="tickets" class="tickets-table">
+        <!-- Ticket Number Column -->
+        <ng-container matColumnDef="ticketNumber">
+          <th mat-header-cell *matHeaderCellDef>Ticket #</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="ticket-number">#{{ element.ticketNumber }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Subject Column -->
+        <ng-container matColumnDef="subject">
+          <th mat-header-cell *matHeaderCellDef>Subject</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="subject-cell">
+              <span class="subject-text">{{ element.subject }}</span>
+              <span class="category-badge">{{ element.category | titlecase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Priority Column -->
+        <ng-container matColumnDef="priority">
+          <th mat-header-cell *matHeaderCellDef>Priority</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="priority-badge" [ngClass]="getPriorityClass(element.priority)">
+              {{ element.priority | titlecase }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-badge" [ngClass]="getStatusClass(element.status)">
+              {{ element.status | titlecase }}
+            </span>
+            <mat-icon *ngIf="isSLABreached(element)" matTooltip="SLA Breached" 
+                      class="sla-warning">warning</mat-icon>
+          </td>
+        </ng-container>
+
+        <!-- Assigned To Column -->
+        <ng-container matColumnDef="assignedToName">
+          <th mat-header-cell *matHeaderCellDef>Assigned To</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.assignedToName || 'Unassigned' }}
+          </td>
+        </ng-container>
+
+        <!-- Created Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.createdAt | date: 'short' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button matTooltip="View Details" 
+                    (click)="viewTicketDetails(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+            [class.highlight-sla]="isSLABreached(row)"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="tickets.length === 0" class="empty-state">
+        <mat-icon>support_agent</mat-icon>
+        <p>No support tickets found</p>
+        <button mat-raised-button color="primary" (click)="openCreateTicket()">
+          Create Your First Ticket
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [length]="totalTickets" [pageSize]="pageSize" 
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="onPageChange($event.pageIndex + 1); onPageSizeChange($event.pageSize)">
+      </mat-paginator>
+    </div>
+
+    <!-- Ticket Details View -->
+    <div *ngIf="showDetailView && selectedTicket" class="detail-view">
+      <div class="detail-header">
+        <button mat-icon-button (click)="closeDetailView()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>#{{ selectedTicket.ticketNumber }} - {{ selectedTicket.subject }}</h2>
+        <span class="status-badge" [ngClass]="getStatusClass(selectedTicket.status)">
+          {{ selectedTicket.status | titlecase }}
+        </span>
+      </div>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <!-- Ticket Info -->
+          <div class="detail-section">
+            <h3>Ticket Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Category</label>
+                <p>{{ selectedTicket.category | titlecase }}</p>
+              </div>
+              <div class="info-item">
+                <label>Priority</label>
+                <p>
+                  <span class="priority-badge" [ngClass]="getPriorityClass(selectedTicket.priority)">
+                    {{ selectedTicket.priority | titlecase }}
+                  </span>
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Created</label>
+                <p>{{ selectedTicket.createdAt | date: 'medium' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Assigned To</label>
+                <p>{{ selectedTicket.assignedToName || 'Unassigned' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="detail-section">
+            <h3>Issue Description</h3>
+            <p class="description-text">{{ selectedTicket.description }}</p>
+          </div>
+
+          <!-- SLA Info -->
+          <div class="detail-section" *ngIf="selectedTicket.sla">
+            <h3>Service Level Agreement (SLA)</h3>
+            <div class="sla-info" [class.sla-breached]="isSLABreached(selectedTicket)">
+              <div class="sla-item">
+                <span class="sla-label">Expected Response</span>
+                <span class="sla-value">{{ selectedTicket.sla.responseTime | date: 'short' }}</span>
+                <mat-icon *ngIf="selectedTicket.sla.responseTimeBreached" class="sla-icon">clear</mat-icon>
+              </div>
+              <div class="sla-item">
+                <span class="sla-label">Expected Resolution</span>
+                <span class="sla-value">{{ selectedTicket.sla.resolutionTime | date: 'short' }}</span>
+                <mat-icon *ngIf="selectedTicket.sla.resolutionTimeBreached" class="sla-icon">clear</mat-icon>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conversation -->
+          <div class="detail-section">
+            <h3>Conversation History</h3>
+            <div class="conversation">
+              <!-- Original Ticket -->
+              <div class="message message-user">
+                <div class="message-header">
+                  <span class="message-author">You</span>
+                  <span class="message-time">{{ selectedTicket.createdAt | date: 'short' }}</span>
+                </div>
+                <div class="message-body">{{ selectedTicket.description }}</div>
+              </div>
+
+              <!-- Replies -->
+              <div *ngFor="let reply of selectedTicket.replies" 
+                   [ngClass]="reply.isFromSupport ? 'message-support' : 'message-user'"
+                   class="message">
+                <div class="message-header">
+                  <span class="message-author">
+                    {{ reply.authorName }}
+                    <span *ngIf="reply.isFromSupport" class="support-badge">Support Team</span>
+                  </span>
+                  <span class="message-time">{{ reply.createdAt | date: 'short' }}</span>
+                </div>
+                <div class="message-body">{{ reply.message }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reply Form -->
+          <div class="detail-section" *ngIf="selectedTicket.status !== 'closed'">
+            <h3>Add Reply</h3>
+            <form [formGroup]="replyForm" (ngSubmit)="submitReply()" *ngIf="showReplyForm" 
+                  class="reply-form">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Your Message</mat-label>
+                <textarea matInput formControlName="message" rows="4" 
+                          placeholder="Type your message here..."></textarea>
+              </mat-form-field>
+
+              <div class="reply-actions">
+                <button mat-button (click)="closeReplyForm()">Cancel</button>
+                <button mat-raised-button color="primary" type="submit" 
+                        [disabled]="!replyForm.valid || isLoading">
+                  Send Reply
+                </button>
+              </div>
+            </form>
+
+            <button *ngIf="!showReplyForm" mat-raised-button (click)="openReplyForm()">
+              <mat-icon>reply</mat-icon>
+              Reply to Ticket
+            </button>
+          </div>
+
+          <!-- Ticket Actions -->
+          <div class="detail-actions">
+            <button *ngIf="selectedTicket.status !== 'closed'" mat-raised-button color="warn" 
+                    (click)="closeTicket()">
+              <mat-icon>done_all</mat-icon>
+              Close Ticket
+            </button>
+            <button *ngIf="selectedTicket.status === 'closed'" mat-raised-button 
+                    (click)="reopenTicket()">
+              <mat-icon>refresh</mat-icon>
+              Reopen Ticket
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

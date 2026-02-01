@@ -88,7 +88,9 @@ export interface StoryGroup {
 }
 
 export interface StoriesResponse {
+  success: boolean;
   storyGroups: StoryGroup[];
+  stories?: Story[];
 }
 
 export interface CreateStoryRequest {

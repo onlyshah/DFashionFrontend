@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AdminNotification } from '../pollux-ui/models/admin-types';
+import { AdminNotification } from '../models/admin-types';
 import { environment } from 'src/environments/environment';
 
 @Injectable({

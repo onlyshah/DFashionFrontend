@@ -1,0 +1,306 @@
+<div class="data-governance-container">
+  <!-- Header -->
+  <div class="governance-header">
+    <h1>Data Governance & GDPR</h1>
+    <div class="header-actions">
+      <button mat-icon-button matTooltip="Export Requests" (click)="exportRequests()">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !showDetailView" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading data requests...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading || showDetailView" class="governance-content">
+    
+    <!-- Filters -->
+    <div *ngIf="!showDetailView" class="filter-section">
+      <mat-form-field appearance="outline">
+        <mat-label>Request Type</mat-label>
+        <mat-select [(ngModel)]="selectedType" (change)="onFilterChange()">
+          <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (change)="onFilterChange()">
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (change)="onFilterChange()" 
+               placeholder="User name or email...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Requests Table -->
+    <div class="requests-table-container" *ngIf="!showDetailView">
+      <table mat-table [dataSource]="requests" class="requests-table">
+        <!-- User Name Column -->
+        <ng-container matColumnDef="userName">
+          <th mat-header-cell *matHeaderCellDef>User</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="user-info">
+              <span class="user-name">{{ element.userName }}</span>
+              <span class="user-email">{{ element.userEmail }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Request Type Column -->
+        <ng-container matColumnDef="requestType">
+          <th mat-header-cell *matHeaderCellDef>Request Type</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="type-cell">
+              <mat-icon>{{ getTypeIcon(element.requestType) }}</mat-icon>
+              <span>{{ element.requestType | titlecase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Status Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let element">
+            <span class="status-badge" [ngClass]="getStatusClass(element.status)">
+              {{ element.status | titlecase }}
+            </span>
+            <mat-icon *ngIf="isRequestExpired(element)" matTooltip="Request Expired" 
+                      class="expiry-warning">warning</mat-icon>
+          </td>
+        </ng-container>
+
+        <!-- Created Date Column -->
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Created</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.createdAt | date: 'short' }}
+          </td>
+        </ng-container>
+
+        <!-- Expires Column -->
+        <ng-container matColumnDef="expiresAt">
+          <th mat-header-cell *matHeaderCellDef>Expires</th>
+          <td mat-cell *matCellDef="let element">
+            <span [class.expired]="isRequestExpired(element)">
+              {{ element.expiresAt | date: 'short' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button matTooltip="View Details" (click)="viewRequestDetails(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" 
+            [class.expired-row]="isRequestExpired(row)"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="requests.length === 0" class="empty-state">
+        <mat-icon>privacy_tip</mat-icon>
+        <p>No data requests found</p>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [length]="totalRequests" [pageSize]="pageSize" 
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="onPageChange($event.pageIndex + 1); onPageSizeChange($event.pageSize)">
+      </mat-paginator>
+    </div>
+
+    <!-- Request Details View -->
+    <div *ngIf="showDetailView && selectedRequest" class="detail-view">
+      <div class="detail-header">
+        <button mat-icon-button (click)="closeDetailView()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>Data Request - {{ selectedRequest.requestType | titlecase }}</h2>
+        <span class="status-badge" [ngClass]="getStatusClass(selectedRequest.status)">
+          {{ selectedRequest.status | titlecase }}
+        </span>
+      </div>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <!-- User Information -->
+          <div class="detail-section">
+            <h3>User Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Name</label>
+                <p>{{ selectedRequest.userName }}</p>
+              </div>
+              <div class="info-item">
+                <label>Email</label>
+                <p>
+                  <a href="mailto:{{ selectedRequest.userEmail }}">{{ selectedRequest.userEmail }}</a>
+                </p>
+              </div>
+              <div class="info-item">
+                <label>User ID</label>
+                <p>{{ selectedRequest.userId }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Request Details -->
+          <div class="detail-section">
+            <h3>Request Details</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Request Type</label>
+                <p>
+                  <mat-icon class="type-icon">{{ getTypeIcon(selectedRequest.requestType) }}</mat-icon>
+                  {{ selectedRequest.requestType | titlecase }}
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Status</label>
+                <p>
+                  <span class="status-badge" [ngClass]="getStatusClass(selectedRequest.status)">
+                    {{ selectedRequest.status | titlecase }}
+                  </span>
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Created</label>
+                <p>{{ selectedRequest.createdAt | date: 'medium' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Expires</label>
+                <p [class.expired-text]="isRequestExpired(selectedRequest)">
+                  {{ selectedRequest.expiresAt | date: 'medium' }}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reason -->
+          <div class="detail-section" *ngIf="selectedRequest.reason">
+            <h3>Reason</h3>
+            <p>{{ selectedRequest.reason }}</p>
+          </div>
+
+          <!-- Results Summary -->
+          <div class="detail-section" *ngIf="selectedRequest.resultSummary && selectedRequest.status !== 'pending'">
+            <h3>Processing Results</h3>
+            <div class="results-grid">
+              <div class="result-item">
+                <span class="result-label">Records Processed</span>
+                <span class="result-value">{{ selectedRequest.resultSummary.recordsProcessed | number }}</span>
+              </div>
+              <div class="result-item" *ngIf="selectedRequest.resultSummary.recordsDeleted !== undefined">
+                <span class="result-label">Records Deleted</span>
+                <span class="result-value">{{ selectedRequest.resultSummary.recordsDeleted | number }}</span>
+              </div>
+              <div class="result-item" *ngIf="selectedRequest.resultSummary.sizeInMB !== undefined">
+                <span class="result-label">Data Size</span>
+                <span class="result-value">{{ selectedRequest.resultSummary.sizeInMB | number: '1.2-2' }} MB</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Download Link -->
+          <div class="detail-section" *ngIf="selectedRequest.downloadUrl && selectedRequest.status === 'completed'">
+            <h3>Download Data</h3>
+            <button mat-raised-button color="primary" (click)="downloadDataExport(selectedRequest)">
+              <mat-icon>download</mat-icon>
+              Download User Data ({{ selectedRequest.resultSummary?.sizeInMB || 'N/A' }} MB)
+            </button>
+            <p class="download-note">
+              This download link will expire on {{ selectedRequest.expiresAt | date: 'medium' }}.
+            </p>
+          </div>
+
+          <!-- Completed Info -->
+          <div class="detail-section" *ngIf="selectedRequest.completedAt">
+            <h3>Completion Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Completed</label>
+                <p>{{ selectedRequest.completedAt | date: 'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Consents -->
+          <div class="detail-section">
+            <div class="section-header">
+              <h3>User Consents</h3>
+              <button mat-button (click)="viewUserConsents(selectedRequest)" 
+                      [disabled]="showConsentManager">
+                <mat-icon>{{ showConsentManager ? 'check' : 'visibility' }}</mat-icon>
+                {{ showConsentManager ? 'Viewing...' : 'View Consents' }}
+              </button>
+            </div>
+
+            <!-- Consent Manager Modal -->
+            <mat-dialog-container *ngIf="showConsentManager" class="form-modal">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2>User Consents</h2>
+                  <button mat-icon-button (click)="closeConsentManager()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                </div>
+
+                <div class="modal-body consents-list">
+                  <mat-list>
+                    <mat-list-item *ngFor="let consent of selectedUserConsents" class="consent-item">
+                      <span matListItemTitle>{{ getConsentLabel(consent.consentType) }}</span>
+                      <span matListItemLine>
+                        {{ consent.given ? 'Given' : 'Not Given' }}
+                        <span *ngIf="consent.givenAt" class="consent-date">
+                          on {{ consent.givenAt | date: 'short' }}
+                        </span>
+                      </span>
+                      <button matListItemMeta mat-icon-button 
+                              (click)="updateConsent(consent, !consent.given)"
+                              [disabled]="isLoading">
+                        <mat-icon>{{ consent.given ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                      </button>
+                    </mat-list-item>
+                  </mat-list>
+                </div>
+              </div>
+            </mat-dialog-container>
+          </div>
+
+          <!-- Actions -->
+          <div class="detail-actions" *ngIf="selectedRequest.status === 'pending'">
+            <button mat-raised-button color="primary" (click)="approveRequest(selectedRequest)">
+              <mat-icon>check_circle</mat-icon>
+              Approve & Process
+            </button>
+            <button mat-raised-button color="warn" (click)="rejectRequest(selectedRequest)">
+              <mat-icon>cancel</mat-icon>
+              Reject Request
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

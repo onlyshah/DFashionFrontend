@@ -82,7 +82,7 @@ export interface SearchAnalytics {
   providedIn: 'root'
 })
 export class SearchService {
-  private readonly API_URL = `${environment.apiUrl}/api/v1`; // Updated to correct port
+  private readonly API_URL = `${environment.apiUrl}/api`; // Updated to correct backend API path
   
   // Search state management
   private searchQuerySubject = new BehaviorSubject<string>('');

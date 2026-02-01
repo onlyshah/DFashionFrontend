@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../../environments/environment';
 
 interface InfluencerMetric {
   title: string;

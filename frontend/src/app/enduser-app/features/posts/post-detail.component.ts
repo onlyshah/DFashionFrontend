@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { CartService } from '../../core/services/cart.service';
-import { WishlistService } from '../../core/services/wishlist.service';
+import { CartService } from '../../../core/services/cart.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 import { environment } from '../../../../environments/environment';
 
 interface Post {
@@ -778,14 +778,14 @@ export class PostDetailComponent implements OnInit {
       console.log('Add to wishlist from post:', product);
 
       this.wishlistService.addToWishlist(product._id).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             alert(`${product.name} added to wishlist!`);
           } else {
             alert('Failed to add product to wishlist');
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error adding to wishlist:', error);
           alert('Error adding product to wishlist');
         }
@@ -815,7 +815,7 @@ export class PostDetailComponent implements OnInit {
       console.log('Add product to cart:', this.selectedProduct);
 
       this.cartService.addToCart(this.selectedProduct._id, 1, undefined, undefined).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             alert(`${this.selectedProduct.name} added to cart!`);
             this.closeProductModal();
@@ -823,7 +823,7 @@ export class PostDetailComponent implements OnInit {
             alert('Failed to add product to cart');
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error adding to cart:', error);
           alert('Error adding product to cart');
         }

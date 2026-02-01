@@ -1,6 +1,6 @@
 import { Injectable, Inject, forwardRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, throwError, of, map, timer, interval } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError, of, map, timer, interval, timeout } from 'rxjs';
 import { Router } from '@angular/router';
 import { switchMap, takeUntil } from 'rxjs/operators';
 
@@ -46,10 +46,20 @@ export class AuthService {
   initializeAuth(): void {
     const token = this.getToken();
     if (token) {
-      this.getCurrentUser().subscribe({
+      // Only try to get current user if we have a token
+      this.getCurrentUser().pipe(
+        timeout(5000), // 5 second timeout to prevent hanging
+        catchError(error => {
+          console.warn('⚠️ Failed to get current user on init:', error.message);
+          // Clear invalid token
+          this.logout();
+          return [];
+        })
+      ).subscribe({
         next: (response) => {
-          this.currentUserSubject.next(response.user);
-          this.isAuthenticatedSubject.next(true);
+          const user = response && (response.user || response) ? (response.user || response) : null;
+          this.currentUserSubject.next(user as any);
+          this.isAuthenticatedSubject.next(!!user);
         },
         error: () => {
           // Clear invalid token without redirecting
@@ -286,12 +296,12 @@ export class AuthService {
   isAdmin(): boolean {
     const user = this.currentUserValue;
     const role = user?.role?.toLowerCase();
-    return ['admin', 'super_admin', 'manager'].includes(role || '');
+    return ['admin', 'super_admin', 'super admin', 'manager'].includes(role || '');
   }
 
   isSuperAdmin(): boolean {
     const user = this.currentUserValue;
-    return user?.role?.toLowerCase() === 'super_admin';
+    return user?.role?.toLowerCase() === 'super_admin' || user?.role?.toLowerCase() === 'super admin';
   }
 
   isManager(): boolean {

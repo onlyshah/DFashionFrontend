@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../../environments/environment';
 import { AuthService } from '../../../../../core/services/auth.service';
+import { StoryService } from '../../../../../core/services/story.service';
+import { CategoryService } from '../../../../../core/services/category.service';
 
 import { ViewAddStoriesComponent } from '../../../../shared/components/view-add-stories/view-add-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
@@ -59,7 +61,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private storyService: StoryService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit() {
@@ -257,7 +261,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     console.log('📖 Sample stories loaded:', this.socialStories.length);
 
     // Try to load from API (this will override sample stories if successful)
-    this.http.get<any>(`${this.apiUrl}/api/stories`).subscribe({
+    this.storyService.getStories().subscribe({
       next: (response) => {
         if (response?.success && response?.storyGroups) {
           this.socialStories = response.storyGroups.map((storyGroup: any) => ({
@@ -310,16 +314,12 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Load categories from API
   private loadCategories() {
-    this.http.get<any>(`${this.apiUrl}/api/categories`).subscribe({
-      next: (response) => {
-        if (response?.success && response?.data) {
-          this.categories = response.data.slice(0, 8).map((category: any) => ({
-            name: category.name,
-            icon: this.getCategoryIcon(category.name)
-          }));
-        } else {
-          this.categories = [];
-        }
+    this.categoryService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories.slice(0, 8).map((category: any) => ({
+          name: category.name,
+          icon: this.getCategoryIcon(category.name)
+        }));
       },
       error: (error) => {
         console.error('Error loading categories:', error);

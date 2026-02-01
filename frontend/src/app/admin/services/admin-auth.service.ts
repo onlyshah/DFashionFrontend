@@ -85,6 +85,31 @@ export class AdminAuthService {
         return; // Found a valid session
       }
     }
+
+    // If no admin-specific session found, derive admin session from regular AuthService
+    try {
+      if (!this.currentUserSubject.value && this.authService.isAuthenticated) {
+        const regularUser = this.authService.currentUserValue;
+        if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin' || regularUser.role === 'Super Admin')) {
+          const token = localStorage.getItem('token') || sessionStorage.getItem('token') || null;
+          const derivedUser: AdminUser = {
+            id: (((regularUser as any).id) || ((regularUser as any)._id) || '') as any,
+            email: (regularUser as any).email,
+            fullName: (regularUser as any).fullName || (regularUser as any).username || (regularUser as any).email,
+            role: (regularUser as any).role,
+            department: (regularUser as any).department || 'Administration',
+            employeeId: (((regularUser as any).id) || ((regularUser as any)._id) || '') as any,
+            permissions: ((regularUser as any).permissions || []) as any,
+            avatar: (regularUser as any).avatar
+          };
+          this.tokenSubject.next(token);
+          this.currentUserSubject.next(derivedUser);
+          console.log('AdminAuthService: derived admin session from AuthService');
+        }
+      }
+    } catch (err) {
+      console.warn('AdminAuthService: failed to derive admin session', err);
+    }
   }
 
   /**
@@ -236,7 +261,7 @@ export class AdminAuthService {
     // Also check regular auth service for super admin users
     if (this.authService.isAuthenticated) {
       const regularUser = this.authService.currentUserValue;
-      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin' || regularUser.role === 'Super Admin')) {
         // Convert regular user to admin user format
         return {
           id: regularUser._id,
@@ -273,7 +298,7 @@ export class AdminAuthService {
     if (this.authService.isAuthenticated) {
       const regularUser = this.authService.currentUserValue;
 
-      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin')) {
+      if (regularUser && (regularUser.role === 'admin' || regularUser.role === 'super_admin' || regularUser.role === 'Super Admin')) {
         return true;
       }
     }
@@ -285,7 +310,7 @@ export class AdminAuthService {
   public hasPermission(module: string, action: string): boolean {
     const user = this.getCurrentUser();
     if (!user) return false;
-    if (user.role === 'super_admin') return true;
+    if (user.role === 'super_admin' || user.role === 'Super Admin') return true;
     return user.permissions?.some(permission => 
       permission.module === module && permission.actions.includes(action)
     ) || false;

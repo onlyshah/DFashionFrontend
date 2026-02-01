@@ -36,7 +36,7 @@ export interface Category {
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiUrl = `${environment.apiUrl}/categories`;
+  private apiUrl = `${environment.apiUrl}/api/categories`;
   
   // Cache for categories - shared across all subscribers
   private categoriesCache$: Observable<Category[]> | null = null;

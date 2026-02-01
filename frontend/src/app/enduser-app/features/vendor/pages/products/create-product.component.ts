@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UploadService, UploadProgress } from '../../../../core/services/upload.service';
+import { UploadService, UploadProgress } from '../../../../../core/services/upload.service';
 
 @Component({
     selector: 'app-create-product',
@@ -268,7 +268,7 @@ export class CreateProductComponent implements OnInit {
 
     ngOnInit() {
         // Subscribe to upload progress
-        this.uploadService.getUploadProgress().subscribe(progress => {
+        this.uploadService.getUploadProgress().subscribe((progress: any) => {
             this.uploadProgress = progress;
             this.isUploading = progress?.status === 'uploading';
         });
@@ -329,7 +329,7 @@ export class CreateProductComponent implements OnInit {
 
             if (response?.success && response.data.images) {
                 // Update selected images with upload results
-                response.data.images.forEach((uploadedImage, index) => {
+                response.data.images.forEach((uploadedImage: any, index: any) => {
                     const imageIndex = this.selectedImages.findIndex(img => !img.uploaded);
                     if (imageIndex !== -1) {
                         this.selectedImages[imageIndex].uploaded = true;
@@ -337,7 +337,7 @@ export class CreateProductComponent implements OnInit {
                     }
                 });
 
-                return response.data.images.map(img => img.url);
+                return response.data.images.map((img: any) => img.url);
             }
 
             throw new Error(response?.message || 'Upload failed');

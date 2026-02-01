@@ -29,7 +29,7 @@ export class RoleGuard implements CanActivate {
     const roles = Array.isArray(requiredRoles) ? requiredRoles : [requiredRoles];
 
     // Super admin has access to everything
-    if (user.role === 'super_admin') {
+    if (user.role === 'super_admin' || user.role === 'Super Admin') {
       return true;
     }
 

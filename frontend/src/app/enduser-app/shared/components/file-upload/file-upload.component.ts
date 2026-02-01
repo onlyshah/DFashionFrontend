@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileUploadService, UploadProgress, UploadResponse, MultipleUploadResponse } from '../../../../core/services/file-upload.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-file-upload',
@@ -27,9 +27,9 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   uploadedFiles: any[] = [];
   isDragOver = false;
   isUploading = false;
-  uploadComplete = false;
-  uploadError: string | null = null;
-  uploadProgress: UploadProgress | null = null;
+  isUploadComplete = false;
+  currentUploadError: string | null = null;
+  currentUploadProgress: UploadProgress | null = null;
   validationErrors: string[] = [];
   acceptedTypes = '';
 
@@ -44,7 +44,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
     // Subscribe to upload progress
     this.progressSubscription = this.fileUploadService.uploadProgress$.subscribe(progress => {
-      this.uploadProgress = progress;
+      this.currentUploadProgress = progress;
       if (progress) {
         this.uploadProgress.emit(progress);
       }
@@ -127,12 +127,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     event.stopPropagation();
     this.isDragOver = false;
 
-    const files = Array.from(event.dataTransfer?.files || []);
+    const files = Array.from(event.dataTransfer?.files || []) as File[];
     this.handleFiles(files);
   }
 
   onFileSelected(event: any) {
-    const files = Array.from(event.target.files || []);
+    const files = Array.from(event.target.files || []) as File[];
     this.handleFiles(files);
 
     // Reset the input
@@ -141,7 +141,7 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   private handleFiles(files: File[]) {
     this.validationErrors = [];
-    this.uploadError = null;
+    this.currentUploadError = null;
 
     if (!this.multiple && files.length > 1) {
       this.validationErrors.push('Only one file is allowed');
@@ -219,8 +219,8 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   clearFiles() {
     this.selectedFiles = [];
     this.uploadedFiles = [];
-    this.uploadComplete = false;
-    this.uploadError = null;
+    this.isUploadComplete = false;
+    this.currentUploadError = null;
     this.validationErrors = [];
     this.fileUploadService.resetProgress();
     this.filesSelected.emit(this.selectedFiles);
@@ -230,11 +230,11 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     if (this.selectedFiles.length === 0) return;
 
     this.isUploading = true;
-    this.uploadError = null;
-    this.uploadComplete = false;
+    this.currentUploadError = null;
+    this.isUploadComplete = false;
 
     // Choose the appropriate upload method based on type
-    let uploadObservable;
+    let uploadObservable: Observable<UploadResponse | MultipleUploadResponse>;
 
     switch (this.uploadType) {
       case 'avatar':
@@ -258,12 +258,12 @@ export class FileUploadComponent implements OnInit, OnDestroy {
     }
 
     this.uploadSubscription = uploadObservable.subscribe({
-      next: (response) => {
+      next: (response: any) => {
         if (response) {
           this.handleUploadSuccess(response);
         }
       },
-      error: (error) => {
+      error: (error: any) => {
         this.handleUploadError(error);
       }
     });
@@ -271,16 +271,23 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   private handleUploadSuccess(response: UploadResponse | MultipleUploadResponse) {
     this.isUploading = false;
-    this.uploadComplete = true;
+    this.isUploadComplete = true;
 
     if ('data' in response && response.data) {
-      if (Array.isArray(response.data.files)) {
-        this.uploadedFiles = response.data.files;
-      } else if (Array.isArray(response.data.images)) {
-        this.uploadedFiles = response.data.images;
-      } else if (Array.isArray(response.data.media)) {
-        this.uploadedFiles = response.data.media;
+      // Check if it's a MultipleUploadResponse (has files/images/media arrays)
+      if ('files' in response.data || 'images' in response.data || 'media' in response.data) {
+        const multiResponse = response as MultipleUploadResponse;
+        if (Array.isArray(multiResponse.data.files)) {
+          this.uploadedFiles = multiResponse.data.files;
+        } else if (Array.isArray(multiResponse.data.images)) {
+          this.uploadedFiles = multiResponse.data.images;
+        } else if (Array.isArray(multiResponse.data.media)) {
+          this.uploadedFiles = multiResponse.data.media;
+        } else {
+          this.uploadedFiles = [];
+        }
       } else {
+        // It's a single UploadResponse
         this.uploadedFiles = [response.data];
       }
     }
@@ -290,14 +297,14 @@ export class FileUploadComponent implements OnInit, OnDestroy {
 
   private handleUploadError(error: any) {
     this.isUploading = false;
-    this.uploadError = error.error?.message || error.message || 'Upload failed';
-    this.uploadError.emit(this.uploadError);
+    this.currentUploadError = error.error?.message || error.message || 'Upload failed';
+    this.uploadError.emit(this.currentUploadError || 'Upload failed');
   }
 
   resetUpload() {
     this.clearFiles();
-    this.uploadComplete = false;
-    this.uploadError = null;
+    this.isUploadComplete = false;
+    this.currentUploadError = null;
   }
 
   // UI Helper Methods
@@ -321,10 +328,10 @@ export class FileUploadComponent implements OnInit, OnDestroy {
   }
 
   getProgressBarClass(): string {
-    if (!this.uploadProgress) return 'bg-primary';
+    if (!this.currentUploadProgress) return 'bg-primary';
 
-    if (this.uploadProgress.status === 'error') return 'bg-danger';
-    if (this.uploadProgress.status === 'completed') return 'bg-success';
+    if (this.currentUploadProgress.status === 'error') return 'bg-danger';
+    if (this.currentUploadProgress.status === 'completed') return 'bg-success';
     return 'bg-primary';
   }
 

@@ -7,6 +7,7 @@ import { CarouselModule } from 'ngx-owl-carousel-o';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
 import { ImageFallbackDirective } from '../../../../shared/directives/directives/image-fallback.directive';
+import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
 
 interface Influencer {
   _id: string;
@@ -65,7 +66,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   sectionComments = 89;
   isMobile = false;
   imageUrl = environment.apiUrl
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private unifiedApiService: UnifiedApiService) {}
 
   ngOnInit() {
     this.loadInfluencers();
@@ -83,7 +84,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
     this.isLoading = true;
     this.error = null;
 
-    this.http.get<any>(`${environment.apiUrl}/api/users/influencers`).subscribe({
+    this.unifiedApiService.getTopInfluencers().subscribe({
       next: (response) => {
         if (response?.success && response?.data) {
           this.topInfluencers = response.data.slice(0, 8);

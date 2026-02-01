@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError, tap, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -72,14 +72,12 @@ export class CsrfService {
           // Store token in meta tag for future use
           this.setTokenInMeta(response.csrfToken);
         }),
+        map(response => response.csrfToken),
         catchError(error => {
           console.error('CSRF token fetch failed:', error);
           return throwError(() => error);
         })
-      )
-      .pipe(
-        tap(response => response.csrfToken)
-      ) as Observable<string>;
+      );
   }
 
   /**
@@ -212,7 +210,6 @@ export class CsrfInterceptor implements HttpInterceptor {
 /**
  * CSRF Guard for route protection
  */
-import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 
 @Injectable({

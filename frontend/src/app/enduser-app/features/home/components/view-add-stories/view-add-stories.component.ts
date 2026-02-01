@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { CartService } from '../../../../core/services/cart.service';
-import { WishlistService } from '../../../../core/services/wishlist.service';
+import { CartService } from '../../../../../core/services/cart.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
 import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { environment } from '../../../../../../environments/environment';
-import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
+import { ImageFallbackDirective } from '../../../../../shared/directives/image-fallback.directive';
+import { StoryService } from '../../../../../core/services/story.service';
 
 export interface Story {
   _id: string;
@@ -174,7 +175,8 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     private router: Router,
     private http: HttpClient,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private storyService: StoryService
   ) {}
 
   ngOnInit() {
@@ -201,7 +203,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     this.isLoadingStories = false;
 
     // Load stories from real API
-    this.http.get<any>(`${environment.apiUrl}/api/stories`).subscribe({
+    this.storyService.getStories().subscribe({
       next: (response) => {
         console.log('✅ Stories loaded successfully:', response);
         if (response?.success && response?.storyGroups) {
@@ -279,8 +281,6 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
       }
     });
   }
-
-  // Removed fallback stories - only use database data
 
   getCurrentStory(): Story {
     return this.stories[this.currentIndex] || this.stories[0];

@@ -361,15 +361,12 @@ export class RecommendationService {
 
   // Category-based Recommendations
   getCategoryRecommendations(category: string, limit: number = 8): Observable<RecommendationProduct[]> {
-    return this.http.get<any>(`${this.apiUrl}/recommendations/category/${category}?limit=${limit}`)
+    return this.http.get<{ success: boolean; data: RecommendationProduct[] }>(`${this.apiUrl}/recommendations/category/${category}?limit=${limit}`)
       .pipe(
         map(response => response.success ? response.data : []),
         catchError(error => {
           console.error('Error fetching category recommendations:', error);
-          return new Observable(observer => {
-            observer.next([]);
-            observer.complete();
-          });
+          return of([]);
         })
       );
   }

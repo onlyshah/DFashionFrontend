@@ -245,7 +245,9 @@ export class VendorDashboardComponent implements OnInit {
         totalRevenue: 0,
         pendingOrders: 0,
         lowStockProducts: 0,
-        recentOrdersCount: 0
+        recentOrdersCount: 0,
+        totalPosts: 0,
+        totalStories: 0
     };
     monthlyRevenue: MonthlyRevenue[] = [];
     loading = false;

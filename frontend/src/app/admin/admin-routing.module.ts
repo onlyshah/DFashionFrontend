@@ -22,7 +22,7 @@ export class SuperAdminGuard implements CanActivate {
     const user = this.adminAuthService.getCurrentUser();
     
     // Allow super_admin or admin roles
-    if (user && (user.role === 'super_admin' || user.role === 'admin')) {
+    if (user && (user.role === 'super_admin' || user.role === 'admin' || user.role === 'Super Admin')) {
       return true;
     }
 

@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 import { Story, StoriesResponse, CreateStoryRequest, StoryGroup } from '../models/story.model';
 import { environment } from '../../../environments/environment';
 
+export { StoriesResponse };
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,17 +20,17 @@ export class StoryService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<StoriesResponse>(`${this.API_URL}/api/stories`, { params });
+    return this.http.get<StoriesResponse>(`${this.API_URL}/stories`, { params });
   }
 
   getUserStories(userId: string): Observable<{ stories: Story[] }> {
-    return this.http.get<{ stories: Story[] }>(`${this.API_URL}/api/stories/user/${userId}`);
+    return this.http.get<{ stories: Story[] }>(`${this.API_URL}/stories/user/${userId}`);
   }
 
 
 
   createStory(storyData: CreateStoryRequest): Observable<{ message: string; story: Story }> {
-    return this.http.post<{ message: string; story: Story }>(`${this.API_URL}/api/stories`, storyData);
+    return this.http.post<{ message: string; story: Story }>(`${this.API_URL}/stories`, storyData);
   }
 
   viewStory(storyId: string): Observable<{ message: string }> {

@@ -1,0 +1,431 @@
+<div class="payment-settlement-container">
+  <div class="settlement-header">
+    <h1>Payment Settlement</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="accent" (click)="exportAllSettlements()">
+        <mat-icon>download</mat-icon>
+        Export Settlements
+      </button>
+      <button mat-raised-button color="primary" (click)="openSettlementForm()">
+        <mat-icon>add</mat-icon>
+        New Settlement
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="settlement-summary" *ngIf="summary && !showDetailView">
+    <div class="summary-card">
+      <div class="summary-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <mat-icon>attach_money</mat-icon>
+      </div>
+      <div class="summary-content">
+        <span class="summary-label">Total Settled</span>
+        <span class="summary-value">${{ summary.totalSettledAmount | number:'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <mat-icon>pending_actions</mat-icon>
+      </div>
+      <div class="summary-content">
+        <span class="summary-label">Pending Payout</span>
+        <span class="summary-value">${{ summary.totalPendingAmount | number:'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="summary-content">
+        <span class="summary-label">Completed</span>
+        <span class="summary-value">{{ summary.completedSettlements }} / {{ summary.totalSettlements }}</span>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <mat-icon>schedule</mat-icon>
+      </div>
+      <div class="summary-content">
+        <span class="summary-label">Avg Process Time</span>
+        <span class="summary-value">{{ summary.averageSettlementTime }} days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation -->
+  <div class="tab-navigation" *ngIf="!showDetailView">
+    <button 
+      (click)="selectedTab = 'settlements'"
+      [class.active]="selectedTab === 'settlements'"
+      class="tab-button">
+      <mat-icon>receipt</mat-icon>
+      Settlements
+    </button>
+    <button 
+      (click)="selectedTab = 'transactions'"
+      [class.active]="selectedTab === 'transactions'"
+      class="tab-button">
+      <mat-icon>swap_horiz</mat-icon>
+      Transactions
+    </button>
+    <button 
+      (click)="selectedTab = 'vendors'"
+      [class.active]="selectedTab === 'vendors'"
+      class="tab-button">
+      <mat-icon>business</mat-icon>
+      Vendors
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading settlements...</p>
+  </div>
+
+  <!-- Settlements Tab -->
+  <div *ngIf="!isLoading && selectedTab === 'settlements' && !showDetailView" class="settlement-content">
+    <!-- Filters -->
+    <div class="filter-section" [formGroup]="filterForm">
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">All Statuses</mat-option>
+          <mat-option value="pending">Pending</mat-option>
+          <mat-option value="processing">Processing</mat-option>
+          <mat-option value="completed">Completed</mat-option>
+          <mat-option value="failed">Failed</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Vendor</mat-label>
+        <mat-select formControlName="vendorId">
+          <mat-option value="">All Vendors</mat-option>
+          <mat-option *ngFor="let vendor of vendors" [value]="vendor.id">
+            {{ vendor.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search by ID or Vendor Name</mat-label>
+        <input matInput formControlName="search" placeholder="Search...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Settlements Table -->
+    <div class="table-container" *ngIf="filteredSettlements.length > 0">
+      <table class="settlements-table">
+        <thead>
+          <tr>
+            <th>Settlement ID</th>
+            <th>Vendor</th>
+            <th>Period</th>
+            <th>Total Sales</th>
+            <th>Net Amount</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let settlement of filteredSettlements" 
+              (click)="viewSettlementDetails(settlement)"
+              class="clickable-row">
+            <td class="settlement-id">{{ settlement.id }}</td>
+            <td>
+              <div class="vendor-info">
+                <span class="vendor-name">{{ settlement.vendorName }}</span>
+                <span class="vendor-email">{{ settlement.vendorEmail }}</span>
+              </div>
+            </td>
+            <td>{{ settlement.settlementPeriod }}</td>
+            <td class="amount">${{ settlement.totalSales | number:'1.0-0' }}</td>
+            <td class="amount-net">${{ settlement.netAmount | number:'1.0-0' }}</td>
+            <td>
+              <span [ngClass]="'status-badge ' + getStatusClass(settlement.status)">
+                {{ settlement.status | titlecase }}
+              </span>
+            </td>
+            <td>{{ settlement.createdAt | date:'MMM dd, yyyy' }}</td>
+            <td class="action-cell">
+              <button mat-icon-button matTooltip="View Details" color="primary">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button matTooltip="Download Report" color="accent">
+                <mat-icon>download</mat-icon>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="filteredSettlements.length === 0 && !isLoading">
+      <mat-icon>folder_open</mat-icon>
+      <p>No settlements found</p>
+      <button mat-raised-button color="primary" (click)="openSettlementForm()">
+        Create Settlement
+      </button>
+    </div>
+  </div>
+
+  <!-- Transactions Tab -->
+  <div *ngIf="!isLoading && selectedTab === 'transactions' && !showDetailView" class="transaction-content">
+    <div class="table-container" *ngIf="transactions.length > 0">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Vendor</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions">
+            <td class="transaction-id">{{ transaction.id }}</td>
+            <td>{{ vendors.find(v => v.id === transaction.vendorId)?.name || 'N/A' }}</td>
+            <td>
+              <div class="type-cell">
+                <mat-icon>{{ getTransactionTypeIcon(transaction.type) }}</mat-icon>
+                <span>{{ transaction.type | titlecase }}</span>
+              </div>
+            </td>
+            <td [class.negative]="transaction.amount < 0" class="amount">
+              {{ transaction.amount < 0 ? '-' : '+' }}${{ Math.abs(transaction.amount) | number:'1.0-0' }}
+            </td>
+            <td>{{ transaction.description }}</td>
+            <td>
+              <span [ngClass]="'status-badge status-' + transaction.status">
+                {{ transaction.status | titlecase }}
+              </span>
+            </td>
+            <td>{{ transaction.createdAt | date:'MMM dd, yyyy' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="transactions.length === 0">
+      <mat-icon>receipt</mat-icon>
+      <p>No transactions yet</p>
+    </div>
+  </div>
+
+  <!-- Vendors Tab -->
+  <div *ngIf="!isLoading && selectedTab === 'vendors' && !showDetailView" class="vendors-content">
+    <div class="vendors-grid">
+      <div class="vendor-card" *ngFor="let vendor of vendors">
+        <div class="vendor-header">
+          <h3>{{ vendor.name }}</h3>
+          <span [ngClass]="'status-badge status-' + vendor.status">
+            {{ vendor.status | titlecase }}
+          </span>
+        </div>
+        <div class="vendor-details">
+          <p>
+            <span class="label">Email:</span>
+            <a href="mailto:{{ vendor.email }}">{{ vendor.email }}</a>
+          </p>
+          <p>
+            <span class="label">Total Settled:</span>
+            <span class="value">${{ vendor.totalSettled | number:'1.0-0' }}</span>
+          </p>
+          <p>
+            <span class="label">Pending:</span>
+            <span class="value pending">${{ vendor.pendingAmount | number:'1.0-0' }}</span>
+          </p>
+          <p>
+            <span class="label">Last Settlement:</span>
+            <span class="value">{{ vendor.lastSettlement | date:'MMM dd, yyyy' }}</span>
+          </p>
+        </div>
+        <div class="vendor-actions">
+          <button mat-raised-button color="primary" size="small">
+            View Settlements
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settlement Form Modal -->
+  <div class="form-modal" *ngIf="showSettlementForm" (click)="closeSettlementForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Create New Settlement</h2>
+        <button mat-icon-button (click)="closeSettlementForm()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <form [formGroup]="settlementForm" class="modal-body">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Vendor</mat-label>
+          <mat-select formControlName="vendorId">
+            <mat-option *ngFor="let vendor of vendors" [value]="vendor.id">
+              {{ vendor.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="settlementForm.get('vendorId').hasError('required')">
+            Vendor is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Settlement Period</mat-label>
+          <input matInput formControlName="settlementPeriod" placeholder="e.g., Jan 1 - Jan 31, 2025">
+          <mat-error *ngIf="settlementForm.get('settlementPeriod').hasError('required')">
+            Settlement period is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-checkbox formControlName="processNow" class="full-width">
+          Process immediately
+        </mat-checkbox>
+
+        <div class="modal-actions">
+          <button mat-button (click)="closeSettlementForm()">Cancel</button>
+          <button mat-raised-button color="primary" (click)="createSettlement()">
+            Create Settlement
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Detail View Modal -->
+  <div class="form-modal" *ngIf="showDetailView && selectedSettlement" (click)="closeDetailView()">
+    <div class="modal-content detail-view" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Settlement Details</h2>
+        <button mat-icon-button (click)="closeDetailView()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Settlement Info -->
+        <div class="detail-section">
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Settlement ID</label>
+              <p>{{ selectedSettlement.id }}</p>
+            </div>
+            <div class="info-item">
+              <label>Vendor</label>
+              <p>{{ selectedSettlement.vendorName }}</p>
+            </div>
+            <div class="info-item">
+              <label>Period</label>
+              <p>{{ selectedSettlement.settlementPeriod }}</p>
+            </div>
+            <div class="info-item">
+              <label>Status</label>
+              <p>
+                <span [ngClass]="'status-badge ' + getStatusClass(selectedSettlement.status)">
+                  {{ selectedSettlement.status | titlecase }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="detail-section">
+          <h3>Financial Summary</h3>
+          <div class="results-grid">
+            <div class="result-item">
+              <span class="result-label">Total Sales</span>
+              <span class="result-value" style="color: #4caf50;">${{ selectedSettlement.totalSales | number:'1.0-0' }}</span>
+            </div>
+            <div class="result-item" style="border-color: #ff9800;">
+              <span class="result-label">Commission (10%)</span>
+              <span class="result-value" style="color: #ff9800;">-${{ selectedSettlement.totalCommission | number:'1.0-0' }}</span>
+            </div>
+            <div class="result-item" style="border-color: #f44336;">
+              <span class="result-label">Deductions</span>
+              <span class="result-value" style="color: #f44336;">-${{ selectedSettlement.totalDeductions | number:'1.0-0' }}</span>
+            </div>
+            <div class="result-item" style="border-color: #2196f3;">
+              <span class="result-label">Net Amount</span>
+              <span class="result-value" style="color: #2196f3;">${{ selectedSettlement.netAmount | number:'1.0-0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="detail-section" *ngIf="selectedSettlement.status === 'completed'">
+          <h3>Payment Information</h3>
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Transaction ID</label>
+              <p>{{ selectedSettlement.transactionId }}</p>
+            </div>
+            <div class="info-item">
+              <label>Payment Method</label>
+              <p>{{ selectedSettlement.paymentMethod | titlecase }}</p>
+            </div>
+            <div class="info-item">
+              <label>Processed Date</label>
+              <p>{{ selectedSettlement.processedAt | date:'MMM dd, yyyy' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions List -->
+        <div class="detail-section">
+          <div class="section-header">
+            <h3>Related Transactions</h3>
+            <button mat-button color="primary" (click)="viewTransactionHistory()">
+              View All
+            </button>
+          </div>
+          <div class="transactions-list">
+            <div class="transaction-item" *ngFor="let txn of getSettlementTransactions(selectedSettlement.id)">
+              <div class="transaction-type">
+                <mat-icon>{{ getTransactionTypeIcon(txn.type) }}</mat-icon>
+              </div>
+              <div class="transaction-info">
+                <span class="description">{{ txn.description }}</span>
+                <span class="details">{{ txn.createdAt | date:'MMM dd, yyyy' }}</span>
+              </div>
+              <span [class.negative]="txn.amount < 0" class="amount">
+                {{ txn.amount < 0 ? '-' : '+' }}${{ Math.abs(txn.amount) | number:'1.0-0' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="detail-actions">
+          <button mat-button (click)="downloadSettlementReport(selectedSettlement)">
+            <mat-icon>download</mat-icon>
+            Download Report
+          </button>
+          <button mat-raised-button color="primary" 
+                  (click)="processSettlement(selectedSettlement)"
+                  *ngIf="selectedSettlement.status === 'pending'">
+            <mat-icon>send</mat-icon>
+            Process Settlement
+          </button>
+          <button mat-raised-button color="accent" 
+                  (click)="retryFailedSettlement(selectedSettlement)"
+                  *ngIf="selectedSettlement.status === 'failed'">
+            <mat-icon>refresh</mat-icon>
+            Retry
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

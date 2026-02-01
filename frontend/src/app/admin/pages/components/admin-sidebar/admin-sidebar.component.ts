@@ -38,7 +38,7 @@ export class AdminSidebarComponent implements OnInit {
       if (user) {
         const userRole = (user.role || '').toLowerCase().trim();
         this.userRole = userRole;
-        this.isSuperAdmin = userRole === 'super_admin' || userRole === 'super-admin';
+        this.isSuperAdmin = userRole === 'super_admin' || userRole === 'super-admin' || userRole === 'super admin';
         
         console.log('🔐 ==== SIDEBAR DEBUG ====');
         console.log('🔐 Raw role from user:', user.role);

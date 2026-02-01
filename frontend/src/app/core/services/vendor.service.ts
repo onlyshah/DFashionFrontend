@@ -10,6 +10,8 @@ export interface VendorStats {
   pendingOrders: number;
   lowStockProducts: number;
   recentOrdersCount: number;
+  totalPosts: number;
+  totalStories: number;
 }
 
 export interface MonthlyRevenue {

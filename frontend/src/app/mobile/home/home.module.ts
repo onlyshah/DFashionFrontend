@@ -5,6 +5,9 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule, Routes } from '@angular/router';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
+// Import Swiper
+import { register } from 'swiper/element/bundle';
+
 import { HomePage } from './home.page';
 
 // Import SharedModule

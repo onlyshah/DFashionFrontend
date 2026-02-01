@@ -12,7 +12,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterModule } from '@angular/router';
 
 import { UserManagementService } from '../services/user-management.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 interface SystemStats {
   totalUsers: number;

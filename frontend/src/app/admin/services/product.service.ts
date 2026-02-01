@@ -118,22 +118,8 @@ export class AdminProductService {
   }
 
   getProductsWithFallback(filters: ProductFilters = {}): Observable<AdminProductResponse> {
-    let params = new HttpParams();
-    Object.keys(filters).forEach(key => {
-      const value = (filters as any)[key];
-      if (value !== undefined && value !== null && value !== '') {
-        params = params.set(key, value.toString());
-      }
-    });
-
-    return this.http.get<AdminProductResponse>(`${this.apiUrl}/products`, { params }).pipe(
-      catchError((err: any) => {
-        if (err && err.status === 401) {
-          return this.http.get<AdminProductResponse>(`/api/admin/demo/products`, { params });
-        }
-        return throwError(() => err);
-      })
-    );
+    // Use real API endpoint - no fallback to demo
+    return this.getProducts(filters);
   }
 
   getProductById(id: string): Observable<{success: boolean; data: Product}> {

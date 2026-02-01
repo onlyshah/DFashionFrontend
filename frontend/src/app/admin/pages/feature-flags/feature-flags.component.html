@@ -1,0 +1,361 @@
+<div class="feature-flags-container">
+  <!-- Header -->
+  <div class="flags-header">
+    <h1>Feature Flags</h1>
+    <div class="header-actions">
+      <button mat-raised-button color="primary" (click)="openCreateFlag()" [disabled]="isLoading">
+        <mat-icon>add_circle</mat-icon>
+        Create Flag
+      </button>
+      <button mat-icon-button matTooltip="Export Flags" (click)="exportFlags()">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading && !showDetailView" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading feature flags...</p>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!isLoading || showDetailView" class="flags-content">
+    
+    <!-- Create Flag Form (Modal) -->
+    <mat-dialog-container *ngIf="showCreateForm" class="form-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create Feature Flag</h2>
+          <button mat-icon-button (click)="closeCreateForm()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <form [formGroup]="createFlagForm" (ngSubmit)="submitCreateFlag()" class="modal-body">
+          <mat-form-field appearance="outline">
+            <mat-label>Flag Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., New Checkout Flow">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Flag Key</mat-label>
+            <input matInput formControlName="key" placeholder="e.g., new_checkout_flow">
+            <mat-hint>Use lowercase letters, numbers, and underscores only</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Type</mat-label>
+            <mat-select formControlName="type">
+              <mat-option value="boolean">Boolean</mat-option>
+              <mat-option value="percentage">Percentage Rollout</mat-option>
+              <mat-option value="multivariate">Multivariate</mat-option>
+              <mat-option value="scheduled">Scheduled</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" rows="4" 
+                      placeholder="Describe the purpose of this flag..."></textarea>
+          </mat-form-field>
+
+          <mat-checkbox formControlName="enabled" class="enable-checkbox">
+            <span>Enable immediately</span>
+          </mat-checkbox>
+
+          <div class="form-actions">
+            <button mat-button (click)="closeCreateForm()">Cancel</button>
+            <button mat-raised-button color="primary" type="submit" 
+                    [disabled]="!createFlagForm.valid || isLoading">
+              Create Flag
+            </button>
+          </div>
+        </form>
+      </div>
+    </mat-dialog-container>
+
+    <!-- Filters -->
+    <div *ngIf="!showDetailView" class="filter-section">
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select [(ngModel)]="selectedType" (change)="onFilterChange()">
+          <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="enabledFilter" (change)="onFilterChange()">
+          <mat-option *ngFor="let option of enabledOptions" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchQuery" (change)="onFilterChange()" 
+               placeholder="Flag name or key...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+
+    <!-- Flags Table -->
+    <div class="flags-table-container" *ngIf="!showDetailView">
+      <table mat-table [dataSource]="flags" class="flags-table">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="name-cell">
+              <span class="flag-name">{{ element.name }}</span>
+              <span class="flag-key">{{ element.key }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Key Column -->
+        <ng-container matColumnDef="key">
+          <th mat-header-cell *matHeaderCellDef>Key</th>
+          <td mat-cell *matCellDef="let element">
+            <code class="flag-code">{{ element.key }}</code>
+          </td>
+        </ng-container>
+
+        <!-- Enabled Column -->
+        <ng-container matColumnDef="enabled">
+          <th mat-header-cell *matHeaderCellDef>Enabled</th>
+          <td mat-cell *matCellDef="let element">
+            <mat-slide-toggle [checked]="element.enabled" 
+                            (change)="toggleFlagEnabled(element)"
+                            [disabled]="isLoading">
+            </mat-slide-toggle>
+          </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let element">
+            <div class="type-cell">
+              <mat-icon class="type-icon">{{ getTypeIcon(element.type) }}</mat-icon>
+              <span>{{ element.type | titlecase }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Rollout Column -->
+        <ng-container matColumnDef="rollout">
+          <th mat-header-cell *matHeaderCellDef>Rollout</th>
+          <td mat-cell *matCellDef="let element">
+            <span *ngIf="element.rollout" class="rollout-percentage">
+              {{ element.rollout.percentage }}%
+            </span>
+            <span *ngIf="!element.rollout" class="no-rollout">—</span>
+          </td>
+        </ng-container>
+
+        <!-- Updated Date Column -->
+        <ng-container matColumnDef="updatedAt">
+          <th mat-header-cell *matHeaderCellDef>Updated</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.updatedAt | date: 'short' }}
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let element">
+            <button mat-icon-button matTooltip="View Details" (click)="viewFlagDetails(element)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Clone Flag" (click)="cloneFlag(element)">
+              <mat-icon>content_copy</mat-icon>
+            </button>
+            <button mat-icon-button matTooltip="Delete" (click)="deleteFlag(element)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Table Header & Rows -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="flags.length === 0" class="empty-state">
+        <mat-icon>flag</mat-icon>
+        <p>No feature flags found</p>
+        <button mat-raised-button color="primary" (click)="openCreateFlag()">
+          Create Your First Flag
+        </button>
+      </div>
+
+      <!-- Pagination -->
+      <mat-paginator [length]="totalFlags" [pageSize]="pageSize" 
+                     [pageSizeOptions]="pageSizeOptions"
+                     (page)="onPageChange($event.pageIndex + 1); onPageSizeChange($event.pageSize)">
+      </mat-paginator>
+    </div>
+
+    <!-- Flag Details View -->
+    <div *ngIf="showDetailView && selectedFlag" class="detail-view">
+      <div class="detail-header">
+        <button mat-icon-button (click)="closeDetailView()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>{{ selectedFlag.name }}</h2>
+        <mat-slide-toggle [checked]="selectedFlag.enabled" 
+                        (change)="toggleFlagEnabled(selectedFlag)"
+                        [disabled]="isLoading">
+        </mat-slide-toggle>
+      </div>
+
+      <mat-card class="detail-card">
+        <mat-card-content>
+          <!-- Flag Info -->
+          <div class="detail-section">
+            <h3>Flag Information</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Name</label>
+                <p>{{ selectedFlag.name }}</p>
+              </div>
+              <div class="info-item">
+                <label>Key</label>
+                <p><code>{{ selectedFlag.key }}</code></p>
+              </div>
+              <div class="info-item">
+                <label>Type</label>
+                <p>
+                  <mat-icon class="type-icon">{{ getTypeIcon(selectedFlag.type) }}</mat-icon>
+                  {{ selectedFlag.type | titlecase }}
+                </p>
+              </div>
+              <div class="info-item">
+                <label>Status</label>
+                <p>
+                  <span class="status-badge" [class.enabled]="selectedFlag.enabled">
+                    {{ selectedFlag.enabled ? 'Enabled' : 'Disabled' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="detail-section">
+            <h3>Description</h3>
+            <p>{{ selectedFlag.description }}</p>
+          </div>
+
+          <!-- Rollout Configuration -->
+          <div class="detail-section" *ngIf="selectedFlag.type === 'percentage'">
+            <h3>Rollout Configuration</h3>
+            <form [formGroup]="updateRolloutForm" class="rollout-form">
+              <mat-slider formControlName="percentage" min="0" max="100" 
+                         [value]="selectedFlag.rollout?.percentage || 0">
+              </mat-slider>
+              <div class="rollout-info">
+                <span class="rollout-label">Current Rollout</span>
+                <span class="rollout-value">
+                  {{ updateRolloutForm.get('percentage')?.value || 0 }}%
+                </span>
+              </div>
+              <button mat-raised-button color="primary" type="button" 
+                      (click)="updateRolloutPercentage(selectedFlag)"
+                      [disabled]="isLoading">
+                <mat-icon>update</mat-icon>
+                Update Rollout
+              </button>
+            </form>
+          </div>
+
+          <!-- Variants -->
+          <div class="detail-section" *ngIf="selectedFlag.variants && selectedFlag.variants.length > 0">
+            <h3>Variants</h3>
+            <div class="variants-list">
+              <div *ngFor="let variant of selectedFlag.variants" class="variant-item">
+                <div class="variant-header">
+                  <span class="variant-name">{{ variant.name }}</span>
+                  <span class="variant-weight">{{ variant.weight }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="detail-section" *ngIf="selectedFlag.tags && selectedFlag.tags.length > 0">
+            <h3>Tags</h3>
+            <div class="tags-list">
+              <mat-chip-set>
+                <mat-chip *ngFor="let tag of selectedFlag.tags">{{ tag }}</mat-chip>
+              </mat-chip-set>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="detail-section" *ngIf="selectedFlag.analytics">
+            <div class="section-header">
+              <h3>Analytics</h3>
+              <button mat-button (click)="viewAnalytics(selectedFlag)">
+                <mat-icon>bar_chart</mat-icon>
+                View Detailed Analytics
+              </button>
+            </div>
+            <div class="analytics-grid">
+              <div class="analytics-card">
+                <span class="analytics-label">Views</span>
+                <span class="analytics-value">{{ selectedFlag.analytics.views | number }}</span>
+              </div>
+              <div class="analytics-card">
+                <span class="analytics-label">Conversions</span>
+                <span class="analytics-value">{{ selectedFlag.analytics.conversions | number }}</span>
+              </div>
+              <div class="analytics-card">
+                <span class="analytics-label">Conversion Rate</span>
+                <span class="analytics-value">{{ selectedFlag.analytics.conversionRate | number: '1.2-2' }}%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metadata -->
+          <div class="detail-section">
+            <h3>Metadata</h3>
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Created</label>
+                <p>{{ selectedFlag.createdAt | date: 'medium' }}</p>
+              </div>
+              <div class="info-item">
+                <label>Created By</label>
+                <p>{{ selectedFlag.createdBy }}</p>
+              </div>
+              <div class="info-item">
+                <label>Last Updated</label>
+                <p>{{ selectedFlag.updatedAt | date: 'medium' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="detail-actions">
+            <button mat-raised-button (click)="cloneFlag(selectedFlag)">
+              <mat-icon>content_copy</mat-icon>
+              Clone Flag
+            </button>
+            <button mat-raised-button color="warn" (click)="deleteFlag(selectedFlag)">
+              <mat-icon>delete</mat-icon>
+              Delete Flag
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+</div>

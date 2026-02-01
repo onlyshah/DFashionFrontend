@@ -6,20 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
-
-interface Category {
-  _id: string;
-  name: string;
-  description?: string;
-  image?: string;
-  productCount?: number;
-  isActive?: boolean;
-  isFeatured?: boolean;
-  parentCategory?: string;
-  subcategories?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { CategoryService, Category, Subcategory } from '../../../../../core/services/category.service';
 
 @Component({
     selector: 'app-shop-by-category',
@@ -48,7 +35,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   imageUrl = environment.apiUrl
   // No static fallback. All category images and data must come from backend.
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private router: Router, private http: HttpClient, private categoryService: CategoryService) {}
 
   ngOnInit() {
   this.loadCategories();
@@ -67,22 +54,17 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
 
     // Load from API only, do not fallback to static data
     this.subscription.add(
-      this.http.get<any>(`${environment.apiUrl}/api/categories`).subscribe({
-        next: (response) => {
-          if (response?.success && response?.data) {
-            this.categories = response.data.slice(0, 8); // Limit to 8 categories for slider
-            console.log('cat',this.categories)
-            this.updateSliderOnCategoriesLoad();
-          } else {
-            console.warn('No categories found');
-            this.categories = [];
-          }
+      this.categoryService.getAllCategories().subscribe({
+        next: (categories) => {
+          this.categories = categories.slice(0, 8); // Limit to 8 categories for slider
+          console.log('cat',this.categories)
+          this.updateSliderOnCategoriesLoad();
           this.isLoading = false;
         },
         error: (error) => {
           console.error('Error loading categories:', error);
-          this.categories = [];
           this.error = 'Failed to load categories';
+          this.categories = [];
           this.isLoading = false;
         }
       })
@@ -106,7 +88,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   }
 
   trackByCategoryId(_index: number, category: Category): string {
-    return category._id;
+    return category._id || category.name;
   }
 
   // No static fallback. All images and categories must come from backend.

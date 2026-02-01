@@ -2,11 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { SocialMediaService } from '../../core/services/social-media.service';
-import { SocialFeaturesService } from '../../core/services/social-features.service';
-import { AuthService } from '../../core/services/auth.service';
-import { CartService } from '../../core/services/cart.service';
-import { WishlistService } from '../../core/services/wishlist.service';
+import { SocialMediaService } from '../../../core/services/social-media.service';
+import { SocialFeaturesService } from '../../../core/services/social-features.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CartService } from '../../../core/services/cart.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 import { Subscription } from 'rxjs';
 import { ViewAddStoriesComponent, Story, CurrentUser } from '../home/components/view-add-stories/view-add-stories.component';
 
@@ -789,7 +789,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
   loadStories() {
     this.subscriptions.push(
       this.socialMediaService.loadStories().subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             // Group stories by user
             const userStories = response.stories.reduce((acc: any, story: any) => {
@@ -809,7 +809,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             console.log('Social Feed - Stories loaded:', this.stories);
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading stories:', error);
           // Set empty stories array so add story button still shows
           this.stories = [];
@@ -823,7 +823,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.socialMediaService.loadPosts(1, 10).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             this.posts = response.posts.map((post: any) => ({
               ...post,
@@ -833,7 +833,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
           }
           this.loading = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading posts:', error);
           this.loading = false;
         }
@@ -859,7 +859,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.socialMediaService.loadPosts(page, 10).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success && response.posts.length > 0) {
             const newPosts = response.posts.map((post: any) => ({
               ...post,
@@ -875,7 +875,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
           }
           this.loading = false;
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Error loading more posts:', error);
           this.loading = false;
         }
@@ -946,7 +946,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
     // API call using new social features service
     this.subscriptions.push(
       this.socialFeaturesService.togglePostLike(post._id).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             post.isLiked = response.isLiked!;
             // Update likes count from server response
@@ -957,7 +957,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           // Revert optimistic update on error
           const currentUser = this.authService.currentUserValue;
           post.isLiked = wasLiked;
@@ -998,7 +998,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
     // API call using new social features service
     this.subscriptions.push(
       this.socialFeaturesService.togglePostSave(post._id).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             post.isSaved = response.isSaved!;
             // Update saves count from server response
@@ -1009,7 +1009,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           // Revert optimistic update on error
           const currentUser = this.authService.currentUserValue;
           post.isSaved = wasSaved;
@@ -1080,7 +1080,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
     // API call using new social features service
     this.subscriptions.push(
       this.socialFeaturesService.addPostComment(post._id, commentText.trim()).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           if (response.success) {
             // Replace the optimistic comment with the server response
             const commentIndex = post.comments.findIndex(c => c._id === newComment._id);
@@ -1092,7 +1092,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             }
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           // Remove optimistic comment on error
           post.comments = post.comments.filter(c => c._id !== newComment._id);
           this.commentTexts[post._id] = commentText; // Restore comment text
@@ -1143,14 +1143,14 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
 
       this.subscriptions.push(
         this.cartService.addToCart(product._id, 1, size, color).subscribe({
-          next: (response) => {
+          next: (response: any) => {
             if (response.success) {
               // Track analytics using new service
               this.socialFeaturesService.trackProductClick('post', post._id, product._id, 'add_to_cart').subscribe();
               alert(`${product.name} added to cart!`);
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error adding to cart:', error);
             alert('Failed to add to cart. Please try again.');
           }
@@ -1172,14 +1172,14 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
 
       this.subscriptions.push(
         this.wishlistService.addToWishlist(product._id).subscribe({
-          next: (response) => {
+          next: (response: any) => {
             if (response.success) {
               // Track analytics using new service
               this.socialFeaturesService.trackProductClick('post', post._id, product._id, 'add_to_wishlist').subscribe();
               alert(`${product.name} added to wishlist!`);
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error adding to wishlist:', error);
             alert('Failed to add to wishlist. Please try again.');
           }
@@ -1199,10 +1199,10 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
   private trackProductClick(postId: string, productId: string, action: string) {
     // Track product click analytics using new service
     this.socialFeaturesService.trackProductClick('post', postId, productId, action).subscribe({
-      next: (response) => {
+      next: (response: any) => {
         console.log('Analytics tracked:', response);
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error tracking analytics:', error);
       }
     });

@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { tap, catchError } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { RBACService } from '../../core/services/rbac.service';
+import { getRedirectPathForRole } from '../../config/roleRedirectMap';
 
 @Component({
   selector: 'app-login',
@@ -53,18 +55,34 @@ export class LoginComponent implements OnInit {
         // Set the rememberMe flag in the auth service before login
         this.authService.setRememberMe(rememberMe);
         
-        const response = await this.authService.login({ email, password }).toPromise();
+        console.log('🔄 Starting login request...');
+        const { firstValueFrom, timeout } = await import('rxjs');
+        const loginObservable = this.authService.login({ email, password }).pipe(
+          timeout(30000), // 30 second timeout
+          tap(resp => console.log('🔄 Login observable emitted:', resp)),
+          catchError(err => {
+            console.error('🔄 Login observable error:', err);
+            throw err;
+          })
+        );
+        
+        console.log('🔄 Converting to promise...');
+        const response = await firstValueFrom(loginObservable);
+        console.log('🔄 Promise resolved with response:', response);
 
         console.log('📨 Login response received:', response);
 
         if (response?.success || response?.data) {
           console.log('✅ Login successful, response:', response);
           // Load user permissions
-          const user = response.data?.user || response.user;
+          const user = (this.authService.currentUserValue as any)?.user || response.data?.user || response.user;
           this.rbacService.initializeUser(user);
 
-          // Redirect based on role
-          this.redirectBasedOnRole(user?.role);
+          // Prefer backend-provided redirectPath, otherwise fallback to role mapping
+          const redirectPath = response.data?.redirectPath || response.redirectPath;
+          const finalRedirect = redirectPath || getRedirectPathForRole(user?.role, '/home');
+          console.log('➡️ Redirect chosen:', { redirectPath, userRole: user?.role, finalRedirect });
+          this.router.navigate([finalRedirect]);
         } else {
           this.errorMessage = response?.message || 'Login failed. Please try again.';
           console.error('❌ Login response invalid:', response);
@@ -81,16 +99,8 @@ export class LoginComponent implements OnInit {
   }
 
   redirectBasedOnRole(role?: string): void {
-    // Route based on user role
-    const roleRoutes: { [key: string]: string } = {
-      'super_admin': '/admin/dashboard',
-      'admin': '/admin/dashboard',
-      'manager': '/admin/dashboard',
-      'vendor': '/vendor/dashboard',
-      'customer': '/user-dashboard'
-    };
-
-    const redirectUrl = roleRoutes[role || 'customer'] || '/home';
+    // Use shared role->path mapping from config
+    const redirectUrl = getRedirectPathForRole(role, '/home');
     this.router.navigate([redirectUrl]);
   }
 

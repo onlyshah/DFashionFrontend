@@ -33,6 +33,8 @@ export interface Post {
     allowComments: boolean;
     allowSharing: boolean;
   };
+  isLiked?: boolean; // UI state: whether current user liked this post
+  isSaved?: boolean; // UI state: whether current user saved this post
   createdAt: Date;
   updatedAt: Date;
 }
@@ -77,6 +79,7 @@ export interface PostComment {
   likes: string[];
   replies: PostCommentReply[];
   createdAt: Date;
+  commentedAt?: Date; // UI state: when the comment was made
 }
 
 export interface PostCommentReply {
@@ -107,6 +110,7 @@ export interface PostsResponse {
     current: number;
     pages: number;
     total: number;
+    totalPages?: number; // Alternative name used in some places
   };
 }
 

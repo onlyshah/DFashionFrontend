@@ -2,10 +2,10 @@
   <div class="navbar-brand-wrapper d-flex justify-content-center">
     <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
       <a class="navbar-brand brand-logo" routerLink="/admin/dashboard" aria-label="DFashion dashboard">
-        <img [src]="apiUrl + '/uploads/logo/logo.svg'" alt="logo" (error)="handleImageError($event)" />
+        <img [src]="'/uploads/logo/logo.svg'" alt="logo" (error)="handleImageError($event)" />
       </a>
       <a class="navbar-brand brand-logo-mini" routerLink="/admin/dashboard" aria-hidden="true">
-        <img [src]="apiUrl + '/uploads/logo/logo-mini.svg'" alt="logo-mini" (error)="handleImageError($event)" />
+        <img [src]="'/uploads/logo/logo-mini.svg'" alt="logo-mini" (error)="handleImageError($event)" />
       </a>
       <button class="navbar-toggler navbar-toggler align-self-center" type="button" (click)="toggleSidebar()">
         <span class="typcn typcn-th-menu"></span>
@@ -16,7 +16,7 @@
     <ul class="navbar-nav me-lg-2">
       <li class="nav-item nav-profile" ngbDropdown>
         <a class="nav-link" id="profileDropdown" role="button" ngbDropdownToggle>
-          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" alt="profile" (error)="handleImageError($event)"/>
+          <img class="profile-avatar" [src]="(currentUser$ | async)?.avatar || '/uploads/avatars/default-avatar.svg'" alt="profile" (error)="handleImageError($event)"/>
           <span class="nav-profile-name">{{(currentUser$ | async)?.fullName || 'Super Admin'}}</span>
         </a>
         <div ngbDropdownMenu class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
