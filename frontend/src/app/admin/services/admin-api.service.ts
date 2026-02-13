@@ -61,7 +61,7 @@ export class AdminApiService {
   constructor(private http: HttpClient, private adminAuth: AdminAuthService) {}
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('admin_token') || localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token = localStorage.getItem('admin_token') || sessionStorage.getItem('admin_token') || localStorage.getItem('token') || sessionStorage.getItem('token');
     const headers: any = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
     return new HttpHeaders(headers);
