@@ -10,21 +10,21 @@
     <!-- Navigation arrows for multiple images -->
     <div class="nav-arrows" *ngIf="images.length > 1">
       <ion-button fill="clear" class="nav-button prev" (click)="previousImage()" [disabled]="currentIndex === 0">
-        <ion-icon name="chevron-back"></ion-icon>
+        <ion-icon name="chevron-back" data-bs-toggle="tooltip" data-bs-placement="top" title="Previous image" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" class="nav-button next" (click)="nextImage()" [disabled]="currentIndex === images.length - 1">
-        <ion-icon name="chevron-forward"></ion-icon>
+        <ion-icon name="chevron-forward" data-bs-toggle="tooltip" data-bs-placement="top" title="Next image" tabindex="0"></ion-icon>
       </ion-button>
     </div>
 
     <!-- Fullscreen toggle -->
     <ion-button fill="clear" class="fullscreen-button" (click)="toggleFullscreen()">
-      <ion-icon [name]="fullscreen ? 'contract' : 'expand'"></ion-icon>
+      <ion-icon [name]="fullscreen ? 'contract' : 'expand'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'" tabindex="0"></ion-icon>
     </ion-button>
 
     <!-- Close button for fullscreen -->
     <ion-button *ngIf="fullscreen" fill="clear" class="close-button" (click)="closeFullscreen()">
-      <ion-icon name="close"></ion-icon>
+      <ion-icon name="close" data-bs-toggle="tooltip" data-bs-placement="top" title="Close viewer" tabindex="0"></ion-icon>
     </ion-button>
   </div>
 

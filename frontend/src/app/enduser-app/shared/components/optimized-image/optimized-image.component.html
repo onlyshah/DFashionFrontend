@@ -10,7 +10,7 @@
 
   <!-- Error State -->
   <div class="error-overlay" *ngIf="hasError && showErrorMessage">
-    <ion-icon name="image-outline" class="error-icon"></ion-icon>
+    <ion-icon name="image-outline" class="error-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Image failed to load" tabindex="0"></ion-icon>
     <p class="error-text">{{ errorMessage }}</p>
   </div>
 

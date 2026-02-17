@@ -3,10 +3,10 @@
     <ion-title>My Wishlist</ion-title>
     <ion-buttons slot="end" *ngIf="wishlistItems.length > 0">
       <ion-button fill="clear" (click)="toggleSelectAll()" [title]="allItemsSelected() ? 'Deselect All' : 'Select All'">
-        <ion-icon [name]="allItemsSelected() ? 'checkbox' : 'square-outline'"></ion-icon>
+        <ion-icon [name]="allItemsSelected() ? 'checkbox' : 'square-outline'" data-bs-toggle="tooltip" data-bs-placement="top" title="Select all" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" (click)="bulkRemoveItems()" [disabled]="selectedItems.length === 0">
-        <ion-icon name="trash"></ion-icon>
+        <ion-icon name="trash" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete selected" tabindex="0"></ion-icon>
         <ion-badge color="danger" *ngIf="selectedItems.length > 0">{{ selectedItems.length }}</ion-badge>
       </ion-button>
     </ion-buttons>
@@ -27,7 +27,7 @@
   <!-- Empty Wishlist -->
   <div class="empty-wishlist" *ngIf="!isLoading && wishlistItems.length === 0">
     <div class="empty-content">
-      <ion-icon name="heart-outline" color="medium"></ion-icon>
+      <ion-icon name="heart-outline" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove from wishlist" tabindex="0"></ion-icon>
       <h2>Your wishlist is empty</h2>
       <p>Save items you love to buy them later</p>
       <ion-button expand="block" (click)="continueShopping()">
@@ -56,7 +56,7 @@
       [disabled]="selectedItems.length === 0"
       (click)="bulkMoveToCart()"
       color="primary">
-      <ion-icon name="bag" slot="start"></ion-icon>
+      <ion-icon name="bag" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to bag" tabindex="0"></ion-icon>
       Move Selected to Cart ({{ selectedItems.length }})
     </ion-button>
   </div>
@@ -100,17 +100,17 @@
           
           <div slot="end" class="item-actions">
             <ion-button fill="clear" size="small" (click)="moveToCart(item)">
-              <ion-icon name="bag" color="primary"></ion-icon>
+              <ion-icon name="bag" color="primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to bag" tabindex="0"></ion-icon>
             </ion-button>
           </div>
         </ion-item>
         
         <ion-item-options side="end">
           <ion-item-option color="success" (click)="moveToCart(item)">
-            <ion-icon name="bag" slot="icon-only"></ion-icon>
+            <ion-icon name="bag" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to bag" tabindex="0"></ion-icon>
           </ion-item-option>
           <ion-item-option color="danger" (click)="removeFromWishlist(item.product._id)">
-            <ion-icon name="trash" slot="icon-only"></ion-icon>
+            <ion-icon name="trash" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove item" tabindex="0"></ion-icon>
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
@@ -119,7 +119,7 @@
     <!-- Action Buttons -->
     <div class="action-buttons">
       <ion-button expand="block" fill="outline" (click)="continueShopping()">
-        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        <ion-icon name="arrow-back" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Back" tabindex="0"></ion-icon>
         Continue Shopping
       </ion-button>
     </div>

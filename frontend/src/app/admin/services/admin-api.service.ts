@@ -757,5 +757,145 @@ export class AdminApiService {
       headers: this.getHeaders()
     });
   }
+
+  // ==================== CUSTOMER MANAGEMENT ====================
+
+  /**
+   * Get aggregated customers list (EndUsers only) with metrics
+   */
+  getCustomers(params: any = {}): Observable<any> {
+    console.log('📡 API Call: GET /api/admin/users/customers', params);
+    const httpParams = new HttpParams()
+      .set('page', (params.page || 1).toString())
+      .set('limit', (params.limit || 25).toString())
+      .set('search', params.search || '')
+      .set('status', params.status || '');
+
+    return this.http.get<any>(`${this.apiUrl}/users/customers`, { params: httpParams, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error('❌ Error fetching customers:', error);
+        return of({ success: false, data: [] });
+      })
+    );
+  }
+
+  /**
+   * Block a customer
+   */
+  blockCustomer(customerId: string): Observable<any> {
+    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}/block`);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/block`, {}, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error blocking customer:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Unblock a customer
+   */
+  unblockCustomer(customerId: string): Observable<any> {
+    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}/unblock`);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/unblock`, {}, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error unblocking customer:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Block or Unblock customer (wrapper method)
+   */
+  blockUnblockCustomer(customerId: string, endpoint: 'block' | 'unblock'): Observable<any> {
+    return endpoint === 'block' ? this.blockCustomer(customerId) : this.unblockCustomer(customerId);
+  }
+
+  /**
+   * Reset customer password
+   */
+  resetCustomerPassword(customerId: string, newPassword: string): Observable<any> {
+    console.log(`📡 API Call: POST /api/admin/users/customers/${customerId}/reset-password`);
+    return this.http.post(
+      `${this.apiUrl}/users/customers/${customerId}/reset-password`,
+      { password: newPassword },
+      { headers: this.getHeaders() }
+    ).pipe(
+      catchError(error => {
+        console.error(`❌ Error resetting customer password:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Get customer posts
+   */
+  getCustomerPosts(customerId: string, page: number = 1, limit: number = 25): Observable<any> {
+    console.log(`📡 API Call: GET /api/admin/users/customers/${customerId}/posts`);
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/posts`, { params, headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error fetching customer posts:`, error);
+        return of({ success: false, data: [] });
+      })
+    );
+  }
+
+  /**
+   * Delete a customer post
+   */
+  deleteCustomerPost(customerId: string, postId: string): Observable<any> {
+    console.log(`📡 API Call: DELETE /api/admin/users/customers/${customerId}/posts/${postId}`);
+    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}/posts/${postId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error deleting customer post:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Get customer engagement metrics
+   */
+  getCustomerEngagement(customerId: string): Observable<any> {
+    console.log(`📡 API Call: GET /api/admin/users/customers/${customerId}/engagement`);
+    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/engagement`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error fetching customer engagement:`, error);
+        return of({ success: false, data: {} });
+      })
+    );
+  }
+
+  /**
+   * Update customer details
+   */
+  updateCustomer(customerId: string, customerData: any): Observable<any> {
+    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}`, customerData);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}`, customerData, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error updating customer:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
+
+  /**
+   * Delete a customer (soft delete)
+   */
+  deleteCustomer(customerId: string): Observable<any> {
+    console.log(`📡 API Call: DELETE /api/admin/users/customers/${customerId}`);
+    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}`, { headers: this.getHeaders() }).pipe(
+      catchError(error => {
+        console.error(`❌ Error deleting customer:`, error);
+        return of({ success: false, error: error.message });
+      })
+    );
+  }
 }
 

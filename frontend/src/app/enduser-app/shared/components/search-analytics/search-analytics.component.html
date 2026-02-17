@@ -2,7 +2,7 @@
   <div class="analytics-header">
     <h3>Search Insights</h3>
     <ion-button fill="clear" size="small" (click)="refreshData()">
-      <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      <ion-icon name="refresh" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" tabindex="0"></ion-icon>
     </ion-button>
   </div>
   <div *ngIf="isLoading" class="loading-container">
@@ -56,7 +56,7 @@
           <div class="trend-stats">
             <span class="trend-searches">{{ trend.searches }} searches</span>
             <span class="trend-growth" [class.positive]="trend.growth > 0" [class.negative]="trend.growth < 0">
-                  <ion-icon [name]="trend.growth > 0 ? 'trending-up' : 'trending-down'"></ion-icon>
+                  <ion-icon [name]="trend.growth > 0 ? 'trending-up' : 'trending-down'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="trend.growth > 0 ? 'Trending up' : 'Trending down'" tabindex="0"></ion-icon>
                   {{ trend.growth | percent:'1.0-0' }}
                 </span>
           </div>
@@ -91,7 +91,7 @@
     </div>
   </div>
   <div *ngIf="!isLoading && !insights" class="no-data">
-    <ion-icon name="analytics-outline" size="large"></ion-icon>
+    <ion-icon name="analytics-outline" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Analytics" tabindex="0"></ion-icon>
     <h4>No Search Data</h4>
     <p>Start searching to see your analytics!</p>
   </div>

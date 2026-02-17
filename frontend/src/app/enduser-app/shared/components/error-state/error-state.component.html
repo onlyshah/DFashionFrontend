@@ -1,6 +1,6 @@
 <div [class]="containerClasses">
   <div class="error-icon" [class.shake]="showAnimation">
-    <ion-icon [name]="icon" color="danger"></ion-icon>
+    <ion-icon [name]="icon" color="danger" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="title" tabindex="0"></ion-icon>
   </div>
   <h3 class="error-title">{{ title }}</h3>
   <p class="error-message">{{ message }}</p>
@@ -19,7 +19,7 @@
       color="primary"
       fill="solid"
       (click)="onRetry()">
-      <ion-icon name="refresh" slot="start"></ion-icon>
+      <ion-icon name="refresh" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Retry" tabindex="0"></ion-icon>
       {{ retryText }}
     </ion-button>
     <ion-button 
@@ -27,7 +27,7 @@
       color="medium"
       fill="outline"
       (click)="onSecondaryAction()">
-      <ion-icon [name]="secondaryIcon" slot="start" *ngIf="secondaryIcon"></ion-icon>
+      <ion-icon [name]="secondaryIcon" slot="start" *ngIf="secondaryIcon" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="secondaryLabel" tabindex="0"></ion-icon>
       {{ secondaryText }}
     </ion-button>
   </div>

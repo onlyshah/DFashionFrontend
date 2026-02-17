@@ -53,6 +53,7 @@ export class AdminsComponent implements OnInit {
     this.api.getAdmins(page, this.pageSize).subscribe({
       next: (res: any) => {
         console.log('✅ Admins loaded:', res);
+        console.log('ℹ️ admins payload users length:', (res?.data?.users || res?.data || []).length);
         this.dataSource.data = res?.data?.users || res?.data || [];
         this.totalAdmins = res?.data?.pagination?.total || res?.data?.length || 0;
         this.isLoading = false;

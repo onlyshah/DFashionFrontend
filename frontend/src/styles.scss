@@ -1,5 +1,10 @@
 // -------------------------------
-// ✅ 1. Admin Theme Styles - MUST COME FIRST
+// ✅ 0. Angular Material Theme - MUST COME FIRST
+// -------------------------------
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+// -------------------------------
+// ✅ 1. Admin Theme Styles
 // -------------------------------
 // Import the complete admin theme from existing theme folder
 @import './app/admin/styles/scss/style.scss';

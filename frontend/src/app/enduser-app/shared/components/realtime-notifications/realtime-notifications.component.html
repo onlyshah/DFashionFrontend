@@ -10,7 +10,7 @@
     class="notification-button"
     [class.has-notifications]="unreadCount > 0"
   >
-    <mat-icon>notifications</mat-icon>
+    <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications" tabindex="0">notifications</mat-icon>
   </button>
 
   <mat-menu #notificationMenu="matMenu" class="notification-menu" xPosition="before">
@@ -24,10 +24,10 @@
           matTooltip="Mark all as read"
           class="mark-all-read-btn"
         >
-          <mat-icon>done_all</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all read" tabindex="0">done_all</mat-icon>
         </button>
         <div class="connection-status" [class.connected]="isConnected" [class.disconnected]="!isConnected">
-          <mat-icon>{{ isConnected ? 'wifi' : 'wifi_off' }}</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="isConnected ? 'Online' : 'Offline'" tabindex="0">{{ isConnected ? 'wifi' : 'wifi_off' }}</mat-icon>
         </div>
       </div>
     </div>
@@ -41,7 +41,7 @@
       </div>
 
       <div *ngIf="!loading && notifications.length === 0" class="empty-state">
-        <mat-icon>notifications_none</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="No notifications" tabindex="0">notifications_none</mat-icon>
         <p>No notifications yet</p>
       </div>
 
@@ -76,7 +76,7 @@
             matTooltip="Mark as read"
             class="mark-read-btn"
           >
-            <mat-icon>done</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Mark done" tabindex="0">done</mat-icon>
           </button>
         </div>
       </div>

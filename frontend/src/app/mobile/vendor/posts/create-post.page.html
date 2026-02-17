@@ -2,13 +2,13 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-back" data-bs-toggle="tooltip" data-bs-placement="top" title="Back" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Create Post</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="saveDraft()" fill="clear">
-        <ion-icon name="bookmark"></ion-icon>
+        <ion-icon name="bookmark" data-bs-toggle="tooltip" data-bs-placement="top" title="Bookmark" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -22,7 +22,7 @@
       <div class="section-header">
         <h3>Media</h3>
         <ion-button fill="clear" size="small" (click)="presentMediaActionSheet()">
-          <ion-icon name="add" slot="start"></ion-icon>
+          <ion-icon name="add" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Add" tabindex="0"></ion-icon>
           Add Media
         </ion-button>
       </div>
@@ -37,14 +37,14 @@
             class="remove-btn"
             (click)="removeMedia(i)"
           >
-            <ion-icon name="close-circle" color="danger"></ion-icon>
+            <ion-icon name="close-circle" color="danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove" tabindex="0"></ion-icon>
           </ion-button>
         </div>
       </div>
 
       <!-- Add Media Button -->
       <div class="add-media-placeholder" *ngIf="selectedMedia.length === 0" (click)="presentMediaActionSheet()">
-        <ion-icon name="camera" color="medium"></ion-icon>
+        <ion-icon name="camera" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="Open camera" tabindex="0"></ion-icon>
         <p>Tap to add photos or videos</p>
       </div>
     </div>
@@ -91,7 +91,7 @@
             <p>₹{{ product.price | number:'1.0-0' }}</p>
           </ion-label>
           <ion-button fill="clear" slot="end">
-            <ion-icon name="add" color="primary"></ion-icon>
+            <ion-icon name="add" color="primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Add" tabindex="0"></ion-icon>
           </ion-button>
         </ion-item>
       </ion-list>
@@ -109,7 +109,7 @@
               <img [src]="product.images[0]?.url" [alt]="product.name">
             </ion-avatar>
             <ion-label>{{ product.name }}</ion-label>
-            <ion-icon name="close"></ion-icon>
+            <ion-icon name="close" data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0"></ion-icon>
           </ion-chip>
         </div>
       </div>
@@ -134,7 +134,7 @@
           (click)="removeHashtag(i)"
         >
           <ion-label>#{{ tag }}</ion-label>
-          <ion-icon name="close"></ion-icon>
+          <ion-icon name="close" data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0"></ion-icon>
         </ion-chip>
       </div>
     </div>
@@ -173,7 +173,7 @@
       (click)="onSubmit()"
       [disabled]="!postForm.valid || selectedMedia.length === 0 || isUploading"
     >
-      <ion-icon name="checkmark" *ngIf="!isUploading"></ion-icon>
+      <ion-icon name="checkmark" *ngIf="!isUploading" data-bs-toggle="tooltip" data-bs-placement="top" title="Submit" tabindex="0"></ion-icon>
       <ion-spinner name="crescent" *ngIf="isUploading"></ion-spinner>
     </ion-fab-button>
   </ion-fab>

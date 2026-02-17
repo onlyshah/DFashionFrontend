@@ -3,10 +3,10 @@
     <ion-title>Posts</ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="onSearchClick()">
-        <ion-icon name="search"></ion-icon>
+        <ion-icon name="search" data-bs-toggle="tooltip" data-bs-placement="top" title="Search posts" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" (click)="onCreatePost()">
-        <ion-icon name="add"></ion-icon>
+        <ion-icon name="add" data-bs-toggle="tooltip" data-bs-placement="top" title="Create post" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -53,7 +53,7 @@
         </div>
         
         <ion-button fill="clear" size="small">
-          <ion-icon name="ellipsis-horizontal"></ion-icon>
+          <ion-icon name="ellipsis-horizontal" data-bs-toggle="tooltip" data-bs-placement="top" title="More actions" tabindex="0"></ion-icon>
         </ion-button>
       </div>
 
@@ -86,7 +86,7 @@
 
           <!-- Shopping bag icon indicator -->
           <div class="shopping-indicator" *ngIf="post.products && post.products.length > 0 && !post.showProductTags">
-            <ion-icon name="bag-outline"></ion-icon>
+            <ion-icon name="bag-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="View product" tabindex="0"></ion-icon>
           </div>
         </div>
 
@@ -118,20 +118,18 @@
       <div class="post-actions">
         <div class="action-buttons">
           <ion-button fill="clear" size="small" (click)="toggleLike(post)">
-            <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'" 
-                      [color]="post.isLiked ? 'danger' : 'dark'"></ion-icon>
+            <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'" [color]="post.isLiked ? 'danger' : 'dark'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="post.isLiked ? 'Unlike post' : 'Like post'" tabindex="0"></ion-icon>
           </ion-button>
           <ion-button fill="clear" size="small" (click)="toggleComments(post)">
-            <ion-icon name="chatbubble-outline" color="dark"></ion-icon>
+            <ion-icon name="chatbubble-outline" color="dark" data-bs-toggle="tooltip" data-bs-placement="top" title="Comment" tabindex="0"></ion-icon>
           </ion-button>
           <ion-button fill="clear" size="small" (click)="sharePost(post)">
-            <ion-icon name="paper-plane-outline" color="dark"></ion-icon>
+            <ion-icon name="paper-plane-outline" color="dark" data-bs-toggle="tooltip" data-bs-placement="top" title="Share post" tabindex="0"></ion-icon>
           </ion-button>
         </div>
         
         <ion-button fill="clear" size="small" (click)="toggleSave(post)">
-          <ion-icon [name]="post.isSaved ? 'bookmark' : 'bookmark-outline'" 
-                    [color]="post.isSaved ? 'dark' : 'dark'"></ion-icon>
+          <ion-icon [name]="post.isSaved ? 'bookmark' : 'bookmark-outline'" [color]="post.isSaved ? 'dark' : 'dark'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="post.isSaved ? 'Remove saved' : 'Save post'" tabindex="0"></ion-icon>
         </ion-button>
       </div>
 

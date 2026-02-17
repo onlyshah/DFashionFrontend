@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="widget-header">
     <div class="header-content">
-      <ion-icon [name]="getRecommendationIcon()" [color]="getRecommendationColor()"></ion-icon>
+      <ion-icon [name]="getRecommendationIcon()" [color]="getRecommendationColor()" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="title" tabindex="0"></ion-icon>
       <h3>{{ title }}</h3>
     </div>
     <ion-button 
@@ -10,7 +10,7 @@
       size="small" 
       (click)="refresh()"
       [disabled]="loading">
-      <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      <ion-icon name="refresh" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh recommendations" tabindex="0"></ion-icon>
     </ion-button>
   </div>
 
@@ -22,7 +22,7 @@
 
   <!-- Error State -->
   <div *ngIf="error && !loading" class="error-container">
-    <ion-icon name="alert-circle" color="danger"></ion-icon>
+    <ion-icon name="alert-circle" color="danger" data-bs-toggle="tooltip" data-bs-placement="top" title="View error details" tabindex="0"></ion-icon>
     <p>{{ error }}</p>
     <ion-button fill="outline" size="small" (click)="refresh()">
       Try Again
@@ -52,7 +52,7 @@
             size="small"
             (click)="onProductLike(product, $event)"
             class="action-btn like-btn">
-            <ion-icon name="heart" slot="icon-only"></ion-icon>
+            <ion-icon name="heart" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Like product" tabindex="0"></ion-icon>
           </ion-button>
           
           <ion-button 
@@ -60,7 +60,7 @@
             size="small"
             (click)="onAddToWishlist(product, $event)"
             class="action-btn wishlist-btn">
-            <ion-icon name="bookmark" slot="icon-only"></ion-icon>
+            <ion-icon name="bookmark" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Save product" tabindex="0"></ion-icon>
           </ion-button>
         </div>
 
@@ -87,7 +87,7 @@
           </div>
           
           <div class="rating" *ngIf="product.rating?.average">
-            <ion-icon name="star" color="warning"></ion-icon>
+            <ion-icon name="star" color="warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Rating" tabindex="0"></ion-icon>
             <span>{{ product.rating.average | number:'1.1' }}</span>
             <span class="review-count">({{ product.rating.count }})</span>
           </div>
@@ -109,7 +109,7 @@
             size="small"
             (click)="onAddToCart(product, $event)"
             class="add-to-cart-btn">
-            <ion-icon name="cart" slot="start"></ion-icon>
+            <ion-icon name="cart" slot="start" data-bs-toggle="tooltip" data-bs-placement="right" title="Add to cart" tabindex="0"></ion-icon>
             Add to Cart
           </ion-button>
           
@@ -118,7 +118,7 @@
             size="small"
             (click)="onProductShare(product, 'copy', $event)"
             class="share-btn">
-            <ion-icon name="share" slot="icon-only"></ion-icon>
+            <ion-icon name="share" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Share product" tabindex="0"></ion-icon>
           </ion-button>
         </div>
 
@@ -132,7 +132,7 @@
 
   <!-- Empty State -->
   <div *ngIf="!loading && !error && recommendations.length === 0" class="empty-state">
-    <ion-icon name="search" color="medium"></ion-icon>
+    <ion-icon name="search" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="Search for recommendations" tabindex="0"></ion-icon>
     <h4>No recommendations found</h4>
     <p>We're working on finding the perfect products for you!</p>
     <ion-button fill="outline" (click)="refresh()">

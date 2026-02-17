@@ -3,7 +3,7 @@
     <ion-title>Vendor Dashboard</ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear">
-        <ion-icon name="notifications"></ion-icon>
+        <ion-icon name="notifications" data-bs-toggle="tooltip" data-bs-placement="top" title="Notifications" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -34,7 +34,7 @@
         <ion-col size="6">
           <div class="stat-card">
             <div class="stat-icon">
-              <ion-icon name="cube" color="primary"></ion-icon>
+              <ion-icon name="cube" color="primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Products" tabindex="0"></ion-icon>
             </div>
             <div class="stat-content">
               <h3>{{ stats.totalProducts }}</h3>
@@ -45,7 +45,7 @@
         <ion-col size="6">
           <div class="stat-card">
             <div class="stat-icon">
-              <ion-icon name="bag" color="success"></ion-icon>
+              <ion-icon name="bag" color="success" data-bs-toggle="tooltip" data-bs-placement="top" title="Shop" tabindex="0"></ion-icon>
             </div>
             <div class="stat-content">
               <h3>{{ stats.totalOrders }}</h3>
@@ -58,7 +58,7 @@
         <ion-col size="6">
           <div class="stat-card">
             <div class="stat-icon">
-              <ion-icon name="cash" color="warning"></ion-icon>
+              <ion-icon name="cash" color="warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Payments" tabindex="0"></ion-icon>
             </div>
             <div class="stat-content">
               <h3>₹{{ stats.totalRevenue | number:'1.0-0' }}</h3>
@@ -69,7 +69,7 @@
         <ion-col size="6">
           <div class="stat-card">
             <div class="stat-icon">
-              <ion-icon name="images" color="secondary"></ion-icon>
+              <ion-icon name="images" color="secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Gallery" tabindex="0"></ion-icon>
             </div>
             <div class="stat-content">
               <h3>{{ stats.totalPosts + stats.totalStories }}</h3>
@@ -91,7 +91,7 @@
         <ion-col size="6" *ngFor="let action of quickActions">
           <div class="action-card" (click)="onQuickAction(action)">
             <div class="action-icon">
-              <ion-icon [name]="action.icon" [color]="action.color"></ion-icon>
+              <ion-icon [name]="action.icon" [color]="action.color" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="action.label" tabindex="0"></ion-icon>
             </div>
             <div class="action-content">
               <h4>{{ action.title }}</h4>
@@ -110,12 +110,12 @@
     </div>
     <ion-list>
       <ion-item button *ngFor="let item of menuItems" (click)="onMenuItem(item)">
-        <ion-icon [name]="item.icon" slot="start" color="medium"></ion-icon>
+        <ion-icon [name]="item.icon" slot="start" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="item.label" tabindex="0"></ion-icon>
         <ion-label>
           <h3>{{ item.title }}</h3>
         </ion-label>
         <ion-badge slot="end" *ngIf="item.count > 0">{{ item.count }}</ion-badge>
-        <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+        <ion-icon name="chevron-forward" slot="end" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="Open" tabindex="0"></ion-icon>
       </ion-item>
     </ion-list>
   </div>
@@ -127,7 +127,7 @@
     </div>
     <ion-list>
       <ion-item *ngFor="let activity of recentActivity">
-        <ion-icon [name]="activity.icon" [color]="activity.iconColor" slot="start"></ion-icon>
+        <ion-icon [name]="activity.icon" [color]="activity.iconColor" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="activity.label" tabindex="0"></ion-icon>
         <ion-label>
           <h3>{{ activity.title }}</h3>
           <p>{{ activity.subtitle }}</p>
@@ -140,17 +140,17 @@
   <!-- Floating Action Button -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button color="primary">
-      <ion-icon name="add"></ion-icon>
+      <ion-icon name="add" data-bs-toggle="tooltip" data-bs-placement="top" title="Add" tabindex="0"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
       <ion-fab-button color="secondary" (click)="onQuickAction(quickActions[0])">
-        <ion-icon name="cube"></ion-icon>
+        <ion-icon name="cube" data-bs-toggle="tooltip" data-bs-placement="top" title="Products" tabindex="0"></ion-icon>
       </ion-fab-button>
       <ion-fab-button color="tertiary" (click)="onQuickAction(quickActions[1])">
-        <ion-icon name="camera"></ion-icon>
+        <ion-icon name="camera" data-bs-toggle="tooltip" data-bs-placement="top" title="Camera" tabindex="0"></ion-icon>
       </ion-fab-button>
       <ion-fab-button color="success" (click)="onQuickAction(quickActions[2])">
-        <ion-icon name="videocam"></ion-icon>
+        <ion-icon name="videocam" data-bs-toggle="tooltip" data-bs-placement="top" title="Record video" tabindex="0"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
   </ion-fab>

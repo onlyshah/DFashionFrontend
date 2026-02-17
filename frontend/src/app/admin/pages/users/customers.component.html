@@ -2,11 +2,11 @@
   <div class="header">
     <div class="header-title">
       <h2>Customer Management</h2>
-      <p>View and manage all customer accounts</p>
+      <p>View and manage all customer accounts (EndUsers only)</p>
     </div>
     <div class="header-actions">
       <button mat-raised-button color="accent" (click)="exportCustomers()" [disabled]="isLoading">
-        <mat-icon>download</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Export customers" tabindex="0">download</mat-icon>
         <span>Export</span>
       </button>
     </div>
@@ -15,11 +15,20 @@
   <div class="toolbar">
     <mat-form-field class="search-field" appearance="outline">
       <mat-label>Search Customers</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
+      <mat-icon matPrefix data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0">search</mat-icon>
       <input matInput placeholder="Name, email, phone..." (keyup)="applyFilter($event)">
       <button mat-icon-button matSuffix *ngIf="searchFilter" (click)="searchFilter = ''; applyFilter({target: {value: ''}})">
-        <mat-icon>close</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Clear search" tabindex="0">close</mat-icon>
       </button>
+    </mat-form-field>
+
+    <mat-form-field class="status-filter" appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="statusFilter" (valueChange)="filterByStatus($event)">
+        <mat-option value="">All</mat-option>
+        <mat-option value="active">Active</mat-option>
+        <mat-option value="inactive">Blocked</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <div class="toolbar-info">
@@ -33,9 +42,9 @@
   </div>
 
   <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
-    <mat-icon>people_outline</mat-icon>
+    <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Customers" tabindex="0">people_outline</mat-icon>
     <h3>No Customers Found</h3>
-    <p>Start by creating new customer accounts</p>
+    <p>No EndUsers match your search criteria</p>
   </div>
 
   <div *ngIf="!isLoading && dataSource.data.length > 0" class="table-wrapper">
@@ -47,10 +56,10 @@
         </th>
         <td mat-cell *matCellDef="let c" class="name-cell">
           <div class="customer-info">
-            <div class="avatar">{{ (c.fullName || c.name || 'C').charAt(0).toUpperCase() }}</div>
+            <div class="avatar">{{ (c.fullName || 'C').charAt(0).toUpperCase() }}</div>
             <div class="info">
-              <span class="name">{{ c.fullName || c.name || '-' }}</span>
-              <span class="email">{{ c.email }}</span>
+              <span class="name">{{ c.fullName || '-' }}</span>
+              <span class="username">@{{ c.username }}</span>
             </div>
           </div>
         </td>
@@ -68,13 +77,17 @@
         <td mat-cell *matCellDef="let c">{{ c.phone || '-' }}</td>
       </ng-container>
 
-      <!-- Orders Column -->
-      <ng-container matColumnDef="totalOrders">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Orders</th>
-        <td mat-cell *matCellDef="let c" class="centered">
-          <span class="chip" [ngClass]="{'chip-active': c.totalOrders > 0}">
-            {{ c.totalOrders || 0 }}
-          </span>
+      <!-- Orders Column (with IDs) -->
+      <ng-container matColumnDef="orders">
+        <th mat-header-cell *matHeaderCellDef>Orders</th>
+        <td mat-cell *matCellDef="let c" class="orders-cell">
+          <span *ngIf="c.totalOrders === 0 || !c.orders || c.orders.length === 0" class="empty">-</span>
+          <div *ngIf="c.orders && c.orders.length > 0" class="orders-list">
+            <span *ngFor="let order of c.orders; let last = last">
+              <a [routerLink]="['/admin/orders', order._id]" class="order-link">{{ order.orderNumber }}</a>
+              <span *ngIf="!last" class="separator">,</span>
+            </span>
+          </div>
         </td>
       </ng-container>
 
@@ -89,16 +102,68 @@
       <!-- Joined Date Column -->
       <ng-container matColumnDef="createdAt">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
-        <td mat-cell *matCellDef="let c">{{ c.createdAt | date:'MMM dd, yyyy' }}</td>
+        <td mat-cell *matCellDef="let c">
+          {{ c.createdAt ? (c.createdAt | date:'MMM dd, yyyy') : '-' }}
+        </td>
+      </ng-container>
+
+      <!-- Posts Column (with titles) -->
+      <ng-container matColumnDef="posts">
+        <th mat-header-cell *matHeaderCellDef>Latest Post</th>
+        <td mat-cell *matCellDef="let c" class="posts-cell">
+          <span *ngIf="!c.posts || c.posts.length === 0" class="empty">-</span>
+          <a *ngIf="c.posts && c.posts.length > 0" 
+             [routerLink]="['/posts', c.posts[0]._id]"
+             class="post-link"
+             (click)="navigateToPost(c.posts[0]._id, $event)">
+            {{ c.posts[0].caption | slice:0:50 }}{{ c.posts[0].caption?.length > 50 ? '...' : '' }}
+          </a>
+          <span *ngIf="c.posts && c.posts.length > 1" class="post-count">+{{ c.posts.length - 1 }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Likes Column -->
+      <ng-container matColumnDef="totalLikes">
+        <th mat-header-cell *matHeaderCellDef>Likes</th>
+        <td mat-cell *matCellDef="let c" class="centered">
+          <mat-chip data-bs-toggle="tooltip" data-bs-placement="top" title="Total likes" tabindex="0">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Likes" tabindex="0">favorite</mat-icon>
+            {{ c.totalLikes || 0 }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Comments Column -->
+      <ng-container matColumnDef="totalComments">
+        <th mat-header-cell *matHeaderCellDef>Comments</th>
+        <td mat-cell *matCellDef="let c" class="centered">
+          <mat-chip data-bs-toggle="tooltip" data-bs-placement="top" title="Total comments" tabindex="0">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Comments" tabindex="0">chat</mat-icon>
+            {{ c.totalComments || 0 }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- Shares Column -->
+      <ng-container matColumnDef="totalShares">
+        <th mat-header-cell *matHeaderCellDef>Shares</th>
+        <td mat-cell *matCellDef="let c" class="centered">
+          <mat-chip data-bs-toggle="tooltip" data-bs-placement="top" title="Total shares" tabindex="0">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Shares" tabindex="0">share</mat-icon>
+            {{ c.totalShares || 0 }}
+          </mat-chip>
+        </td>
       </ng-container>
 
       <!-- Status Column -->
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let c">
-          <span class="status-badge" [ngClass]="c.isActive ? 'active' : 'inactive'">
-            <mat-icon>{{ c.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
-            {{ c.isActive ? 'Active' : 'Inactive' }}
+          <span class="status-badge" [ngClass]="c.isActive ? 'active' : 'blocked'">
+            <mat-icon [attr.title]="c.isActive ? 'Active' : 'Blocked'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">
+              {{ c.isActive ? 'check_circle' : 'block' }}
+            </mat-icon>
+            {{ c.isActive ? 'Active' : 'Blocked' }}
           </span>
         </td>
       </ng-container>
@@ -108,16 +173,27 @@
         <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
         <td mat-cell *matCellDef="let c" class="actions-cell">
           <button mat-icon-button matTooltip="View Details" (click)="viewDetails(c)">
-            <mat-icon>visibility</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View details" tabindex="0">visibility</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Edit Customer" (click)="editCustomer(c)">
-            <mat-icon>edit</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Edit customer" tabindex="0">edit</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Toggle Status" (click)="toggleStatus(c._id || c.id, c.isActive)">
-            <mat-icon>{{ c.isActive ? 'block' : 'check_circle' }}</mat-icon>
+          <button mat-icon-button matTooltip="View Posts" (click)="viewCustomerPosts(c)">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View posts" tabindex="0">image</mat-icon>
           </button>
-          <button mat-icon-button matTooltip="Delete Customer" (click)="deleteCustomer(c._id || c.id, c.fullName || c.name)">
-            <mat-icon>delete</mat-icon>
+          <button mat-icon-button matTooltip="View Engagement" (click)="viewEngagement(c)">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View engagement" tabindex="0">bar_chart</mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Reset Password" (click)="resetPassword(c)">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Reset password" tabindex="0">vpn_key</mat-icon>
+          </button>
+          <button mat-icon-button [matTooltip]="c.isActive ? 'Block Customer' : 'Unblock Customer'" (click)="toggleStatus(c)">
+            <mat-icon [attr.title]="c.isActive ? 'Block' : 'Unblock'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">
+              {{ c.isActive ? 'block' : 'check_circle' }}
+            </mat-icon>
+          </button>
+          <button mat-icon-button matTooltip="Delete Customer" (click)="deleteCustomer(c._id, c.fullName)">
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Delete customer" tabindex="0">delete</mat-icon>
           </button>
         </td>
       </ng-container>

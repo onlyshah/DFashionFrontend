@@ -15,7 +15,7 @@
       <mat-card-content>
         <div class="stat-value">{{ stats.totalPosts }}</div>
         <div class="stat-label">Total Posts</div>
-        <mat-icon class="stat-icon">image</mat-icon>
+        <mat-icon class="stat-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Total posts" tabindex="0">image</mat-icon>
       </mat-card-content>
     </mat-card>
 
@@ -23,7 +23,7 @@
       <mat-card-content>
         <div class="stat-value">{{ stats.totalReels }}</div>
         <div class="stat-label">Total Reels</div>
-        <mat-icon class="stat-icon">videocam</mat-icon>
+        <mat-icon class="stat-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Total reels" tabindex="0">videocam</mat-icon>
       </mat-card-content>
     </mat-card>
 
@@ -31,7 +31,7 @@
       <mat-card-content>
         <div class="stat-value">{{ stats.totalEngagement | number:'0.0-0' }}</div>
         <div class="stat-label">Total Engagement</div>
-        <mat-icon class="stat-icon">favorite</mat-icon>
+        <mat-icon class="stat-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Total engagement" tabindex="0">favorite</mat-icon>
       </mat-card-content>
     </mat-card>
 
@@ -39,7 +39,7 @@
       <mat-card-content>
         <div class="stat-value">{{ stats.avgEngagementRate | number:'0.0-1' }}%</div>
         <div class="stat-label">Avg Engagement Rate</div>
-        <mat-icon class="stat-icon">trending_up</mat-icon>
+        <mat-icon class="stat-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Avg engagement rate" tabindex="0">trending_up</mat-icon>
       </mat-card-content>
     </mat-card>
   </div>
@@ -58,8 +58,8 @@
           <mat-spinner></mat-spinner>
         </div>
 
-        <div *ngIf="!postsLoading && postsDataSource.data.length === 0" class="empty-state">
-          <mat-icon>image</mat-icon>
+          <div *ngIf="!postsLoading && postsDataSource.data.length === 0" class="empty-state">
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="No posts" tabindex="0">image</mat-icon>
           <p>No posts found</p>
         </div>
 
@@ -67,7 +67,7 @@
           <table mat-table [dataSource]="postsDataSource" matSort>
             <ng-container matColumnDef="user">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>User</th>
-              <td mat-cell *matCellDef="let p">{{ p.user?.username || p.user?.name || 'Anonymous' }}</td>
+              <td mat-cell *matCellDef="let p">{{ p.creator?.name || 'Anonymous' }}</td>
             </ng-container>
             <ng-container matColumnDef="caption">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Caption</th>
@@ -76,13 +76,13 @@
             <ng-container matColumnDef="likes">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Likes</th>
               <td mat-cell *matCellDef="let p">
-                <mat-chip>{{ p.likes?.length || 0 }} <mat-icon>favorite</mat-icon></mat-chip>
+                <mat-chip>{{ p.likes?.length || 0 }} <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Likes" tabindex="0">favorite</mat-icon></mat-chip>
               </td>
             </ng-container>
             <ng-container matColumnDef="comments">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Comments</th>
               <td mat-cell *matCellDef="let p">
-                <mat-chip>{{ p.comments?.length || 0 }} <mat-icon>chat</mat-icon></mat-chip>
+                <mat-chip>{{ p.comments?.length || 0 }} <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Comments" tabindex="0">chat</mat-icon></mat-chip>
               </td>
             </ng-container>
             <ng-container matColumnDef="createdAt">
@@ -92,10 +92,12 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let p">
-                <button mat-icon-button matTooltip="Approve/Reject" (click)="togglePostApproval(p._id, p.approved)">
-                  <mat-icon [class.approved]="p.approved">{{ p.approved ? 'check_circle' : 'cancel' }}</mat-icon>
+                <button mat-icon-button [matTooltip]="p.approved ? 'Reject Post' : 'Approve Post'" matTooltipPosition="above" (click)="togglePostApproval(p._id, p.approved)">
+                  <mat-icon [class.approved]="p.approved" [attr.title]="p.approved ? 'Approved' : 'Pending'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">{{ p.approved ? 'check_circle' : 'cancel' }}</mat-icon>
                 </button>
-                <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deletePost(p._id)">delete</mat-icon></button>
+                <button mat-icon-button matTooltip="Delete Post" matTooltipPosition="above" (click)="deletePost(p._id)">
+                  <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Delete post" tabindex="0">delete</mat-icon>
+                </button>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="postsDisplayedColumns"></tr>
@@ -119,7 +121,7 @@
         </div>
 
         <div *ngIf="!reelsLoading && reelsDataSource.data.length === 0" class="empty-state">
-          <mat-icon>videocam</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="No reels" tabindex="0">videocam</mat-icon>
           <p>No reels found</p>
         </div>
 
@@ -127,7 +129,7 @@
           <table mat-table [dataSource]="reelsDataSource" matSort>
             <ng-container matColumnDef="user">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Creator</th>
-              <td mat-cell *matCellDef="let r">{{ r.user?.username || r.user?.name || 'Anonymous' }}</td>
+              <td mat-cell *matCellDef="let r">{{ r.creator?.name || 'Anonymous' }}</td>
             </ng-container>
             <ng-container matColumnDef="title">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
@@ -140,13 +142,13 @@
             <ng-container matColumnDef="views">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Views</th>
               <td mat-cell *matCellDef="let r">
-                <mat-chip>{{ r.views || 0 }} <mat-icon>visibility</mat-icon></mat-chip>
+                <mat-chip>{{ r.views || 0 }} <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Views" tabindex="0">visibility</mat-icon></mat-chip>
               </td>
             </ng-container>
             <ng-container matColumnDef="likes">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Likes</th>
               <td mat-cell *matCellDef="let r">
-                <mat-chip>{{ r.likes?.length || 0 }} <mat-icon>favorite</mat-icon></mat-chip>
+                <mat-chip>{{ r.likes?.length || 0 }} <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Likes" tabindex="0">favorite</mat-icon></mat-chip>
               </td>
             </ng-container>
             <ng-container matColumnDef="createdAt">
@@ -156,10 +158,12 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let r">
-                <button mat-icon-button matTooltip="Approve/Reject" (click)="toggleReelApproval(r._id, r.approved)">
-                  <mat-icon [class.approved]="r.approved">{{ r.approved ? 'check_circle' : 'cancel' }}</mat-icon>
+                <button mat-icon-button [matTooltip]="r.approved ? 'Reject Reel' : 'Approve Reel'" matTooltipPosition="above" (click)="toggleReelApproval(r._id, r.approved)">
+                  <mat-icon [class.approved]="r.approved" [attr.title]="r.approved ? 'Approved' : 'Pending'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">{{ r.approved ? 'check_circle' : 'cancel' }}</mat-icon>
                 </button>
-                <button mat-icon-button matTooltip="Delete"><mat-icon (click)="deleteReel(r._id)">delete</mat-icon></button>
+                <button mat-icon-button matTooltip="Delete Reel" matTooltipPosition="above" (click)="deleteReel(r._id)">
+                  <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Delete reel" tabindex="0">delete</mat-icon>
+                </button>
               </td>
             </ng-container>
             <tr mat-header-row *matHeaderRowDef="reelsDisplayedColumns"></tr>

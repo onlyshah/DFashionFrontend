@@ -7,11 +7,11 @@
     </div>
     <div class="header-actions">
       <button mat-raised-button color="primary" (click)="openUserDialog()">
-        <mat-icon>person_add</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Add user" tabindex="0">person_add</mat-icon>
         Add User
       </button>
       <button mat-stroked-button (click)="exportUsers()">
-        <mat-icon>download</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Export" tabindex="0">download</mat-icon>
         Export
       </button>
     </div>
@@ -27,7 +27,7 @@
           <input matInput 
                  [formControl]="searchControl"
                  placeholder="Search by name, email, or username">
-          <mat-icon matSuffix>search</mat-icon>
+          <mat-icon matSuffix data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0">search</mat-icon>
         </mat-form-field>
 
         <!-- Role Filter -->
@@ -62,7 +62,7 @@
 
         <!-- Clear Filters -->
         <button mat-stroked-button (click)="clearFilters()" class="clear-filters-btn">
-          <mat-icon>clear</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Clear filters" tabindex="0">clear</mat-icon>
           Clear Filters
         </button>
       </div>

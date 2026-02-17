@@ -28,13 +28,13 @@
     
     <div class="story-controls">
       <ion-button fill="clear" size="small" (click)="togglePlayPause()">
-        <ion-icon [name]="isPlaying ? 'pause' : 'play'" color="light"></ion-icon>
+        <ion-icon [name]="isPlaying ? 'pause' : 'play'" color="light" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="isPlaying ? 'Pause' : 'Play'" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" size="small" (click)="toggleMute()" *ngIf="currentStory.media.type === 'video'">
-        <ion-icon [name]="isMuted ? 'volume-mute' : 'volume-high'" color="light"></ion-icon>
+        <ion-icon [name]="isMuted ? 'volume-mute' : 'volume-high'" color="light" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="isMuted ? 'Unmute' : 'Mute'" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" size="small" (click)="closeStories()">
-        <ion-icon name="close" color="light"></ion-icon>
+        <ion-icon name="close" color="light" data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0"></ion-icon>
       </ion-button>
     </div>
   </div>
@@ -91,11 +91,11 @@
   <div class="story-footer">
     <div class="story-actions">
       <ion-button fill="clear" size="small" (click)="shareStory()">
-        <ion-icon name="share-outline" color="light"></ion-icon>
+        <ion-icon name="share-outline" color="light" data-bs-toggle="tooltip" data-bs-placement="top" title="Share" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" size="small" (click)="toggleProducts()" 
                   *ngIf="currentStory.products && currentStory.products.length > 0">
-        <ion-icon name="bag-outline" color="light"></ion-icon>
+        <ion-icon name="bag-outline" color="light" data-bs-toggle="tooltip" data-bs-placement="top" title="View product" tabindex="0"></ion-icon>
         <ion-badge color="primary">{{ currentStory.products.length }}</ion-badge>
       </ion-button>
     </div>
@@ -103,10 +103,10 @@
     <!-- Navigation Hints -->
     <div class="navigation-hints">
       <div class="nav-hint left" *ngIf="currentIndex > 0">
-        <ion-icon name="chevron-back"></ion-icon>
+        <ion-icon name="chevron-back" data-bs-toggle="tooltip" data-bs-placement="top" title="Previous" tabindex="0"></ion-icon>
       </div>
       <div class="nav-hint right" *ngIf="currentIndex < stories.length - 1">
-        <ion-icon name="chevron-forward"></ion-icon>
+        <ion-icon name="chevron-forward" data-bs-toggle="tooltip" data-bs-placement="top" title="Next" tabindex="0"></ion-icon>
       </div>
     </div>
   </div>
@@ -126,7 +126,7 @@
       <div class="modal-header">
         <h3>Product Details</h3>
         <ion-button fill="clear" (click)="closeProductModal()">
-          <ion-icon name="close"></ion-icon>
+          <ion-icon name="close" data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0"></ion-icon>
         </ion-button>
       </div>
       
@@ -153,11 +153,11 @@
       
       <div class="modal-actions">
         <ion-button expand="block" (click)="addToCart(selectedProduct)" color="primary">
-          <ion-icon name="bag" slot="start"></ion-icon>
+          <ion-icon name="bag" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Add to bag" tabindex="0"></ion-icon>
           Add to Cart
         </ion-button>
         <ion-button expand="block" fill="outline" (click)="addToWishlist(selectedProduct)">
-          <ion-icon name="heart" slot="start"></ion-icon>
+          <ion-icon name="heart" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Like" tabindex="0"></ion-icon>
           Add to Wishlist
         </ion-button>
       </div>
@@ -168,7 +168,7 @@
 <!-- Empty State -->
 <div class="empty-stories" *ngIf="!currentStory && stories.length === 0">
   <div class="empty-content">
-    <ion-icon name="camera-outline" color="medium"></ion-icon>
+    <ion-icon name="camera-outline" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="Open camera" tabindex="0"></ion-icon>
     <h3>No Stories Available</h3>
     <p>Check back later for new stories</p>
     <ion-button expand="block" (click)="closeStories()">

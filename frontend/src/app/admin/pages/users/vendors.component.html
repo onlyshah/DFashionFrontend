@@ -6,7 +6,7 @@
     </div>
     <div class="header-actions">
       <button mat-raised-button color="accent" (click)="exportVendors()" [disabled]="isLoading">
-        <mat-icon>download</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Export vendors" tabindex="0">download</mat-icon>
         <span>Export</span>
       </button>
     </div>
@@ -15,10 +15,10 @@
   <div class="toolbar">
     <mat-form-field class="search-field" appearance="outline">
       <mat-label>Search Vendors</mat-label>
-      <mat-icon matPrefix>search</mat-icon>
+      <mat-icon matPrefix data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0">search</mat-icon>
       <input matInput placeholder="Store name, owner, email..." (keyup)="applyFilter($event)">
       <button mat-icon-button matSuffix *ngIf="searchFilter" (click)="searchFilter = ''; applyFilter({target: {value: ''}})">
-        <mat-icon>close</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Clear search" tabindex="0">close</mat-icon>
       </button>
     </mat-form-field>
 
@@ -32,8 +32,8 @@
     <p>Loading vendors...</p>
   </div>
 
-  <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
-    <mat-icon>store</mat-icon>
+    <div *ngIf="!isLoading && dataSource.data.length === 0" class="empty-state">
+    <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Store" tabindex="0">store</mat-icon>
     <h3>No Vendors Found</h3>
     <p>Start by approving vendor applications</p>
   </div>
@@ -89,7 +89,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
         <td mat-cell *matCellDef="let v" class="centered">
           <span class="rating">
-            <mat-icon>star</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Rating" tabindex="0">star</mat-icon>
             {{ (v.rating || 0) | number:'1.1-1' }}
           </span>
         </td>
@@ -100,7 +100,7 @@
         <th mat-header-cell *matHeaderCellDef>Verified</th>
         <td mat-cell *matCellDef="let v">
           <span class="verified-badge" [ngClass]="v.verified ? 'verified' : 'unverified'">
-            <mat-icon>{{ v.verified ? 'verified' : 'pending' }}</mat-icon>
+            <mat-icon [attr.title]="v.verified ? 'Verified' : 'Pending'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">{{ v.verified ? 'verified' : 'pending' }}</mat-icon>
             {{ v.verified ? 'Verified' : 'Pending' }}
           </span>
         </td>
@@ -111,7 +111,7 @@
         <th mat-header-cell *matHeaderCellDef>Status</th>
         <td mat-cell *matCellDef="let v">
           <span class="status-badge" [ngClass]="v.isActive ? 'active' : 'inactive'">
-            <mat-icon>{{ v.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
+            <mat-icon [attr.title]="v.isActive ? 'Active' : 'Inactive'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">{{ v.isActive ? 'check_circle' : 'cancel' }}</mat-icon>
             {{ v.isActive ? 'Active' : 'Inactive' }}
           </span>
         </td>
@@ -122,22 +122,22 @@
         <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
         <td mat-cell *matCellDef="let v" class="actions-cell">
           <button mat-icon-button matTooltip="View Details" (click)="viewDetails(v)">
-            <mat-icon>visibility</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View details" tabindex="0">visibility</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Edit Vendor" (click)="editVendor(v)">
-            <mat-icon>edit</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Edit vendor" tabindex="0">edit</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Approve" *ngIf="v.verificationStatus === 'pending'" (click)="approveVendor(v._id || v.id)">
-            <mat-icon>check_circle</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Approve" tabindex="0">check_circle</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Reject" *ngIf="v.verificationStatus === 'pending'" (click)="rejectVendor(v._id || v.id)">
-            <mat-icon>cancel</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Reject" tabindex="0">cancel</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Toggle Status" (click)="toggleStatus(v._id || v.id, v.isActive)">
-            <mat-icon>{{ v.isActive ? 'block' : 'check_circle' }}</mat-icon>
+            <mat-icon [attr.title]="v.isActive ? 'Deactivate' : 'Activate'" data-bs-toggle="tooltip" data-bs-placement="top" tabindex="0">{{ v.isActive ? 'block' : 'check_circle' }}</mat-icon>
           </button>
           <button mat-icon-button matTooltip="Delete Vendor" (click)="deleteVendor(v._id || v.id, v.storeName || v.businessName)">
-            <mat-icon>delete</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Delete vendor" tabindex="0">delete</mat-icon>
           </button>
         </td>
       </ng-container>

@@ -22,7 +22,7 @@
         size="small"
         (click)="startVoiceSearch()"
         class="voice-search-btn">
-        <ion-icon name="mic" slot="icon-only"></ion-icon>
+        <ion-icon name="mic" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Voice search" tabindex="0"></ion-icon>
       </ion-button>
 
       <!-- Visual Search Button -->
@@ -31,7 +31,7 @@
         size="small"
         (click)="toggleVisualSearch()"
         class="visual-search-btn">
-        <ion-icon name="camera" slot="icon-only"></ion-icon>
+        <ion-icon name="camera" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Visual search" tabindex="0"></ion-icon>
       </ion-button>
     </div>
 
@@ -51,7 +51,7 @@
       <!-- Search Suggestions -->
       <div *ngIf="suggestions.length > 0" class="suggestions-section">
         <div class="section-header">
-          <ion-icon name="search"></ion-icon>
+          <ion-icon name="search" data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0"></ion-icon>
           <span>Suggestions</span>
         </div>
         <ion-item 
@@ -62,7 +62,11 @@
           <ion-icon 
             [name]="getSuggestionIcon(suggestion.type)" 
             slot="start"
-            class="suggestion-icon">
+            class="suggestion-icon"
+            data-bs-toggle="tooltip"
+            data-bs-placement="top"
+            [attr.title]="getSuggestionTypeLabel(suggestion.type)"
+            tabindex="0">
           </ion-icon>
           <ion-label>
             <h3 [innerHTML]="highlightQuery(suggestion.text)"></h3>
@@ -80,15 +84,15 @@
       <!-- Trending Searches -->
       <div *ngIf="trendingSearches.length > 0 && !searchQuery" class="suggestions-section">
         <div class="section-header">
-          <ion-icon name="trending-up"></ion-icon>
+          <ion-icon name="trending-up" data-bs-toggle="tooltip" data-bs-placement="top" title="Trending" tabindex="0"></ion-icon>
           <span>Trending</span>
         </div>
-        <ion-item 
+          <ion-item 
           *ngFor="let trending of trendingSearches; trackBy: trackTrending"
           button
           (click)="selectTrendingSearch(trending)"
           class="suggestion-item trending-item">
-          <ion-icon name="flame" slot="start" color="danger"></ion-icon>
+          <ion-icon name="flame" slot="start" color="danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Trending" tabindex="0"></ion-icon>
           <ion-label>
             <h3>{{ trending.query }}</h3>
             <p>{{ trending.searches }} searches</p>
@@ -105,7 +109,7 @@
       <!-- Recent Searches -->
       <div *ngIf="recentSearches.length > 0 && !searchQuery" class="suggestions-section">
         <div class="section-header">
-          <ion-icon name="time"></ion-icon>
+          <ion-icon name="time" data-bs-toggle="tooltip" data-bs-placement="top" title="Recent" tabindex="0"></ion-icon>
           <span>Recent</span>
           <ion-button 
             fill="clear" 
@@ -115,12 +119,12 @@
             Clear
           </ion-button>
         </div>
-        <ion-item 
+          <ion-item 
           *ngFor="let recent of recentSearches; trackBy: trackRecent"
           button
           (click)="selectRecentSearch(recent)"
           class="suggestion-item recent-item">
-          <ion-icon name="time-outline" slot="start"></ion-icon>
+          <ion-icon name="time-outline" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Recent" tabindex="0"></ion-icon>
           <ion-label>
             <h3>{{ recent.query }}</h3>
             <p>{{ recent.resultsCount }} results • {{ getRelativeTime(recent.timestamp) }}</p>
@@ -239,20 +243,20 @@
         size="small"
         (click)="clearFilters()"
         class="clear-filters-btn">
-        <ion-icon name="close-circle" slot="start"></ion-icon>
+        <ion-icon name="close-circle" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Clear filters" tabindex="0"></ion-icon>
         Clear Filters
       </ion-button>
     </form>
   </div>
 
   <!-- Active Filters Display -->
-  <div *ngIf="activeFilters.length > 0" class="active-filters">
+    <div *ngIf="activeFilters.length > 0" class="active-filters">
     <ion-chip 
       *ngFor="let filter of activeFilters; trackBy: trackFilter"
       (click)="removeFilter(filter)"
       class="filter-chip">
       <ion-label>{{ filter.label }}: {{ filter.value }}</ion-label>
-      <ion-icon name="close-circle"></ion-icon>
+      <ion-icon name="close-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove filter" tabindex="0"></ion-icon>
     </ion-chip>
   </div>
 

@@ -4,7 +4,7 @@
     <div class="modal-header">
       <h2>Create</h2>
       <ion-button fill="clear" (click)="onClose()">
-        <ion-icon name="close" size="large"></ion-icon>
+        <ion-icon name="close" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0"></ion-icon>
       </ion-button>
     </div>
 
@@ -13,21 +13,21 @@
       <!-- Create Post -->
       <div class="create-option" (click)="onCreatePost()">
         <div class="option-icon post-icon">
-          <ion-icon name="images"></ion-icon>
+          <ion-icon name="images" data-bs-toggle="tooltip" data-bs-placement="top" title="Choose images" tabindex="0"></ion-icon>
         </div>
         <div class="option-content">
           <h3>Create Post</h3>
           <p>Share photos and videos with your followers</p>
         </div>
         <div class="option-arrow">
-          <ion-icon name="chevron-forward"></ion-icon>
+          <ion-icon name="chevron-forward" data-bs-toggle="tooltip" data-bs-placement="top" title="Next" tabindex="0"></ion-icon>
         </div>
       </div>
 
       <!-- Add Story -->
       <div class="create-option" (click)="onAddStory()">
         <div class="option-icon story-icon">
-          <ion-icon name="camera"></ion-icon>
+          <ion-icon name="camera" data-bs-toggle="tooltip" data-bs-placement="top" title="Open camera" tabindex="0"></ion-icon>
         </div>
         <div class="option-content">
           <h3>Add Story</h3>
@@ -41,7 +41,7 @@
       <!-- Create Reel -->
       <div class="create-option" (click)="onCreateReel()">
         <div class="option-icon reel-icon">
-          <ion-icon name="videocam"></ion-icon>
+          <ion-icon name="videocam" data-bs-toggle="tooltip" data-bs-placement="top" title="Record video" tabindex="0"></ion-icon>
         </div>
         <div class="option-content">
           <h3>Create Reel</h3>
@@ -55,7 +55,7 @@
       <!-- Go Live -->
       <div class="create-option" (click)="onGoLive()">
         <div class="option-icon live-icon">
-          <ion-icon name="radio"></ion-icon>
+          <ion-icon name="radio" data-bs-toggle="tooltip" data-bs-placement="top" title="Choose audio" tabindex="0"></ion-icon>
         </div>
         <div class="option-content">
           <h3>Go Live</h3>
@@ -69,7 +69,7 @@
       <!-- More Options -->
       <div class="create-option" (click)="onMoreOptions()">
         <div class="option-icon more-icon">
-          <ion-icon name="grid"></ion-icon>
+          <ion-icon name="grid" data-bs-toggle="tooltip" data-bs-placement="top" title="Select layout" tabindex="0"></ion-icon>
         </div>
         <div class="option-content">
           <h3>More Options</h3>

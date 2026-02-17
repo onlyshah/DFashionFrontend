@@ -69,20 +69,14 @@ export class SuperAdminDashboardComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     );
 
-    const orders$ = this.adminApiService.get('/orders').pipe(
-      takeUntil(this.destroy$)
-    );
-
     // Combine all API calls
     forkJoin({
       metrics: dashboardMetrics$,
-      users: users$,
-      orders: orders$
+      users: users$
     }).subscribe({
       next: (response: any) => {
         console.log('✅ API Response - Dashboard Metrics:', response.metrics);
         console.log('✅ API Response - Users:', response.users);
-        console.log('✅ API Response - Orders:', response.orders);
 
         // Process dashboard metrics
         if (response.metrics) {
@@ -100,16 +94,30 @@ export class SuperAdminDashboardComponent implements OnInit, OnDestroy {
         // Calculate system health
         this.stats.systemHealth = 100;
 
-        // Process recent activities from orders
-        if (response.orders && response.orders.data && response.orders.data.orders && Array.isArray(response.orders.data.orders)) {
-          this.recentActivities = response.orders.data.orders.slice(0, 5).map((order: any) => ({
-            timestamp: new Date(order.createdAt),
-            action: `Order #${order._id || order.id}`,
-            user: order.userId || 'Unknown',
-            status: order.status || 'Pending'
-          }));
+        // Process recent activities from recentOrders in dashboard metrics
+        if (response.metrics && response.metrics.recentOrders && Array.isArray(response.metrics.recentOrders)) {
+          this.recentActivities = response.metrics.recentOrders.slice(0, 5).map((order: any) => {
+            let timestamp = new Date();
+            if (order.createdAt) {
+              const parsed = new Date(order.createdAt);
+              if (!isNaN(parsed.getTime())) {
+                timestamp = parsed;
+              }
+            }
+            
+            const activity = {
+              id: order.id,
+              orderNumber: order.orderNumber,
+              timestamp,
+              user: order.customer || 'Unknown',
+              status: order.status || 'pending'
+            };
+            console.log('Activity mapped:', activity);
+            return activity;
+          });
+          console.log('All recentActivities:', this.recentActivities);
         } else {
-          console.warn('⚠️ Orders data structure unexpected:', response.orders);
+          console.warn('⚠️ RecentOrders not found in metrics response');
           this.recentActivities = [];
         }
 

@@ -7,7 +7,7 @@
     </ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="onCameraClick()">
-        <ion-icon name="camera-outline" size="large"></ion-icon>
+        <ion-icon name="camera-outline" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Open camera" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -48,7 +48,7 @@
             
             <!-- Play/Pause Overlay -->
             <div class="play-pause-overlay" *ngIf="!isPlaying[i]" (click)="togglePlayPause(videoPlayer)">
-              <ion-icon name="play" size="large"></ion-icon>
+              <ion-icon name="play" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Play reel" tabindex="0"></ion-icon>
             </div>
             
             <!-- Progress Bar -->
@@ -82,7 +82,7 @@
             <div class="user-avatar" (click)="onUserClick(reel.user)">
               <img [src]="reel.user.avatar" [alt]="reel.user.fullName">
               <div class="verified-badge" *ngIf="reel.user.isVerified">
-                <ion-icon name="checkmark-circle"></ion-icon>
+                <ion-icon name="checkmark-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark as watched" tabindex="0"></ion-icon>
               </div>
             </div>
 
@@ -98,13 +98,13 @@
 
             <!-- Comment Button -->
             <div class="action-button" (click)="onCommentReel(reel)">
-              <ion-icon name="chatbubble-outline" color="light" size="large"></ion-icon>
+              <ion-icon name="chatbubble-outline" color="light" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Comment" tabindex="0"></ion-icon>
               <span class="action-count">{{ formatCount(reel.analytics.comments) }}</span>
             </div>
 
             <!-- Share Button -->
             <div class="action-button" (click)="onShareReel(reel)">
-              <ion-icon name="paper-plane-outline" color="light" size="large"></ion-icon>
+              <ion-icon name="paper-plane-outline" color="light" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Share" tabindex="0"></ion-icon>
               <span class="action-count">{{ formatCount(reel.analytics.shares) }}</span>
             </div>
 
@@ -120,7 +120,7 @@
 
             <!-- More Options -->
             <div class="action-button" (click)="onMoreOptions(reel)">
-              <ion-icon name="ellipsis-vertical" color="light" size="large"></ion-icon>
+              <ion-icon name="ellipsis-vertical" color="light" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="More actions" tabindex="0"></ion-icon>
             </div>
           </div>
 
@@ -156,7 +156,7 @@
 
             <!-- View Count -->
             <div class="view-count">
-              <ion-icon name="eye-outline"></ion-icon>
+              <ion-icon name="eye-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="View details" tabindex="0"></ion-icon>
               <span>{{ formatCount(reel.analytics.views) }} views</span>
             </div>
           </div>
@@ -167,7 +167,7 @@
 
   <!-- Empty State -->
   <div *ngIf="!isLoading && reels.length === 0" class="empty-state">
-    <ion-icon name="videocam-outline" size="large"></ion-icon>
+    <ion-icon name="videocam-outline" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Record reel" tabindex="0"></ion-icon>
     <h3>No Reels Yet</h3>
     <p>Be the first to create a reel!</p>
     <ion-button fill="solid" color="primary" (click)="onCreateReel()">

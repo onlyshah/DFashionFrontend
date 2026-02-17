@@ -3,10 +3,10 @@
     <ion-title>Shopping Cart</ion-title>
     <ion-buttons slot="end" *ngIf="cartItems.length > 0">
       <ion-button fill="clear" (click)="toggleSelectAll()" [title]="allItemsSelected() ? 'Deselect All' : 'Select All'">
-        <ion-icon [name]="allItemsSelected() ? 'checkbox' : 'square-outline'"></ion-icon>
+        <ion-icon [name]="allItemsSelected() ? 'checkbox' : 'square-outline'" data-bs-toggle="tooltip" data-bs-placement="top" title="Select all" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" (click)="bulkRemoveItems()" [disabled]="selectedItems.length === 0">
-        <ion-icon name="trash"></ion-icon>
+        <ion-icon name="trash" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete selected" tabindex="0"></ion-icon>
         <ion-badge color="danger" *ngIf="selectedItems.length > 0">{{ selectedItems.length }}</ion-badge>
       </ion-button>
     </ion-buttons>
@@ -27,7 +27,7 @@
   <!-- Empty Cart -->
   <div class="empty-cart" *ngIf="!isLoading && cartItems.length === 0">
     <div class="empty-content">
-      <ion-icon name="bag-outline" color="medium"></ion-icon>
+      <ion-icon name="bag-outline" color="medium" data-bs-toggle="tooltip" data-bs-placement="top" title="View item" tabindex="0"></ion-icon>
       <h2>Your cart is empty</h2>
       <p>Add some products to get started</p>
       <ion-button expand="block" (click)="continueShopping()">
@@ -110,7 +110,7 @@
                 (click)="updateQuantity(item._id, item.quantity - 1)"
                 [disabled]="item.quantity <= 1"
               >
-                <ion-icon name="remove"></ion-icon>
+                <ion-icon name="remove" data-bs-toggle="tooltip" data-bs-placement="top" title="Decrease quantity" tabindex="0"></ion-icon>
               </ion-button>
               <span class="quantity">{{ item.quantity }}</span>
               <ion-button 
@@ -118,7 +118,7 @@
                 size="small" 
                 (click)="updateQuantity(item._id, item.quantity + 1)"
               >
-                <ion-icon name="add"></ion-icon>
+                <ion-icon name="add" data-bs-toggle="tooltip" data-bs-placement="top" title="Increase quantity" tabindex="0"></ion-icon>
               </ion-button>
             </div>
           </ion-label>
@@ -130,7 +130,7 @@
         
         <ion-item-options side="end">
           <ion-item-option color="danger" (click)="removeItem(item)">
-            <ion-icon name="trash" slot="icon-only"></ion-icon>
+            <ion-icon name="trash" slot="icon-only" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove item" tabindex="0"></ion-icon>
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
@@ -140,7 +140,7 @@
     <ion-card *ngIf="selectedItems.length > 0" class="selected-total-card">
       <ion-card-content>
         <div class="selected-total-display">
-          <ion-icon name="bag" color="primary"></ion-icon>
+          <ion-icon name="bag" color="primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Checkout" tabindex="0"></ion-icon>
           <div class="total-details">
             <div class="total-label">Selected Items Total</div>
             <div class="total-amount">₹{{ getSelectedItemsTotal() | number:'1.0-0' }}</div>
@@ -153,7 +153,7 @@
     <ion-card *ngIf="selectedItems.length === 0" class="no-selection-card">
       <ion-card-content>
         <div class="no-selection-content">
-          <ion-icon name="information-circle" color="warning"></ion-icon>
+          <ion-icon name="information-circle" color="warning" data-bs-toggle="tooltip" data-bs-placement="top" title="Info" tabindex="0"></ion-icon>
           <p>Select items to see total amount</p>
         </div>
       </ion-card-content>
@@ -224,11 +224,11 @@
         [disabled]="selectedItems.length === 0"
         (click)="proceedToCheckout()"
         color="primary">
-        <ion-icon name="card" slot="start"></ion-icon>
+        <ion-icon name="card" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Payment" tabindex="0"></ion-icon>
         Checkout Selected ({{ selectedItems.length }})
       </ion-button>
       <ion-button expand="block" fill="outline" (click)="continueShopping()">
-        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        <ion-icon name="arrow-back" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Back" tabindex="0"></ion-icon>
         Continue Shopping
       </ion-button>
     </div>

@@ -103,20 +103,39 @@
                       <thead>
                         <tr>
                           <th>Time</th>
-                          <th>Action</th>
-                          <th>User</th>
+                          <th>Order ID</th>
+                          <th>Customer</th>
                           <th>Status</th>
+                          <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let activity of recentActivities">
                           <td>{{ activity.timestamp | date:'short' }}</td>
-                          <td>{{ activity.action }}</td>
+                          <td><code>{{ activity.orderNumber }}</code></td>
                           <td>{{ activity.user }}</td>
                           <td>
-                            <div [class]="'badge badge-' + activity.status.toLowerCase()">
-                              {{ activity.status }}
-                            </div>
+                            <span [ngSwitch]="(activity.status || 'pending').toLowerCase()" class="badge">
+                              <span *ngSwitchCase="'pending'" class="badge bg-warning text-dark">Pending</span>
+                              <span *ngSwitchCase="'confirmed'" class="badge bg-info">Confirmed</span>
+                              <span *ngSwitchCase="'processing'" class="badge bg-primary">Processing</span>
+                              <span *ngSwitchCase="'completed'" class="badge bg-success">Completed</span>
+                              <span *ngSwitchCase="'cancelled'" class="badge bg-danger">Cancelled</span>
+                              <span *ngSwitchCase="'failed'" class="badge bg-dark">Failed</span>
+                              <span *ngSwitchDefault class="badge bg-secondary">{{ activity.status || 'Pending' }}</span>
+                            </span>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm btn-info" title="View Order" [attr.data-order-id]="activity.id">
+                              <i class="icon-eye"></i> View
+                            </button>
+                            <button class="btn btn-sm btn-warning" title="Edit Order" [attr.data-order-id]="activity.id">
+                              <i class="icon-edit"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger" title="Cancel Order" [attr.data-order-id]="activity.id"
+                              [disabled]="activity.status === 'completed' || activity.status === 'cancelled'">
+                              <i class="icon-trash"></i> Cancel
+                            </button>
                           </td>
                         </tr>
                       </tbody>

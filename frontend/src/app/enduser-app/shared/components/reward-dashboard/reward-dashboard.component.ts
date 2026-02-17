@@ -94,4 +94,23 @@ export class RewardDashboardComponent implements OnInit {
             minute: '2-digit'
         });
     }
+
+        getRewardLabel(type: string): string {
+            const labelMap: { [key: string]: string } = {
+                'post_like': 'Post liked',
+                'post_share': 'Post shared',
+                'post_comment': 'Comment received',
+                'story_view': 'Story viewed',
+                'reel_view': 'Reel viewed',
+                'product_purchase': 'Product purchased',
+                'referral_signup': 'Referral signup',
+                'referral_purchase': 'Referral purchase',
+                'content_creation': 'Content created',
+                'daily_login': 'Daily login',
+                'profile_completion': 'Profile completed',
+                'first_purchase': 'First purchase',
+                'review_submission': 'Review submitted'
+            };
+            return labelMap[type] || 'Reward';
+        }
 }

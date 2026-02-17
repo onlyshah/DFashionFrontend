@@ -3,7 +3,7 @@
   <div class="returns-header">
     <h1>My Returns</h1>
     <button mat-raised-button color="primary" (click)="openInitiateReturn()" [disabled]="isLoading">
-      <mat-icon>assignment_return</mat-icon>
+      <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Returns" tabindex="0">assignment_return</mat-icon>
       Initiate Return
     </button>
   </div>
@@ -32,7 +32,7 @@
         <mat-label>Search Returns</mat-label>
         <input matInput [(ngModel)]="searchQuery" (change)="onSearchChange()" 
                placeholder="Order number, product name...">
-        <mat-icon matSuffix>search</mat-icon>
+        <mat-icon matSuffix data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0">search</mat-icon>
       </mat-form-field>
     </div>
 
@@ -42,7 +42,7 @@
         <div class="modal-header">
           <h2>Initiate Return</h2>
           <button mat-icon-button (click)="closeInitiateForm()">
-            <mat-icon>close</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0">close</mat-icon>
           </button>
         </div>
 
@@ -131,17 +131,17 @@
           <td mat-cell *matCellDef="let element">
             <button mat-icon-button matTooltip="View Details" 
                     (click)="viewReturnDetails(element)">
-              <mat-icon>visibility</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View details" tabindex="0">visibility</mat-icon>
             </button>
             <button mat-icon-button matTooltip="Track Return" 
                     (click)="trackReturn(element.id)"
                     [disabled]="element.status === 'pending'">
-              <mat-icon>local_shipping</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Track return" tabindex="0">local_shipping</mat-icon>
             </button>
             <button mat-icon-button matTooltip="Cancel Return" 
                     (click)="cancelReturn(element.id)"
                     [disabled]="element.status !== 'pending' && element.status !== 'approved'">
-              <mat-icon>clear</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Cancel" tabindex="0">clear</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -153,7 +153,7 @@
 
       <!-- Empty State -->
       <div *ngIf="returns.length === 0" class="empty-state">
-        <mat-icon>assignment_return</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Returns" tabindex="0">assignment_return</mat-icon>
         <p>No returns found</p>
         <button mat-raised-button color="primary" (click)="openInitiateReturn()">
           Initiate Your First Return

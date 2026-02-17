@@ -20,7 +20,7 @@
               {{ customerData.isActive ? 'Active' : 'Inactive' }}
             </mat-chip>
             <mat-chip *ngIf="customerData.isVerified" class="verified-chip">
-              <mat-icon>verified</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Verified" tabindex="0">verified</mat-icon>
               Verified
             </mat-chip>
           </div>
@@ -52,7 +52,7 @@
         <mat-card class="info-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>person</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="User" tabindex="0">person</mat-icon>
               Personal Details
             </mat-card-title>
           </mat-card-header>
@@ -106,11 +106,11 @@
         <mat-card class="orders-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>shopping_cart</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Orders" tabindex="0">shopping_cart</mat-icon>
               Order History ({{ orders.length }})
             </mat-card-title>
             <button mat-icon-button (click)="refreshOrders()">
-              <mat-icon>refresh</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" tabindex="0">refresh</mat-icon>
             </button>
           </mat-card-header>
           <mat-card-content>
@@ -139,7 +139,7 @@
             </div>
             <ng-template #noOrders>
               <div class="no-data">
-                <mat-icon>shopping_cart_outlined</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Orders" tabindex="0">shopping_cart_outlined</mat-icon>
                 <h3>No Orders Found</h3>
                 <p>This customer hasn't placed any orders yet.</p>
               </div>
@@ -155,7 +155,7 @@
         <mat-card class="activity-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>timeline</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Timeline" tabindex="0">timeline</mat-icon>
               Recent Activity
             </mat-card-title>
           </mat-card-header>
@@ -163,7 +163,7 @@
             <div class="activity-timeline">
               <div *ngFor="let activity of recentActivity" class="activity-item">
                 <div class="activity-icon">
-                  <mat-icon>{{ activity.icon }}</mat-icon>
+                  <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="activity.label" tabindex="0">{{ activity.icon }}</mat-icon>
                 </div>
                 <div class="activity-content">
                   <div class="activity-description">{{ activity.description }}</div>
@@ -182,26 +182,26 @@
         <mat-card class="settings-card">
           <mat-card-header>
             <mat-card-title>
-              <mat-icon>settings</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Settings" tabindex="0">settings</mat-icon>
               Account Management
             </mat-card-title>
           </mat-card-header>
           <mat-card-content>
             <div class="settings-actions">
               <button mat-raised-button color="primary" (click)="editProfile()">
-                <mat-icon>edit</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Edit" tabindex="0">edit</mat-icon>
                 Edit Profile
               </button>
               <button mat-raised-button color="accent" (click)="changePassword()">
-                <mat-icon>lock</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Toggle lock" tabindex="0">lock</mat-icon>
                 Change Password
               </button>
               <button mat-raised-button [color]="customerData.isActive ? 'warn' : 'primary'" (click)="toggleAccountStatus()">
-                <mat-icon>{{ customerData.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="customerData.isActive ? 'Disable' : 'Enable'" tabindex="0">{{ customerData.isActive ? 'block' : 'check_circle' }}</mat-icon>
                 {{ customerData.isActive ? 'Deactivate' : 'Activate' }} Account
               </button>
               <button mat-raised-button color="warn" (click)="deleteAccount()">
-                <mat-icon>delete</mat-icon>
+                <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Delete" tabindex="0">delete</mat-icon>
                 Delete Account
               </button>
             </div>

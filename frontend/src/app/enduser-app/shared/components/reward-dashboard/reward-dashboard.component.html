@@ -5,7 +5,7 @@
     <mat-card class="reward-card total-credits">
       <mat-card-content>
         <div class="card-header">
-          <mat-icon>stars</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Rewards" tabindex="0">stars</mat-icon>
           <h3>Total Credits</h3>
         </div>
         <div class="card-value">{{ rewardSummary?.totalCredits || 0 }}</div>
@@ -15,7 +15,7 @@
     <mat-card class="reward-card available-credits">
       <mat-card-content>
         <div class="card-header">
-          <mat-icon>account_balance_wallet</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Wallet" tabindex="0">account_balance_wallet</mat-icon>
           <h3>Available</h3>
         </div>
         <div class="card-value">{{ rewardSummary?.availableCredits || 0 }}</div>
@@ -25,7 +25,7 @@
     <mat-card class="reward-card referrals">
       <mat-card-content>
         <div class="card-header">
-          <mat-icon>group_add</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Invite" tabindex="0">group_add</mat-icon>
           <h3>Referrals</h3>
         </div>
         <div class="card-value">{{ rewardSummary?.referralCount || 0 }}</div>
@@ -35,7 +35,7 @@
     <mat-card class="reward-card earnings">
       <mat-card-content>
         <div class="card-header">
-          <mat-icon>trending_up</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Trending" tabindex="0">trending_up</mat-icon>
           <h3>Earnings</h3>
         </div>
         <div class="card-value">${{ (rewardSummary?.totalEarnings || 0) / 100 }}</div>
@@ -48,7 +48,7 @@
   <mat-card class="referral-section" *ngIf="rewardSummary?.referralCode">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>share</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Share" tabindex="0">share</mat-icon>
         Your Referral Code
       </mat-card-title>
     </mat-card-header>
@@ -56,7 +56,7 @@
       <div class="referral-code-container">
         <div class="referral-code">{{ rewardSummary?.referralCode }}</div>
         <button mat-raised-button color="primary" (click)="copyReferralCode()">
-          <mat-icon>content_copy</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Copy" tabindex="0">content_copy</mat-icon>
           Copy
         </button>
       </div>
@@ -71,7 +71,7 @@
   <mat-card class="recent-rewards">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>history</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="History" tabindex="0">history</mat-icon>
         Recent Activity
       </mat-card-title>
     </mat-card-header>
@@ -79,7 +79,7 @@
       <div class="reward-list" *ngIf="recentRewards && recentRewards.length > 0; else noRewards">
         <div class="reward-item" *ngFor="let reward of recentRewards">
           <div class="reward-icon">
-            <mat-icon [class]="getRewardIconClass(reward.type)">
+            <mat-icon [class]="getRewardIconClass(reward.type)" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="getRewardLabel(reward.type)" tabindex="0">
               {{ getRewardIcon(reward.type) }}
             </mat-icon>
           </div>
@@ -99,7 +99,7 @@
       </div>
       <ng-template #noRewards>
         <div class="no-rewards">
-          <mat-icon>sentiment_satisfied</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Status" tabindex="0">sentiment_satisfied</mat-icon>
           <p>Start engaging to earn your first rewards!</p>
         </div>
       </ng-template>
@@ -110,22 +110,22 @@
   <mat-card class="reward-actions">
     <mat-card-header>
       <mat-card-title>
-        <mat-icon>redeem</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Redeem" tabindex="0">redeem</mat-icon>
         Redeem Credits
       </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <div class="action-buttons">
         <button mat-raised-button color="primary" [disabled]="(rewardSummary?.availableCredits || 0) < 100">
-          <mat-icon>local_offer</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Offers" tabindex="0">local_offer</mat-icon>
           Get 10% Discount (100 credits)
         </button>
         <button mat-raised-button color="accent" [disabled]="(rewardSummary?.availableCredits || 0) < 250">
-          <mat-icon>card_giftcard</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Gift" tabindex="0">card_giftcard</mat-icon>
           Free Shipping (250 credits)
         </button>
         <button mat-raised-button [disabled]="(rewardSummary?.availableCredits || 0) < 500">
-          <mat-icon>monetization_on</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Cashback" tabindex="0">monetization_on</mat-icon>
           $5 Store Credit (500 credits)
         </button>
       </div>

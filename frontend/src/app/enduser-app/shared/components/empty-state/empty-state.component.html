@@ -1,6 +1,6 @@
 <div [class]="containerClasses">
   <div class="empty-icon" [class.pulse]="showAnimation">
-    <ion-icon [name]="icon" [color]="iconColor"></ion-icon>
+    <ion-icon [name]="icon" [color]="iconColor" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="title" tabindex="0"></ion-icon>
   </div>
   <h3 class="empty-title">{{ title }}</h3>
   <p class="empty-message">{{ message }}</p>
@@ -10,7 +10,7 @@
     [fill]="buttonFill"
     class="empty-button"
     (click)="onButtonClick()">
-    <ion-icon [name]="buttonIcon" slot="start" *ngIf="buttonIcon"></ion-icon>
+    <ion-icon [name]="buttonIcon" slot="start" *ngIf="buttonIcon" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="buttonText" tabindex="0"></ion-icon>
     {{ buttonText }}
   </ion-button>
 </div>

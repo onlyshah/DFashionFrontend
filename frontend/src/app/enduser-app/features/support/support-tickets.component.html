@@ -4,11 +4,11 @@
     <h1>Support Tickets</h1>
     <div class="header-actions">
       <button mat-raised-button color="primary" (click)="openCreateTicket()" [disabled]="isLoading">
-        <mat-icon>add_circle</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Create ticket" tabindex="0">add_circle</mat-icon>
         Create Ticket
       </button>
       <button mat-icon-button matTooltip="Export Tickets" (click)="exportTickets()">
-        <mat-icon>download</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Export tickets" tabindex="0">download</mat-icon>
       </button>
     </div>
   </div>
@@ -28,7 +28,7 @@
         <div class="modal-header">
           <h2>Create Support Ticket</h2>
           <button mat-icon-button (click)="closeCreateForm()">
-            <mat-icon>close</mat-icon>
+            <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Close" tabindex="0">close</mat-icon>
           </button>
         </div>
 
@@ -178,7 +178,7 @@
           <td mat-cell *matCellDef="let element">
             <button mat-icon-button matTooltip="View Details" 
                     (click)="viewTicketDetails(element)">
-              <mat-icon>visibility</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="View details" tabindex="0">visibility</mat-icon>
             </button>
           </td>
         </ng-container>
@@ -191,7 +191,7 @@
 
       <!-- Empty State -->
       <div *ngIf="tickets.length === 0" class="empty-state">
-        <mat-icon>support_agent</mat-icon>
+        <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Support" tabindex="0">support_agent</mat-icon>
         <p>No support tickets found</p>
         <button mat-raised-button color="primary" (click)="openCreateTicket()">
           Create Your First Ticket
@@ -209,7 +209,7 @@
     <div *ngIf="showDetailView && selectedTicket" class="detail-view">
       <div class="detail-header">
         <button mat-icon-button (click)="closeDetailView()">
-          <mat-icon>arrow_back</mat-icon>
+          <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Back" tabindex="0">arrow_back</mat-icon>
         </button>
         <h2>#{{ selectedTicket.ticketNumber }} - {{ selectedTicket.subject }}</h2>
         <span class="status-badge" [ngClass]="getStatusClass(selectedTicket.status)">
@@ -319,7 +319,7 @@
             </form>
 
             <button *ngIf="!showReplyForm" mat-raised-button (click)="openReplyForm()">
-              <mat-icon>reply</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Reply" tabindex="0">reply</mat-icon>
               Reply to Ticket
             </button>
           </div>
@@ -328,12 +328,12 @@
           <div class="detail-actions">
             <button *ngIf="selectedTicket.status !== 'closed'" mat-raised-button color="warn" 
                     (click)="closeTicket()">
-              <mat-icon>done_all</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all done" tabindex="0">done_all</mat-icon>
               Close Ticket
             </button>
             <button *ngIf="selectedTicket.status === 'closed'" mat-raised-button 
                     (click)="reopenTicket()">
-              <mat-icon>refresh</mat-icon>
+              <mat-icon data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh" tabindex="0">refresh</mat-icon>
               Reopen Ticket
             </button>
           </div>

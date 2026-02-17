@@ -69,17 +69,21 @@ export class SocialEngagementComponent implements OnInit {
 
   loadStats(): void {
     this.statsLoading = true;
+    console.log('📡 [Social] Calling GET /api/admin/social/stats');
     this.api.get('/social/stats').subscribe({
       next: (res: any) => {
+        console.log('✅ [Social Stats] Response:', res);
         this.stats = res?.data || {
           totalPosts: 0,
           totalReels: 0,
           totalEngagement: 0,
           avgEngagementRate: 0
         };
+        console.log('✅ [Social Stats] Mapped stats:', this.stats);
         this.statsLoading = false;
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('❌ [Social Stats] Error:', err);
         this.statsLoading = false;
       }
     });
@@ -87,12 +91,18 @@ export class SocialEngagementComponent implements OnInit {
 
   loadPosts(): void {
     this.postsLoading = true;
-    this.api.get('/social/posts').subscribe({
+    console.log('📡 [Social Posts] Calling GET /api/admin/social/posts with page=1, limit=20');
+    this.api.get('/social/posts', { params: { page: 1, limit: 20 } }).subscribe({
       next: (res: any) => {
+        console.log('✅ [Social Posts] Full Response:', res);
+        console.log('✅ [Social Posts] Data array:', res?.data);
+        console.log('✅ [Social Posts] Pagination:', res?.pagination);
         this.postsDataSource.data = res?.data || [];
+        console.log('✅ [Social Posts] Set datasource with', this.postsDataSource.data.length, 'items');
         this.postsLoading = false;
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('❌ [Social Posts] Error:', err);
         this.postsDataSource.data = [];
         this.postsLoading = false;
       }
@@ -101,12 +111,18 @@ export class SocialEngagementComponent implements OnInit {
 
   loadReels(): void {
     this.reelsLoading = true;
-    this.api.get('/social/reels').subscribe({
+    console.log('📡 [Social Reels] Calling GET /api/admin/social/reels with page=1, limit=20');
+    this.api.get('/social/reels', { params: { page: 1, limit: 20 } }).subscribe({
       next: (res: any) => {
+        console.log('✅ [Social Reels] Full Response:', res);
+        console.log('✅ [Social Reels] Data array:', res?.data);
+        console.log('✅ [Social Reels] Pagination:', res?.pagination);
         this.reelsDataSource.data = res?.data || [];
+        console.log('✅ [Social Reels] Set datasource with', this.reelsDataSource.data.length, 'items');
         this.reelsLoading = false;
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('❌ [Social Reels] Error:', err);
         this.reelsDataSource.data = [];
         this.reelsLoading = false;
       }

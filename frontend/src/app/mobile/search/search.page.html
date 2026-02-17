@@ -2,7 +2,7 @@
   <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back"></ion-icon>
+        <ion-icon name="arrow-back" data-bs-toggle="tooltip" data-bs-placement="top" title="Back" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
     <ion-title>Search</ion-title>
@@ -37,7 +37,7 @@
 
     <!-- No Results -->
     <div *ngIf="searchResults.length === 0" class="no-results">
-      <ion-icon name="search-outline"></ion-icon>
+      <ion-icon name="search-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0"></ion-icon>
       <h3>No products found</h3>
       <p>Try searching with different keywords or browse our categories below.</p>
     </div>
@@ -59,7 +59,7 @@
             <span *ngIf="product.discountPrice" class="original-price">₹{{ product.price | number:'1.0-0' }}</span>
           </div>
           <div class="rating" *ngIf="product.rating">
-            <ion-icon name="star" *ngFor="let star of [1,2,3,4,5]; let i = index" 
+            <ion-icon name="star" *ngFor="let star of [1,2,3,4,5]; let i = index" data-bs-toggle="tooltip" data-bs-placement="top" title="Rating" tabindex="0"
                       [color]="i < product.rating.average ? 'warning' : 'medium'"></ion-icon>
             <span>({{ product.rating.count }})</span>
           </div>
@@ -78,9 +78,9 @@
       </div>
       <div class="search-chips">
         <ion-chip *ngFor="let search of recentSearches" (click)="onRecentSearchClick(search)">
-          <ion-icon name="time-outline"></ion-icon>
+          <ion-icon name="time-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Recent" tabindex="0"></ion-icon>
           <ion-label>{{ search }}</ion-label>
-          <ion-icon name="close" (click)="removeRecentSearch(search); $event.stopPropagation()"></ion-icon>
+          <ion-icon name="close" (click)="removeRecentSearch(search); $event.stopPropagation()" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove" tabindex="0"></ion-icon>
         </ion-chip>
       </div>
     </div>
@@ -92,7 +92,7 @@
       </div>
       <div class="search-chips">
         <ion-chip *ngFor="let search of popularSearches" (click)="onPopularSearchClick(search)">
-          <ion-icon name="trending-up-outline"></ion-icon>
+          <ion-icon name="trending-up-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Trending" tabindex="0"></ion-icon>
           <ion-label>{{ search }}</ion-label>
         </ion-chip>
       </div>
@@ -106,7 +106,7 @@
       <div class="categories-grid">
         <div *ngFor="let category of categories" class="category-card" (click)="onCategoryClick(category)">
           <div class="category-icon" [style.background-color]="'var(--ion-color-' + category.color + ')'">
-            <ion-icon [name]="category.icon"></ion-icon>
+            <ion-icon [name]="category.icon" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="category.label" tabindex="0"></ion-icon>
           </div>
           <span>{{ category.name }}</span>
         </div>

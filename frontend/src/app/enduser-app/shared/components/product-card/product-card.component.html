@@ -7,7 +7,7 @@
       appLazyLoad>
     <!-- Featured Badge -->
     <div class="featured-badge" *ngIf="product.isFeatured">
-      <ion-icon name="star"></ion-icon>
+      <ion-icon name="star" data-bs-toggle="tooltip" data-bs-placement="top" title="Featured product" tabindex="0"></ion-icon>
       Featured
     </div>
     <!-- Discount Badge -->
@@ -20,7 +20,7 @@
       class="wishlist-button"
       [color]="product.isWishlisted ? 'danger' : 'medium'"
       (click)="onWishlistToggle($event)">
-      <ion-icon [name]="product.isWishlisted ? 'heart' : 'heart-outline'"></ion-icon>
+            <ion-icon [name]="product.isWishlisted ? 'heart' : 'heart-outline'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="product.isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'" tabindex="0"></ion-icon>
     </ion-button>
   </div>
   <!-- Product Info -->
@@ -55,7 +55,7 @@
       fill="solid" 
       color="primary"
       (click)="onAddToCart($event)">
-      <ion-icon name="bag-add" slot="start"></ion-icon>
+      <ion-icon name="bag-add" slot="start" data-bs-toggle="tooltip" data-bs-placement="right" title="Add to cart" tabindex="0"></ion-icon>
       Add to Cart
     </ion-button>
     <ion-button 

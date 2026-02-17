@@ -7,10 +7,10 @@
     </ion-title>
     <ion-buttons slot="end">
       <ion-button fill="clear" (click)="onNotificationsClick()">
-        <ion-icon name="heart-outline" size="large"></ion-icon>
+        <ion-icon name="heart-outline" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Like" tabindex="0"></ion-icon>
       </ion-button>
       <ion-button fill="clear" (click)="onMessagesClick()">
-        <ion-icon name="chatbubble-outline" size="large"></ion-icon>
+        <ion-icon name="chatbubble-outline" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Comment" tabindex="0"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -39,7 +39,7 @@
           <div class="story-item add-story" (click)="onAddStoryClick()">
             <div class="story-avatar">
               <div class="add-story-circle">
-                <ion-icon name="add" size="large"></ion-icon>
+                <ion-icon name="add" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" tabindex="0"></ion-icon>
               </div>
             </div>
             <span class="story-username">Your Story</span>
@@ -73,7 +73,7 @@
             </div>
           </div>
           <ion-button fill="clear" size="small">
-            <ion-icon name="ellipsis-horizontal"></ion-icon>
+            <ion-icon name="ellipsis-horizontal" data-bs-toggle="tooltip" data-bs-placement="top" title="More actions" tabindex="0"></ion-icon>
           </ion-button>
         </div>
 
@@ -82,7 +82,7 @@
           <img [src]="post.featuredImage || (apiUrl + '/uploads/default/default-post.svg')"
                [alt]="post.title" class="post-image">
           <div class="media-overlay" *ngIf="post.media?.type === 'video'">
-            <ion-icon name="play-circle" size="large"></ion-icon>
+            <ion-icon name="play-circle" size="large" data-bs-toggle="tooltip" data-bs-placement="top" title="Play" tabindex="0"></ion-icon>
           </div>
         </div>
 
@@ -90,18 +90,18 @@
         <div class="post-actions">
           <div class="action-buttons">
             <ion-button fill="clear" size="small" (click)="onLikePost(post)">
-              <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'"
+              <ion-icon [name]="post.isLiked ? 'heart' : 'heart-outline'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="post.isLiked ? 'Unlike post' : 'Like post'" tabindex="0"
                         [color]="post.isLiked ? 'danger' : 'dark'"></ion-icon>
             </ion-button>
             <ion-button fill="clear" size="small" (click)="onCommentPost(post)">
-              <ion-icon name="chatbubble-outline"></ion-icon>
+              <ion-icon name="chatbubble-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Comment" tabindex="0"></ion-icon>
             </ion-button>
             <ion-button fill="clear" size="small" (click)="onSharePost(post)">
-              <ion-icon name="paper-plane-outline"></ion-icon>
+              <ion-icon name="paper-plane-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Share" tabindex="0"></ion-icon>
             </ion-button>
           </div>
           <ion-button fill="clear" size="small" (click)="onSavePost(post)" slot="end">
-            <ion-icon [name]="post.isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+            <ion-icon [name]="post.isSaved ? 'bookmark' : 'bookmark-outline'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="post.isSaved ? 'Remove saved' : 'Save post'" tabindex="0"></ion-icon>
           </ion-button>
         </div>
 
@@ -143,7 +143,7 @@
     <!-- Load More Posts Button -->
     <div class="load-more-section" *ngIf="trendingPosts.length > 0">
       <ion-button fill="clear" expand="block" (click)="loadMorePosts()">
-        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        <ion-icon name="refresh-outline" slot="start" data-bs-toggle="tooltip" data-bs-placement="top" title="Refresh feed" tabindex="0"></ion-icon>
         Load more posts
       </ion-button>
     </div>
