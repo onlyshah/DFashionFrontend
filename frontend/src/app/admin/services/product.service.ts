@@ -80,7 +80,12 @@ export interface AdminProductResponse {
   success: boolean;
   data: {
     products: Product[];
-    pagination: {
+    total: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+    // Legacy pagination object support
+    pagination?: {
       currentPage: number;
       totalPages: number;
       totalProducts: number;
@@ -112,7 +117,7 @@ export class AdminProductService {
     return this.http.get<AdminProductResponse>(`${this.apiUrl}/products`, { params })
       .pipe(
         tap(response => {
-          console.log('[AdminProductService] Products fetched:', response.data?.pagination?.totalProducts || 0);
+          console.log('[AdminProductService] Products fetched:', response.data?.total || response.data?.pagination?.totalProducts || 0);
         })
       );
   }
@@ -155,7 +160,7 @@ export class AdminProductService {
   }
 
   getCategoriesWithFallback(): Observable<any[]> {
-    return this.http.get<any[]>(`${environment.apiUrl}/api/categories`).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}/categories`).pipe(
       catchError(error => {
         console.error('Error loading categories:', error);
         return throwError(() => error);
@@ -215,6 +220,24 @@ export class AdminProductService {
 
   getCurrentProducts(): Product[] {
     return this.productsSubject.value;
+  }
+
+  // ============ SubCategory Management ============
+
+  getSubCategoriesList(categoryId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/categories/${categoryId}/subcategories`);
+  }
+
+  createSubCategory(categoryId: string, data: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/categories/${categoryId}/subcategories`, data);
+  }
+
+  updateSubCategory(categoryId: string, subCategoryId: string, data: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/categories/${categoryId}/subcategories/${subCategoryId}`, data);
+  }
+
+  deleteSubCategory(categoryId: string, subCategoryId: string): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/categories/${categoryId}/subcategories/${subCategoryId}`);
   }
 }
 

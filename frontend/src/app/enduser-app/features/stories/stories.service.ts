@@ -69,21 +69,11 @@ export class StoriesService {
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
-
-  private getAuthHeadersForUpload(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-      // Don't set Content-Type for FormData uploads
-    });
-  }
+  /**
+   * ✅ NOTE: Authorization headers are handled by authInterceptor
+   * No need to manually create headers in this service
+   * All HTTP requests automatically get Bearer token via interceptor
+   */
 
   // Get all active stories
   getStories(): Observable<Story[]> {
@@ -141,9 +131,7 @@ export class StoriesService {
 
   // Create a new story
   createStory(storyData: FormData): Observable<Story> {
-    return this.http.post<any>(`${this.apiUrl}/stories`, storyData, {
-      headers: this.getAuthHeadersForUpload()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/stories`, storyData).pipe(
       map(response => {
         if (response.success) {
           // Update local stories list
@@ -159,9 +147,7 @@ export class StoriesService {
 
   // Delete a story
   deleteStory(storyId: string): Observable<boolean> {
-    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}`).pipe(
       map(response => {
         if (response.success) {
           // Remove from local stories list
@@ -178,9 +164,7 @@ export class StoriesService {
 
   // View a story (mark as viewed)
   viewStory(storyId: string): Observable<boolean> {
-    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/view`, {}, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/view`, {}).pipe(
       map(response => response.success),
       catchError(this.handleError)
     );
@@ -188,9 +172,7 @@ export class StoriesService {
 
   // Like a story
   likeStory(storyId: string): Observable<boolean> {
-    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/like`, {}, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/like`, {}).pipe(
       map(response => {
         if (response.success) {
           this.updateStoryInList(storyId, { isLiked: true });
@@ -204,9 +186,7 @@ export class StoriesService {
 
   // Unlike a story
   unlikeStory(storyId: string): Observable<boolean> {
-    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}/like`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}/like`).pipe(
       map(response => {
         if (response.success) {
           this.updateStoryInList(storyId, { isLiked: false });
@@ -221,8 +201,7 @@ export class StoriesService {
   // Comment on a story
   commentOnStory(storyId: string, comment: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/comment`, 
-      { text: comment }, 
-      { headers: this.getAuthHeaders() }
+      { text: comment }
     ).pipe(
       map(response => {
         if (response.success) {
@@ -250,8 +229,7 @@ export class StoriesService {
   // Share a story
   shareStory(storyId: string, platform?: string): Observable<boolean> {
     return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/share`, 
-      { platform }, 
-      { headers: this.getAuthHeaders() }
+      { platform }
     ).pipe(
       map(response => response.success),
       catchError(this.handleError)
@@ -276,8 +254,7 @@ export class StoriesService {
   // Tag a product in a story
   tagProduct(storyId: string, productId: string, position: {x: number, y: number}): Observable<boolean> {
     return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/tag-product`, 
-      { productId, position }, 
-      { headers: this.getAuthHeaders() }
+      { productId, position }
     ).pipe(
       map(response => response.success),
       catchError(this.handleError)
@@ -286,9 +263,7 @@ export class StoriesService {
 
   // Remove product tag from story
   removeProductTag(storyId: string, tagId: string): Observable<boolean> {
-    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}/tag/${tagId}`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/stories/${storyId}/tag/${tagId}`).pipe(
       map(response => response.success),
       catchError(this.handleError)
     );
@@ -296,9 +271,7 @@ export class StoriesService {
 
   // Get story analytics
   getStoryAnalytics(storyId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stories/${storyId}/analytics`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/stories/${storyId}/analytics`).pipe(
       map(response => {
         if (response.success) {
           return response.analytics;

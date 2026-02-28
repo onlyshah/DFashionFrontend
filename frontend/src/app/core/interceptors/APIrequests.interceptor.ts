@@ -1,22 +1,12 @@
 import { HttpInterceptorFn, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { tap, map } from 'rxjs/operators';
-import { inject } from '@angular/core';
-import { AuthService } from '../services/auth.service';
 
-// Normalize server responses to a consistent shape: { success, message, data }
+/**
+ * ✅ API Request Interceptor - Normalizes responses & logging
+ * NOTE: Auth headers are handled by authInterceptor (single source of truth)
+ * This interceptor only handles response normalization
+ */
 export const apiRequestsInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  
-  // Add Authorization header with JWT token if available
-  const token = authService.getToken();
-  if (token && !req.headers.has('Authorization')) {
-    req = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
-
   try {
     console.groupCollapsed(`API Request: ${req.method} ${req.url}`);
     const headers = req.headers.keys().reduce((acc, k) => {

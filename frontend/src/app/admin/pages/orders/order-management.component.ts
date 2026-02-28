@@ -129,7 +129,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
                 console.log('Orders loaded:', response);
                 if (response.success) {
                     this.dataSource.data = response.data.orders;
-                    this.totalOrders = response.data.pagination.totalOrders;
+                    this.totalOrders = response.data.total || response.data.pagination?.totalOrders || 0;
                 } else {
                     this.dataSource.data = [];
                     this.totalOrders = 0;

@@ -138,9 +138,7 @@ export class WishlistNewService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.get<any>(`${this.apiUrl}`, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.get<any>(`${this.apiUrl}`).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistSubject.next(response.wishlist);
@@ -165,9 +163,7 @@ export class WishlistNewService {
       priority
     };
 
-    return this.http.post<any>(`${this.apiUrl}/add`, payload, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/add`, payload).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistSubject.next(response.wishlist);
@@ -184,9 +180,7 @@ export class WishlistNewService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.put<any>(`${this.apiUrl}/update/${itemId}`, updates, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.put<any>(`${this.apiUrl}/update/${itemId}`, updates).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistSubject.next(response.wishlist);
@@ -202,9 +196,7 @@ export class WishlistNewService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.delete<any>(`${this.apiUrl}/remove/${itemId}`, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/remove/${itemId}`).pipe(
       tap(response => {
         if (response.success) {
           this.wishlistSubject.next(response.wishlist);
@@ -223,9 +215,7 @@ export class WishlistNewService {
 
     const payload = wishlistUserId ? { wishlistUserId } : {};
 
-    return this.http.post<any>(`${this.apiUrl}/like/${itemId}`, payload, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/like/${itemId}`, payload).pipe(
       tap(response => {
         if (response.success) {
           this.showSuccessMessage(response.message);
@@ -245,9 +235,7 @@ export class WishlistNewService {
 
     const payload = wishlistUserId ? { wishlistUserId } : {};
 
-    return this.http.delete<any>(`${this.apiUrl}/unlike/${itemId}`, {
-      headers: this.authService.getAuthHeaders(),
-      body: payload
+    return this.http.delete<any>(`${this.apiUrl}/unlike/${itemId}`, { body: payload
     }).pipe(
       tap(response => {
         if (response.success) {
@@ -271,9 +259,7 @@ export class WishlistNewService {
       ...(wishlistUserId && { wishlistUserId })
     };
 
-    return this.http.post<any>(`${this.apiUrl}/comment/${itemId}`, payload, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/comment/${itemId}`, payload).pipe(
       tap(response => {
         if (response.success) {
           this.showSuccessMessage(response.message);
@@ -291,9 +277,7 @@ export class WishlistNewService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/move-to-cart/${itemId}`, { quantity }, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/move-to-cart/${itemId}`, { quantity }).pipe(
       tap(response => {
         if (response.success) {
           this.loadWishlist().subscribe(); // Refresh wishlist
@@ -401,3 +385,5 @@ export class WishlistNewService {
     }
   }
 }
+
+

@@ -108,11 +108,10 @@ export class DashboardPerformanceService {
 
   /**
    * Make HTTP request with proper headers
+   * ✅ NOTE: Authorization headers are handled by authInterceptor
    */
   private makeRequest(url: string): Observable<any> {
-    const headers = this.getAuthHeaders();
-    
-    return this.http.get<any>(url, { headers }).pipe(
+    return this.http.get<any>(url).pipe(
       map(response => {
         if (response && response.success && response.data) {
           return response.data;
@@ -123,27 +122,7 @@ export class DashboardPerformanceService {
     );
   }
 
-  /**
-   * Get authentication headers
-   */
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token') || 
-                  localStorage.getItem('admin_token') || 
-                  sessionStorage.getItem('token');
-    
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
 
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-      console.log('🔐 Using auth token for request');
-    } else {
-      console.warn('⚠️ No auth token found');
-    }
-
-    return headers;
-  }
 
   /**
    * Handle HTTP errors

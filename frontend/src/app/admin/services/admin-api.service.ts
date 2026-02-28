@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AdminAuthService } from './admin-auth.service';
+import { AuthService } from '../../core/services/auth.service';
 
 export interface DashboardMetrics {
   totalUsers: number;
@@ -58,90 +59,93 @@ export class AdminApiService {
   private apiUrl = `${environment.apiUrl}/api/admin`;
   private apiUrlPublic = `${environment.apiUrl}/api`;
 
-  constructor(private http: HttpClient, private adminAuth: AdminAuthService) {}
+  constructor(
+    private http: HttpClient,
+    private adminAuth: AdminAuthService,
+    private authService: AuthService
+  ) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('admin_token') || sessionStorage.getItem('admin_token') || localStorage.getItem('token') || sessionStorage.getItem('token');
-    const headers: any = { 'Content-Type': 'application/json' };
-    if (token) headers['Authorization'] = `Bearer ${token}`;
-    return new HttpHeaders(headers);
-  }
+  /**
+   * âœ… NOTE: Authorization headers are handled by authInterceptor
+   * No need to manually add headers in this service
+   * All HTTP requests automatically get Bearer token via interceptor
+   */
 
   getProducts(params: any = {}): Observable<any> {
-    console.log('📡 API Call: GET /api/admin/products', params);
-    return this.http.get(`${this.apiUrl}/products`, { params, headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: GET /api/admin/products', params);
+    return this.http.get(`${this.apiUrl}/products`, { params }).pipe(
       catchError(error => {
-        console.error('❌ Error fetching products:', error);
+        console.error('âŒ Error fetching products:', error);
         return of({ success: false, data: [] });
       })
     );
   }
 
   createProduct(product: any): Observable<any> {
-    console.log('📡 API Call: POST /api/admin/products', product);
-    return this.http.post(`${this.apiUrl}/products`, product, { headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: POST /api/admin/products', product);
+    return this.http.post(`${this.apiUrl}/products`, product).pipe(
       catchError(error => {
-        console.error('❌ Error creating product:', error);
+        console.error('âŒ Error creating product:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   updateProduct(id: string, product: any): Observable<any> {
-    console.log(`📡 API Call: PUT /api/admin/products/${id}`, product);
-    return this.http.put(`${this.apiUrl}/products/${id}`, product, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PUT /api/admin/products/${id}`, product);
+    return this.http.put(`${this.apiUrl}/products/${id}`, product).pipe(
       catchError(error => {
-        console.error('❌ Error updating product:', error);
+        console.error('âŒ Error updating product:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   deleteProduct(id: string): Observable<any> {
-    console.log(`📡 API Call: DELETE /api/admin/products/${id}`);
-    return this.http.delete(`${this.apiUrl}/products/${id}`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: DELETE /api/admin/products/${id}`);
+    return this.http.delete(`${this.apiUrl}/products/${id}`).pipe(
       catchError(error => {
-        console.error('❌ Error deleting product:', error);
+        console.error('âŒ Error deleting product:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   getCategories(): Observable<any[]> {
-    console.log('📡 API Call: GET /api/categories');
-    return this.http.get<any[]>(`${this.apiUrlPublic}/categories`, { headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: GET /api/categories');
+    return this.http.get<any[]>(`${this.apiUrlPublic}/categories`).pipe(
       catchError(error => {
-        console.error('❌ Error fetching categories:', error);
+        console.error('âŒ Error fetching categories:', error);
         return of([]);
       })
     );
   }
 
   createCategory(category: any): Observable<any> {
-    console.log('📡 API Call: POST /api/categories', category);
-    return this.http.post<any>(`${this.apiUrlPublic}/categories`, category, { headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: POST /api/categories', category);
+    return this.http.post<any>(`${this.apiUrlPublic}/categories`, category).pipe(
       catchError(error => {
-        console.error('❌ Error creating category:', error);
+        console.error('âŒ Error creating category:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   updateCategory(id: string, category: any): Observable<any> {
-    console.log(`📡 API Call: PUT /api/categories/${id}`, category);
-    return this.http.put<any>(`${this.apiUrlPublic}/categories/${id}`, category, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PUT /api/categories/${id}`, category);
+    return this.http.put<any>(`${this.apiUrlPublic}/categories/${id}`, category).pipe(
       catchError(error => {
-        console.error('❌ Error updating category:', error);
+        console.error('âŒ Error updating category:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   deleteCategory(id: string): Observable<any> {
-    console.log(`📡 API Call: DELETE /api/categories/${id}`);
-    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: DELETE /api/categories/${id}`);
+    return this.http.delete(`${this.apiUrlPublic}/categories/${id}`).pipe(
       catchError(error => {
-        console.error('❌ Error deleting category:', error);
+        console.error('âŒ Error deleting category:', error);
         return of({ success: false, error: error.message });
       })
     );
@@ -151,7 +155,7 @@ export class AdminApiService {
    * Get all categories with nested sub-categories (Admin view)
    */
   getAdminCategories(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/categories`, { headers: this.getHeaders() }).pipe(
+    return this.http.get(`${this.apiUrl}/categories`).pipe(
       catchError(error => {
         console.error('Error fetching admin categories:', error);
         return of({ success: false, data: [], error: error.message });
@@ -163,7 +167,7 @@ export class AdminApiService {
    * Get sub-categories for a specific category
    */
   getSubCategories(categoryId: number | string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/categories/${categoryId}/sub-categories`, { headers: this.getHeaders() }).pipe(
+    return this.http.get(`${this.apiUrl}/categories/${categoryId}/subcategories`).pipe(
       catchError(error => {
         console.error(`Error fetching sub-categories for category ${categoryId}:`, error);
         return of({ success: false, data: [], categoryId, error: error.message });
@@ -175,7 +179,7 @@ export class AdminApiService {
    * Create a new category
    */
   createAdminCategory(category: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/categories`, category, { headers: this.getHeaders() }).pipe(
+    return this.http.post(`${this.apiUrl}/categories`, category).pipe(
       catchError(error => {
         console.error('Error creating category:', error);
         return throwError(() => error);
@@ -187,7 +191,7 @@ export class AdminApiService {
    * Create a new sub-category
    */
   createSubCategory(categoryId: number | string, subCategory: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/categories/${categoryId}/sub-categories`, subCategory, { headers: this.getHeaders() }).pipe(
+    return this.http.post(`${this.apiUrl}/categories/${categoryId}/sub-categories`, subCategory).pipe(
       catchError(error => {
         console.error(`Error creating sub-category for category ${categoryId}:`, error);
         return throwError(() => error);
@@ -199,7 +203,7 @@ export class AdminApiService {
    * Update a category
    */
   updateAdminCategory(categoryId: number | string, category: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/categories/${categoryId}`, category, { headers: this.getHeaders() }).pipe(
+    return this.http.put(`${this.apiUrl}/categories/${categoryId}`, category).pipe(
       catchError(error => {
         console.error(`Error updating category ${categoryId}:`, error);
         return throwError(() => error);
@@ -211,7 +215,7 @@ export class AdminApiService {
    * Delete a category
    */
   deleteAdminCategory(categoryId: number | string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/categories/${categoryId}`, { headers: this.getHeaders() }).pipe(
+    return this.http.delete(`${this.apiUrl}/categories/${categoryId}`).pipe(
       catchError(error => {
         console.error(`Error deleting category ${categoryId}:`, error);
         return throwError(() => error);
@@ -223,7 +227,7 @@ export class AdminApiService {
    * Update a sub-category
    */
   updateSubCategory(categoryId: number | string, subCategoryId: number | string, subCategory: any): Observable<any> {
-    return this.http.put(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`, subCategory, { headers: this.getHeaders() }).pipe(
+    return this.http.put(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`, subCategory).pipe(
       catchError(error => {
         console.error(`Error updating sub-category ${subCategoryId}:`, error);
         return throwError(() => error);
@@ -235,7 +239,7 @@ export class AdminApiService {
    * Delete a sub-category
    */
   deleteSubCategory(categoryId: number | string, subCategoryId: number | string): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`, { headers: this.getHeaders() }).pipe(
+    return this.http.delete(`${this.apiUrl}/categories/${categoryId}/sub-categories/${subCategoryId}`).pipe(
       catchError(error => {
         console.error(`Error deleting sub-category ${subCategoryId}:`, error);
         return throwError(() => error);
@@ -244,65 +248,65 @@ export class AdminApiService {
   }
 
   getBrands(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/brands`, { headers: this.getHeaders() });
+    return this.http.get<any[]>(`${this.apiUrl}/brands`);
   }
 
   // NOTE: Removed getUsersWithFallback() - use getUsers() instead
   // Demo endpoint fallback has been removed - only real API endpoints are supported
 
   createUser(user: any): Observable<any> {
-    console.log('📡 API Call: POST /api/admin/users', user);
-    return this.http.post(`${this.apiUrl}/users`, user, { headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: POST /api/admin/users', user);
+    return this.http.post(`${this.apiUrl}/users`, user).pipe(
       catchError(error => {
-        console.error('❌ Error creating user:', error);
+        console.error('âŒ Error creating user:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   updateUser(id: string, user: any): Observable<any> {
-    console.log(`📡 API Call: PUT /api/admin/users/${id}`, user);
-    return this.http.put(`${this.apiUrl}/users/${id}`, user, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PUT /api/admin/users/${id}`, user);
+    return this.http.put(`${this.apiUrl}/users/${id}`, user).pipe(
       catchError(error => {
-        console.error('❌ Error updating user:', error);
+        console.error('âŒ Error updating user:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   deleteUser(id: string): Observable<any> {
-    console.log(`📡 API Call: DELETE /api/admin/users/${id}`);
-    return this.http.delete(`${this.apiUrl}/users/${id}`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: DELETE /api/admin/users/${id}`);
+    return this.http.delete(`${this.apiUrl}/users/${id}`).pipe(
       catchError(error => {
-        console.error('❌ Error deleting user:', error);
+        console.error('âŒ Error deleting user:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   activateUser(id: string): Observable<any> {
-    console.log(`📡 API Call: PUT /api/admin/users/${id}/activate`);
-    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {}, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PUT /api/admin/users/${id}/activate`);
+    return this.http.put(`${this.apiUrl}/users/${id}/activate`, {}).pipe(
       catchError(error => {
-        console.error('❌ Error activating user:', error);
+        console.error('âŒ Error activating user:', error);
         return of({ success: false, error: error.message });
       })
     );
   }
 
   getSuperAdminStats(): Observable<any> {
-    console.log('📡 API Call: GET /api/admin/dashboard/super-admin');
-    return this.http.get(`${this.apiUrl}/dashboard/super-admin`, { headers: this.getHeaders() });
+    console.log('ðŸ“¡ API Call: GET /api/admin/dashboard/super-admin');
+    return this.http.get(`${this.apiUrl}/dashboard/super-admin`);
   }
 
   /**
    * Get dashboard metrics
    */
   getDashboardMetrics(): Observable<any> {
-    console.log('📡 API Call: GET /api/admin/dashboard/metrics');
-    return this.http.get<any>(`${this.apiUrl}/dashboard/metrics`, { headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: GET /api/admin/dashboard/metrics');
+    return this.http.get<any>(`${this.apiUrl}/dashboard/metrics`).pipe(
       catchError(error => {
-        console.error('❌ Error fetching dashboard metrics:', error);
+        console.error('âŒ Error fetching dashboard metrics:', error);
         return of({ success: false, data: {} });
       })
     );
@@ -312,10 +316,10 @@ export class AdminApiService {
    * Get orders list
    */
   getOrders(params: any = {}): Observable<any> {
-    console.log('📡 API Call: GET /api/admin/orders', params);
-    return this.http.get<any>(`${this.apiUrl}/orders`, { params, headers: this.getHeaders() }).pipe(
+    console.log('ðŸ“¡ API Call: GET /api/admin/orders', params);
+    return this.http.get<any>(`${this.apiUrl}/orders`, { params }).pipe(
       catchError(error => {
-        console.error('❌ Error fetching orders:', error);
+        console.error('âŒ Error fetching orders:', error);
         return of({ success: false, data: [] });
       })
     );
@@ -326,13 +330,12 @@ export class AdminApiService {
    * Maps backend response to frontend DashboardMetrics interface
    */
   getGeneralDashboardData(): Observable<DashboardMetrics> {
-    const headers = this.getHeaders();
-    return this.http.get<any>(`${this.apiUrl}/dashboard/metrics`, { headers }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/dashboard/metrics`).pipe(
       // Fetch additional recent orders data
       switchMap(response => {
         const dashboardMetrics = this.mapDashboardResponse(response);
         console.log('Dashboard metrics fetched:', dashboardMetrics);
-        return this.http.get<any>(`${this.apiUrl}/orders/recent`, { headers }).pipe(
+        return this.http.get<any>(`${this.apiUrl}/orders/recent`).pipe(
           map(ordersResponse => {
             console.log('Orders response received:', ordersResponse);
             // Extract recentOrders array from nested data structure
@@ -413,8 +416,7 @@ export class AdminApiService {
    */
   get(endpoint: string, options?: any): Observable<any> {
     return this.http.get(`${this.apiUrl}${endpoint}`, {
-      ...options,
-      headers: this.getHeaders()
+      ...options
     });
   }
 
@@ -423,8 +425,7 @@ export class AdminApiService {
    */
   post(endpoint: string, body: any, options?: any): Observable<any> {
     return this.http.post(`${this.apiUrl}${endpoint}`, body, {
-      ...options,
-      headers: this.getHeaders()
+      ...options
     });
   }
 
@@ -433,8 +434,7 @@ export class AdminApiService {
    */
   put(endpoint: string, body: any, options?: any): Observable<any> {
     return this.http.put(`${this.apiUrl}${endpoint}`, body, {
-      ...options,
-      headers: this.getHeaders()
+      ...options
     });
   }
 
@@ -443,8 +443,7 @@ export class AdminApiService {
    */
   patch(endpoint: string, body: any, options?: any): Observable<any> {
     return this.http.patch(`${this.apiUrl}${endpoint}`, body, {
-      ...options,
-      headers: this.getHeaders()
+      ...options
     });
   }
 
@@ -458,7 +457,7 @@ export class AdminApiService {
       .set('page', (filters?.page || 1).toString())
       .set('limit', (filters?.limit || 50).toString());
 
-    return this.http.get<any>(`${this.apiUrl}/audit-logs`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/audit-logs`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching system logs:', error);
         return throwError(() => error);
@@ -470,7 +469,7 @@ export class AdminApiService {
    * Get audit log details
    */
   getAuditLogDetails(logId: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/audit-logs/${logId}`, { headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/audit-logs/${logId}`).pipe(
       catchError(error => {
         console.error('Error fetching audit log details:', error);
         return throwError(() => error);
@@ -486,7 +485,7 @@ export class AdminApiService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/activity-logs`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/activity-logs`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching activity logs:', error);
         return throwError(() => error);
@@ -508,7 +507,7 @@ export class AdminApiService {
       .set('sortBy', options.sortBy || '')
       .set('sortOrder', options.sortOrder || '');
 
-    return this.http.get<any>(`${this.apiUrl}/users`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users`, { params }).pipe(
       map(response => {
         // Normalize response structure: wrap users in data property for consistency
         if (response.success && response.data) {
@@ -531,7 +530,7 @@ export class AdminApiService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/users/vendors`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/vendors`, { params }).pipe(
       map(response => {
         if (response.success && response.data) {
           return { success: true, data: { users: response.data.users || response.data, pagination: response.data.pagination || {} } };
@@ -553,7 +552,7 @@ export class AdminApiService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/users/creators`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/creators`, { params }).pipe(
       map(response => {
         if (response.success && response.data) {
           return { success: true, data: { users: response.data.users || response.data, pagination: response.data.pagination || {} } };
@@ -575,7 +574,7 @@ export class AdminApiService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/users/admins`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/admins`, { params }).pipe(
       map(response => {
         if (response.success && response.data) {
           return { success: true, data: { users: response.data.users || response.data, pagination: response.data.pagination || {} } };
@@ -597,7 +596,7 @@ export class AdminApiService {
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/departments`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/departments`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching departments:', error);
         return throwError(() => error);
@@ -609,7 +608,7 @@ export class AdminApiService {
    * Update user status (activate/deactivate)
    */
   updateUserStatus(id: string, isActive: boolean): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/users/${id}/status`, { isActive }, { headers: this.getHeaders() }).pipe(
+    return this.http.patch(`${this.apiUrl}/users/${id}/status`, { isActive }).pipe(
       catchError(error => {
         console.error('Error updating user status:', error);
         return throwError(() => error);
@@ -621,7 +620,7 @@ export class AdminApiService {
    * Approve vendor
    */
   approveVendor(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/users/${id}/approve`, {}, { headers: this.getHeaders() }).pipe(
+    return this.http.patch(`${this.apiUrl}/users/${id}/approve`, {}).pipe(
       catchError(error => {
         console.error('Error approving vendor:', error);
         return throwError(() => error);
@@ -633,7 +632,7 @@ export class AdminApiService {
    * Reject vendor
    */
   rejectVendor(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/users/${id}/reject`, {}, { headers: this.getHeaders() }).pipe(
+    return this.http.patch(`${this.apiUrl}/users/${id}/reject`, {}).pipe(
       catchError(error => {
         console.error('Error rejecting vendor:', error);
         return throwError(() => error);
@@ -650,7 +649,7 @@ export class AdminApiService {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
-    return this.http.get<any>(`${this.apiUrl}/roles`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/roles`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching roles:', error);
         return of({ success: false, data: [], pagination: {} });
@@ -668,7 +667,7 @@ export class AdminApiService {
     if (module) {
       params = params.set('module', module);
     }
-    return this.http.get<any>(`${this.apiUrl}/permissions`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/permissions`, { params }).pipe(
       catchError(error => {
         console.error('Error fetching permissions:', error);
         return of({ success: false, data: [], pagination: {} });
@@ -680,7 +679,7 @@ export class AdminApiService {
    * Create new role
    */
   createRole(role: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/roles`, role, { headers: this.getHeaders() }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/roles`, role).pipe(
       catchError(error => {
         console.error('Error creating role:', error);
         return throwError(() => error);
@@ -692,7 +691,7 @@ export class AdminApiService {
    * Update role
    */
   updateRole(roleId: string, role: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/roles/${roleId}`, role, { headers: this.getHeaders() }).pipe(
+    return this.http.put<any>(`${this.apiUrl}/roles/${roleId}`, role).pipe(
       catchError(error => {
         console.error('Error updating role:', error);
         return throwError(() => error);
@@ -704,7 +703,7 @@ export class AdminApiService {
    * Delete role
    */
   deleteRole(roleId: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/roles/${roleId}`, { headers: this.getHeaders() }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/roles/${roleId}`).pipe(
       catchError(error => {
         console.error('Error deleting role:', error);
         return throwError(() => error);
@@ -716,7 +715,7 @@ export class AdminApiService {
    * Create new permission
    */
   createPermission(permission: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/permissions`, permission, { headers: this.getHeaders() }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/permissions`, permission).pipe(
       catchError(error => {
         console.error('Error creating permission:', error);
         return throwError(() => error);
@@ -728,7 +727,7 @@ export class AdminApiService {
    * Update permission
    */
   updatePermission(permissionId: string, permission: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/permissions/${permissionId}`, permission, { headers: this.getHeaders() }).pipe(
+    return this.http.put<any>(`${this.apiUrl}/permissions/${permissionId}`, permission).pipe(
       catchError(error => {
         console.error('Error updating permission:', error);
         return throwError(() => error);
@@ -740,7 +739,7 @@ export class AdminApiService {
    * Delete permission
    */
   deletePermission(permissionId: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/permissions/${permissionId}`, { headers: this.getHeaders() }).pipe(
+    return this.http.delete<any>(`${this.apiUrl}/permissions/${permissionId}`).pipe(
       catchError(error => {
         console.error('Error deleting permission:', error);
         return throwError(() => error);
@@ -753,8 +752,7 @@ export class AdminApiService {
    */
   delete(endpoint: string, options?: any): Observable<any> {
     return this.http.delete(`${this.apiUrl}${endpoint}`, {
-      ...options,
-      headers: this.getHeaders()
+      ...options
     });
   }
 
@@ -764,16 +762,16 @@ export class AdminApiService {
    * Get aggregated customers list (EndUsers only) with metrics
    */
   getCustomers(params: any = {}): Observable<any> {
-    console.log('📡 API Call: GET /api/admin/users/customers', params);
+    console.log('ðŸ“¡ API Call: GET /api/admin/users/customers', params);
     const httpParams = new HttpParams()
       .set('page', (params.page || 1).toString())
       .set('limit', (params.limit || 25).toString())
       .set('search', params.search || '')
       .set('status', params.status || '');
 
-    return this.http.get<any>(`${this.apiUrl}/users/customers`, { params: httpParams, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/customers`, { params: httpParams }).pipe(
       catchError(error => {
-        console.error('❌ Error fetching customers:', error);
+        console.error('âŒ Error fetching customers:', error);
         return of({ success: false, data: [] });
       })
     );
@@ -783,10 +781,10 @@ export class AdminApiService {
    * Block a customer
    */
   blockCustomer(customerId: string): Observable<any> {
-    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}/block`);
-    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/block`, {}, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PATCH /api/admin/users/customers/${customerId}/block`);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/block`, {}).pipe(
       catchError(error => {
-        console.error(`❌ Error blocking customer:`, error);
+        console.error(`âŒ Error blocking customer:`, error);
         return of({ success: false, error: error.message });
       })
     );
@@ -796,10 +794,10 @@ export class AdminApiService {
    * Unblock a customer
    */
   unblockCustomer(customerId: string): Observable<any> {
-    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}/unblock`);
-    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/unblock`, {}, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PATCH /api/admin/users/customers/${customerId}/unblock`);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}/unblock`, {}).pipe(
       catchError(error => {
-        console.error(`❌ Error unblocking customer:`, error);
+        console.error(`âŒ Error unblocking customer:`, error);
         return of({ success: false, error: error.message });
       })
     );
@@ -816,14 +814,13 @@ export class AdminApiService {
    * Reset customer password
    */
   resetCustomerPassword(customerId: string, newPassword: string): Observable<any> {
-    console.log(`📡 API Call: POST /api/admin/users/customers/${customerId}/reset-password`);
+    console.log(`ðŸ“¡ API Call: POST /api/admin/users/customers/${customerId}/reset-password`);
     return this.http.post(
       `${this.apiUrl}/users/customers/${customerId}/reset-password`,
-      { password: newPassword },
-      { headers: this.getHeaders() }
+      { password: newPassword }
     ).pipe(
       catchError(error => {
-        console.error(`❌ Error resetting customer password:`, error);
+        console.error(`âŒ Error resetting customer password:`, error);
         return of({ success: false, error: error.message });
       })
     );
@@ -833,14 +830,14 @@ export class AdminApiService {
    * Get customer posts
    */
   getCustomerPosts(customerId: string, page: number = 1, limit: number = 25): Observable<any> {
-    console.log(`📡 API Call: GET /api/admin/users/customers/${customerId}/posts`);
+    console.log(`ðŸ“¡ API Call: GET /api/admin/users/customers/${customerId}/posts`);
     const params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/posts`, { params, headers: this.getHeaders() }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/posts`, { params }).pipe(
       catchError(error => {
-        console.error(`❌ Error fetching customer posts:`, error);
+        console.error(`âŒ Error fetching customer posts:`, error);
         return of({ success: false, data: [] });
       })
     );
@@ -850,10 +847,10 @@ export class AdminApiService {
    * Delete a customer post
    */
   deleteCustomerPost(customerId: string, postId: string): Observable<any> {
-    console.log(`📡 API Call: DELETE /api/admin/users/customers/${customerId}/posts/${postId}`);
-    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}/posts/${postId}`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: DELETE /api/admin/users/customers/${customerId}/posts/${postId}`);
+    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}/posts/${postId}`).pipe(
       catchError(error => {
-        console.error(`❌ Error deleting customer post:`, error);
+        console.error(`âŒ Error deleting customer post:`, error);
         return of({ success: false, error: error.message });
       })
     );
@@ -863,10 +860,10 @@ export class AdminApiService {
    * Get customer engagement metrics
    */
   getCustomerEngagement(customerId: string): Observable<any> {
-    console.log(`📡 API Call: GET /api/admin/users/customers/${customerId}/engagement`);
-    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/engagement`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: GET /api/admin/users/customers/${customerId}/engagement`);
+    return this.http.get<any>(`${this.apiUrl}/users/customers/${customerId}/engagement`).pipe(
       catchError(error => {
-        console.error(`❌ Error fetching customer engagement:`, error);
+        console.error(`âŒ Error fetching customer engagement:`, error);
         return of({ success: false, data: {} });
       })
     );
@@ -876,10 +873,10 @@ export class AdminApiService {
    * Update customer details
    */
   updateCustomer(customerId: string, customerData: any): Observable<any> {
-    console.log(`📡 API Call: PATCH /api/admin/users/customers/${customerId}`, customerData);
-    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}`, customerData, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: PATCH /api/admin/users/customers/${customerId}`, customerData);
+    return this.http.patch(`${this.apiUrl}/users/customers/${customerId}`, customerData).pipe(
       catchError(error => {
-        console.error(`❌ Error updating customer:`, error);
+        console.error(`âŒ Error updating customer:`, error);
         return of({ success: false, error: error.message });
       })
     );
@@ -889,13 +886,15 @@ export class AdminApiService {
    * Delete a customer (soft delete)
    */
   deleteCustomer(customerId: string): Observable<any> {
-    console.log(`📡 API Call: DELETE /api/admin/users/customers/${customerId}`);
-    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}`, { headers: this.getHeaders() }).pipe(
+    console.log(`ðŸ“¡ API Call: DELETE /api/admin/users/customers/${customerId}`);
+    return this.http.delete(`${this.apiUrl}/users/customers/${customerId}`).pipe(
       catchError(error => {
-        console.error(`❌ Error deleting customer:`, error);
+        console.error(`âŒ Error deleting customer:`, error);
         return of({ success: false, error: error.message });
       })
     );
   }
 }
+
+
 

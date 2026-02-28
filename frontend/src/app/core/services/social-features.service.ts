@@ -56,9 +56,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/like`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/like`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -76,9 +74,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/save`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/save`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -96,9 +92,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/share`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/posts/${postId}/share`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -116,9 +110,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/comment`, { text }, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/comment`, { text }).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage('Comment added successfully');
@@ -149,9 +141,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/stories/${storyId}/like`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/stories/${storyId}/like`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -169,9 +159,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/stories/${storyId}/share`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/stories/${storyId}/share`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -189,9 +177,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/comment`, { text }, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/comment`, { text }).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage('Comment added successfully');
@@ -222,9 +208,7 @@ export class SocialFeaturesService {
       throw new Error('Authentication required');
     }
 
-    return this.http.post<SocialInteraction>(`${this.apiUrl}/users/follow/${userId}`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<SocialInteraction>(`${this.apiUrl}/users/follow/${userId}`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showMessage(response.message);
@@ -268,9 +252,7 @@ export class SocialFeaturesService {
       });
     }
 
-    return this.http.get<any>(`${this.apiUrl}/users/${userId}/follow-status`, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/users/${userId}/follow-status`).pipe(
       catchError(this.handleError)
     );
   }
@@ -286,8 +268,6 @@ export class SocialFeaturesService {
     return this.http.post<any>(`${this.apiUrl}/${endpoint}/${contentId}/analytics/product-click`, {
       productId,
       action
-    }, {
-      headers: this.authService.getAuthHeaders()
     }).pipe(
       catchError(this.handleError)
     );
@@ -305,3 +285,4 @@ export class SocialFeaturesService {
     console.log('Social action:', message);
   }
 }
+

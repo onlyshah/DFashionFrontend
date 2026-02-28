@@ -1,8 +1,9 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withInterceptors } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
+import { authInterceptor } from '../core/interceptors/auth.interceptor';
 
 // Angular Material Modules
 import { MaterialModule } from '../material.module';
@@ -103,7 +104,7 @@ import { CurrencyFormatPipe as AdminCurrencyFormatPipe } from './pipes/currency-
     AnalyticsService,
     AdminAuthGuard,
     PermissionGuard,
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withInterceptors([authInterceptor])),
   ],
 })
 export class AdminModule {}

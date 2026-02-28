@@ -119,8 +119,7 @@ export class SocialMediaService {
   // Posts API
   loadPosts(page: number = 1, limit: number = 10): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/posts`, {
-      params: { page: page.toString(), limit: limit.toString() },
-      headers: this.authService.getAuthHeaders()
+      params: { page: page.toString(), limit: limit.toString() }
     }).pipe(
       tap(response => {
         if (response.success) {
@@ -140,9 +139,7 @@ export class SocialMediaService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/like`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/like`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.updatePostInList(postId, { isLiked: response.isLiked });
@@ -163,9 +160,7 @@ export class SocialMediaService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/comment`, { text }, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/comment`, { text }).pipe(
       tap(response => {
         if (response.success) {
           this.showSuccessMessage('Comment added!');
@@ -181,9 +176,7 @@ export class SocialMediaService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/share`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/share`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.showSuccessMessage('Post shared!');
@@ -197,9 +190,7 @@ export class SocialMediaService {
       return new Observable(observer => observer.error('Authentication required'));
     }
 
-    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/save`, {}, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.post<any>(`${this.apiUrl}/posts/${postId}/save`, {}).pipe(
       tap(response => {
         if (response.success) {
           this.updatePostInList(postId, { isSaved: response.isSaved });
@@ -217,9 +208,7 @@ export class SocialMediaService {
 
   // Stories API
   loadStories(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/stories`, {
-      headers: this.authService.getAuthHeaders()
-    }).pipe(
+    return this.http.get<any>(`${this.apiUrl}/stories`).pipe(
       tap(response => {
         if (response.success) {
           this.storiesSubject.next(response.stories);
@@ -229,9 +218,7 @@ export class SocialMediaService {
   }
 
   viewStory(storyId: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/view`, {}, {
-      headers: this.authService.getAuthHeaders()
-    });
+    return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/view`, {});
   }
 
   // E-commerce integration
@@ -303,8 +290,6 @@ export class SocialMediaService {
     return this.http.post<any>(`${this.apiUrl}/posts/${postId}/analytics/product-click`, {
       productId,
       action
-    }, {
-      headers: this.authService.getAuthHeaders()
     });
   }
 
@@ -312,8 +297,6 @@ export class SocialMediaService {
     return this.http.post<any>(`${this.apiUrl}/stories/${storyId}/analytics/product-click`, {
       productId,
       action
-    }, {
-      headers: this.authService.getAuthHeaders()
     });
   }
 
@@ -352,3 +335,4 @@ export class SocialMediaService {
     return (num / 1000000).toFixed(1) + 'M';
   }
 }
+

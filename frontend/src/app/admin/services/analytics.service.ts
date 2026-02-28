@@ -75,35 +75,20 @@ export class AnalyticsService {
 
   constructor(private http: HttpClient) {}
 
-  // Get authentication headers
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('admin_token') ||
-                  localStorage.getItem('token') ||
-                  sessionStorage.getItem('token');
-
-    let headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
-    if (token) {
-      headers = headers.set('Authorization', `Bearer ${token}`);
-    }
-
-    return headers;
-  }
+  /**
+   * ✅ NOTE: Authorization headers are handled by authInterceptor
+   * No need to manually create headers in this service
+   * All HTTP requests automatically get Bearer token via interceptor
+   */
 
   // Dashboard Statistics (Admin API)
   getDashboardStats(): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`);
   }
 
   // Use real API endpoint - no fallback to demo
   getDashboardStatsWithFallback(): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/dashboard/metrics`).pipe(
       catchError((err: any) => {
         // Return error - no fallback to demo data
         return throwError(() => err);
@@ -115,67 +100,47 @@ export class AnalyticsService {
 
   // Sales Analytics
   getSalesData(period: string = '30d'): Observable<SalesData[]> {
-    return this.http.get<SalesData[]>(`${this.apiUrl}/sales?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<SalesData[]>(`${this.apiUrl}/sales?period=${period}`);
   }
 
   getSalesStats(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/sales/stats?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/sales/stats?period=${period}`);
   }
 
   // User Analytics
   getUserAnalytics(period: string = '30d'): Observable<UserAnalytics> {
-    return this.http.get<UserAnalytics>(`${this.apiUrl}/users?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<UserAnalytics>(`${this.apiUrl}/users?period=${period}`);
   }
 
   getUserGrowth(period: string = '12m'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users/growth?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/users/growth?period=${period}`);
   }
 
   getUserActivity(period: string = '7d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users/activity?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/users/activity?period=${period}`);
   }
 
   // Product Analytics
   getProductAnalytics(period: string = '30d'): Observable<ProductAnalytics> {
-    return this.http.get<ProductAnalytics>(`${this.apiUrl}/products?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<ProductAnalytics>(`${this.apiUrl}/products?period=${period}`);
   }
 
   getTopSellingProducts(limit: number = 10, period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/products/top-selling?limit=${limit}&period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/products/top-selling?limit=${limit}&period=${period}`);
   }
 
   getProductPerformance(productId: string, period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/products/${productId}/performance?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/products/${productId}/performance?period=${period}`);
   }
 
   // Order Analytics
   getOrderAnalytics(period: string = '30d'): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders?period=${period}`);
   }
 
   // Use real API endpoint - no fallback to demo
   getOrderAnalyticsWithFallback(period: string = '30d'): Observable<{success: boolean; data: any}> {
-    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders/recent`, {
-      headers: this.getAuthHeaders()
-    }).pipe(
+    return this.http.get<{success: boolean; data: any}>(`${this.apiUrl}/orders/recent`).pipe(
       catchError((err: any) => {
         // Return error - no fallback to demo data
         return throwError(() => err);
@@ -184,118 +149,82 @@ export class AnalyticsService {
   }
 
   getOrderTrends(period: string = '12m'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/orders/trends?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/orders/trends?period=${period}`);
   }
 
   // Revenue Analytics
   getRevenueAnalytics(period: string = '30d'): Observable<RevenueAnalytics> {
-    return this.http.get<RevenueAnalytics>(`${this.apiUrl}/revenue?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<RevenueAnalytics>(`${this.apiUrl}/revenue?period=${period}`);
   }
 
   getRevenueByCategory(period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/revenue/by-category?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/revenue/by-category?period=${period}`);
   }
 
   getRevenueByVendor(period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/revenue/by-vendor?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/revenue/by-vendor?period=${period}`);
   }
 
   // Traffic Analytics
   getTrafficAnalytics(period: string = '30d'): Observable<TrafficAnalytics> {
-    return this.http.get<TrafficAnalytics>(`${this.apiUrl}/traffic?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<TrafficAnalytics>(`${this.apiUrl}/traffic?period=${period}`);
   }
 
   getPageViews(period: string = '7d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/traffic/page-views?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/traffic/page-views?period=${period}`);
   }
 
   // Conversion Analytics
   getConversionRates(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/conversion?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/conversion?period=${period}`);
   }
 
   getFunnelAnalytics(period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/conversion/funnel?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/conversion/funnel?period=${period}`);
   }
 
   // Customer Analytics
   getCustomerAnalytics(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/customers?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/customers?period=${period}`);
   }
 
   getCustomerLifetimeValue(period: string = '12m'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/customers/lifetime-value?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/customers/lifetime-value?period=${period}`);
   }
 
   getCustomerRetention(period: string = '12m'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/customers/retention?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/customers/retention?period=${period}`);
   }
 
   // Inventory Analytics
   getInventoryAnalytics(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/inventory`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/inventory`);
   }
 
   getLowStockProducts(threshold: number = 10): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/inventory/low-stock?threshold=${threshold}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/inventory/low-stock?threshold=${threshold}`);
   }
 
   getStockMovement(period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/inventory/movement?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/inventory/movement?period=${period}`);
   }
 
   // Marketing Analytics
   getMarketingAnalytics(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/marketing?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/marketing?period=${period}`);
   }
 
   getCampaignPerformance(period: string = '30d'): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/marketing/campaigns?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any[]>(`${this.apiUrl}/marketing/campaigns?period=${period}`);
   }
 
   // Financial Analytics
   getFinancialAnalytics(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/financial?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/financial?period=${period}`);
   }
 
   getProfitAnalysis(period: string = '30d'): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/financial/profit?period=${period}`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/financial/profit?period=${period}`);
   }
 
   // Export Analytics
@@ -307,23 +236,18 @@ export class AnalyticsService {
 
     return this.http.get(`${this.apiUrl}/export`, {
       params,
-      responseType: 'blob',
-      headers: this.getAuthHeaders()
+      responseType: 'blob'
     });
   }
 
   // Real-time Analytics
   getRealTimeStats(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/real-time`, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.get<any>(`${this.apiUrl}/real-time`);
   }
 
   // Custom Analytics
   getCustomAnalytics(query: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/custom`, query, {
-      headers: this.getAuthHeaders()
-    });
+    return this.http.post<any>(`${this.apiUrl}/custom`, query);
   }
 
   // Comparative Analytics
@@ -333,6 +257,7 @@ export class AnalyticsService {
       params = params.append('periods', period);
     });
 
-    return this.http.get<any>(`${this.apiUrl}/comparative`, { params, headers: this.getAuthHeaders() });
+    return this.http.get<any>(`${this.apiUrl}/comparative`, { params });
   }
 }
+

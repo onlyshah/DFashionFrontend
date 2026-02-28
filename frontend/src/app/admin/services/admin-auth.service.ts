@@ -330,8 +330,7 @@ export class AdminAuthService {
     if (!token) {
       return throwError(() => 'No token found');
     }
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get(`${this.apiUrl}/auth/verify`, { headers }).pipe(
+    return this.http.get(`${this.apiUrl}/auth/verify`).pipe(
       tap(response => {
         if (response && (response as any).data?.user) {
           this.currentUserSubject.next((response as any).data.user);
@@ -345,6 +344,8 @@ export class AdminAuthService {
   }
 
   // Get authorization headers
+  // ✅ NOTE: This method is kept for API compatibility but tokens are handled by authInterceptor
+  // No need to manually pass these headers to HTTP calls
   public getAuthHeaders(): HttpHeaders {
     let token = this.getToken();
     if (!token && this.authService.isAuthenticated) {
@@ -368,8 +369,7 @@ export class AdminAuthService {
 
   // Update user profile
   public updateProfile(profileData: Partial<AdminUser>): Observable<any> {
-    const headers = this.getAuthHeaders();
-    return this.http.put(`${this.apiUrl}/admin/profile`, profileData, { headers }).pipe(
+    return this.http.put(`${this.apiUrl}/admin/profile`, profileData).pipe(
       tap(response => {
         if (response && (response as any).success) {
           const currentUser = this.getCurrentUser();
@@ -385,11 +385,10 @@ export class AdminAuthService {
 
   // Change password
   public changePassword(currentPassword: string, newPassword: string): Observable<any> {
-    const headers = this.getAuthHeaders();
     return this.http.post(`${this.apiUrl}/admin/change-password`, {
       currentPassword,
       newPassword
-    }, { headers });
+    });
   }
 
   // Get user permissions for display

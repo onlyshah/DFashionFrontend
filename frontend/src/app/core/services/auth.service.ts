@@ -23,6 +23,10 @@ export class AuthService {
   private readonly LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly TOKEN_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  
+  // ✅ Cache token in memory to survive navigation
+  private cachedToken: string | null = null;
+  private rememberMe = false;
 
   public currentUser$ = this.currentUserSubject.asObservable();
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -108,8 +112,22 @@ export class AuthService {
       .pipe(
         tap(response => {
           console.log('✅ Login response received:', response);
+          console.log('📦 Response structure check:', {
+            hasData: !!response.data,
+            hasToken: !!response.data?.token,
+            tokenValue: response.data?.token ? response.data.token.substring(0, 30) + '...' : 'MISSING',
+            hasUser: !!response.data?.user,
+            rememberMe: this.rememberMe
+          });
+          
           // Handle backend response format: { success: true, data: { token, user } }
           const authData = response.data || response;
+          console.log('🔍 authData extraction:', {
+            source: response.data ? 'response.data' : 'response root',
+            tokenInAuthData: authData.token ? 'PRESENT' : 'MISSING',
+            willCall: 'setToken()'
+          });
+          
           this.setToken(authData.token);
           this.currentUserSubject.next(authData.user);
           this.isAuthenticatedSubject.next(true);
@@ -194,7 +212,14 @@ export class AuthService {
   }
 
   private clearAuth(): void {
+    // ✅ Clear memory cache
+    this.cachedToken = null;
+    
+    // Clear all token keys from storage
     localStorage.removeItem('token');
+    localStorage.removeItem('auth_token');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('auth_token');
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
 
@@ -255,30 +280,85 @@ export class AuthService {
     );
   }
 
-  private rememberMe: boolean = false;
-
   setRememberMe(remember: boolean) {
     this.rememberMe = remember;
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token') || sessionStorage.getItem('token');
+    // PRIORITY 1: Return cache if available (fastest)
+    if (this.cachedToken && this.cachedToken.trim()) {
+      console.log('✅ getToken: Returning from MEMORY CACHE (length: ' + this.cachedToken.length + ')');
+      return this.cachedToken;
+    }
+
+    // PRIORITY 2: Check all storage locations
+    const sessionToken = sessionStorage.getItem('auth_token');
+    const localToken = localStorage.getItem('auth_token');
+    const legacySessionToken = sessionStorage.getItem('token');
+    const legacyLocalToken = localStorage.getItem('token');
+    const adminSessionToken = sessionStorage.getItem('admin_token');
+    const adminLocalToken = localStorage.getItem('admin_token');
+
+    console.log('🔍 getToken: Storage check:', {
+      sessionToken: sessionToken ? sessionToken.substring(0, 20) + '...' : null,
+      localToken: localToken ? localToken.substring(0, 20) + '...' : null,
+      legacySessionToken: legacySessionToken ? 'found' : null,
+      legacyLocalToken: legacyLocalToken ? 'found' : null,
+      adminSessionToken: adminSessionToken ? 'found' : null,
+      adminLocalToken: adminLocalToken ? 'found' : null
+    });
+
+    const token = sessionToken || 
+                  localToken ||
+                  legacySessionToken ||
+                  legacyLocalToken ||
+                  adminSessionToken ||
+                  adminLocalToken;
+
+    // If token found in storage, cache it for next time
+    if (token && token.trim()) {
+      console.log('✅ getToken: Found in storage, caching (length: ' + token.length + ')');
+      this.cachedToken = token;
+      return token;
+    }
+
+    console.log('❌ getToken: NO TOKEN FOUND ANYWHERE');
+    return null;
   }
 
   private setToken(token: string): void {
+    console.log('📝 setToken() called with:', {
+      isNull: token === null,
+      isUndefined: token === undefined,
+      isEmpty: token === '',
+      length: token ? token.length : 0
+    });
+
     if (!token) {
-      console.warn('⚠️ setToken called with empty/null token!');
+      console.error('❌ CRITICAL: setToken called with falsy value! Token:', token);
       return;
     }
     
+    // ✅ CRITICAL: Cache token in memory IMMEDIATELY
+    this.cachedToken = token;
+    console.log('✅ Token cached in memory (length: ' + token.length + ')');
+    
+    const key = 'auth_token'; // Consistent key
+    
+    console.log('💾 About to store token...');
+    
     if (this.rememberMe) {
-      localStorage.setItem('token', token);
-      sessionStorage.removeItem('token');
-      console.log('✅ Token stored in localStorage (Remember Me enabled)');
+      localStorage.setItem(key, token);
+      sessionStorage.removeItem(key);
+      localStorage.removeItem('token'); // Cleanup old key
+      console.log('✅ Token stored in localStorage (key: auth_token, length: ' + token.length + ')');
+      console.log('🔍 Verification - localStorage.getItem(auth_token) length:', localStorage.getItem(key)?.length || 'NULL');
     } else {
-      sessionStorage.setItem('token', token);
-      localStorage.removeItem('token');
-      console.log('✅ Token stored in sessionStorage');
+      sessionStorage.setItem(key, token);
+      localStorage.removeItem(key);
+      localStorage.removeItem('token'); // Cleanup old key
+      console.log('✅ Token stored in sessionStorage (key: auth_token, length: ' + token.length + ')');
+      console.log('🔍 Verification - sessionStorage.getItem(auth_token) length:', sessionStorage.getItem(key)?.length || 'NULL');
     }
   }
 

@@ -236,6 +236,11 @@ export class SubCategoryManagementComponent implements OnInit, OnDestroy {
       slug: [''],
       description: ['']
     });
+
+    // Load subcategories when parent category is selected
+    this.subCategoryForm.get('parentId')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.loadSubCategoriesForParent());
   }
 
   private loadParentCategories(): void {
@@ -244,8 +249,8 @@ export class SubCategoryManagementComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data: any) => {
           const categoriesData = Array.isArray(data) ? data : (data?.data || []);
-          // Filter only parent categories (those without parentId)
-          this.parentCategories = categoriesData.filter((cat: any) => !cat.parentId);
+          // All categories returned from admin endpoint are parent categories
+          this.parentCategories = categoriesData;
         },
         error: (error) => {
           console.error('Error loading parent categories:', error);
@@ -255,10 +260,37 @@ export class SubCategoryManagementComponent implements OnInit, OnDestroy {
   }
 
   private loadSubCategories(): void {
-    // TODO: Implement backend API call to fetch sub-categories with pagination
+    // Load all subcategories without filtering by specific parent
     this.subCategories = [];
     this.totalSubCategories = 0;
     this.dataSource.data = this.subCategories;
+  }
+
+  private loadSubCategoriesForParent(): void {
+    const categoryId = this.subCategoryForm.get('parentId')?.value;
+    if (!categoryId) {
+      this.subCategories = [];
+      this.totalSubCategories = 0;
+      this.dataSource.data = [];
+      return;
+    }
+
+    this.productService.getSubCategoriesList(categoryId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.subCategories = Array.isArray(data) ? data : [];
+          this.totalSubCategories = this.subCategories.length;
+          this.dataSource.data = this.subCategories;
+        },
+        error: (error) => {
+          console.error('Error loading subcategories:', error);
+          this.subCategories = [];
+          this.totalSubCategories = 0;
+          this.dataSource.data = [];
+        }
+      });
   }
 
   onSubmit(): void {
@@ -269,25 +301,56 @@ export class SubCategoryManagementComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     const formData = this.subCategoryForm.value;
+    const categoryId = formData.parentId;
 
     if (this.editingId) {
-      // TODO: Call backend API to update sub-category
-      this.snackBar.open('Sub-category updated successfully', 'Close', { duration: 3000 });
+      // Update subcategory
+      this.productService.updateSubCategory(categoryId, this.editingId, {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description
+      }).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Sub-category updated successfully', 'Close', { duration: 3000 });
+          this.subCategoryForm.reset();
+          this.editingId = null;
+          this.isLoading = false;
+          this.loadSubCategories();
+        },
+        error: (error) => {
+          console.error('Update error:', error);
+          this.snackBar.open('Failed to update sub-category', 'Close', { duration: 3000 });
+          this.isLoading = false;
+        }
+      });
     } else {
-      // TODO: Call backend API to create sub-category
-      this.snackBar.open('Sub-category created successfully', 'Close', { duration: 3000 });
+      // Create new subcategory
+      this.productService.createSubCategory(categoryId, {
+        name: formData.name,
+        slug: formData.slug,
+        description: formData.description
+      }).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.snackBar.open('Sub-category created successfully', 'Close', { duration: 3000 });
+          this.subCategoryForm.reset();
+          this.isLoading = false;
+          this.loadSubCategories();
+        },
+        error: (error) => {
+          console.error('Create error:', error);
+          this.snackBar.open('Failed to create sub-category', 'Close', { duration: 3000 });
+          this.isLoading = false;
+        }
+      });
     }
-
-    this.subCategoryForm.reset();
-    this.editingId = null;
-    this.isLoading = false;
-    this.loadSubCategories();
   }
 
   onEdit(subCategory: any): void {
     this.editingId = subCategory._id || subCategory.id;
     this.subCategoryForm.patchValue({
-      parentId: subCategory.parentId,
+      parentId: subCategory.parentId || subCategory.categoryId,
       name: subCategory.name,
       slug: subCategory.slug,
       description: subCategory.description
@@ -296,10 +359,26 @@ export class SubCategoryManagementComponent implements OnInit, OnDestroy {
 
   onDelete(subCategoryId: string): void {
     if (confirm('Are you sure you want to delete this sub-category?')) {
-      // TODO: Call backend API to delete sub-category
-      this.subCategories = this.subCategories.filter(sc => (sc._id || sc.id) !== subCategoryId);
-      this.dataSource.data = this.subCategories;
-      this.snackBar.open('Sub-category deleted successfully', 'Close', { duration: 3000 });
+      const categoryId = this.subCategoryForm.get('parentId')?.value;
+      if (!categoryId) {
+        this.snackBar.open('Category ID not found', 'Close', { duration: 3000 });
+        return;
+      }
+
+      this.productService.deleteSubCategory(categoryId, subCategoryId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.subCategories = this.subCategories.filter(sc => (sc._id || sc.id) !== subCategoryId);
+            this.dataSource.data = this.subCategories;
+            this.totalSubCategories--;
+            this.snackBar.open('Sub-category deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: (error) => {
+            console.error('Delete error:', error);
+            this.snackBar.open('Failed to delete sub-category', 'Close', { duration: 3000 });
+          }
+        });
     }
   }
 

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { tap, catchError } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { RBACService } from '../../core/services/rbac.service';
 import { getRedirectPathForRole } from '../../config/roleRedirectMap';
@@ -49,46 +48,25 @@ export class LoginComponent implements OnInit {
 
       try {
         const { email, password, rememberMe } = this.loginForm.value;
-        
-        console.log('📝 Login attempt with:', { email, rememberMe });
-        
-        // Set the rememberMe flag in the auth service before login
         this.authService.setRememberMe(rememberMe);
         
-        console.log('🔄 Starting login request...');
-        const { firstValueFrom, timeout } = await import('rxjs');
-        const loginObservable = this.authService.login({ email, password }).pipe(
-          timeout(30000), // 30 second timeout
-          tap(resp => console.log('🔄 Login observable emitted:', resp)),
-          catchError(err => {
-            console.error('🔄 Login observable error:', err);
-            throw err;
-          })
-        );
-        
-        console.log('🔄 Converting to promise...');
-        const response = await firstValueFrom(loginObservable);
-        console.log('🔄 Promise resolved with response:', response);
-
-        console.log('📨 Login response received:', response);
+        const response = await new Promise<any>((resolve, reject) => {
+          this.authService.login({ email, password }).subscribe({
+            next: (res) => resolve(res),
+            error: (err) => reject(err)
+          });
+        });
 
         if (response?.success || response?.data) {
-          console.log('✅ Login successful, response:', response);
-          // Load user permissions
-          const user = (this.authService.currentUserValue as any)?.user || response.data?.user || response.user;
+          const user = response?.data?.user || this.authService.currentUserValue;
           this.rbacService.initializeUser(user);
-
-          // Prefer backend-provided redirectPath, otherwise fallback to role mapping
-          const redirectPath = response.data?.redirectPath || response.redirectPath;
-          const finalRedirect = redirectPath || getRedirectPathForRole(user?.role, '/home');
-          console.log('➡️ Redirect chosen:', { redirectPath, userRole: user?.role, finalRedirect });
-          this.router.navigate([finalRedirect]);
+          
+          const redirectUrl = getRedirectPathForRole(user?.role, '/home');
+          this.router.navigate([redirectUrl]);
         } else {
           this.errorMessage = response?.message || 'Login failed. Please try again.';
-          console.error('❌ Login response invalid:', response);
         }
       } catch (error: any) {
-        console.error('❌ Login error caught:', error);
         this.errorMessage = error.error?.message || error.message || 'Login failed. Please try again.';
       } finally {
         this.isLoading = false;

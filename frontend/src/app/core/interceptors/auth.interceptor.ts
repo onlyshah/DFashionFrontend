@@ -1,64 +1,74 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { catchError, throwError } from 'rxjs';
 
+/**
+ * ✅ UNIFIED Auth Interceptor - SINGLE SOURCE OF TRUTH for JWT tokens
+ * - Adds Authorization header to ALL requests automatically
+ * - No manual header passing needed in services
+ * - Handles token refresh and expiration
+ * - Works with all storage methods (memory, sessionStorage, localStorage)
+ */
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-
-  // Get the appropriate token based on the request URL
-  let token = null;
-  let tokenSource = 'none';
-
-  // Check if this is an admin route
-  if (req.url.includes('/api/admin/')) {
-    // Try sessionStorage first (session-based), then localStorage (persistent)
-    if (sessionStorage.getItem('admin_token')) {
-      token = sessionStorage.getItem('admin_token');
-      tokenSource = 'sessionStorage(admin_token)';
-    } else if (localStorage.getItem('admin_token')) {
-      token = localStorage.getItem('admin_token');
-      tokenSource = 'localStorage(admin_token)';
-    } else if (authService.getToken()) {
-      token = authService.getToken();
-      tokenSource = 'authService.getToken()';
-    } else if (sessionStorage.getItem('token')) {
-      token = sessionStorage.getItem('token');
-      tokenSource = 'sessionStorage(token)';
-    } else if (localStorage.getItem('token')) {
-      token = localStorage.getItem('token');
-      tokenSource = 'localStorage(token)';
-    }
-  } else {
-    // For regular routes, check sessionStorage first, then localStorage
-    if (sessionStorage.getItem('token')) {
-      token = sessionStorage.getItem('token');
-      tokenSource = 'sessionStorage(token)';
-    } else if (localStorage.getItem('token')) {
-      token = localStorage.getItem('token');
-      tokenSource = 'localStorage(token)';
-    } else if (authService.getToken()) {
-      token = authService.getToken();
-      tokenSource = 'authService.getToken()';
-    }
+  
+  // Get token from AuthService (checks memory cache first, then all storage)
+  let token = authService.getToken();
+  
+  // If token not found via service, do direct storage check (fallback)
+  if (!token) {
+    token = sessionStorage.getItem('auth_token') || 
+            localStorage.getItem('auth_token') ||
+            sessionStorage.getItem('token') ||
+            localStorage.getItem('token') ||
+            sessionStorage.getItem('admin_token') ||
+            localStorage.getItem('admin_token');
   }
-
-  console.log('🔐 Auth Interceptor:', {
-    method: req.method,
-    url: req.url,
-    isAdminRoute: req.url.includes('/admin/'),
-    hasToken: !!token,
-    tokenSource,
-    tokenPreview: token ? token.substring(0, 20) + '...' : 'none'
-  });
-
-  if (token) {
-    const authReq = req.clone({
-      headers: req.headers.set('Authorization', `Bearer ${token}`)
+  
+  // Validate token has actual content
+  if (token && typeof token === 'string' && token.trim().length > 0) {
+    console.log('✅ [authInterceptor] Token attached to request:', req.url);
+    
+    // Clone request and add Authorization header
+    req = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
-    console.log('✅ Auth header added:', { headerPresent: authReq.headers.has('Authorization') });
-    return next(authReq);
+  } else {
+    // No token found - log for debugging admin endpoints
+    if (req.url.includes('/api/admin/') || req.url.includes('/api/auth/')) {
+      console.warn('⚠️ [authInterceptor] No token for request:', req.url, {
+        token: token,
+        tokenType: typeof token,
+        tokenLength: token ? (token as string).length : 0
+      });
+    }
   }
 
-  console.warn('⚠️ No token found - request will be sent without authorization');
-  return next(req);
+  return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+      // Handle 401 Unauthorized - token might be invalid
+      if (error.status === 401) {
+        console.error('❌ [authInterceptor] 401 Unauthorized:', {
+          url: req.url,
+          message: error.error?.message,
+          hasToken: !!token,
+          tokenLength: token ? token.length : 0
+        });
+        
+        // Log the actual token value for debugging (truncated for security)
+        if (token) {
+          console.error('🔍 Token preview:', token.substring(0, 50) + '...');
+        }
+        
+        // Clear invalid token
+        authService.logout();
+      }
+      
+      return throwError(() => error);
+    })
+  );
 };

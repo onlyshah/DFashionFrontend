@@ -137,7 +137,8 @@ export class ProductManagementComponent implements OnInit, OnDestroy {
                 console.log('Products loaded:', response);
                 if (response.success) {
                     this.dataSource.data = response.data.products;
-                    this.totalProducts = response.data.pagination.totalProducts;
+                    // Support both new and legacy response formats
+                    this.totalProducts = response.data.total || response.data.pagination?.totalProducts || 0;
                 } else {
                     this.dataSource.data = [];
                     this.totalProducts = 0;
