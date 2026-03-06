@@ -322,21 +322,21 @@ const routes: Routes = [
         path: 'pages',
         component: PageManagementComponent,
         canActivate: [PermissionGuard],
-        data: { title: 'Pages', permission: 'content:view' }
+        data: { title: 'Pages', module: 'cms', permission: 'content:view' }
       },
       // Blog Posts (Content Management)
       {
         path: 'blogs',
         component: BlogPostsComponent,
         canActivate: [PermissionGuard],
-        data: { title: 'Blog Posts', permission: 'content:view' }
+        data: { title: 'Blog Posts', module: 'cms', permission: 'content:view' }
       },
       // Media Library (Content Management)
       {
         path: 'media',
         component: MediaLibraryComponent,
         canActivate: [PermissionGuard],
-        data: { title: 'Media Library', permission: 'content:view' }
+        data: { title: 'Media Library', module: 'cms', permission: 'content:view' }
       },
       // Inventory (Main)
       {

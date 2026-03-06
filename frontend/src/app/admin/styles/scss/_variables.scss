@@ -1,3 +1,5 @@
+@use "common/light/variables" as lightVars;
+
 ////////// SIDEBAR ////////
 $sidebar-width-lg: 236px;
 $sidebar-width-mini: 185px;
@@ -12,8 +14,8 @@ $sidebar-light-menu-active-bg: #f7f8fc;
 $sidebar-light-menu-active-color: #12253f;
 $sidebar-light-menu-hover-bg: #f7f8fc;
 $sidebar-light-menu-hover-color: #56595a;
-$sidebar-light-submenu-hover-color: $primary;
-$sidebar-light-submenu-active-color: $primary;
+$sidebar-light-submenu-hover-color: #844fc1;
+$sidebar-light-submenu-active-color: #844fc1;
 $sidebar-light-menu-icon-color: #6c7293;
 $sidebar-light-menu-arrow-color: #686868;
 $sidebar-light-profile-name-color: #404852;

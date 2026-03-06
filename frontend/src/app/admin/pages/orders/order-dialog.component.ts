@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -6,6 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AdminProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-order-dialog',
@@ -89,17 +92,41 @@ import { MatSelectModule } from '@angular/material/select';
     }
   `]
 })
-export class OrderDialogComponent implements OnInit {
+export class OrderDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
+  orderStatuses: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<OrderDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private productService: AdminProductService
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadOrderStatuses();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadOrderStatuses(): void {
+    this.productService.getOrderStatuses()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.orderStatuses = Array.isArray(data) ? data : [];
+        },
+        error: (error: any) => {
+          console.error('Error loading order statuses:', error);
+          this.orderStatuses = [];
+        }
+      });
   }
 
   initializeForm(): void {

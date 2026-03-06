@@ -3,7 +3,7 @@
     <h1>Settings</h1>
     <p>Manage your application settings and preferences</p>
   </div>
-  <mat-tab-group>
+  <mat-tab-group #tabGroup>
 
     <!-- General Settings -->
     <mat-tab label="General">
@@ -54,13 +54,13 @@
       </div>
     </mat-tab>
 
-    <!-- E-commerce Settings -->
-    <mat-tab label="E-commerce">
+    <!-- Payment Settings -->
+    <mat-tab label="Payment">
       <div class="tab-content">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>E-commerce Settings</mat-card-title>
-            <mat-card-subtitle>Configure your online store</mat-card-subtitle>
+            <mat-card-title>Payment Settings</mat-card-title>
+            <mat-card-subtitle>Configure payment methods and processing</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <form [formGroup]="ecommerceForm" class="settings-form">
@@ -71,18 +71,6 @@
               <mat-form-field appearance="outline">
                 <mat-label>Store Description</mat-label>
                 <textarea matInput rows="3" formControlName="storeDescription"></textarea>
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Default Tax Rate (%)</mat-label>
-                <input matInput type="number" formControlName="taxRate">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Shipping Fee</mat-label>
-                <input matInput type="number" formControlName="shippingFee">
-              </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Free Shipping Threshold</mat-label>
-                <input matInput type="number" formControlName="freeShippingThreshold">
               </mat-form-field>
               <div class="checkbox-group">
                 <mat-checkbox formControlName="enableInventoryTracking">
@@ -106,45 +94,26 @@
       </div>
     </mat-tab>
 
-    <!-- Notifications -->
-    <mat-tab label="Notifications">
+    <!-- Shipping Settings -->
+    <mat-tab label="Shipping">
       <div class="tab-content">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>Notification Settings</mat-card-title>
-            <mat-card-subtitle>Configure email and push notifications</mat-card-subtitle>
+            <mat-card-title>Shipping Settings</mat-card-title>
+            <mat-card-subtitle>Configure shipping options and fees</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
-            <form [formGroup]="notificationForm" class="settings-form">
-              <h3>Email Notifications</h3>
-              <div class="checkbox-group">
-                <mat-checkbox formControlName="emailNewOrders">
-                  New Orders
-                </mat-checkbox>
-                <mat-checkbox formControlName="emailLowStock">
-                  Low Stock Alerts
-                </mat-checkbox>
-                <mat-checkbox formControlName="emailNewUsers">
-                  New User Registrations
-                </mat-checkbox>
-                <mat-checkbox formControlName="emailReviews">
-                  New Product Reviews
-                </mat-checkbox>
-              </div>
-              <h3>Push Notifications</h3>
-              <div class="checkbox-group">
-                <mat-checkbox formControlName="pushNewOrders">
-                  New Orders
-                </mat-checkbox>
-                <mat-checkbox formControlName="pushUrgentAlerts">
-                  Urgent System Alerts
-                </mat-checkbox>
-                <mat-checkbox formControlName="pushDailyReports">
-                  Daily Reports
-                </mat-checkbox>
-              </div>
+            <form [formGroup]="ecommerceForm" class="settings-form">
+              <mat-form-field appearance="outline">
+                <mat-label>Shipping Fee</mat-label>
+                <input matInput type="number" formControlName="shippingFee">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Free Shipping Threshold</mat-label>
+                <input matInput type="number" formControlName="freeShippingThreshold">
+              </mat-form-field>
               <div class="form-actions">
-                <button mat-raised-button color="primary" (click)="saveNotificationSettings()">
+                <button mat-raised-button color="primary" (click)="saveEcommerceSettings()">
                   Save Changes
                 </button>
               </div>
@@ -154,37 +123,22 @@
       </div>
     </mat-tab>
 
-    <!-- Security -->
-    <mat-tab label="Security">
+    <!-- Tax Settings -->
+    <mat-tab label="Tax">
       <div class="tab-content">
         <mat-card>
           <mat-card-header>
-            <mat-card-title>Security Settings</mat-card-title>
-            <mat-card-subtitle>Manage security and access controls</mat-card-subtitle>
+            <mat-card-title>Tax Settings</mat-card-title>
+            <mat-card-subtitle>Configure tax rates and calculations</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
-            <form [formGroup]="securityForm" class="settings-form">
+            <form [formGroup]="ecommerceForm" class="settings-form">
               <mat-form-field appearance="outline">
-                <mat-label>Session Timeout (minutes)</mat-label>
-                <input matInput type="number" formControlName="sessionTimeout">
+                <mat-label>Default Tax Rate (%)</mat-label>
+                <input matInput type="number" formControlName="taxRate">
               </mat-form-field>
-              <mat-form-field appearance="outline">
-                <mat-label>Password Minimum Length</mat-label>
-                <input matInput type="number" formControlName="passwordMinLength">
-              </mat-form-field>
-              <div class="checkbox-group">
-                <mat-checkbox formControlName="requireTwoFactor">
-                  Require Two-Factor Authentication
-                </mat-checkbox>
-                <mat-checkbox formControlName="enableLoginAttempts">
-                  Enable Login Attempt Limits
-                </mat-checkbox>
-                <mat-checkbox formControlName="enableAuditLog">
-                  Enable Audit Logging
-                </mat-checkbox>
-              </div>
               <div class="form-actions">
-                <button mat-raised-button color="primary" (click)="saveSecuritySettings()">
+                <button mat-raised-button color="primary" (click)="saveEcommerceSettings()">
                   Save Changes
                 </button>
               </div>

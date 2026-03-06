@@ -62,18 +62,24 @@ export class RolePermissionsService {
     admin: [
       { module: 'overview', actions: ['view'] },
       { module: 'analytics', actions: ['view'] },
+      { module: 'social', actions: ['view'] },
+      { module: 'alerts', actions: ['view'] },
       { module: 'users', actions: ['view', 'create', 'update'] },
       { module: 'products', actions: ['view', 'create', 'update'] },
       { module: 'inventory', actions: ['view', 'update'] },
       { module: 'orders', actions: ['view', 'update'] },
       { module: 'payments', actions: ['view'] },
       { module: 'socialFeed', actions: ['view'] },
+      { module: 'creators', actions: ['view'] },
+      { module: 'live', actions: ['view'] },
       { module: 'marketing', actions: ['view', 'create'] },
       { module: 'reviews', actions: ['view'] },
       { module: 'reports', actions: ['view'] },
       { module: 'cms', actions: ['view', 'update'] },
       { module: 'settings', actions: ['view'] },
-      { module: 'support', actions: ['view'] }
+      { module: 'security', actions: ['view'] },
+      { module: 'support', actions: ['view'] },
+      { module: 'ai', actions: ['view'] }
     ],
     vendor: [
       { module: 'overview', actions: ['view'] },

@@ -112,6 +112,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     }
 
     loadOrders(): void {
+        console.log('🔄 [Orders] Fetching orders from API with filters');
         this.isLoading = true;
 
         const filters = {
@@ -124,27 +125,93 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
             limit: this.paginator?.pageSize || 10
         };
 
+        console.log('🔍 [Orders] Filter parameters:', filters);
+
         this.orderService.getOrdersWithFallback(filters).subscribe({
             next: (response) => {
-                console.log('Orders loaded:', response);
-                if (response.success) {
-                    this.dataSource.data = response.data.orders;
-                    this.totalOrders = response.data.total || response.data.pagination?.totalOrders || 0;
+                console.log('✅ [Orders] Full API Response:', response);
+                console.log('✅ [Orders] Response success:', response?.success);
+                console.log('✅ [Orders] Response data:', response?.data);
+                console.log('✅ [Orders] Data.orders array:', response?.data?.orders);
+                console.log('✅ [Orders] Pagination:', { total: response?.data?.total, page: response?.data?.page, limit: response?.data?.limit, totalPages: response?.data?.totalPages });
+                
+                if (response.success && response.data) {
+                    // Transform API response to component Order interface
+                    const orders = (response.data.orders || response.data || []).map((order: any) => ({
+                        _id: order.id || order._id,
+                        orderNumber: order.order_number || order.orderNumber || `ORD-${order.id}`,
+                        orderDate: order.created_at || order.orderDate || new Date().toISOString(),
+                        customer: {
+                            _id: order.user_id || order.customer?._id || 'unknown',
+                            fullName: this.extractCustomerName(order.shipping_address) || 'Unknown Customer',
+                            email: order.customer_email || order.customer?.email || 'N/A',
+                            phone: this.extractCustomerPhone(order.shipping_address) || 'N/A'
+                        },
+                        items: order.items || [],
+                        totalAmount: parseFloat(order.total_amount) || 0,
+                        paymentMethod: order.payment_method || 'unknown',
+                        paymentStatus: order.payment_status || 'pending',
+                        status: order.status || 'pending',
+                        shippingAddress: order.shipping_address,
+                        userId: order.user_id
+                    }));
+                    
+                    console.log('✅ [Orders] Transformed orders count:', orders.length);
+                    console.log('✅ [Orders] Sample order:', orders[0]);
+                    
+                    this.dataSource.data = orders;
+                    console.log('✅ [Orders] DataSource updated with', this.dataSource.data.length, 'orders');
+                    
+                    this.totalOrders = response.data.total || response.data.pagination?.totalOrders || orders.length;
+                    console.log('✅ [Orders] Total orders for pagination:', this.totalOrders);
                 } else {
+                    console.warn('⚠️ [Orders] Response indicates failure or no data');
                     this.dataSource.data = [];
                     this.totalOrders = 0;
                     this.snackBar.open('Failed to load orders', 'Close', { duration: 3000 });
                 }
                 this.isLoading = false;
+                console.log('✅ [Orders] Load complete - UI should show', this.dataSource.data.length, 'orders');
             },
             error: (error) => {
-                console.error('Error loading orders:', error);
+                console.error('❌ [Orders] API Error:', error);
+                console.error('❌ [Orders] Error message:', error?.message);
+                console.error('❌ [Orders] Error status:', error?.status);
+                console.error('❌ [Orders] Full error:', error);
                 this.dataSource.data = [];
                 this.totalOrders = 0;
                 this.isLoading = false;
                 this.snackBar.open('Error loading orders', 'Close', { duration: 3000 });
             }
         });
+    }
+
+    private extractCustomerName(shippingAddressJson: string | any): string {
+        try {
+            if (typeof shippingAddressJson === 'string') {
+                const addr = JSON.parse(shippingAddressJson);
+                return addr.name || 'Unknown';
+            } else if (shippingAddressJson && shippingAddressJson.name) {
+                return shippingAddressJson.name;
+            }
+        } catch (e) {
+            console.error('Error parsing shipping address:', e);
+        }
+        return 'Unknown Customer';
+    }
+
+    private extractCustomerPhone(shippingAddressJson: string | any): string {
+        try {
+            if (typeof shippingAddressJson === 'string') {
+                const addr = JSON.parse(shippingAddressJson);
+                return addr.phone || '';
+            } else if (shippingAddressJson && shippingAddressJson.phone) {
+                return shippingAddressJson.phone;
+            }
+        } catch (e) {
+            console.error('Error parsing shipping address:', e);
+        }
+        return '';
     }
 
     onPageChange(): void {

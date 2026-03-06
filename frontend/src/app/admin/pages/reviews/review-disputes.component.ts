@@ -1,29 +1,194 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { AdminApiService } from '../../services/admin-api.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-review-disputes',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTooltipModule,
+    MatCardModule,
+    MatSnackBarModule
+  ],
   template: `
     <div class="page-container">
       <div class="page-header">
         <h1>Review Disputes</h1>
         <p>Resolve disputes and conflicts on reviews</p>
       </div>
-      <mat-card>
+      
+      <mat-card class="filters-card">
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="filter-field">
+            <mat-label>Status</mat-label>
+            <select matNativeControl (change)="loadDisputes()">
+              <option value="all">All</option>
+              <option value="open">Open</option>
+              <option value="resolved">Resolved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card *ngIf="isLoading" class="loading-card">
+        <mat-card-content>
+          <mat-progress-spinner mode="indeterminate" diameter="40"></mat-progress-spinner>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card *ngIf="!isLoading && dataSource.data.length === 0" class="empty-card">
         <mat-card-content>
           <div class="empty-state">
             <mat-icon>gavel</mat-icon>
-            <p>Review Disputes</p>
+            <p>No disputes found</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card *ngIf="!isLoading && dataSource.data.length > 0">
+        <mat-card-content>
+          <div class="table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="disputes-table">
+              <ng-container matColumnDef="productTitle">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
+                <td mat-cell *matCellDef="let element">{{ element.product_title }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Reviewer</th>
+                <td mat-cell *matCellDef="let element">{{ element.username }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="rating">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Rating</th>
+                <td mat-cell *matCellDef="let element">
+                  <span class="rating-badge">{{ element.rating }}/5</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="reason">
+                <th mat-header-cell *matHeaderCellDef>Reason</th>
+                <td mat-cell *matCellDef="let element">{{ element.reason }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+                <td mat-cell *matCellDef="let element">
+                  <span [ngClass]="'status-badge status-' + element.status">{{ element.status }}</span>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="createdAt">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+                <td mat-cell *matCellDef="let element">{{ element.created_at | date: 'short' }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[10, 20, 50]" showFirstLastButtons></mat-paginator>
           </div>
         </mat-card-content>
       </mat-card>
     </div>
   `,
-  styles: [`.page-container { padding: 24px; } .page-header { margin-bottom: 24px; } .page-header h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 500; } .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; }`]
+  styles: [`
+    .page-container { padding: 24px; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { margin: 0 0 8px 0; font-size: 28px; font-weight: 500; }
+    .filters-card { margin-bottom: 20px; }
+    .filter-field { width: 300px; }
+    .loading-card { display: flex; justify-content: center; padding: 40px; }
+    .empty-card { display: flex; justify-content: center; padding: 60px 20px; }
+    .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .empty-state mat-icon { font-size: 48px; width: 48px; height: 48px; color: #ccc; margin-bottom: 16px; }
+    .table-container { overflow-x: auto; }
+    .disputes-table { width: 100%; }
+    .rating-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 4px; font-weight: 500; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+    .status-badge.status-open { background: #fff3e0; color: #e65100; }
+    .status-badge.status-resolved { background: #e8f5e9; color: #2e7d32; }
+    .status-badge.status-rejected { background: #ffebee; color: #c62828; }
+  `]
 })
-export class ReviewDisputesComponent {}
+export class ReviewDisputesComponent implements OnInit, OnDestroy {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  private destroy$ = new Subject<void>();
+  
+  displayedColumns = ['productTitle', 'username', 'rating', 'reason', 'status', 'createdAt'];
+  dataSource = new MatTableDataSource<any>([]);
+  isLoading = false;
+
+  constructor(
+    private api: AdminApiService,
+    private snackBar: MatSnackBar
+  ) {}
+
+  ngOnInit(): void {
+    this.loadDisputes();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadDisputes(): void {
+    console.log('🔄 [Review Disputes] Fetching from /api/admin/review-disputes');
+    this.isLoading = true;
+    this.api.get('/review-disputes')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          console.log('✅ [Review Disputes] Full API Response:', response);
+          console.log('✅ [Review Disputes] Response.success:', response?.success);
+          console.log('✅ [Review Disputes] Response.data:', response?.data);
+          console.log('✅ [Review Disputes] Disputes array:', response?.data?.disputes);
+          console.log('✅ [Review Disputes] Data array length:', response?.data?.disputes?.length);
+          console.log('✅ [Review Disputes] Pagination:', response?.data?.total, 'total');
+          console.log('✅ [Review Disputes] Sample dispute:', response?.data?.disputes?.[0]);
+          this.dataSource.data = response?.data?.disputes || [];
+          console.log('✅ [Review Disputes] DataSource updated with', this.dataSource.data.length, 'rows');
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('❌ [Review Disputes] API Error:', err);
+          console.error('❌ [Review Disputes] Error message:', err?.message);
+          console.error('❌ [Review Disputes] Error status:', err?.status);
+          this.dataSource.data = [];
+          this.isLoading = false;
+          this.snackBar.open('Failed to load disputes', 'Close', { duration: 3000 });
+        }
+      });
+  }
+}

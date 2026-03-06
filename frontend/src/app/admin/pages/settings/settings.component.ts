@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -8,7 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule, MatTabGroup } from '@angular/material/tabs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-settings',
@@ -29,19 +30,44 @@ import { MatTabsModule } from '@angular/material/tabs';
     ]
 })
 export class SettingsComponent implements OnInit {
+    @ViewChild('tabGroup', { static: false }) tabGroup!: MatTabGroup;
+    
     generalForm!: FormGroup;
     ecommerceForm!: FormGroup;
     notificationForm!: FormGroup;
     securityForm!: FormGroup;
 
+    // Map route types to tab indices
+    private tabIndexMap: { [key: string]: number } = {
+        'general': 0,
+        'payment': 1,
+        'shipping': 2,
+        'tax': 3
+    };
+
     constructor(
         private fb: FormBuilder,
-        private snackBar: MatSnackBar
+        private snackBar: MatSnackBar,
+        private activatedRoute: ActivatedRoute
     ) { }
 
     ngOnInit(): void {
         this.createForms();
         this.loadSettings();
+        this.selectTabByRoute();
+    }
+
+    private selectTabByRoute(): void {
+        this.activatedRoute.data.subscribe(data => {
+            const routeType = data['type'];
+            if (routeType && this.tabIndexMap.hasOwnProperty(routeType)) {
+                setTimeout(() => {
+                    if (this.tabGroup) {
+                        this.tabGroup.selectedIndex = this.tabIndexMap[routeType];
+                    }
+                }, 0);
+            }
+        });
     }
 
     createForms(): void {

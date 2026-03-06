@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -6,6 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AdminProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-inventory-dialog',
@@ -48,9 +52,7 @@ import { MatSelectModule } from '@angular/material/select';
             <mat-label>Warehouse</mat-label>
             <mat-select formControlName="warehouse" required>
               <mat-option value="">Select Warehouse</mat-option>
-              <mat-option value="Main Warehouse">Main Warehouse</mat-option>
-              <mat-option value="Secondary Warehouse">Secondary Warehouse</mat-option>
-              <mat-option value="Distribution Center">Distribution Center</mat-option>
+              <mat-option *ngFor="let wh of warehouses" [value]="wh.id">{{ wh.name }}</mat-option>
             </mat-select>
             <mat-error *ngIf="form.get('warehouse')?.hasError('required')">Warehouse is required</mat-error>
           </mat-form-field>
@@ -113,17 +115,42 @@ import { MatSelectModule } from '@angular/material/select';
     }
   `]
 })
-export class InventoryDialogComponent implements OnInit {
+export class InventoryDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
+  warehouses: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<InventoryDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private productService: AdminProductService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadWarehouses();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadWarehouses(): void {
+    this.productService.getWarehouses()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.warehouses = Array.isArray(data) ? data : [];
+        },
+        error: (error) => {
+          console.error('Error loading warehouses:', error);
+          this.warehouses = [];
+        }
+      });
   }
 
   initializeForm(): void {

@@ -50,33 +50,43 @@ export class CreatorsComponent implements OnInit, AfterViewInit {
   }
 
   load(page: number = 1): void {
+    console.log('🔄 [Creators] Fetching creators from API - page:', page, 'pageSize:', this.pageSize);
     this.isLoading = true;
     this.currentPage = page;
     
     this.api.getCreators(page, this.pageSize).subscribe({
       next: (res: any) => {
-        console.log('✅ Full API response:', JSON.stringify(res, null, 2));
-        console.log('res.data:', res?.data);
-        console.log('res.data.users:', res?.data?.users);
-        console.log('res.data.users length:', res?.data?.users?.length);
+        console.log('✅ [Creators] Full API Response:', JSON.stringify(res, null, 2));
+        console.log('✅ [Creators] res.success:', res?.success);
+        console.log('✅ [Creators] res.data:', res?.data);
+        console.log('✅ [Creators] res.data.users (if exists):', res?.data?.users);
+        console.log('✅ [Creators] res.data length:', res?.data?.length);
+        console.log('✅ [Creators] res.pagination:', res?.pagination);
         
         const creators = res?.data?.users || res?.data || [];
-        console.log('After extraction, creators:', creators);
-        console.log('Creators length:', creators?.length);
+        console.log('✅ [Creators] Extracted creators array:', creators);
+        console.log('✅ [Creators] Creators count:', creators?.length);
         
         this.dataSource.data = creators;
-        console.log('DataSource data length after assignment:', this.dataSource.data.length);
+        console.log('✅ [Creators] DataSource.data count after assignment:', this.dataSource.data.length);
+        console.log('✅ [Creators] DataSource.data sample:', this.dataSource.data[0]);
         
-        this.totalCreators = res?.data?.pagination?.total || creators?.length || 0;
+        this.totalCreators = res?.data?.pagination?.total || res?.pagination?.total || creators?.length || 0;
+        console.log('✅ [Creators] Total count for pagination:', this.totalCreators);
         
         if (this.paginator) {
           this.paginator.length = this.totalCreators;
+          console.log('✅ [Creators] Paginator length updated to:', this.totalCreators);
         }
         
         this.isLoading = false;
+        console.log('✅ [Creators] Load complete - UI should show', this.dataSource.data.length, 'creators');
       },
       error: (err) => {
-        console.error('❌ Error loading creators:', err);
+        console.error('❌ [Creators] API Error:', err);
+        console.error('❌ [Creators] Error message:', err?.message);
+        console.error('❌ [Creators] Error status:', err?.status);
+        console.error('❌ [Creators] Full error:', err);
         this.dataSource.data = [];
         this.totalCreators = 0;
         this.isLoading = false;

@@ -32,7 +32,8 @@ import { AdminApiService } from '../../services/admin-api.service';
     MatSelectModule,
     MatTableModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    ReturnDialogComponent
   ],
   templateUrl: './returns-management.component.html',
   styleUrls: ['./returns-management.component.scss']

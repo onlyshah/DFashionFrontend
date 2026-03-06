@@ -73,20 +73,27 @@ export class InventoryComponent implements OnInit, OnDestroy {
   }
 
   loadInventoryStats(): void {
+    console.log('🔄 [Inventory] Fetching stats from /inventory/stats');
     this.api.get('/inventory/stats')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
-          console.log('Inventory stats loaded:', response);
+          console.log('✅ [Inventory Stats] Full Response:', response);
+          console.log('✅ [Inventory Stats] Data:', response?.data);
+          console.log('✅ [Inventory Stats] Total items:', response?.data?.totalItems);
+          console.log('✅ [Inventory Stats] Low stock:', response?.data?.lowStock);
           this.inventoryStats = response?.data || {
             totalItems: 0,
             lowStock: 0,
             outOfStock: 0,
             totalValue: 0
           };
+          console.log('✅ [Inventory Stats] Component updated:', this.inventoryStats);
         },
         error: (err) => {
-          console.error('Failed to load inventory stats:', err);
+          console.error('❌ [Inventory Stats] API Error:', err);
+          console.error('❌ [Inventory Stats] Error message:', err?.message);
+          console.error('❌ [Inventory Stats] Error status:', err?.status);
           this.inventoryStats = {
             totalItems: 0,
             lowStock: 0,
@@ -98,17 +105,26 @@ export class InventoryComponent implements OnInit, OnDestroy {
   }
 
   loadInventory(): void {
+    console.log('🔄 [Inventory] Fetching items from /inventory');
     this.isLoading = true;
     this.api.get('/inventory')
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
-          console.log('Inventory loaded:', response);
+          console.log('✅ [Inventory] Full API Response:', response);
+          console.log('✅ [Inventory] Response success:', response?.success);
+          console.log('✅ [Inventory] Data array:', response?.data);
+          console.log('✅ [Inventory] Row count:', response?.data?.length);
+          console.log('✅ [Inventory] Pagination:', response?.pagination);
           this.dataSource.data = response?.data || [];
+          console.log('✅ [Inventory] DataSource updated with', this.dataSource.data.length, 'rows');
           this.isLoading = false;
         },
         error: (err) => {
-          console.error('Failed to load inventory:', err);
+          console.error('❌ [Inventory] API Error:', err);
+          console.error('❌ [Inventory] Error message:', err?.message);
+          console.error('❌ [Inventory] Error status:', err?.status);
+          console.error('❌ [Inventory] Full error object:', err);
           this.dataSource.data = [];
           this.isLoading = false;
           this.snackBar.open('Failed to load inventory', 'Close', { duration: 3000 });

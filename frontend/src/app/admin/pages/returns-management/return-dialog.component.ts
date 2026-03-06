@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -6,6 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AdminProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-return-dialog',
@@ -115,17 +118,55 @@ import { MatSelectModule } from '@angular/material/select';
     }
   `]
 })
-export class ReturnDialogComponent implements OnInit {
+export class ReturnDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
+  returnReasons: any[] = [];
+  returnStatuses: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<ReturnDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private productService: AdminProductService
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadReturnsData();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadReturnsData(): void {
+    this.productService.getReturnReasons()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.returnReasons = Array.isArray(data) ? data : [];
+        },
+        error: (error: any) => {
+          console.error('Error loading return reasons:', error);
+          this.returnReasons = [];
+        }
+      });
+
+    this.productService.getReturnStatuses()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.returnStatuses = Array.isArray(data) ? data : [];
+        },
+        error: (error: any) => {
+          console.error('Error loading return statuses:', error);
+          this.returnStatuses = [];
+        }
+      });
   }
 
   initializeForm(): void {

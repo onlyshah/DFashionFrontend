@@ -101,7 +101,7 @@ export const ADMIN_MENU: AdminMenuItem[] = [
     title: 'Creators & Influencers',
     icon: 'typcn typcn-star',
     children: [
-      { title: 'Creator Profiles', route: '/admin/creators' },
+      { title: 'Creator Profiles', route: '/admin/users/creators' },
       { title: 'Verification Requests', route: '/admin/creators/verification' },
       { title: 'Affiliate Products', route: '/admin/creators/affiliate' },
       { title: 'Commissions', route: '/admin/creators/commissions' },
@@ -131,9 +131,7 @@ export const ADMIN_MENU: AdminMenuItem[] = [
     children: [
       { title: 'Campaigns', route: '/admin/marketing/campaigns' },
       { title: 'Coupons & Promo Codes', route: '/admin/marketing/coupons' },
-      { title: 'Flash Sales', route: '/admin/marketing/flash-sales' },
-      { title: 'Push Notifications', route: '/admin/marketing/push' },
-      { title: 'Email & SMS Marketing', route: '/admin/marketing/email-sms' }
+      { title: 'Newsletters', route: '/admin/marketing/newsletters' }
     ]
   },
 
@@ -167,10 +165,9 @@ export const ADMIN_MENU: AdminMenuItem[] = [
     title: 'CMS & Content',
     icon: 'typcn typcn-book',
     children: [
-      { title: 'Pages', route: '/admin/cms/pages' },
-      { title: 'Banners & Sliders', route: '/admin/cms/banners' },
-      { title: 'Blogs / Announcements', route: '/admin/cms/blogs' },
-      { title: 'Help Center', route: '/admin/cms/help' }
+      { title: 'Pages', route: '/admin/pages' },
+      { title: 'Blogs / Announcements', route: '/admin/blogs' },
+      { title: 'Media Library', route: '/admin/media' }
     ]
   },
 
@@ -180,11 +177,9 @@ export const ADMIN_MENU: AdminMenuItem[] = [
     icon: 'typcn typcn-cog',
     children: [
       { title: 'General Settings', route: '/admin/settings/general' },
-      { title: 'Branding', route: '/admin/settings/branding' },
-      { title: 'Tax & Shipping', route: '/admin/settings/tax-shipping' },
-      { title: 'Currency & Localization', route: '/admin/settings/currency' },
-      { title: 'Notification Settings', route: '/admin/settings/notifications' },
-      { title: 'API & Webhooks', route: '/admin/settings/api' }
+      { title: 'Payment Settings', route: '/admin/settings/payment' },
+      { title: 'Shipping Settings', route: '/admin/settings/shipping' },
+      { title: 'Tax Settings', route: '/admin/settings/tax' }
     ]
   },
 

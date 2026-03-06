@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -7,6 +7,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AdminProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-warehouse-dialog',
@@ -152,17 +155,41 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     }
   `]
 })
-export class WarehouseDialogComponent implements OnInit {
+export class WarehouseDialogComponent implements OnInit, OnDestroy {
   form!: FormGroup;
+  warehouseTypes: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
     public dialogRef: MatDialogRef<WarehouseDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private productService: AdminProductService
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loadWarehouseTypes();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadWarehouseTypes(): void {
+    this.productService.getWarehouseTypes()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: any) => {
+          const data = response?.data || response || [];
+          this.warehouseTypes = Array.isArray(data) ? data : [];
+        },
+        error: (error: any) => {
+          console.error('Error loading warehouse types:', error);
+          this.warehouseTypes = [];
+        }
+      });
   }
 
   initializeForm(): void {

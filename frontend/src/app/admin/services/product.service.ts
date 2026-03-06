@@ -239,5 +239,121 @@ export class AdminProductService {
   deleteSubCategory(categoryId: string, subCategoryId: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/categories/${categoryId}/subcategories/${subCategoryId}`);
   }
+
+  getWarehouses(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/inventory/warehouses`).pipe(
+      catchError(error => {
+        console.error('Error loading warehouses:', error);
+        return of({ data: [] });
+      })
+    );
+  }
+
+  getRoles(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/roles`).pipe(
+      catchError(error => {
+        console.error('Error loading roles:', error);
+        return of({ data: [] });
+      })
+    );
+  }
+
+  getDepartments(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/departments`).pipe(
+      catchError(error => {
+        console.error('Error loading departments:', error);
+        return of({ data: [] });
+      })
+    );
+  }
+
+  getReturnReasons(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/returns/reasons`).pipe(
+      catchError(error => {
+        console.error('Error loading return reasons:', error);
+        return of({
+          data: [
+            { value: 'defective', label: 'Defective Product' },
+            { value: 'damaged', label: 'Damaged in Transit' },
+            { value: 'wrong-item', label: 'Wrong Item Received' },
+            { value: 'sizing-issue', label: 'Sizing Issue' },
+            { value: 'color-difference', label: 'Color/Print Difference' },
+            { value: 'quality-issue', label: 'Quality Issue' },
+            { value: 'changed-mind', label: 'Changed Mind' },
+            { value: 'other', label: 'Other' }
+          ]
+        });
+      })
+    );
+  }
+
+  getOrderStatuses(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/orders/statuses`).pipe(
+      catchError(error => {
+        console.error('Error loading order statuses:', error);
+        return of({
+          data: [
+            { value: 'pending', label: 'Pending' },
+            { value: 'confirmed', label: 'Confirmed' },
+            { value: 'processing', label: 'Processing' },
+            { value: 'shipped', label: 'Shipped' },
+            { value: 'delivered', label: 'Delivered' },
+            { value: 'cancelled', label: 'Cancelled' }
+          ]
+        });
+      })
+    );
+  }
+
+  getReturnStatuses(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/returns/statuses`).pipe(
+      catchError(error => {
+        console.error('Error loading return statuses:', error);
+        return of({
+          data: [
+            { value: 'pending', label: 'Pending' },
+            { value: 'approved', label: 'Approved' },
+            { value: 'rejected', label: 'Rejected' },
+            { value: 'refunded', label: 'Refunded' }
+          ]
+        });
+      })
+    );
+  }
+
+  getSupplierCategories(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/inventory/supplier-categories`).pipe(
+      catchError(error => {
+        console.error('Error loading supplier categories:', error);
+        return of({
+          data: [
+            { value: 'fabric', label: 'Fabric' },
+            { value: 'buttons', label: 'Buttons & Accessories' },
+            { value: 'thread', label: 'Thread & Trims' },
+            { value: 'packaging', label: 'Packaging' },
+            { value: 'machinery', label: 'Machinery' },
+            { value: 'chemical', label: 'Chemical & Dyes' },
+            { value: 'other', label: 'Other' }
+          ]
+        });
+      })
+    );
+  }
+
+  getWarehouseTypes(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/inventory/warehouse-types`).pipe(
+      catchError(error => {
+        console.error('Error loading warehouse types:', error);
+        return of({
+          data: [
+            { value: 'primary', label: 'Primary' },
+            { value: 'secondary', label: 'Secondary' },
+            { value: 'distribution', label: 'Distribution Center' },
+            { value: 'fulfillment', label: 'Fulfillment Center' }
+          ]
+        });
+      })
+    );
+  }
 }
 

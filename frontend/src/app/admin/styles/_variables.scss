@@ -1,12 +1,12 @@
 // Re-export variables and mixins from the admin theme
 // This includes both common/light variables and admin-specific variables
-@import "./scss/common/light/variables";
-@import "./scss/variables";
+@use "./scss/common/light/variables" as lightVars;
+@use "./scss/variables" as adminVars;
 
-// Define Compass mixins that were used but are not available
-@mixin display-flex() {
-  display: flex;
-}
+// Forward all variables from both scss/variables and common/light/variables
+// so they're available to components that import from this file
+@forward "./scss/variables";
+@forward "./scss/common/light/variables";
 
 @mixin flex-direction($direction) {
   flex-direction: $direction;
