@@ -37,8 +37,7 @@ import { OrderDialogComponent } from './order-dialog.component';
         MatSelectModule,
         MatCardModule,
         MatTooltipModule,
-        ReactiveFormsModule,
-        OrderDialogComponent
+        ReactiveFormsModule
     ],
     templateUrl: './order-management.component.html'
 })

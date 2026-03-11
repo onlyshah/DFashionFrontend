@@ -31,8 +31,7 @@ import { takeUntil } from 'rxjs/operators';
     MatInputModule,
     MatTooltipModule,
     MatDialogModule,
-    MatSnackBarModule,
-    SupplierDialogComponent
+    MatSnackBarModule
   ],
   templateUrl: './suppliers.component.html',
   styleUrls: ['./suppliers.component.scss']

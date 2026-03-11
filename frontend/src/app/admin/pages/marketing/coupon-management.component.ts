@@ -68,8 +68,7 @@ export interface Coupon {
     MatProgressSpinnerModule,
     MatSlideToggleModule,
     MatTooltipModule,
-    MatSnackBarModule,
-    CouponDialogComponent
+    MatSnackBarModule
   ],
   templateUrl: './coupon-management.component.html',
   styleUrls: ['./coupon-management.component.scss']

@@ -12,6 +12,8 @@
       <div class="search-bar">
         <i class="fas fa-search"></i>
         <input
+          id="globalSearch"
+          name="globalSearch"
           type="text"
           placeholder="Search products, brands, categories..."
           [(ngModel)]="searchQuery"
@@ -79,7 +81,7 @@
         <!-- User Menu for logged in users -->
         <div *ngIf="currentUser" class="user-menu" (click)="toggleUserMenu()">
        <img
-  [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar)"
+  [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar + 'default-avatar.svg')"
   [alt]="currentUser.fullName"
   class="user-avatar"
   (error)="onAvatarError($event)"

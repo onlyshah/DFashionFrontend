@@ -4,7 +4,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatToggleModule } from '@angular/material/button-toggle';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -16,7 +15,6 @@ import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
     MatButtonModule,
     MatIconModule,
     MatCheckboxModule,
-    MatToggleModule,
     ReactiveFormsModule
   ],
   template: `

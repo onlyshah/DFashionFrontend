@@ -456,7 +456,7 @@ export class HeaderComponent implements OnInit {
   cartTotalAmount = 0;
   showCartTotalPrice = false;
 
-  backendDefaultAvatar = environment.apiUrl;
+  backendDefaultAvatar = environment.apiUrl + '/uploads/avatars/';
 
   // Search functionality
   showSuggestions = false;
@@ -653,7 +653,7 @@ export class HeaderComponent implements OnInit {
   
   onAvatarError(event: any) {
     // Fallback to backend-served default avatar if the current one fails to load
-    event.target.src = this.backendDefaultAvatar;
+    event.target.src = this.backendDefaultAvatar + 'default-avatar.svg';
     
   }
 }
