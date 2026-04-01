@@ -36,7 +36,7 @@ export class UserAvatarComponent {
   get fallbackAvatarUrl(): string {
     // Always use backend URL prefix
     // If avatarUrl is already a full URL, don't double-prefix
-    const base = (window as any).environment?.apiUrl || (window as any).env?.apiUrl || 'http://localhost:9000';
+    const base = (window as any).environment?.apiUrl || (window as any).env?.apiUrl || 'http://localhost:3000';
     return base + this.BACKEND_AVATAR_PLACEHOLDER;
   }
 
@@ -44,7 +44,7 @@ export class UserAvatarComponent {
     if (!this.avatarUrl) return undefined;
     // If already absolute URL, return as is
     if (/^https?:\/\//.test(this.avatarUrl)) return this.avatarUrl;
-    const base = (window as any).environment?.apiUrl || (window as any).env?.apiUrl || 'http://localhost:9000';
+    const base = (window as any).environment?.apiUrl || (window as any).env?.apiUrl || 'http://localhost:3000';
     return base + this.avatarUrl;
   }
 }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../../environments/environment';
 import { AvatarService, AvatarData } from '../../../../core/services/avatar.service';
 
 @Component({
@@ -41,7 +42,7 @@ export class AvatarComponent implements OnInit, OnChanges {
     // Fallback logic: image > avatar > default
     let finalImageUrl = this.imageUrl;
     if (!finalImageUrl || finalImageUrl === '') {
-      finalImageUrl = '/uploads/default-avatar.svg';
+      finalImageUrl = `${environment.apiUrl}/uploads/avatars/default-avatar.svg`;
     }
     this.avatarData = this.avatarService.generateAvatarData(this.name, finalImageUrl);
     this.avatarStyles = this.avatarService.generateAvatarStyles(this.name, this.size);

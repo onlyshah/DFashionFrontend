@@ -1,102 +1,235 @@
-<div class="login-container">
-  <!-- Instagram-style Login -->
-  <div class="login-box">
-    <!-- Logo Section -->
-    <div class="logo-section">
-      <div class="brand-logo">
+<div class="login-wrapper">
+  <!-- Left Side - Marketing/Branding -->
+  <div class="login-left">
+    <div class="marketing-content">
+      <div class="branding-logo">
         <h1>DFashion</h1>
       </div>
-      <p class="subtitle">Social E-commerce Platform</p>
-    </div>
-
-    <!-- Error Alert -->
-    <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
-      <strong>Login Failed</strong>
-      <p>{{ errorMessage }}</p>
-    </div>
-
-    <!-- Login Form -->
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-      <!-- Email/Username Field -->
-      <div class="form-group">
-        <input
-          type="email"
-          id="email"
-          class="form-control"
-          formControlName="email"
-          placeholder="Mobile number, username or email"
-          [disabled]="isLoading"
-          autocomplete="email"
-        />
-        <div class="invalid-feedback" *ngIf="getErrorMessage('email')">
-          {{ getErrorMessage('email') }}
+      <h2>Discover Fashion,<br>Connect with Style</h2>
+      <p>See everyday moments from your favorite creators and brands</p>
+      
+      <!-- Animated Fashion Carousel -->
+      <div class="fashion-carousel">
+        <div class="carousel-container">
+          <div class="carousel-slide" [class.active]="isSlideActive(0)">
+            <div class="fashion-post">
+              <div class="post-image">
+                <img src="/assets/images/fashion-1.svg" alt="Fashion Post 1">
+                <div class="post-overlay">
+                  <div class="post-actions">
+                    <button class="action-btn like-btn">
+                      <i class="fas fa-heart"></i>
+                      <span>2.3k</span>
+                    </button>
+                    <button class="action-btn comment-btn">
+                      <i class="fas fa-comment"></i>
+                      <span>127</span>
+                    </button>
+                    <button class="action-btn share-btn">
+                      <i class="fas fa-share"></i>
+                    </button>
+                  </div>
+                  <div class="post-info">
+                    <div class="creator-info">
+                      <div class="creator-avatar">
+                        <i class="fas fa-user-circle"></i>
+                      </div>
+                      <span class="creator-name">Fashionista_Pro</span>
+                    </div>
+                    <div class="product-tag">
+                      <span class="product-price">$89.99</span>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="carousel-slide" [class.active]="isSlideActive(1)">
+            <div class="fashion-post">
+              <div class="post-image">
+                <img src="/assets/images/fashion-2.svg" alt="Fashion Post 2">
+                <div class="post-overlay">
+                  <div class="post-actions">
+                    <button class="action-btn like-btn">
+                      <i class="fas fa-heart"></i>
+                      <span>1.8k</span>
+                    </button>
+                    <button class="action-btn comment-btn">
+                      <i class="fas fa-comment"></i>
+                      <span>89</span>
+                    </button>
+                    <button class="action-btn share-btn">
+                      <i class="fas fa-share"></i>
+                    </button>
+                  </div>
+                  <div class="post-info">
+                    <div class="creator-info">
+                      <div class="creator-avatar">
+                        <i class="fas fa-user-circle"></i>
+                      </div>
+                      <span class="creator-name">StyleGuru</span>
+                    </div>
+                    <div class="product-tag">
+                      <span class="product-price">$124.99</span>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="carousel-slide" [class.active]="isSlideActive(2)">
+            <div class="fashion-post">
+              <div class="post-image">
+                <img src="/assets/images/fashion-3.svg" alt="Fashion Post 3">
+                <div class="post-overlay">
+                  <div class="post-actions">
+                    <button class="action-btn like-btn">
+                      <i class="fas fa-heart"></i>
+                      <span>3.1k</span>
+                    </button>
+                    <button class="action-btn comment-btn">
+                      <i class="fas fa-comment"></i>
+                      <span>203</span>
+                    </button>
+                    <button class="action-btn share-btn">
+                      <i class="fas fa-share"></i>
+                    </button>
+                  </div>
+                  <div class="post-info">
+                    <div class="creator-info">
+                      <div class="creator-avatar">
+                        <i class="fas fa-user-circle"></i>
+                      </div>
+                      <span class="creator-name">TrendSetter</span>
+                    </div>
+                    <div class="product-tag">
+                      <span class="product-price">$156.99</span>
+                      <button class="buy-btn">Buy Now</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Carousel Indicators -->
+        <div class="carousel-indicators">
+          <span class="indicator" [class.active]="isSlideActive(0)" (click)="goToSlide(0)"></span>
+          <span class="indicator" [class.active]="isSlideActive(1)" (click)="goToSlide(1)"></span>
+          <span class="indicator" [class.active]="isSlideActive(2)" (click)="goToSlide(2)"></span>
         </div>
       </div>
-
-      <!-- Password Field -->
-      <div class="form-group">
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          id="password"
-          class="form-control"
-          formControlName="password"
-          placeholder="Password"
-          [disabled]="isLoading"
-          autocomplete="current-password"
-        />
-        <div class="invalid-feedback" *ngIf="getErrorMessage('password')">
-          {{ getErrorMessage('password') }}
-        </div>
-      </div>
-
-      <!-- Submit Button -->
-      <button
-        type="submit"
-        class="btn btn-login w-100"
-        [disabled]="!loginForm.valid || isLoading"
-      >
-        <span *ngIf="!isLoading">Log in</span>
-        <span *ngIf="isLoading">
-          <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Logging in...
-        </span>
-      </button>
-    </form>
-
-    <!-- Divider -->
-    <div class="divider">
-      <span>OR</span>
-    </div>
-
-    <!-- Facebook Login -->
-    <button type="button" class="btn btn-facebook w-100">
-      <i class="fab fa-facebook-f"></i> Log in with Facebook
-    </button>
-
-    <!-- Forgot Password -->
-    <div class="forgot-section">
-      <a routerLink="/auth/forgot-password" class="forgot-link">Forgot password?</a>
-    </div>
-
-    <!-- Divider -->
-    <div class="border-divider"></div>
-
-    <!-- Sign Up Link -->
-    <div class="signup-section">
-      <p>Don't have an account? <a routerLink="/auth/register" class="signup-link">Sign up</a></p>
     </div>
   </div>
 
-  <!-- App Store Links -->
-  <div class="app-download-section">
-    <p>Get the app.</p>
-    <div class="app-links">
-      <a href="#" class="app-link">
-        <img src="/assets/images/app-store.png" alt="Download on App Store">
-      </a>
-      <a href="#" class="app-link">
-        <img src="/assets/images/google-play.png" alt="Get it on Google Play">
-      </a>
+  <!-- Right Side - Login Form -->
+  <div class="login-right">
+    <div class="login-box">
+      <!-- Logo Section -->
+      <div class="logo-section">
+        <div class="brand-logo">
+          <h1>DFashion</h1>
+        </div>
+        <p class="subtitle">Social E-commerce Platform</p>
+      </div>
+
+      <!-- Error Alert -->
+      <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+        <strong>Login Failed</strong>
+        <p>{{ errorMessage }}</p>
+      </div>
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Email/Username Field -->
+        <div class="form-group">
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="Mobile number, username or email"
+            [disabled]="isLoading"
+            autocomplete="email"
+          />
+          <div class="invalid-feedback" *ngIf="getErrorMessage('email')">
+            {{ getErrorMessage('email') }}
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            class="form-control"
+            formControlName="password"
+            placeholder="Password"
+            [disabled]="isLoading"
+            autocomplete="current-password"
+          />
+          <div class="invalid-feedback" *ngIf="getErrorMessage('password')">
+            {{ getErrorMessage('password') }}
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn btn-login w-100"
+          [disabled]="!loginForm.valid || isLoading"
+        >
+          <span *ngIf="!isLoading">Log in</span>
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Logging in...
+          </span>
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>OR</span>
+      </div>
+
+      <!-- Facebook Login -->
+      <button type="button" class="btn btn-facebook w-100">
+        <i class="fab fa-facebook-f"></i> Log in with Facebook
+      </button>
+
+      <!-- Forgot Password -->
+      <div class="forgot-section">
+        <a routerLink="/auth/forgot-password" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <!-- Divider -->
+      <div class="border-divider"></div>
+
+      <!-- Sign Up Link -->
+      <div class="signup-section">
+        <p>Don't have an account? <a routerLink="/auth/register" class="signup-link">Sign up</a></p>
+      </div>
+    </div>
+
+    <!-- App Store Links -->
+    <div class="app-download-section">
+      <p>Get the app.</p>
+      <div class="app-links">
+        <a href="#" class="app-link">
+          <img src="/assets/images/app-store.png" alt="Download on App Store">
+        </a>
+        <a href="#" class="app-link">
+          <img src="/assets/images/google-play.png" alt="Get it on Google Play">
+        </a>
+      </div>
     </div>
   </div>
 </div>
+
+
+

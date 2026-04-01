@@ -12,6 +12,7 @@ export class AuthService {
   public currentUser: Observable<any>;
   public isAuthenticated$: Observable<boolean>;
   private isAuthenticatedSubject: BehaviorSubject<boolean>;
+  private rememberMe: boolean = false;
 
   constructor(private http: HttpClient) {
     this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
@@ -25,13 +26,14 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  login(email: string, password: string, rememberMe: boolean = false): Promise<any> {
+  login(credentials: { email: string; password: string }, rememberMe: boolean = false): Promise<any> {
+    const { email, password } = credentials;
     return this.http.post<any>(`${environment.apiUrl}/api/auth/login`, { email, password })
       .pipe(
         tap(response => {
           if (response.data && response.data.token) {
-            const userData = { 
-              token: response.data.token, 
+            const userData = {
+              token: response.data.token,
               user: response.data.user,
               data: response.data
             };
@@ -79,7 +81,7 @@ export class AuthService {
   }
 
   register(userData: any): Promise<any> {
-    return this.http.post<any>(`${environment.apiUrl}/auth/register`, userData).toPromise();
+    return this.http.post<any>(`${environment.apiUrl}/api/auth/register`, userData).toPromise();
   }
 
   logout() {
@@ -128,6 +130,10 @@ export class AuthService {
 
   getCurrentUser() {
     return this.currentUserValue;
+  }
+
+  setRememberMe(value: boolean): void {
+    this.rememberMe = value;
   }
 
   getToken(): string | null {

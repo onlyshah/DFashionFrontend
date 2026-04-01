@@ -6,13 +6,13 @@
   <div class="wishlist-content" *ngIf="wishlistItems.length > 0">
     <div class="wishlist-grid">
       <div *ngFor="let item of wishlistItems" class="wishlist-item">
-        <div class="item-image">
-          <img [src]="imageUrl +item.product.images[0].url" [alt]="item.product.name">
+        <div class="item-image" *ngIf="item.product">
+          <img [src]="imageUrl + (item.product.images && item.product.images.length ? item.product.images[0]?.url : '/uploads/default-product.svg')" [alt]="item.product.name">
           <button class="remove-btn" (click)="removeFromWishlist(item.product._id)">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <div class="item-details">
+        <div class="item-details" *ngIf="item.product">
           <h3>{{ item.product.name }}</h3>
           <p class="brand">{{ item.product.brand }}</p>
           <div class="price">

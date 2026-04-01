@@ -6,7 +6,7 @@ export const environment = {
   // Fallback URLs for different scenarios
   fallbackApiUrls: [
     'https://your-dfashion-backend.onrender.com',  // Primary production URL
-    'http://192.168.29.5:9000',                    // Local development fallback
-    'http://localhost:9000'                        // Local fallback
+    'http://192.168.29.5:3000',                    // Local development fallback
+    'http://localhost:3000'                        // Local fallback
   ]
 };

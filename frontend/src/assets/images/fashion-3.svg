@@ -1,0 +1,13 @@
+<svg width="320" height="400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fashion3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="400" fill="url(#fashion3)"/>
+  <circle cx="160" cy="120" r="45" fill="rgba(255,255,255,0.25)"/>
+  <rect x="110" y="180" width="100" height="140" fill="rgba(255,255,255,0.2)" rx="12"/>
+  <text x="160" y="350" text-anchor="middle" fill="white" font-family="Arial" font-size="16" font-weight="bold">Trend Alert</text>
+</svg>

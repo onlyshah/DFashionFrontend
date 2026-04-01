@@ -73,7 +73,9 @@ export class AuthService {
     }
   }
 
-  login(credentials: LoginRequest): Observable<any> {
+  login(credentials: LoginRequest, rememberMe: boolean = false): Observable<any> {
+    this.rememberMe = rememberMe;
+
     // Validate credentials
     if (!this.validateCredentials(credentials)) {
       return throwError(() => new Error('Invalid credentials format'));

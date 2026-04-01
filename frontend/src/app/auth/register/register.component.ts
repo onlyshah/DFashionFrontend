@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -60,8 +61,8 @@ export class RegisterComponent implements OnInit {
 
       try {
         const formData = this.registerForm.value;
-        const response = await this.authService.register(formData).toPromise();
-        
+        const response = await firstValueFrom(this.authService.register(formData));
+
         if (response?.success || response?.data) {
           this.router.navigate(['/auth/login'], { 
             queryParams: { registered: 'true' }

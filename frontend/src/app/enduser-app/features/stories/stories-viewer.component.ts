@@ -58,6 +58,11 @@ export class StoriesViewerComponent implements OnInit, OnDestroy {
   showCommentsModal = false;
   comments: any[] = [];
   newComment = '';
+  
+  // Missing properties
+  isVisible = true;
+  suggestedStories: Story[] = [];
+  isMobile = window.innerWidth <= 768;
 
   // Touch handling
   private touchStartTime = 0;

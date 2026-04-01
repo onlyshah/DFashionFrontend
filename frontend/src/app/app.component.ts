@@ -19,6 +19,12 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'DFashion';
   showHeader = false;
   isMobile = false;
+  sidebarExpanded = false;
+  messageCount = 2;
+  notificationCount = 7;
+  moreMenuOpen = false;
+  createMenuOpen = false;
+  isLoggedIn = false;
   private subscription = new Subscription();
 
   constructor(
@@ -28,7 +34,50 @@ export class AppComponent implements OnInit, OnDestroy {
     private layoutService: LayoutService
   ) {}
 
+  toggleSidebar(): void {
+    this.sidebarExpanded = !this.sidebarExpanded;
+  }
+
+  closeSidebar(): void {
+    this.sidebarExpanded = false;
+  }
+
+  toggleMoreMenu(): void {
+    this.moreMenuOpen = !this.moreMenuOpen;
+  }
+
+  closeMoreMenu(): void {
+    this.moreMenuOpen = false;
+  }
+
+  openCreateModal(): void {
+    this.createMenuOpen = !this.createMenuOpen;
+    this.moreMenuOpen = false;
+  }
+
+  switchAppearance(): void {
+    console.log('Switch appearance');
+  }
+
+  switchAccounts(): void {
+    // Implement switch accounts logic
+    console.log('Switch accounts');
+  }
+
+  logout(): void {
+    // Implement logout logic
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
+  }
+
   ngOnInit(): void {
+    // Check authentication state - user is logged in if currentUser$ is not null
+    this.subscription.add(
+      this.authService.currentUser$.subscribe(user => {
+        this.isLoggedIn = !!user;
+      })
+    );
+
     // Detect mobile using public method
     this.subscription.add(
       this.mobileOptimizationService.getDeviceInfo$().subscribe(info => {

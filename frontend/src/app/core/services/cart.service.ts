@@ -79,7 +79,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<{ success: boolean; cart: any; summary: any }>(`${this.API_URL}/api/cart-new`, options);
+    return this.http.get<{ success: boolean; cart: any; summary: any }>(`${this.API_URL}/api/cart`, options);
   }
 
   // Get cart count only (lightweight endpoint) - returns total quantities
@@ -88,7 +88,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<{ success: boolean; count: number; totalItems: number; itemCount: number; totalAmount: number; showTotalPrice: boolean }>(`${this.API_URL}/cart-new/count`, options);
+    return this.http.get<{ success: boolean; count: number; totalItems: number; itemCount: number; totalAmount: number; showTotalPrice: boolean }>(`${this.API_URL}/cart/count`, options);
   }
 
   // Get total count for logged-in user (cart + wishlist)
@@ -97,7 +97,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<any>(`${this.API_URL}/api/cart-new/total-count`, options);
+    return this.http.get<any>(`${this.API_URL}/api/cart/total-count`, options);
   }
 
   // Debug cart data
@@ -106,7 +106,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.get<any>(`${this.API_URL}/cart-new/debug`, options).pipe(
+    return this.http.get<any>(`${this.API_URL}/cart/debug`, options).pipe(
       catchError(error => {
         console.log('🔍 Debug endpoint not available, skipping debug');
         return of({ success: false, message: 'Debug endpoint not available' });
@@ -120,7 +120,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.post<any>(`${this.API_URL}/cart-new/recalculate`, {}, options).pipe(
+    return this.http.post<any>(`${this.API_URL}/cart/recalculate`, {}, options).pipe(
       catchError(error => {
         console.log('🔧 Recalculate endpoint not available, skipping recalculation');
         return of({ success: false, message: 'Recalculate endpoint not available' });
@@ -356,7 +356,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-  return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart-new/add`, payload, options).pipe(
+  return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart/add`, payload, options).pipe(
       tap(response => {
         if (response.success) {
           // Immediately refresh cart to get updated count
@@ -433,7 +433,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart-new/remove/${itemId}`, options).pipe(
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart/remove/${itemId}`, options).pipe(
       tap(response => {
         if (response.success) {
           // Immediately refresh cart to get updated count
@@ -452,7 +452,7 @@ export class CartService {
     } : {
       body: { itemIds }
     };
-    return this.http.delete<{ success: boolean; message: string; removedCount: number }>(`${this.API_URL}/cart-new/bulk-remove`, options).pipe(
+    return this.http.delete<{ success: boolean; message: string; removedCount: number }>(`${this.API_URL}/cart/bulk-remove`, options).pipe(
       tap(response => {
         if (response.success) {
           // Immediately refresh cart to get updated count
@@ -482,7 +482,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.put<{ success: boolean; message: string }>(`${this.API_URL}/cart-new/update/${itemId}`, { quantity }, options).pipe(
+    return this.http.put<{ success: boolean; message: string }>(`${this.API_URL}/cart/update/${itemId}`, { quantity }, options).pipe(
       tap(response => {
         if (response.success) {
           // Immediately refresh cart to get updated count
@@ -516,7 +516,7 @@ export class CartService {
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart-new/clear`, options);
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart/clear`, options);
   }
 
   async clearCart(): Promise<void> {
@@ -602,7 +602,7 @@ export class CartService {
         return;
       }
 
-      const response = await this.http.get<any>(`${this.API_URL}/api/cart-new`, {
+      const response = await this.http.get<any>(`${this.API_URL}/api/cart`, {
         headers: { Authorization: `Bearer ${token}` }
       }).toPromise();
 

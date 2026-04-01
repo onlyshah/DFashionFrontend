@@ -84,7 +84,7 @@ export class RealtimeNotificationService {
       return;
     }
 
-    this.socket = io('http://localhost:9000', { // Use environment URL
+    this.socket = io('http://localhost:3000', { // Use environment URL
       auth: {
         token: token
       },

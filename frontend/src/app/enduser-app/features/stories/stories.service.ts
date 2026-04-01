@@ -80,7 +80,8 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories`).pipe(
       map(response => {
         if (response.success) {
-          const stories = response.stories.filter((story: Story) => story.isActive);
+          // Backend returns data array, filter for active stories
+          const stories = (response.data || []).filter((story: Story) => story.isActive);
           this.storiesSubject.next(stories);
           return stories;
         }
@@ -95,7 +96,8 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories/user/${userId}`).pipe(
       map(response => {
         if (response.success) {
-          return response.stories.filter((story: Story) => story.isActive);
+          // Backend returns data array, filter for active stories
+          return (response.data || []).filter((story: Story) => story.isActive);
         }
         return [];
       }),
@@ -108,7 +110,7 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories/groups`).pipe(
       map(response => {
         if (response.success) {
-          return response.groups;
+          return response.data || [];
         }
         return [];
       }),
@@ -121,7 +123,7 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories/preview`).pipe(
       map(response => {
         if (response.success) {
-          return response.stories;
+          return response.data || [];
         }
         return [];
       }),
@@ -136,8 +138,10 @@ export class StoriesService {
         if (response.success) {
           // Update local stories list
           const currentStories = this.storiesSubject.value;
-          this.storiesSubject.next([response.story, ...currentStories]);
-          return response.story;
+          // Backend returns story in data property
+          const newStory = response.data || response.story;
+          this.storiesSubject.next([newStory, ...currentStories]);
+          return newStory;
         }
         throw new Error(response.message || 'Failed to create story');
       }),
@@ -205,7 +209,8 @@ export class StoriesService {
     ).pipe(
       map(response => {
         if (response.success) {
-          return response.comment;
+          // Backend returns comment data in data property
+          return response.data || response.comment;
         }
         throw new Error(response.message || 'Failed to add comment');
       }),
@@ -218,7 +223,8 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories/${storyId}/comments`).pipe(
       map(response => {
         if (response.success) {
-          return response.comments;
+          // Backend returns comments array in data property
+          return response.data || response.comments || [];
         }
         return [];
       }),
@@ -243,7 +249,8 @@ export class StoriesService {
     }).pipe(
       map(response => {
         if (response.success) {
-          return response.products;
+          // Backend returns products array in data property
+          return response.data || response.products || [];
         }
         return [];
       }),
@@ -274,7 +281,8 @@ export class StoriesService {
     return this.http.get<any>(`${this.apiUrl}/stories/${storyId}/analytics`).pipe(
       map(response => {
         if (response.success) {
-          return response.analytics;
+          // Backend returns analytics data in data property
+          return response.data || response.analytics || null;
         }
         return null;
       }),

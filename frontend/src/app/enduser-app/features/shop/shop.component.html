@@ -44,8 +44,8 @@
         <div class="category-info">
           <h3>{{ category.name }}</h3>
           <div class="subcategories">
-            <span *ngFor="let sub of category.subcategories.slice(0, 3)">{{ sub }}</span>
-            <span *ngIf="category.subcategories.length > 3" class="more">+{{ category.subcategories.length - 3 }} more</span>
+            <span *ngFor="let sub of (category.subcategories || []).slice(0, 3)">{{ (typeof sub === 'string' ? sub : sub.name) }}</span>
+            <span *ngIf="(category.subcategories || []).length > 3" class="more">+{{ (category.subcategories || []).length - 3 }} more</span>
           </div>
         </div>
       </div>

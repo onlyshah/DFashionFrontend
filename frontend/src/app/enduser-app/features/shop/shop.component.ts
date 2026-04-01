@@ -10,7 +10,7 @@ interface Category {
   id: string;
   name: string;
   image: string;
-  subcategories: string[];
+  subcategories: Array<string | { name: string }>;
   productCount: number;
 }
 

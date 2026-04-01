@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistNewService } from '../../core/services/wishlist-new.service';
@@ -35,7 +36,7 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   get userAvatar(): string {
-  return this.currentUser?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg';
+  return this.currentUser?.avatar || `${environment.apiUrl}/uploads/avatars/default-avatar.svg`;
   }
 
   constructor(

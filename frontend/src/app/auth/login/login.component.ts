@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { RBACService } from '../../core/services/rbac.service';
 import { getRedirectPathForRole } from '../../config/roleRedirectMap';
@@ -11,14 +12,19 @@ import { getRedirectPathForRole } from '../../config/roleRedirectMap';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage: string = '';
   showPassword = false;
   apiUrl = '/api';
+
+  // Carousel properties
+  currentSlide = 0;
+  totalSlides = 3;
+  carouselInterval: any;
 
   constructor(
     private fb: FormBuilder,
@@ -39,6 +45,39 @@ export class LoginComponent implements OnInit {
       const user = this.authService.currentUser;
       this.redirectBasedOnRole(user?.role);
     }
+
+    // Start carousel animation
+    this.startCarousel();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up carousel interval
+    if (this.carouselInterval) {
+      clearInterval(this.carouselInterval);
+    }
+  }
+
+  startCarousel(): void {
+    this.carouselInterval = setInterval(() => {
+      this.nextSlide();
+    }, 4000); // Change slide every 4 seconds
+  }
+
+  nextSlide(): void {
+    this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+  }
+
+  goToSlide(index: number): void {
+    this.currentSlide = index;
+    // Reset timer when manually changing slides
+    if (this.carouselInterval) {
+      clearInterval(this.carouselInterval);
+      this.startCarousel();
+    }
+  }
+
+  isSlideActive(index: number): boolean {
+    return this.currentSlide === index;
   }
 
   async onSubmit() {
@@ -49,13 +88,8 @@ export class LoginComponent implements OnInit {
       try {
         const { email, password, rememberMe } = this.loginForm.value;
         this.authService.setRememberMe(rememberMe);
-        
-        const response = await new Promise<any>((resolve, reject) => {
-          this.authService.login({ email, password }).subscribe({
-            next: (res) => resolve(res),
-            error: (err) => reject(err)
-          });
-        });
+
+        const response = await firstValueFrom(this.authService.login({ email, password }, rememberMe));
 
         if (response?.success || response?.data) {
           const user = response?.data?.user || this.authService.currentUserValue;

@@ -214,7 +214,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
               _id: storyGroup.user?._id,
               username: storyGroup.user?.username || 'unknown',
               fullName: storyGroup.user?.fullName || 'Unknown User',
-              avatar: storyGroup.user?.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg',
+              avatar: storyGroup.user?.avatar || 'http://localhost:3000/uploads/avatars/default-avatar.svg',
               isBrand: false,
               isVerified: false
             },
@@ -245,7 +245,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
                   _id: story.user._id,
                   username: story.user.username || 'unknown',
                   fullName: story.user.fullName || 'Unknown User',
-                  avatar: story.user.avatar || 'http://localhost:9000/uploads/avatars/default-avatar.svg',
+                  avatar: story.user.avatar || 'http://localhost:3000/uploads/avatars/default-avatar.svg',
                   isBrand: false,
                   isVerified: false
                 },
@@ -497,7 +497,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
 
   getCurrentUserAvatar(): string {
     // Use currentUser input if available, otherwise return default avatar
-  return this.currentUser?.avatar || 'http://localhost:9000/upload/avatars/default-avatar.png';
+  return this.currentUser?.avatar || 'http://localhost:3000/upload/avatars/default-avatar.png';
   }
 
   openAddStoryModal() {
