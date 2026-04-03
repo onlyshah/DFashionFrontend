@@ -110,6 +110,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   }
 
   formatFollowerCount(count: number): string {
+    if (!count && count !== 0) return '0';
     if (count >= 1000000) {
       return (count / 1000000).toFixed(1) + 'M';
     } else if (count >= 1000) {

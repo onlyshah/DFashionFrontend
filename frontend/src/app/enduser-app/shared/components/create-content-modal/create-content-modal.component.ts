@@ -26,8 +26,8 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
   currentStream: MediaStream | null = null;
   facingMode: 'user' | 'environment' = 'user';
 
-  // Drafts data - loaded from database
-  drafts: any[] = [];
+  // Sidepanel state for More Options
+  isMorePanelOpen = false;
 
   get isMobile(): boolean {
     return this.platform.is('mobile') || this.platform.is('mobileweb');
@@ -170,8 +170,38 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
 
   onMoreOptions() {
     console.log('📱 Create Content: More Options');
+    // Open nested sidepanel for more options, while keeping current modal open
+    this.isMorePanelOpen = true;
     this.moreOptions.emit();
-    this.onClose();
+  }
+
+  closeMorePanel() {
+    console.log('📱 More panel closed');
+    this.isMorePanelOpen = false;
+  }
+
+  openMorePanel() {
+    console.log('📱 More panel opened');
+    this.isMorePanelOpen = true;
+  }
+
+  selectMoreItem(item: string) {
+    console.log('📱 More item selected:', item);
+    this.closeMorePanel();
+    // Example action; adapt to app routes or feature behaviors
+    switch (item) {
+      case 'trending':
+        this.router.navigate(['/home'], { queryParams: { tab: 'trending' } });
+        break;
+      case 'brands':
+        this.router.navigate(['/home'], { queryParams: { tab: 'brands' } });
+        break;
+      case 'categories':
+        this.router.navigate(['/shop'], { queryParams: { category: 'all' } });
+        break;
+      default:
+        break;
+    }
   }
 
   // Media Capture Methods

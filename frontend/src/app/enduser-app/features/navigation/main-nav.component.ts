@@ -13,6 +13,9 @@ import { filter } from 'rxjs/operators';
  
 export class MainNavComponent implements OnInit {
   currentRoute = '';
+  isMoreMenuOpen = false;
+  isCollapsed = false;
+  isMobile = false;
 
   constructor(private router: Router) {}
 
@@ -27,6 +30,18 @@ export class MainNavComponent implements OnInit {
 
     // Set initial route
     this.currentRoute = this.router.url;
+    this.isMobile = window.innerWidth <= 768;
+
+    window.addEventListener('resize', () => {
+      this.isMobile = window.innerWidth <= 768;
+      if (this.isMobile) {
+        this.isCollapsed = true;
+      }
+    });
+  }
+
+  toggleCollapse() {
+    this.isCollapsed = !this.isCollapsed;
   }
 
   // Navigation methods
@@ -68,5 +83,33 @@ export class MainNavComponent implements OnInit {
   navigateToProfile() {
     console.log('Navigating to profile');
     this.router.navigate(['/profile']);
+  }
+
+  openMoreOptions() {
+    console.log('Opening More panel');
+    this.isMoreMenuOpen = true;
+  }
+
+  closeMoreOptions() {
+    console.log('Closing More panel');
+    this.isMoreMenuOpen = false;
+  }
+
+  onMoreItemClick(action: string) {
+    console.log('More action selected:', action);
+    this.closeMoreOptions();
+    switch (action) {
+      case 'settings':
+        this.router.navigate(['/settings']);
+        break;
+      case 'help':
+        this.router.navigate(['/help']);
+        break;
+      case 'logout':
+        this.router.navigate(['/logout']);
+        break;
+      default:
+        break;
+    }
   }
 }

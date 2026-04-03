@@ -13,7 +13,7 @@ home component
 }
 
 // Styling for the new components in sidebar
-app-view-add-stories,
+app-story-tray,
 app-trending-products,
 app-featured-brands,
 app-new-arrivals {
@@ -297,7 +297,7 @@ app-new-arrivals {
   }
 
   // Adjust component layout for tablet view
-  app-view-add-stories,
+  app-story-tray,
   app-trending-products,
   app-featured-brands,
   app-new-arrivals {
@@ -311,7 +311,7 @@ app-new-arrivals {
   }
 
   // Stack components vertically on mobile
-  app-view-add-stories,
+  app-story-tray,
   app-trending-products,
   app-featured-brands,
   app-new-arrivals {

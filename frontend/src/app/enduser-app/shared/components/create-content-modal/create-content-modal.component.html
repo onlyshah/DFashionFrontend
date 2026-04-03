@@ -126,6 +126,25 @@
   </div>
 </ion-modal>
 
+<!-- Nested More Options Sidepanel Overlay -->
+<div class="more-options-panel-overlay" *ngIf="isMorePanelOpen">
+  <div class="more-panel-backdrop" (click)="closeMorePanel()"></div>
+  <aside class="more-panel" role="dialog" aria-modal="true" aria-label="More actions">
+    <div class="more-panel-header">
+      <h3>More Actions</h3>
+      <button class="close-more-panel" aria-label="Close more panel" (click)="closeMorePanel()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </div>
+    <div class="more-panel-body">
+      <button class="more-action-btn" (click)="selectMoreItem('trending')">Trending</button>
+      <button class="more-action-btn" (click)="selectMoreItem('brands')">Featured Brands</button>
+      <button class="more-action-btn" (click)="selectMoreItem('categories')">Categories</button>
+      <button class="more-action-btn" (click)="selectMoreItem('settings')">Settings</button>
+    </div>
+  </aside>
+</div>
+
 <!-- File Input (Hidden) -->
 <input #fileInput 
        id="contentFileInput"

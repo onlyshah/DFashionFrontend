@@ -9,10 +9,9 @@ import { HttpClient } from '@angular/common/http';
 import { PostService } from '../../../../../core/services/post.service';
 import { StoryService } from '../../../../../core/services/story.service';
 
-import { StoriesListComponent } from '../../../stories/stories-list.component';
 @Component({
   selector: 'app-feed',
-  imports: [CommonModule, FormsModule, StoriesListComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './feed.component.html',
   styleUrls: ['./feed.component.scss']
 })
@@ -29,9 +28,27 @@ export class FeedComponent implements OnInit {
   stories: any[] = [];
   storiesLoading = true;
 
+  // Instagram-style overlay state
+  storyViewerOpen = false;
+  currentStoryIndex = 0;
+  storyProgress = 0;
+  selectedPostForOptions: any = null;
+  isPostOptionsOpen = false;
+  messagesPanelOpen = false;
+  messages: any[] = [
+    { name: 'Anna', avatar: `${environment.apiUrl}/uploads/avatars/default-avatar.svg`, last: 'Loved your latest post!', active: '1m', unread: 2 },
+    { name: 'Riya', avatar: `${environment.apiUrl}/uploads/avatars/default-avatar.svg`, last: 'Can we collaborate?', active: '3m', unread: 0 },
+    { name: 'Nina', avatar: `${environment.apiUrl}/uploads/avatars/default-avatar.svg`, last: 'Nice outfit!', active: '5m', unread: 1 }
+  ];
+
   // TrackBy for ngFor
   trackByPostId(index: number, post: any) {
     return post.id;
+  }
+
+  // Calculate total unread messages
+  getTotalUnreadMessages(): number {
+    return this.messages.reduce((total, msg) => total + (msg.unread || 0), 0);
   }
 
   // Format time ago
@@ -322,4 +339,52 @@ loadPosts() {
     }
   });
 }
+
+openPostCreator() {
+  console.log('Open post creator UI');
+  // TODO: implement a modal or route to create post
 }
+
+showPostOptions(post: any) {
+  this.selectedPostForOptions = post;
+  this.isPostOptionsOpen = true;
+}
+
+closePostOptions() {
+  this.isPostOptionsOpen = false;
+  this.selectedPostForOptions = null;
+}
+
+toggleMessagesPanel() {
+  this.messagesPanelOpen = !this.messagesPanelOpen;
+}
+
+closeStoryViewer() {
+  this.storyViewerOpen = false;
+}
+
+onViewerNext() {
+  if (this.currentStoryIndex < this.stories.length - 1) {
+    this.currentStoryIndex += 1;
+  }
+}
+
+onViewerPrevious() {
+  if (this.currentStoryIndex > 0) {
+    this.currentStoryIndex -= 1;
+  }
+}
+
+viewTaggedProduct(product: any) {
+  this.buyNow(product);
+}
+
+// Handle image load errors with fallback
+onImageError(event: any) {
+  if (!event.target.dataset.fallback) {
+    event.target.src = `${this.imageUrl}/uploads/default-post.jpg`;
+    event.target.dataset.fallback = 'true';
+  }
+}
+}
+

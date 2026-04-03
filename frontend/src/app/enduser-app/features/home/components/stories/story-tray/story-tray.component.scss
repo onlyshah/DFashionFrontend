@@ -1,0 +1,103 @@
+.story-tray-container { 
+  width: 100%;
+  display: block;
+  position: relative;
+
+  .slide-controls {
+    position: absolute;
+    left: 0;
+    top: 40px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .slide-btn {
+    pointer-events: all;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .slide-btn:hover {
+    transform: scale(1.03);
+  }
+
+  .slide-btn.left { margin-left: 8px; }
+  .slide-btn.right { margin-right: 8px; }
+
+  .stories-row {
+    display: flex;
+    overflow-x: auto;
+    padding: 14px 0 11px;
+    gap: 10px;
+    margin-bottom: 16px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 999px;
+    }
+
+    .story-item {
+      scroll-snap-align: start;
+      text-align: center;
+      cursor: pointer;
+      font-size: 11px;
+      color: #333;
+      min-width: calc((100% / 6) - 10px);
+      max-width: calc((100% / 6) - 10px);
+      padding: 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: transform 0.2s ease;
+
+      &.active {
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 0 0 6px rgba(255,255,255,0.2);
+      }
+
+      &:hover {
+        transform: scale(1.03);
+      }
+
+      img {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        background: #fff;
+      }
+
+      span {
+        display: block;
+        margin-top: 6px;
+        width: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+    /* Posts are rendered in a dedicated post component; story-tray only manages stories */
+}
+
+@media (max-width: 768px) { .story-tray-container { .post-card { .post-media { max-height: 340px; } } } }

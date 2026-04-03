@@ -1,14 +1,14 @@
 <div class="social-feed">
   <!-- Stories Bar with Carousel -->
   <div class="stories-bar">
-    <app-view-add-stories
+    <app-story-tray
       [stories]="stories"
       [showAddStory]="true"
       addStoryText="Your Story"
       [currentUser]="currentUser"
       (storyClick)="onStoryClick($event)"
       (createStory)="createStory()">
-    </app-view-add-stories>
+    </app-story-tray>
   </div>
 
   <!-- Posts Feed -->

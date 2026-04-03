@@ -6,6 +6,7 @@ import { ReviewService, Review, ReviewStats, CreateReviewRequest } from '../../.
 import { AuthService } from '../../../../../core/services/auth.service';
 import { NotificationService } from '../../../../../core/services/notification.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
     selector: 'app-product-reviews',
@@ -149,7 +150,7 @@ import { Subscription } from 'rxjs';
             <!-- Review Header -->
             <div class="review-header">
               <div class="reviewer-info">
-                <img [src]="review.user?.avatar || '/assets/default-avatar.png'" alt="Reviewer" class="reviewer-avatar">
+                <img [src]="review.user?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" alt="Reviewer" class="reviewer-avatar">
                 <div class="reviewer-details">
                   <span class="reviewer-name">{{ review.user?.username || 'Anonymous' }}</span>
                   <div class="review-meta">
@@ -714,6 +715,8 @@ import { Subscription } from 'rxjs';
 })
 export class ProductReviewsComponent implements OnInit, OnDestroy {
   @Input() productId!: string;
+
+  apiUrl = environment.apiUrl;
 
   reviews: Review[] = [];
   reviewStats: ReviewStats | null = null;

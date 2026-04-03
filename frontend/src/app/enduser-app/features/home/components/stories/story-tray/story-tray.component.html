@@ -1,0 +1,27 @@
+<div class="story-tray-container" [class.loading]="loading || storyLoading">
+  <div class="slide-controls">
+    <button class="slide-btn left" (click)="scrollLeft()"><ion-icon name="chevron-back"></ion-icon></button>
+    <button class="slide-btn right" (click)="scrollRight()"><ion-icon name="chevron-forward"></ion-icon></button>
+  </div>
+
+  <div class="add-story-row" *ngIf="showAddStory">
+    <button class="add-story-button" (click)="onCreateStory()">{{ addStoryText || 'Add Story' }}</button>
+  </div>
+
+  <div class="stories-row" #storiesContainer *ngIf="!storyLoading && stories.length > 0; else storiesSkeleton">
+    <div class="story-item" *ngFor="let story of stories; let i = index" (click)="onStoryClick(story, i)">
+      <div class="avatar-wrapper" [class.active]="story.hasNew">
+        <img [src]="story.user?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" [alt]="story.user?.username || 'User'" />
+      </div>
+      <span>{{ story.user?.username || 'Unknown' }}</span>
+    </div>
+  </div>
+
+  <ng-template #storiesSkeleton>
+    <div class="stories-skeleton">
+      <div class="skeleton-item" *ngFor="let n of [1,2,3,4,5,6]"></div>
+    </div>
+  </ng-template>
+
+  <!-- Posts are handled in separate component; story-tray now focuses on stories only -->
+</div>

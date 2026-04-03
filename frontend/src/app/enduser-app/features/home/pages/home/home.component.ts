@@ -8,14 +8,14 @@ import { AuthService } from '../../../../../core/services/auth.service';
 import { StoryService } from '../../../../../core/services/story.service';
 import { CategoryService } from '../../../../../core/services/category.service';
 
-import { ViewAddStoriesComponent } from '../../../../shared/components/view-add-stories/view-add-stories.component';
-import { FeedComponent } from '../../components/feed/feed.component';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TrendingProductsComponent } from '../../components/trending-products/trending-products.component';
 import { FeaturedBrandsComponent } from '../../components/featured-brands/featured-brands.component';
 import { NewArrivalsComponent } from '../../components/new-arrivals/new-arrivals.component';
 import { SuggestedForYouComponent } from '../../components/suggested-for-you/suggested-for-you.component';
 import { TopFashionInfluencersComponent } from '../../components/top-fashion-influencers/top-fashion-influencers.component';
+import { StoryTrayComponent } from '../../components/stories/story-tray/story-tray.component';
+import { FeedComponent } from '../../components/feed/feed.component';
 //import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
 @Component({
@@ -23,7 +23,7 @@ import { TopFashionInfluencersComponent } from '../../components/top-fashion-inf
     imports: [
         CommonModule,
         IonicModule,
-        ViewAddStoriesComponent,
+        StoryTrayComponent,
         FeedComponent,
         SidebarComponent,
         TrendingProductsComponent,

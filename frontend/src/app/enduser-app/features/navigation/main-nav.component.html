@@ -126,3 +126,17 @@
     </button>
   </div>
 </nav>
+
+<!-- More options sidebar overlay -->
+<div class="more-options-overlay" *ngIf="isMoreMenuOpen">
+  <div class="overlay-backdrop" (click)="closeMoreOptions()"></div>
+  <aside class="more-options-menu">
+    <div class="more-options-head">
+      <span>More actions</span>
+      <button class="close-btn" (click)="closeMoreOptions()">×</button>
+    </div>
+    <button class="menu-item" (click)="onMoreItemClick('settings')">Settings</button>
+    <button class="menu-item" (click)="onMoreItemClick('help')">Help</button>
+    <button class="menu-item" (click)="onMoreItemClick('logout')">Log out</button>
+  </aside>
+</div>

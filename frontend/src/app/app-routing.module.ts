@@ -62,7 +62,7 @@ const routes: Routes = [
   },
   {
     path: 'story',
-    loadChildren: () => import('./enduser-app/features/stories/stories.module').then(m => m.StoriesModule)
+    loadComponent: () => import('./enduser-app/features/home/components/stories/story-tray/story-tray.component').then(m => m.StoryTrayComponent)
   },
   /*
   {

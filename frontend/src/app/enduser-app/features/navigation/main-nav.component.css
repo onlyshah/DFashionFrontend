@@ -152,14 +152,63 @@
   border-color: #000;
 }
 
-/* Sidebar Bottom */
-.sidebar-bottom {
+/* More panel overlay */
+.more-options-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: auto;
+}
+
+.overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.more-options-menu {
+  position: absolute;
+  left: 245px;
+  top: 0;
+  height: 100vh;
+  width: min(320px, 85vw);
+  background: #ffffff;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 8px 0;
-  border-top: 1px solid #dbdbdb;
-  margin-top: auto;
+  padding: 16px;
+  z-index: 301;
+}
+
+.more-options-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+.more-options-menu .close-btn {
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.more-options-menu .menu-item {
+  width: 100%;
+  border: none;
+  background: #f8f8f8;
+  margin-bottom: 9px;
+  border-radius: 9px;
+  padding: 10px 12px;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.more-options-menu .menu-item:hover {
+  background: #ececec;
 }
 
 .collapse-toggle {

@@ -24,13 +24,13 @@
   <div class="web-layout" *ngIf="!isMobile">
     <!-- Stories Section (Full Width) -->
     <div class="stories-section-container">
-      <app-view-add-stories
+      <app-story-tray
         [stories]="socialStories"
         [showAddStory]="true"
         [addStoryText]="'Your Story'"
         (storyClick)="viewStory($event)"
         (createStory)="createStory()">
-      </app-view-add-stories>
+      </app-story-tray>
     </div>
 
     <!-- Two Column Layout -->
@@ -53,13 +53,13 @@
       <!-- Main Feed -->
       <div class="main-content">
         <!-- Responsive Stories Component (Works on all screen sizes) -->
-        <app-view-add-stories
+        <app-story-tray
           [stories]="socialStories"
           [showAddStory]="true"
           [addStoryText]="'Your Story'"
           (storyClick)="viewStory($event)"
           (createStory)="createStory()">
-        </app-view-add-stories>
+        </app-story-tray>
         <!-- Social Feed with Posts and Reels -->
         <app-feed></app-feed>
       </div>

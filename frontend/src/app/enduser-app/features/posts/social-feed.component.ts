@@ -8,7 +8,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { Subscription } from 'rxjs';
-import { ViewAddStoriesComponent, Story, CurrentUser } from '../home/components/view-add-stories/view-add-stories.component';
+import { StoryTrayComponent } from '../home/components/stories/story-tray/story-tray.component';
+
+type Story = any;
+type CurrentUser = any;
 
 interface Post {
   _id: string;
@@ -67,7 +70,7 @@ interface Post {
 
 @Component({
     selector: 'app-social-feed',
-    imports: [CommonModule, FormsModule, ViewAddStoriesComponent],
+    imports: [CommonModule, FormsModule, StoryTrayComponent],
     templateUrl: './social-feed.component.html',
     styles: [`
     .social-feed {

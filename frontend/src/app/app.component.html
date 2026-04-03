@@ -69,16 +69,23 @@
         <span class="label" *ngIf="sidebarExpanded">More</span>
       </button>
     </nav>
-    <div class="more-dropdown" *ngIf="moreMenuOpen" (mouseleave)="closeMoreMenu()">
-      <a class="drop-item" routerLink="/settings">Settings</a>
-      <a class="drop-item" routerLink="/activity">Your activity</a>
-      <a class="drop-item" routerLink="/saved">Saved</a>
-      <a class="drop-item" (click)="switchAppearance()">Switch appearance</a>
-      <a class="drop-item" routerLink="/report">Report a problem</a>
-      <a class="drop-item" routerLink="/threads">Threads</a>
-      <a class="drop-item" (click)="switchAccounts()">Switch accounts</a>
-      <a class="drop-item" (click)="logout()">Log out</a>
-    </div>
+</aside>
+
+  <!-- More panel (right side panel) -->
+  <div class="more-panel-backdrop" *ngIf="moreMenuOpen" (click)="closeMoreMenu()"></div>
+  <aside class="more-panel" [class.open]="moreMenuOpen" role="dialog" aria-modal="true" aria-label="More options">
+    <button class="more-panel-close" type="button" aria-label="Close" (click)="closeMoreMenu()">✕</button>
+
+    <nav class="more-panel-nav">
+      <a class="panel-item" routerLink="/settings" (click)="closeMoreMenu()">⚙️ Settings</a>
+      <a class="panel-item" routerLink="/activity" (click)="closeMoreMenu()">📊 Your activity</a>
+      <a class="panel-item" routerLink="/saved" (click)="closeMoreMenu()">💾 Saved</a>
+      <button class="panel-item" (click)="switchAppearance(); closeMoreMenu()">🌙 Switch appearance</button>
+      <a class="panel-item" routerLink="/report" (click)="closeMoreMenu()">🚨 Report a problem</a>
+      <a class="panel-item" routerLink="/threads" (click)="closeMoreMenu()">🧵 Threads</a>
+      <button class="panel-item" (click)="switchAccounts(); closeMoreMenu()">🔄 Switch accounts</button>
+      <button class="panel-item" (click)="logout(); closeMoreMenu()">🚪 Log out</button>
+    </nav>
   </aside>
 
   <button class="sidebar-toggle-btn" type="button" aria-label="Toggle sidebar" (click)="toggleSidebar()">
