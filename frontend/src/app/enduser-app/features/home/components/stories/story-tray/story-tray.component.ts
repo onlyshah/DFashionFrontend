@@ -1,20 +1,21 @@
-import { Component, OnDestroy, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, AfterViewInit, OnDestroy, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { PostService } from '../../../../../../core/services/post.service';
 import { StoryService } from '../../../../../../core/services/story.service';
+import { ViewStoriesComponent } from '../view-stories/view-stories.component';
 import { environment } from 'src/environments/environment';
 import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-story-tray',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule],
+  imports: [CommonModule, FormsModule, IonicModule, ViewStoriesComponent],
   templateUrl: './story-tray.component.html',
   styleUrls: ['./story-tray.component.scss']
 })
-export class StoryTrayComponent implements OnInit, OnDestroy {
+export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('storiesContainer', { static: false }) storiesContainer!: ElementRef<HTMLDivElement>;
   @Input() stories: any[] = [];
   @Input() showAddStory = true;
@@ -23,7 +24,15 @@ export class StoryTrayComponent implements OnInit, OnDestroy {
   itemsPerPage = 6;
   currentPage = 0;
   @Input() currentUser: any = null;
-  @Output() storyClick = new EventEmitter<any>();
+
+  imageUrl = environment.apiUrl;
+  canScrollLeft = false;
+  canScrollRight = false;
+  isDragging = false;
+  dragStartX = 0;
+  scrollStartX = 0;
+  viewerVisible = false;
+  viewerIndex = 0;
   @Output() createStory = new EventEmitter<void>();
 
   posts: any[] = [];
@@ -52,29 +61,69 @@ export class StoryTrayComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => this.updateScrollButtons(), 0);
+  }
+
   onCreateStory(): void {
     this.createStory.emit();
   }
 
-  onStoryClick(story: any, index: number): void {
-    this.storyClick.emit({ story, index });
-    this.openStory(story);
+  onStoryClick(story: any, index: number, isOwn = false): void {
+    console.log('Story clicked:', story);
+    this.viewerIndex = index;
+    this.viewerVisible = true;
+    this.openStory(story, isOwn);
   }
 
   scrollLeft(): void {
     if (!this.storiesContainer) return;
     const container = this.storiesContainer.nativeElement;
-    const step = Math.floor(container.clientWidth);
-    this.currentPage = Math.max(0, this.currentPage - 1);
+    const step = Math.floor(container.clientWidth * 0.8);
     container.scrollBy({ left: -step, behavior: 'smooth' });
+    setTimeout(() => this.updateScrollButtons(), 220);
   }
 
   scrollRight(): void {
     if (!this.storiesContainer) return;
     const container = this.storiesContainer.nativeElement;
-    const step = Math.floor(container.clientWidth);
-    this.currentPage = Math.min(Math.ceil(this.stories.length / this.itemsPerPage) - 1, this.currentPage + 1);
+    const step = Math.floor(container.clientWidth * 0.8);
     container.scrollBy({ left: step, behavior: 'smooth' });
+    setTimeout(() => this.updateScrollButtons(), 220);
+  }
+
+  onStoryScroll(): void {
+    this.updateScrollButtons();
+  }
+
+  startDrag(event: PointerEvent): void {
+    if (!this.storiesContainer) return;
+    this.isDragging = true;
+    this.dragStartX = event.clientX;
+    this.scrollStartX = this.storiesContainer.nativeElement.scrollLeft;
+    this.storiesContainer.nativeElement.setPointerCapture(event.pointerId);
+  }
+
+  onDrag(event: PointerEvent): void {
+    if (!this.isDragging || !this.storiesContainer) return;
+    const delta = this.dragStartX - event.clientX;
+    // Only scroll if moved more than 5px (to distinguish from clicks)
+    if (Math.abs(delta) > 5) {
+      this.storiesContainer.nativeElement.scrollLeft = this.scrollStartX + delta;
+      this.updateScrollButtons();
+    }
+  }
+
+  endDrag(): void {
+    console.log('Drag ended');
+    this.isDragging = false;
+  }
+
+  updateScrollButtons(): void {
+    if (!this.storiesContainer) return;
+    const container = this.storiesContainer.nativeElement;
+    this.canScrollLeft = container.scrollLeft > 8;
+    this.canScrollRight = container.scrollLeft + container.clientWidth < container.scrollWidth - 8;
   }
 
   ngOnDestroy(): void {
@@ -92,6 +141,7 @@ export class StoryTrayComponent implements OnInit, OnDestroy {
       next: (res: any) => {
         this.stories = res.stories || [];
         this.storyLoading = false;
+        setTimeout(() => this.updateScrollButtons(), 0);
       },
       error: () => {
         this.stories = [];
@@ -135,6 +185,14 @@ export class StoryTrayComponent implements OnInit, OnDestroy {
     this.loadPosts(false);
   }
 
+  closeViewer(): void {
+    this.viewerVisible = false;
+  }
+
+  changeViewerIndex(index: number): void {
+    this.viewerIndex = index;
+  }
+
   toggleLike(post: any): void {
     this.postService.likePost(post._id).subscribe({
       next: (res: any) => {
@@ -144,10 +202,16 @@ export class StoryTrayComponent implements OnInit, OnDestroy {
     });
   }
 
-  openStory(story: any): void {
+  openStory(story: any, isOwn = false): void {
+    // This method handles API calls and story analytics only.
+    // The actual viewer modal opens in onStoryClick().
+    console.log('Story clicked - API call and additional logic here');
+    if (!story) {
+      return;
+    }
+
+    // Mark story as viewed (API call)
     this.storyService.viewStory(story._id).subscribe();
-    this.storyClick.emit({ story });
-    window.alert(`Open story for ${story.user?.username || 'unknown'}`);
   }
 
   getTimeAgo(dateStr: string | Date): string {

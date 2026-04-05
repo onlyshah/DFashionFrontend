@@ -28,7 +28,6 @@
         [stories]="socialStories"
         [showAddStory]="true"
         [addStoryText]="'Your Story'"
-        (storyClick)="viewStory($event)"
         (createStory)="createStory()">
       </app-story-tray>
     </div>
@@ -57,7 +56,6 @@
           [stories]="socialStories"
           [showAddStory]="true"
           [addStoryText]="'Your Story'"
-          (storyClick)="viewStory($event)"
           (createStory)="createStory()">
         </app-story-tray>
         <!-- Social Feed with Posts and Reels -->
@@ -270,4 +268,5 @@
       </div>
     </div>
   </div>
+
 </div>

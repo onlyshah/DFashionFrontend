@@ -56,8 +56,13 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.categoryService.getAllCategories().subscribe({
         next: (categories) => {
-          this.categories = categories.slice(0, 8); // Limit to 8 categories for slider
-          console.log('cat',this.categories)
+          // Add default images for categories without images
+          const categoriesWithImages = categories.slice(0, 8).map((cat, index) => ({
+            ...cat,
+            image: cat.image || this.getDefaultCategoryImage(cat.name)
+          }));
+          this.categories = categoriesWithImages;
+          console.log('cat', this.categories);
           this.updateSliderOnCategoriesLoad();
           this.isLoading = false;
         },
@@ -69,6 +74,32 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  // Provide default images for categories based on their name
+  private getDefaultCategoryImage(categoryName: string): string {
+    const name = categoryName.toLowerCase();
+    const defaultImages: { [key: string]: string } = {
+      'men': '/uploads/categories/men.svg',
+      'women': '/uploads/categories/women.svg',
+      'kids': '/uploads/categories/kids.svg',
+      'accessories': '/uploads/categories/accessories.svg',
+      'footwear': '/uploads/categories/shoes.svg',
+      'shoes': '/uploads/categories/shoes.svg',
+      'bags': '/uploads/categories/bags.svg',
+      'beauty': '/uploads/categories/beauty.svg',
+      'sportswear': '/uploads/categories/sportswear.svg',
+      'ethnic wear': '/uploads/categories/ethnic-wear.svg',
+      'ethnic-wear': '/uploads/categories/ethnic-wear.svg',
+      'western wear': '/uploads/categories/western-wear.svg',
+      'western-wear': '/uploads/categories/western-wear.svg',
+      'formal wear': '/uploads/categories/formal-wear.svg',
+      'formal-wear': '/uploads/categories/formal-wear.svg',
+      'casual wear': '/uploads/categories/casual-wear.svg',
+      'casual-wear': '/uploads/categories/casual-wear.svg'
+    };
+
+    return defaultImages[name] || '/uploads/categories/fashion.svg';
   }
 
   onCategoryClick(category: Category) {

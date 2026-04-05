@@ -82,7 +82,8 @@
   flex: 0 0 470px;
   background: var(--bg-white);
   border-radius: 1px;
-  border: 1px solid var(--border-color);
+  // border: 1px solid var(--border-color);
+  margin-top: -30px;
 
   @media (max-width: 1024px) {
     flex: 0 0 400px;

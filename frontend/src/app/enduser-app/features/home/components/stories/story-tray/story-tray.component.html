@@ -1,27 +1,58 @@
 <div class="story-tray-container" [class.loading]="loading || storyLoading">
-  <div class="slide-controls">
-    <button class="slide-btn left" (click)="scrollLeft()"><ion-icon name="chevron-back"></ion-icon></button>
-    <button class="slide-btn right" (click)="scrollRight()"><ion-icon name="chevron-forward"></ion-icon></button>
-  </div>
-
-  <div class="add-story-row" *ngIf="showAddStory">
-    <button class="add-story-button" (click)="onCreateStory()">{{ addStoryText || 'Add Story' }}</button>
-  </div>
-
-  <div class="stories-row" #storiesContainer *ngIf="!storyLoading && stories.length > 0; else storiesSkeleton">
-    <div class="story-item" *ngFor="let story of stories; let i = index" (click)="onStoryClick(story, i)">
-      <div class="avatar-wrapper" [class.active]="story.hasNew">
-        <img [src]="story.user?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')" [alt]="story.user?.username || 'User'" />
+  <div class="story-tray-inner">
+    <div class="your-story-static" (click)="onCreateStory()" role="button" aria-label="Create your story">
+      <div class="status-ring own-story-ring">
+        <div class="image">
+          <img [src]="apiUrl + '/uploads/avatars/default-avatar.svg'" alt="Your Story">
+        </div>
+        <span class="story-plus"><i class="fas fa-plus"></i></span>
       </div>
-      <span>{{ story.user?.username || 'Unknown' }}</span>
+      <span class="story-label">{{ addStoryText }}</span>
+    </div>
+
+    <div class="statuses" #storiesContainer *ngIf="!storyLoading && stories.length > 0; else storiesSkeleton"
+         (scroll)="onStoryScroll()"
+         (pointerdown)="startDrag($event)"
+         (pointermove)="onDrag($event)"
+         (pointerup)="endDrag()"
+         (pointercancel)="endDrag()"
+         (mouseleave)="endDrag()">
+      <div class="status" *ngFor="let story of stories; let i = index"
+           [ngClass]="{ 'unviewed': story?.unseen, 'viewed': !story?.unseen }"
+           (click)="onStoryClick(story, i)">
+        <div class="status-ring" >
+          <div class="image">
+            <img [src]="story.user?.avatar || (apiUrl + '/uploads/avatars/default-avatar.svg')"
+                 [alt]="story.user?.username || 'Story'">
+          </div>
+        </div>
+        <span class="story-label">{{ story.user?.username || 'Story' }}</span>
+      </div>
     </div>
   </div>
+
+  <div class="slide-controls" *ngIf="stories.length && !storyLoading">
+    <button class="slide-btn left" [disabled]="!canScrollLeft" (click)="scrollLeft()" aria-label="Scroll stories left">
+      <ion-icon name="chevron-back"></ion-icon>
+    </button>
+    <button class="slide-btn right" [disabled]="!canScrollRight" (click)="scrollRight()" aria-label="Scroll stories right">
+      <ion-icon name="chevron-forward"></ion-icon>
+    </button>
+  </div>
+
+  <ng-container *ngIf="viewerVisible">
+    <app-view-stories
+      [visible]="viewerVisible"
+      [stories]="stories"
+      [currentIndex]="viewerIndex"
+      (close)="closeViewer()"
+      (changeIndex)="changeViewerIndex($event)">
+    </app-view-stories>
+  </ng-container>
 
   <ng-template #storiesSkeleton>
     <div class="stories-skeleton">
       <div class="skeleton-item" *ngFor="let n of [1,2,3,4,5,6]"></div>
     </div>
   </ng-template>
-
-  <!-- Posts are handled in separate component; story-tray now focuses on stories only -->
 </div>

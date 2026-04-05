@@ -15,6 +15,7 @@ import { NewArrivalsComponent } from '../../components/new-arrivals/new-arrivals
 import { SuggestedForYouComponent } from '../../components/suggested-for-you/suggested-for-you.component';
 import { TopFashionInfluencersComponent } from '../../components/top-fashion-influencers/top-fashion-influencers.component';
 import { StoryTrayComponent } from '../../components/stories/story-tray/story-tray.component';
+import { ViewStoriesComponent } from '../../components/stories/view-stories/view-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
 //import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
@@ -24,6 +25,7 @@ import { FeedComponent } from '../../components/feed/feed.component';
         CommonModule,
         IonicModule,
         StoryTrayComponent,
+        ViewStoriesComponent,
         FeedComponent,
         SidebarComponent,
         TrendingProductsComponent,
@@ -188,10 +190,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Stories functionality
   createStory() {
     // TODO: Implement story creation
-  }
-
-  viewStory(_story: any) {
-    // TODO: Implement story viewer
   }
 
   trackByStoryId(index: number, story: any): any {

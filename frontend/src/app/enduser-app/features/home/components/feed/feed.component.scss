@@ -2,8 +2,7 @@
   width: 100%;
   margin-top: 30px;
 }
-
-.statuses {
+.post-section {
   margin-bottom: 30px;
   width: 100%;
   background-color: #fff;
@@ -12,41 +11,134 @@
   justify-content: start;
   padding: 20px 0;
   border-radius: 2px;
-  border: 1px solid rgb(218, 217, 217);
-  overflow: auto;
+  border: none;
+}
+.feed-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+.statuses {
+  margin-bottom: 24px;
+  width: 100%;
+  background-color: #ffffff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 14px 12px;
+  border-radius: 18px;
+  border: 1px solid #dbdbdb;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 12px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
 }
 
-.statuses .status {
-  display: inline-block;
-  border-radius: 50%;
-  overflow: auto;
-  width: 70px;
-  height: 70px;
-  min-width: 70px;
-  min-height: 70px;
-  background: linear-gradient(to right, red, orange);
-  padding: 2px;
-  margin-left: 15px;
+.statuses::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  min-width: 80px;
+  scroll-snap-align: start;
   cursor: pointer;
+  user-select: none;
 }
 
-.statuses .status .image {
+.status-ring {
+  position: relative;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #feda75, #fa7e1e, #d62976, #962fbf, #405de6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-ring::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #fff;
+  z-index: 0;
+}
+
+.status .image {
   position: relative;
   width: 100%;
   height: 100%;
   border-radius: 50%;
   overflow: hidden;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
+  z-index: 1;
 }
 
-.statuses .status img {
+.status .image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
+}
+
+.story-label {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #262626;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.your-story .status-ring {
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 100%);
+  border: 1px solid #dbdbdb;
+}
+
+.your-story .status-ring::after {
+  background: #ffffff;
+}
+
+.your-story .image {
+  background: #f2f2f2;
+}
+
+.story-plus {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0095f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.status:hover .status-ring {
+  transform: translateY(-1px);
+}
+
+.status:active .status-ring {
+  transform: translateY(0);
 }
 
 .col-3 {
@@ -219,6 +311,117 @@
   margin-right: 8px;
 }
 
+.actionBtns .left svg {
+  margin-right: 8px;
+}
+
+// E-commerce Icon Buttons (inline with action buttons)
+.ecommerce-icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+}
+
+.ecommerce-icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ecommerce-icon-btn i {
+  font-size: 20px;
+  color: #262626;
+}
+
+.cart-btn i {
+  color: #0095f6;
+}
+
+.cart-btn:hover {
+  background: rgba(0, 149, 246, 0.1);
+}
+
+.wishlist-btn i {
+  color: #ed4956;
+}
+
+.wishlist-btn:hover {
+  background: rgba(237, 73, 86, 0.1);
+}
+
+.notification-btn i {
+  color: #8e44ad;
+}
+
+.notification-btn:hover {
+  background: rgba(142, 68, 173, 0.1);
+}
+
+.buy-now-btn i {
+  color: #27ae60;
+}
+
+.buy-now-btn:hover {
+  background: rgba(39, 174, 96, 0.1);
+}
+
+// Legacy styles for larger e-commerce buttons (can be removed later)
+.ecommerce-actions {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 15px 0;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 8px;
+}
+
+.ecommerce-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #f8f8f8;
+  color: #262626;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 60px;
+  gap: 4px;
+}
+
+.ecommerce-btn:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.ecommerce-btn:active {
+  transform: translateY(0);
+}
+
+.ecommerce-btn i {
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.ecommerce-btn span {
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .likes {
   font-weight: 500;
   margin-top: 5px;
@@ -352,7 +555,39 @@ a {
   font-size: 14px;
   font-family: sans-serif;
 }
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin: 28px 0 16px;
+}
 
+.load-more-btn {
+  padding: 12px 26px;
+  min-width: 220px;
+  border-radius: 999px;
+  border: none;
+  outline: none;
+  background: linear-gradient(135deg, #405de6, #5851db, #833ab4, #c13584, #e1306c);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.load-more-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+}
+
+.load-more-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
 .footer a:hover {
   color: #ff0000;
 }

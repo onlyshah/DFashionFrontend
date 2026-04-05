@@ -23,6 +23,7 @@ export class FeedComponent implements OnInit {
   loading = true;
   hasMore = true;
   currentPage = 1;
+  pageSize = 10;
   newComment = '';
   imageUrl = environment.apiUrl;
   stories: any[] = [];
@@ -125,99 +126,43 @@ export class FeedComponent implements OnInit {
 
   // Add product to cart
   addToCart(product: any) {
-    this.cartService.addToCart(product.product || product);
+    // For now, just show a placeholder action since products aren't loaded
+    console.log('Add to cart clicked for post:', product.id);
+    // this.cartService.addToCart(product.product || product);
   }
 
   // Add product to wishlist
   addToWishlist(product: any) {
-    this.wishlistService.addToWishlist(product.product || product);
+    // For now, just show a placeholder action since products aren't loaded
+    console.log('Add to wishlist clicked for post:', product.id);
+    // this.wishlistService.addToWishlist(product.product || product);
   }
 
   // Buy now (navigate to product page)
   buyNow(product: any) {
-    const prodId = product.product?._id || product._id;
-    if (prodId) {
-      this.router.navigate(['/product', prodId]);
-    }
+    // For now, just show a placeholder action since products aren't loaded
+    console.log('Buy now clicked for post:', product.id);
+    // const prodId = product.product?._id || product._id;
+    // if (prodId) {
+    //   this.router.navigate(['/product', prodId]);
+    // }
+  }
+
+  // Toggle notification for post updates
+  toggleNotification(post: any) {
+    const url = `${environment.apiUrl}/api/posts/${post.id}/notification`;
+    this.http.post(url, {}).subscribe({
+      next: () => {
+        post.isNotified = !post.isNotified;
+      },
+      error: () => {}
+    });
   }
 
   // Load more posts (pagination)
   loadMorePosts() {
     if (!this.hasMore || this.loading) return;
-    this.loading = true;
-    this.currentPage++;
-    this.http.get<any>(`${environment.apiUrl}/api/posts?page=${this.currentPage}`).subscribe({
-      next: (res: any) => {
-        console.log('post',res)
-        if (!res?.posts || !Array.isArray(res.posts) || res.posts.length === 0) {
-          this.hasMore = false;
-          this.loading = false;
-          return;
-        }
-        const base = environment.apiUrl.replace(/\/$/, '');
-        const newPosts = res.posts.map((p: any) => {
-          const mediaItem = p.media && p.media.length ? p.media[0] : null;
-          const mediaPath = mediaItem?.url || '/uploads/default-post.jpg';
-          const mediaUrl = `${base}${mediaPath}`;
-          const mediaType = mediaItem?.type || 'image';
-          const userObj = p.user || null;
-          const userAvatar = userObj?.avatar
-            ? `${base}${userObj.avatar}`
-            : `${base}/uploads/avatars/default-avatar.svg`;
-          const mappedUser = userObj
-            ? { ...userObj, avatar: userAvatar }
-            : { username: 'Unknown User', avatar: `${base}/uploads/avatars/default-avatar.svg` };
-          const mappedProducts = (p.products || []).map((pr: any) => {
-            const prodData = pr.product || null;
-            const prodImage = prodData?.image
-              ? `${base}${prodData.image}`
-              : `${base}/uploads/default-product.png`;
-            return {
-              ...pr,
-              image: prodImage,
-              name: prodData?.name || 'Unnamed Product',
-              price: prodData?.price ?? null,
-              product: prodData
-            };
-          });
-          return {
-            id: p._id,
-            caption: p.caption,
-            content: p.caption,
-            mediaType,
-            mediaUrl,
-            hashtags: p.hashtags || [],
-            mentions: p.mentions || [],
-            user: mappedUser,
-            products: mappedProducts,
-            likes: Array.isArray(p.likes)
-              ? p.likes.length
-              : (typeof p.likes === 'number' ? p.likes : 0),
-            comments: p.comments || [],
-            commentsCount: Array.isArray(p.comments)
-              ? p.comments.length
-              : (p.commentsCount || 0),
-            shares: Array.isArray(p.shares) ? p.shares.length : 0,
-            saves: Array.isArray(p.saves) ? p.saves.length : 0,
-            isLiked: p.isLiked || false,
-            isSaved: p.isSaved || false,
-            isReel: p.isReel || (mediaType === 'video'),
-            createdAt: p.createdAt,
-            updatedAt: p.updatedAt,
-            analytics: p.analytics || {},
-            engagement: p.engagement || {},
-            performance: p.performance || {},
-            settings: p.settings || {}
-          };
-        });
-        this.posts = [...this.posts, ...newPosts];
-        this.loading = false;
-      },
-      error: () => {
-        this.loading = false;
-        this.hasMore = false;
-      }
-    });
+    this.fetchPosts(this.currentPage + 1, true);
   }
   constructor(
     private router: Router,
@@ -230,9 +175,8 @@ export class FeedComponent implements OnInit {
 
 
   ngOnInit() {
-    this.loadPosts();
+    this.fetchPosts(1);
     this.loadStories();
-    // Debug: log feed data after loading
     setTimeout(() => {
       console.log('Feed posts:', this.posts);
     }, 2000);
@@ -252,31 +196,37 @@ export class FeedComponent implements OnInit {
     });
   }
 
-  openStory(event: { story: any, index: number }) {
-    const { story, index } = event;
-    this.router.navigate(['/stories', story.user._id], {
-      queryParams: { index, storyId: story._id }
+  openStory(event: { story: any, index: number, isOwn?: boolean }) {
+    const { story, index, isOwn } = event;
+    const userId = isOwn ? (story?.user?._id || 'me') : story?.user?._id;
+    if (!userId) {
+      return;
+    }
+
+    this.router.navigate(['/stories', userId], {
+      queryParams: { index: isOwn ? 0 : index, storyId: story?._id }
     });
   }
 
 loadPosts() {
-  this.loading = true;
-  this.postService.getPosts(this.currentPage, 10).subscribe({
-    next: (res: any) => {
-      const base = environment.apiUrl.replace(/\/$/, ''); // remove trailing slash
-      if (!res?.posts || !Array.isArray(res.posts)) {
-        this.posts = [];
-        this.loading = false;
-        return;
-      }
+  this.fetchPosts(this.currentPage);
+}
 
-      this.posts = res.posts.map((p: any) => {
+fetchPosts(page: number = 1, append = false) {
+  if (this.loading && !(page === 1 && !append)) return;
+  this.loading = true;
+
+  this.postService.getPosts(page, this.pageSize).subscribe({
+    next: (res: any) => {
+      const base = environment.apiUrl.replace(/\/$/, '');
+      const posts = Array.isArray(res?.posts) ? res.posts : [];
+
+      const mappedPosts = posts.map((p: any) => {
         const mediaItem = p.media && p.media.length ? p.media[0] : null;
         const mediaPath = mediaItem?.url || '/uploads/default-post.jpg';
-        const mediaUrl = `${base}${mediaPath}`; // full URL to image/video
+        const mediaUrl = `${base}${mediaPath}`;
         const mediaType = mediaItem?.type || 'image';
 
-        // user/avatar fallback to server default
         const userObj = p.user || null;
         const userAvatar = userObj?.avatar
           ? `${base}${userObj.avatar}`
@@ -285,7 +235,6 @@ loadPosts() {
           ? { ...userObj, avatar: userAvatar }
           : { username: 'Unknown User', avatar: `${base}/uploads/avatars/default-avatar.svg` };
 
-        // map product items so template can use product.image, product.name, product.price
         const mappedProducts = (p.products || []).map((pr: any) => {
           const prodData = pr.product || null;
           const prodImage = prodData?.image
@@ -331,11 +280,19 @@ loadPosts() {
         };
       });
 
-      this.loading = false; // ✅ put here
+      this.posts = append ? [...this.posts, ...mappedPosts] : mappedPosts;
+      this.currentPage = page;
+      this.hasMore = posts.length === this.pageSize;
+      this.loading = false;
     },
     error: () => {
-      this.posts = [];
+      if (!append) {
+        this.posts = [];
+      }
       this.loading = false;
+      if (append) {
+        this.hasMore = false;
+      }
     }
   });
 }
