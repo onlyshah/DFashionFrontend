@@ -1,12 +1,14 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../../environments/environment';
 import { AuthService } from '../../../../../core/services/auth.service';
 import { StoryService } from '../../../../../core/services/story.service';
 import { CategoryService } from '../../../../../core/services/category.service';
+import { ProductService } from '../../../../../core/services/product.service';
+import { PostService } from '../../../../../core/services/post.service';
 
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { TrendingProductsComponent } from '../../components/trending-products/trending-products.component';
@@ -39,47 +41,98 @@ import { FeedComponent } from '../../components/feed/feed.component';
     styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit, OnDestroy {
+  @Input() platform: 'web' | 'mobile' = 'web';
+
   isMobile = false;
   isSidebarOpen = false;
   isTabMenuOpen = false;
   isSidebarContentOpen = false;
   currentSidebarTab = '';
   currentSidebarTitle = '';
-  hasNotifications = true; // Example notification state
-  window = window; // For template access
-
-  // TikTok-style interaction states
+  hasNotifications = true;
+  window = window;
   isLiked = false;
-
-  // Social Stories Data - Will be loaded from API
   socialStories: any[] = [];
-
-  // Categories Data - Will be loaded from API
   categories: any[] = [];
-
   apiUrl = environment.apiUrl;
   currentUser: any = null;
+
+  // Mobile-specific properties
+  featuredProducts: any[] = [];
+  recentStories: any[] = [];
+  trendingPosts: any[] = [];
+  trendingProducts: any[] = [];
+  featuredBrands: any[] = [];
+  newArrivals: any[] = [];
+  suggestedUsers: any[] = [];
+  topInfluencers: any[] = [];
+  isLoading = true;
+  isAuthenticated = false;
+
+  // Slider options for mobile
+  slideOpts = { initialSlide: 0, speed: 400, spaceBetween: 10, slidesPerView: 1.2, centeredSlides: false, loop: true, autoplay: { delay: 3000 } };
+  storySlideOpts = { initialSlide: 0, speed: 400, spaceBetween: 8, slidesPerView: 5.5, freeMode: true, grabCursor: true };
+  productSlideOpts = { initialSlide: 0, speed: 400, spaceBetween: 15, slidesPerView: 2.2, freeMode: true, autoplay: { delay: 3000 } };
+  brandSlideOpts = { initialSlide: 0, speed: 400, spaceBetween: 12, slidesPerView: 3.5, freeMode: true, autoplay: { delay: 4000 } };
+  userSlideOpts = { initialSlide: 0, speed: 400, spaceBetween: 16, slidesPerView: 2.5, freeMode: true, autoplay: { delay: 5000 } };
 
   constructor(
     private http: HttpClient,
     private router: Router,
     private authService: AuthService,
     private storyService: StoryService,
-    private categoryService: CategoryService
-  ) {}
+    private categoryService: CategoryService,
+    private productService?: ProductService,
+    private postService?: PostService,
+    private toastController?: ToastController
+  ) {
+    // Auto-detect platform from router URL
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    } else {
+      this.platform = 'web';
+    }
+  }
 
   ngOnInit() {
-    this.checkScreenSize();
-    this.loadStories();
-    this.loadCategories();
-    // Prevent body scroll when sidebar is open
-    document.addEventListener('touchmove', this.preventScroll, { passive: false });
-
-    console.log('🏠 Home component initialized:', { isMobile: this.isMobile, storiesCount: this.socialStories.length });
+    if (this.platform === 'mobile') {
+      this.loadMobileHomeData();
+      this.authService.isAuthenticated$.subscribe(isAuth => {
+        this.isAuthenticated = isAuth;
+      });
+    } else {
+      this.checkScreenSize();
+      this.loadStories();
+      this.loadCategories();
+      document.addEventListener('touchmove', this.preventScroll, { passive: false });
+      console.log('🏠 Home component initialized:', { isMobile: this.isMobile, storiesCount: this.socialStories.length });
+    }
   }
 
   ngOnDestroy() {
-    document.removeEventListener('touchmove', this.preventScroll);
+    if (this.platform === 'web') {
+      document.removeEventListener('touchmove', this.preventScroll);
+    }
+  }
+
+  // Mobile-specific data loading
+  async loadMobileHomeData() {
+    try {
+      this.isLoading = true;
+      // Load all data in parallel
+      const [products, stories, posts] = await Promise.all([
+        this.productService ? this.productService.getProducts().toPromise() : Promise.resolve([]),
+        this.storyService.getStories().toPromise(),
+        this.postService ? this.postService.getPosts().toPromise() : Promise.resolve([])
+      ]);
+      this.featuredProducts = (products as any) || [];
+      this.recentStories = (stories as any) || [];
+      this.trendingPosts = (posts as any) || [];
+      this.isLoading = false;
+    } catch (error) {
+      console.error('Error loading mobile home data:', error);
+      this.isLoading = false;
+    }
   }
 
   @HostListener('window:resize', ['$event'])

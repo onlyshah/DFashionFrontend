@@ -51,6 +51,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   private loadCategories() {
     this.isLoading = true;
     this.error = null;
+    this.categoryService.invalidateCache();
 
     // Load from API only, do not fallback to static data
     this.subscription.add(

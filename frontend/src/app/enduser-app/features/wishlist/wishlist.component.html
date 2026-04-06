@@ -1,111 +1,178 @@
-<div class="wishlist-container">
-  <!-- Header -->
-  <div class="wishlist-header">
-    <div class="breadcrumb">
-      <span (click)="goHome()">Home</span>
-      <i class="fas fa-chevron-right"></i>
-      <span class="current">My Wishlist</span>
+<div *ngIf="mode === 'shop'" class="shop-layout">
+  <div class="wishlist-page">
+    <div class="wishlist-header">
+      <h1>My Wishlist</h1>
+      <p *ngIf="wishlistItems.length > 0">{{ wishlistItems.length }} items</p>
     </div>
-    <h1>My Wishlist</h1>
-    <p class="wishlist-count">{{ wishlistItems.length }} items saved</p>
-  </div>
-
-  <!-- Wishlist Actions -->
-  <div class="wishlist-actions" *ngIf="wishlistItems.length > 0">
-    <div class="action-buttons">
-      <button class="btn-move-all" (click)="moveAllToCart()" [disabled]="loading">
-        <i class="fas fa-shopping-cart"></i>
-        Move All to Cart
-      </button>
-      <button class="btn-clear-all" (click)="clearWishlist()" [disabled]="loading">
-        <i class="fas fa-trash"></i>
-        Clear Wishlist
-      </button>
-    </div>
-    <div class="sort-options">
-      <label>Sort by:</label>
-      <select [(ngModel)]="sortBy" (change)="sortWishlist()">
-        <option value="recent">Recently Added</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-        <option value="name">Product Name</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Wishlist Items -->
-  <div class="wishlist-grid" *ngIf="wishlistItems.length > 0">
-    <div class="wishlist-item" *ngFor="let item of sortedWishlistItems">
-      <div class="item-image" (click)="viewProduct(item.product)">
-        <img [src]="getProductImage(item.product)" [alt]="item.product.name" loading="lazy">
-        <div class="discount-badge" *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price">
-          {{ getDiscountPercentage(item.product) }}% OFF
-        </div>
-        <div class="unavailable-overlay" *ngIf="!item.product.isActive">
-          <span>Currently Unavailable</span>
-        </div>
-      </div>
-      
-      <div class="item-details">
-        <h3 class="product-name" (click)="viewProduct(item.product)">{{ item.product.name }}</h3>
-        <p class="product-brand">{{ item.product.brand }}</p>
-        
-        <div class="product-rating" *ngIf="item.product.rating">
-          <div class="stars">
-            <i class="fas fa-star" *ngFor="let star of getStars(item.product.rating.average)"></i>
-            <i class="far fa-star" *ngFor="let star of getEmptyStars(item.product.rating.average)"></i>
+    <div class="wishlist-content" *ngIf="wishlistItems.length > 0">
+      <div class="wishlist-grid">
+        <div *ngFor="let item of wishlistItems" class="wishlist-item">
+          <div class="item-image" *ngIf="item.product">
+            <img [src]="imageUrl + (item.product.images && item.product.images.length ? item.product.images[0]?.url : '/uploads/default-product.svg')" [alt]="item.product.name">
+            <button class="remove-btn" (click)="removeFromWishlist(item)">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
-          <span class="rating-count">({{ item.product.rating.count }})</span>
-        </div>
-        
-        <div class="product-price">
-          <span class="current-price">₹{{ item.product.price | number:'1.0-0' }}</span>
-          <span class="original-price" *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price">
-            ₹{{ item.product.originalPrice | number:'1.0-0' }}
-          </span>
-        </div>
-        
-        <div class="added-info">
-          <span class="added-date">Added {{ getTimeAgo(item.addedAt) }}</span>
-          <span class="added-from">from {{ item.addedFrom }}</span>
+          <div class="item-details" *ngIf="item.product">
+            <h3>{{ item.product.name }}</h3>
+            <p class="brand">{{ item.product.brand }}</p>
+            <div class="price">
+              <span class="current-price">₹{{ item.product.price | number }}</span>
+              <span class="original-price" *ngIf="item.product.originalPrice">₹{{ item.product.originalPrice | number }}</span>
+              <span class="discount" *ngIf="getDiscount(item.product) > 0">{{ getDiscount(item.product) }}% OFF</span>
+            </div>
+            <div class="rating" *ngIf="item.product.rating">
+              <div class="stars">
+                <i *ngFor="let star of getStarsShop(item.product.rating.average)" [class]="star"></i>
+              </div>
+              <span>({{ item.product.rating.count }})</span>
+            </div>
+            <div class="item-actions">
+              <button class="add-to-cart-btn" (click)="addToCart(item)">
+                <i class="fas fa-shopping-cart"></i>
+                Add to Cart
+              </button>
+              <button class="view-product-btn" (click)="viewProduct(item.product)">
+                View Details
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <div class="item-actions">
-        <button class="btn-add-cart" (click)="addToCart(item)" [disabled]="!item.product.isActive || loading">
-          <i class="fas fa-shopping-cart"></i>
-          {{ !item.product.isActive ? 'Unavailable' : 'Add to Cart' }}
+      <div class="wishlist-actions">
+        <button class="clear-wishlist-btn" (click)="clearWishlist()">
+          Clear Wishlist
         </button>
-        <button class="btn-remove" (click)="removeFromWishlist(item)" [disabled]="loading">
-          <i class="fas fa-heart"></i>
-          Remove
+        <button class="continue-shopping-btn" (click)="continueShopping()">
+          Continue Shopping
         </button>
       </div>
     </div>
-  </div>
-
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="wishlistItems.length === 0 && !loading">
-    <div class="empty-content">
+    <div class="empty-wishlist" *ngIf="wishlistItems.length === 0 && !loading">
       <i class="fas fa-heart"></i>
-      <h2>Your wishlist is empty</h2>
-      <p>Save items you love to buy them later</p>
-      <div class="empty-actions">
-        <button class="btn-primary" (click)="goShopping()">
-          <i class="fas fa-shopping-bag"></i>
-          Start Shopping
-        </button>
-        <button class="btn-secondary" (click)="browsePosts()">
-          <i class="fas fa-images"></i>
-          Browse Posts
-        </button>
-      </div>
+      <h3>Your wishlist is empty</h3>
+      <p>Save items you love to your wishlist</p>
+      <button class="shop-now-btn" (click)="continueShopping()">
+        Shop Now
+      </button>
+    </div>
+    <div class="loading-container" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Loading wishlist...</p>
     </div>
   </div>
+</div>
 
-  <!-- Loading State -->
-  <div class="loading-state" *ngIf="loading">
-    <div class="loading-spinner"></div>
-    <p>Loading your wishlist...</p>
+<div *ngIf="mode === 'main'" class="main-layout">
+  <div class="wishlist-container">
+    <!-- Header -->
+    <div class="wishlist-header">
+      <div class="breadcrumb">
+        <span (click)="goHome()">Home</span>
+        <i class="fas fa-chevron-right"></i>
+        <span class="current">My Wishlist</span>
+      </div>
+      <h1>My Wishlist</h1>
+      <p class="wishlist-count">{{ wishlistItems.length }} items saved</p>
+    </div>
+
+    <!-- Wishlist Actions -->
+    <div class="wishlist-actions" *ngIf="wishlistItems.length > 0">
+      <div class="action-buttons">
+        <button class="btn-move-all" (click)="moveAllToCart()" [disabled]="loading">
+          <i class="fas fa-shopping-cart"></i>
+          Move All to Cart
+        </button>
+        <button class="btn-clear-all" (click)="clearWishlist()" [disabled]="loading">
+          <i class="fas fa-trash"></i>
+          Clear Wishlist
+        </button>
+      </div>
+      <div class="sort-options">
+        <label>Sort by:</label>
+        <select [(ngModel)]="sortBy" (change)="sortWishlist()">
+          <option value="recent">Recently Added</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="name">Product Name</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Wishlist Items -->
+    <div class="wishlist-grid" *ngIf="wishlistItems.length > 0">
+      <div class="wishlist-item" *ngFor="let item of sortedWishlistItems">
+        <div class="item-image" (click)="viewProduct(item.product)">
+          <img [src]="getProductImage(item.product)" [alt]="item.product.name" loading="lazy">
+          <div class="discount-badge" *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price">
+            {{ getDiscountPercentage(item.product) }}% OFF
+          </div>
+          <div class="unavailable-overlay" *ngIf="!item.product.isActive">
+            <span>Currently Unavailable</span>
+          </div>
+        </div>
+        
+        <div class="item-details">
+          <h3 class="product-name" (click)="viewProduct(item.product)">{{ item.product.name }}</h3>
+          <p class="product-brand">{{ item.product.brand }}</p>
+          
+          <div class="product-rating" *ngIf="item.product.rating">
+            <div class="stars">
+              <i class="fas fa-star" *ngFor="let star of getStars(item.product.rating.average)"></i>
+              <i class="far fa-star" *ngFor="let star of getEmptyStars(item.product.rating.average)"></i>
+            </div>
+            <span class="rating-count">({{ item.product.rating.count }})</span>
+          </div>
+          
+          <div class="product-price">
+            <span class="current-price">₹{{ item.product.price | number:'1.0-0' }}</span>
+            <span class="original-price" *ngIf="item.product.originalPrice && item.product.originalPrice > item.product.price">
+              ₹{{ item.product.originalPrice | number:'1.0-0' }}
+            </span>
+          </div>
+          
+          <div class="added-info">
+            <span class="added-date">Added {{ getTimeAgo(item.addedAt) }}</span>
+            <span class="added-from">from {{ item.addedFrom }}</span>
+          </div>
+        </div>
+        
+        <div class="item-actions">
+          <button class="btn-add-cart" (click)="addToCart(item)" [disabled]="!item.product.isActive || loading">
+            <i class="fas fa-shopping-cart"></i>
+            {{ !item.product.isActive ? 'Unavailable' : 'Add to Cart' }}
+          </button>
+          <button class="btn-remove" (click)="removeFromWishlist(item)" [disabled]="loading">
+            <i class="fas fa-heart"></i>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="wishlistItems.length === 0 && !loading">
+      <div class="empty-content">
+        <i class="fas fa-heart"></i>
+        <h2>Your wishlist is empty</h2>
+        <p>Save items you love to buy them later</p>
+        <div class="empty-actions">
+          <button class="btn-primary" (click)="goShopping()">
+            <i class="fas fa-shopping-bag"></i>
+            Start Shopping
+          </button>
+          <button class="btn-secondary" (click)="browsePosts()">
+            <i class="fas fa-images"></i>
+            Browse Posts
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-state" *ngIf="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading your wishlist...</p>
+    </div>
   </div>
 </div>

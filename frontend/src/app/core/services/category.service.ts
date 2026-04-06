@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, of } from 'rxjs';
+import { catchError, map, shareReplay, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface Subcategory {
@@ -57,16 +57,31 @@ export class CategoryService {
       console.log('[CategoryService] Fetching all categories from API:', this.apiUrl);
       this.categoriesCache$ = this.http.get<any>(`${this.apiUrl}`)
         .pipe(
+          tap((rawResponse: any) => {
+            console.log('🔍 [RAW API RESPONSE]', rawResponse);
+            console.log('🔍 [RESPONSE KEYS]', Object.keys(rawResponse));
+            console.log('🔍 [RESPONSE.DATA]', rawResponse.data);
+            console.log('🔍 [RESPONSE.SUCCESS]', rawResponse.success);
+            console.log('🔍 [FULL RESPONSE]', JSON.stringify(rawResponse, null, 2));
+          }),
           map(response => {
             console.log('[CategoryService] API Response (getAllCategories):', response);
-            return response.data || [];
+            const categories = response.data || response.categories || [];
+            console.log('[CategoryService] Extracted categories count:', categories.length);
+            return categories;
           }),
           tap((categories: any[]) => {
             console.log('[CategoryService] Categories loaded and cached:', categories.length, 'categories');
             categories.forEach((cat: any) => {
-              console.log(`  - ${cat.name} (${cat._id}): ${cat.subcategories?.length || 0} subcategories`);
+              console.log(`  - ${cat.name || cat.id} (${cat._id || cat.id}): ${cat.subcategories?.length || 0} subcategories`);
             });
             this.categoriesSubject.next(categories);
+          }),
+          catchError((error) => {
+            console.error('[CategoryService] getAllCategories failed:', error);
+            this.categoriesCache$ = null; // clear cache so next request retries
+            this.categoriesSubject.next([]);
+            return of([]);
           }),
           shareReplay(1) // Share and cache the result
         );

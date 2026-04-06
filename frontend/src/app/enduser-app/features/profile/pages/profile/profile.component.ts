@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { firstValueFrom } from 'rxjs';
 
 import { AuthService } from '../../../../../core/services/auth.service';
 import { User } from '../../../../../core/models/user.model';
@@ -194,21 +195,117 @@ import { OptimizedImageComponent } from '../../../../shared/components/optimized
   `]
 })
 export class ProfileComponent implements OnInit {
+  @Input() platform: 'web' | 'mobile' = 'web';
+
+  // Web version properties
   currentUser: User | null = null;
   isLoading = true;
 
+  // Mobile version properties
+  user: any = null;
+  isAuthenticated = false;
+  
+  menuItems = [
+    {
+      title: 'My Orders',
+      icon: 'bag-handle',
+      route: '/orders',
+      color: 'primary'
+    },
+    {
+      title: 'My Wishlist',
+      icon: 'heart',
+      route: '/tabs/wishlist',
+      color: 'danger'
+    },
+    {
+      title: 'My Cart',
+      icon: 'bag',
+      route: '/tabs/cart',
+      color: 'success'
+    },
+    {
+      title: 'Address Book',
+      icon: 'location',
+      route: '/addresses',
+      color: 'warning'
+    },
+    {
+      title: 'Payment Methods',
+      icon: 'card',
+      route: '/payment-methods',
+      color: 'secondary'
+    },
+    {
+      title: 'Notifications',
+      icon: 'notifications',
+      route: '/notifications',
+      color: 'tertiary'
+    },
+    {
+      title: 'Help & Support',
+      icon: 'help-circle',
+      route: '/support',
+      color: 'medium'
+    },
+    {
+      title: 'Settings',
+      icon: 'settings',
+      route: '/settings',
+      color: 'dark'
+    }
+  ];
+
   constructor(
     private authService: AuthService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {
-    this.loadUserProfile();
+    private router: Router,
+    @Optional() private toastController?: ToastController
+  ) {
+    // Auto-detect platform from router URL
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    } else {
+      this.platform = 'web';
+    }
   }
 
+  ngOnInit() {
+    if (this.platform === 'mobile') {
+      this.loadUserDataMobile();
+      this.authService.isAuthenticated$.subscribe(
+        isAuth => {
+          this.isAuthenticated = isAuth;
+          if (isAuth) {
+            this.loadUserDataMobile();
+          } else {
+            this.user = null;
+          }
+        }
+      );
+    } else {
+      this.loadUserProfile();
+    }
+  }
+
+  // Web version methods
   loadUserProfile() {
     this.currentUser = this.authService.currentUserValue;
     this.isLoading = false;
+  }
+
+  // Mobile version methods
+  async loadUserDataMobile() {
+    try {
+      this.isLoading = true;
+      if (this.isAuthenticated) {
+        const response = await firstValueFrom(this.authService.getCurrentUser());
+        this.user = response && (response as any).user ? (response as any).user : response;
+      }
+    } catch (error) {
+      console.error('Error loading user data:', error);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   // Role-based feature access
@@ -309,5 +406,80 @@ export class ProfileComponent implements OnInit {
     }
 
     return baseFeatures;
+  }
+
+  // Mobile-specific methods
+  onMenuItemClick(item: any) {
+    if (!this.isAuthenticated && item.route !== '/auth/login') {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    this.router.navigate([item.route]);
+  }
+
+  onEditProfile() {
+    if (!this.isAuthenticated) {
+      this.router.navigate(['/auth/login']);
+      return;
+    }
+    this.router.navigate(['/profile/edit']);
+  }
+
+  onLogin() {
+    this.router.navigate(['/auth/login']);
+  }
+
+  onRegister() {
+    this.router.navigate(['/auth/register']);
+  }
+
+  async onLogout() {
+    try {
+      await this.authService.logout();
+      this.router.navigate([this.platform === 'mobile' ? '/tabs/home' : '/auth/login']);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  }
+
+  getUserAvatar(): string {
+    const avatar = this.user?.avatar || this.currentUser?.avatar || this.currentUser?.image;
+    return avatar || '/uploads/avatars/default-avatar.svg';
+  }
+
+  getUserDisplayName(): string {
+    if (this.platform === 'mobile') {
+      if (!this.user) return 'Guest User';
+      return this.user.fullName || this.user.username || 'User';
+    } else {
+      return this.currentUser?.fullName || this.currentUser?.username || 'User';
+    }
+  }
+
+  getUserEmail(): string {
+    if (this.platform === 'mobile') {
+      return this.user?.email || 'Not logged in';
+    } else {
+      return this.currentUser?.email || 'Not logged in';
+    }
+  }
+
+  getJoinDate(): string {
+    const createdAt = this.user?.createdAt || this.currentUser?.createdAt;
+    if (!createdAt) return '';
+    return new Date(createdAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long'
+    });
+  }
+
+  doRefresh(event: any) {
+    if (this.platform === 'mobile') {
+      this.loadUserDataMobile().then(() => {
+        if (event?.target?.complete) {
+          event.target.complete();
+        }
+      });
+    }
   }
 }

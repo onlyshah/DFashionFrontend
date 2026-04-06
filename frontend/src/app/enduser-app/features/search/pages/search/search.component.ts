@@ -1,7 +1,7 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, Input, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, IonSearchbar, ToastController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
@@ -494,6 +494,9 @@ import { AdvancedSearchComponent } from '../../../../shared/components/advanced-
   `]
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  @Input() platform: 'web' | 'mobile' = 'web';
+  @ViewChild('searchbar', { static: false }) searchbar?: IonSearchbar;
+
   searchQuery = '';
   searchResults: any[] = [];
   recentSearches: string[] = [];
@@ -528,8 +531,16 @@ export class SearchComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private searchService: SearchService
-  ) {}
+    private searchService: SearchService,
+    @Optional() private toastController?: ToastController
+  ) {
+    // Auto-detect platform from router URL
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    } else {
+      this.platform = 'web';
+    }
+  }
 
   ngOnInit() {
     this.loadRecentSearches();
@@ -577,9 +588,20 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.hasSearched = true;
         this.searchResults = [];
         // Show user-friendly error message
-        this.showErrorMessage('Search failed. Please try again.');
+        if (this.platform === 'mobile') {
+          this.showErrorToast('Search failed. Please try again.');
+        } else {
+          this.showErrorMessage('Search failed. Please try again.');
+        }
       }
     });
+
+    // Auto-focus search bar on mobile platform
+    if (this.platform === 'mobile' && this.searchbar) {
+      setTimeout(() => {
+        this.searchbar?.setFocus();
+      }, 300);
+    }
   }
 
   onSearchInput(event: any) {
@@ -817,6 +839,24 @@ export class SearchComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private async showErrorToast(message: string) {
+    if (this.toastController) {
+      const toast = await this.toastController.create({
+        message: message,
+        duration: 3000,
+        position: 'top',
+        color: 'danger',
+        buttons: [
+          {
+            text: 'Dismiss',
+            role: 'cancel'
+          }
+        ]
+      });
+      await toast.present();
+    }
   }
 
   // Track product clicks from search results

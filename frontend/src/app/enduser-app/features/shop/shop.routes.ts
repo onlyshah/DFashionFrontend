@@ -23,6 +23,6 @@ export const shopRoutes: Routes = [
   },
   {
     path: 'wishlist',
-    loadComponent: () => import('./pages/wishlist/wishlist.component').then(m => m.WishlistComponent)
+    loadComponent: () => import('../wishlist/wishlist.component').then(m => m.WishlistComponent)
   }
 ];

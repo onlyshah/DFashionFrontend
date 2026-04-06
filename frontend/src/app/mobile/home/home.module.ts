@@ -8,7 +8,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 // Import Swiper
 import { register } from 'swiper/element/bundle';
 
-import { HomePage } from './home.page';
+import { HomeComponent } from '../../enduser-app/features/home/pages/home/home.component';
 
 // Import SharedModule
 import { SharedModule } from '../../shared/shared.module';
@@ -16,7 +16,7 @@ import { SharedModule } from '../../shared/shared.module';
 const routes: Routes = [
   {
     path: '',
-    component: HomePage
+    component: HomeComponent
   }
 ];
 
@@ -27,7 +27,7 @@ const routes: Routes = [
     IonicModule,
     RouterModule.forChild(routes),
     SharedModule,
-    HomePage
+    HomeComponent
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

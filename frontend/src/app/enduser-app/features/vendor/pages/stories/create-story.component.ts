@@ -1,27 +1,41 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { IonicModule, ActionSheetController, LoadingController, ToastController, Camera, CameraResultType, CameraSource } from '@ionic/angular';
+import { Camera as CapacitorCamera, CameraResultType as CapCameraResultType, CameraSource as CapCameraSource } from '@capacitor/camera';
 
 @Component({
     selector: 'app-create-story',
-    imports: [CommonModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule],
     templateUrl: './create-story.component.html',
     styleUrls: ['./create-story.component.scss']
 })
 export class CreateStoryComponent implements OnInit {
+  @Input() platform: 'web' | 'mobile' = 'web';
   storyForm: FormGroup;
   selectedMedia: any = null;
   taggedProducts: any[] = [];
   searchResults: any[] = [];
   uploading = false;
+  isUploading = false;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    @Optional() private actionSheetController?: ActionSheetController,
+    @Optional() private loadingController?: LoadingController,
+    @Optional() private toastController?: ToastController
   ) {
+    // Auto-detect platform
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    } else {
+      this.platform = 'web';
+    }
+    
     this.storyForm = this.fb.group({
       caption: ['', [Validators.maxLength(500)]],
       allowReplies: [true],
@@ -32,6 +46,66 @@ export class CreateStoryComponent implements OnInit {
   }
 
   ngOnInit() {}
+
+  async presentMediaActionSheet() {
+    if (this.platform === 'mobile' && this.actionSheetController) {
+      const actionSheet = await this.actionSheetController.create({
+        header: 'Add Story Media',
+        buttons: [
+          {
+            text: 'Camera',
+            icon: 'camera',
+            handler: () => {
+              this.takePicture(CapCameraSource.Camera);
+            }
+          },
+          {
+            text: 'Photo Library',
+            icon: 'images',
+            handler: () => {
+              this.takePicture(CapCameraSource.Photos);
+            }
+          },
+          {
+            text: 'Cancel',
+            icon: 'close',
+            role: 'cancel'
+          }
+        ]
+      });
+      await actionSheet.present();
+    }
+  }
+
+  async takePicture(source: any) {
+    try {
+      const image = await CapacitorCamera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CapCameraResultType.DataUrl,
+        source: source
+      });
+
+      const imageData = image.dataUrl;
+      this.selectedMedia = {
+        preview: imageData,
+        type: 'image/jpeg',
+        name: 'story-media.jpg'
+      };
+
+      if (this.platform === 'mobile' && this.toastController) {
+        const toast = await this.toastController.create({
+          message: 'Photo selected successfully!',
+          duration: 2000,
+          color: 'success',
+          position: 'bottom'
+        });
+        toast.present();
+      }
+    } catch (error) {
+      console.error('Error taking picture:', error);
+    }
+  }
 
   onFileSelect(event: any) {
     const file = event.target.files[0];
@@ -91,14 +165,23 @@ export class CreateStoryComponent implements OnInit {
     console.log('Saving as draft...');
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.storyForm.valid && this.selectedMedia) {
       this.uploading = true;
+      this.isUploading = true;
+      
+      if (this.platform === 'mobile' && this.loadingController) {
+        const loading = await this.loadingController.create({
+          message: 'Uploading story...',
+          spinner: 'crescent'
+        });
+        await loading.present();
+      }
       
       const storyData = {
         media: {
           type: this.selectedMedia.type.startsWith('image') ? 'image' : 'video',
-          url: this.selectedMedia.preview // In real implementation, upload to server first
+          url: this.selectedMedia.preview
         },
         caption: this.storyForm.value.caption,
         products: this.taggedProducts.map(p => ({
@@ -116,8 +199,22 @@ export class CreateStoryComponent implements OnInit {
       // Simulate API call
       setTimeout(() => {
         this.uploading = false;
-        alert('Story created successfully!');
-        this.router.navigate(['/vendor/stories']);
+        this.isUploading = false;
+        const successMsg = 'Story created successfully!';
+        
+        if (this.platform === 'mobile' && this.toastController) {
+          this.toastController.create({
+            message: successMsg,
+            duration: 2000,
+            color: 'success',
+            position: 'bottom'
+          }).then(toast => toast.present());
+        } else {
+          alert(successMsg);
+        }
+        
+        const target = this.platform === 'mobile' ? '/tabs/vendor/stories' : '/vendor/stories';
+        this.router.navigate([target]);
       }, 2000);
     }
   }

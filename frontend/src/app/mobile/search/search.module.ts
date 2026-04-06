@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { SearchPageRoutingModule } from './search-routing.module';
-import { SearchPage } from './search.page';
+import { SearchComponent } from '../../enduser-app/features/search/pages/search/search.component';
 
 @NgModule({
   imports: [
@@ -12,7 +12,7 @@ import { SearchPage } from './search.page';
     FormsModule,
     IonicModule,
     SearchPageRoutingModule,
-    SearchPage
+    SearchComponent
   ]
 })
 export class SearchPageModule {}

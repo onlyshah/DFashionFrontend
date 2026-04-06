@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule, Routes } from '@angular/router';
 
-import { WishlistPage } from './wishlist.page';
+import { WishlistComponent } from '../../enduser-app/features/wishlist/wishlist.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: WishlistPage
+    component: WishlistComponent
   }
 ];
 
@@ -19,7 +19,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    WishlistPage
+    WishlistComponent
   ]
 })
 export class WishlistPageModule {}

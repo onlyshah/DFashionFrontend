@@ -310,6 +310,7 @@ import { UploadService, UploadProgress } from '../../../../../core/services/uplo
     templateUrl: './create-post.component.html'
 })
 export class CreatePostComponent implements OnInit {
+    platform: 'web' | 'mobile' = 'web';
     postForm: FormGroup;
     selectedFiles: any[] = [];
     taggedProducts: any[] = [];
@@ -325,6 +326,13 @@ export class CreatePostComponent implements OnInit {
         private http: HttpClient,
         private uploadService: UploadService
     ) {
+        // Auto-detect platform
+        if (this.router.url.includes('/mobile/')) {
+          this.platform = 'mobile';
+        } else {
+          this.platform = 'web';
+        }
+
         this.postForm = this.fb.group({
             caption: ['', [Validators.required, Validators.maxLength(2000)]],
             allowComments: [true],
@@ -346,7 +354,11 @@ export class CreatePostComponent implements OnInit {
         // Validate files
         const validation = this.uploadService.validateFiles(files, 'any', 10);
         if (!validation.isValid) {
-            alert(validation.errors.join('\n'));
+            if (this.platform === 'mobile') {
+              console.error(validation.errors.join('\n'));
+            } else {
+              alert(validation.errors.join('\n'));
+            }
             return;
         }
 

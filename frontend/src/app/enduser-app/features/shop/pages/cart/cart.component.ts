@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { AlertController, ToastController } from '@ionic/angular';
 
 import { CartService, CartItem, CartSummary } from '../../../../../core/services/cart.service';
 
@@ -11,6 +12,8 @@ import { CartService, CartItem, CartSummary } from '../../../../../core/services
     styleUrls: ['./cart.component.scss']
 })
 export class CartComponent implements OnInit {
+  @Input() platform: 'web' | 'mobile' = 'web';
+  
   cartItems: CartItem[] = [];
   cartSummary: CartSummary | null = null;
   isLoading = true;
@@ -19,13 +22,24 @@ export class CartComponent implements OnInit {
 
   constructor(
     private cartService: CartService,
-    private router: Router
+    private router: Router,
+    @Optional() private alertController?: AlertController,
+    @Optional() private toastController?: ToastController
   ) {}
 
   ngOnInit() {
+    // Auto-detect platform from route
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    }
     this.loadCart();
     this.subscribeToCartUpdates();
     this.subscribeToCartCount();
+  }
+
+  // Ionic lifecycle hook (no-op for web, works on mobile)
+  ionViewWillEnter() {
+    this.loadCart();
   }
 
   loadCart() {
@@ -117,20 +131,52 @@ export class CartComponent implements OnInit {
   }
 
   // Bulk operations
-  bulkRemoveItems() {
+  async bulkRemoveItems() {
     if (this.selectedItems.length === 0) return;
 
-    if (confirm(`Are you sure you want to remove ${this.selectedItems.length} item(s) from your cart?`)) {
-      this.cartService.bulkRemoveFromCart(this.selectedItems).subscribe({
-        next: (response) => {
-          console.log(`✅ ${response.removedCount} items removed from cart`);
-          this.selectedItems = [];
-          this.loadCart();
-        },
-        error: (error) => {
-          console.error('Failed to remove items:', error);
-        }
+    if (this.platform === 'mobile' && this.alertController) {
+      const alert = await this.alertController.create({
+        header: 'Remove Selected Items',
+        message: `Are you sure you want to remove ${this.selectedItems.length} item(s) from your cart?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Remove',
+            handler: () => {
+              this.cartService.bulkRemoveFromCart(this.selectedItems).subscribe({
+                next: (response) => {
+                  console.log(`✅ ${response.removedCount} items removed from cart`);
+                  this.selectedItems = [];
+                  this.loadCart();
+                  this.presentToast(`${response.removedCount} items removed from cart`, 'success');
+                },
+                error: (error) => {
+                  console.error('Failed to remove items:', error);
+                  this.presentToast('Failed to remove items', 'danger');
+                }
+              });
+            }
+          }
+        ]
       });
+      await alert.present();
+    } else {
+      // Web version - use browser confirm
+      if (confirm(`Are you sure you want to remove ${this.selectedItems.length} item(s) from your cart?`)) {
+        this.cartService.bulkRemoveFromCart(this.selectedItems).subscribe({
+          next: (response) => {
+            console.log(`✅ ${response.removedCount} items removed from cart`);
+            this.selectedItems = [];
+            this.loadCart();
+          },
+          error: (error) => {
+            console.error('Failed to remove items:', error);
+          }
+        });
+      }
     }
   }
 
@@ -165,14 +211,153 @@ export class CartComponent implements OnInit {
   }
 
   async removeItem(item: CartItem) {
-    this.cartService.removeFromCart(item._id).subscribe({
+    if (this.platform === 'mobile' && this.alertController) {
+      const alert = await this.alertController.create({
+        header: 'Remove Item',
+        message: `Remove ${item.product.name} from cart?`,
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Remove',
+            handler: () => {
+              this.cartService.removeFromCart(item._id).subscribe({
+                next: () => {
+                  this.presentToast('Item removed from cart', 'success');
+                  this.loadCart();
+                },
+                error: (error) => {
+                  console.error('Error removing item:', error);
+                  this.presentToast('Failed to remove item', 'danger');
+                }
+              });
+            }
+          }
+        ]
+      });
+      await alert.present();
+    } else {
+      // Web version
+      this.cartService.removeFromCart(item._id).subscribe({
+        next: () => {
+          this.loadCart();
+        },
+        error: (error) => {
+          console.error('Failed to remove item:', error);
+        }
+      });
+    }
+  }
+
+  // Unified quantity update method
+  async updateQuantity(itemId: string, newQuantity: number) {
+    if (newQuantity < 1) return;
+
+    this.cartService.updateCartItem(itemId, newQuantity).subscribe({
       next: () => {
-        this.loadCart(); // Refresh cart
+        if (this.platform === 'mobile') {
+          this.presentToast('Quantity updated', 'success');
+        }
+        this.loadCart();
       },
       error: (error) => {
-        console.error('Failed to remove item:', error);
+        console.error('Error updating quantity:', error);
+        if (this.platform === 'mobile') {
+          this.presentToast('Failed to update quantity', 'danger');
+        }
       }
     });
+  }
+
+  // Clear entire cart
+  async clearCart() {
+    if (this.platform === 'mobile' && this.alertController) {
+      const alert = await this.alertController.create({
+        header: 'Clear Cart',
+        message: 'Are you sure you want to remove all items from your cart?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Clear All',
+            handler: () => {
+              this.cartService.clearCartAPI().subscribe({
+                next: () => {
+                  this.presentToast('Cart cleared', 'success');
+                  this.loadCart();
+                },
+                error: (error) => {
+                  console.error('Error clearing cart:', error);
+                  this.presentToast('Failed to clear cart', 'danger');
+                }
+              });
+            }
+          }
+        ]
+      });
+      await alert.present();
+    }
+  }
+
+  // Pull-to-refresh for mobile
+  doRefresh(event: any) {
+    this.loadCart();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
+  }
+
+  // Calculate tax (18% for mobile, 0 for web)
+  getTax(): number {
+    if (this.platform !== 'mobile') return 0;
+    return this.cartSummary ? Math.round(this.cartSummary.subtotal * 0.18) : 0;
+  }
+
+  // Calculate shipping (mobile: ₹50, free above ₹500; web: included in total)
+  getShipping(): number {
+    if (this.platform !== 'mobile') return 0;
+    return this.cartSummary && this.cartSummary.subtotal >= 500 ? 0 : 50;
+  }
+
+  // Override total for mobile with tax/shipping
+  getTotal(): number {
+    if (this.platform === 'mobile') {
+      if (!this.cartSummary) return 0;
+      return this.cartSummary.subtotal + this.getTax() + this.getShipping() - (this.cartSummary.discount || 0);
+    }
+    return this.cartSummary?.total || 0;
+  }
+
+  // Image URL normalization for mobile
+  getImageUrl(image: any): string {
+    if (typeof image === 'string') {
+      return image;
+    }
+    return image?.url || '/uploads/placeholder.jpg';
+  }
+
+  // Performance optimization for mobile rendering
+  trackByItemId(index: number, item: any): string {
+    return item._id;
+  }
+
+  // Toast notification for mobile, console log for web
+  async presentToast(message: string, color: string = 'medium') {
+    if (this.platform === 'mobile' && this.toastController) {
+      const toast = await this.toastController.create({
+        message,
+        duration: 2000,
+        color,
+        position: 'bottom'
+      });
+      toast.present();
+    } else if (this.platform === 'web') {
+      console.log(`[${color.toUpperCase()}]: ${message}`);
+    }
   }
 
   getTotalItems(): number {
@@ -185,10 +370,6 @@ export class CartComponent implements OnInit {
 
   getDiscount(): number {
     return this.cartSummary?.discount || 0;
-  }
-
-  getTotal(): number {
-    return this.cartSummary?.total || 0;
   }
 
   // Calculate discount percentage
@@ -248,10 +429,26 @@ export class CartComponent implements OnInit {
   }
 
   proceedToCheckout() {
-    this.router.navigate(['/shop/checkout']);
+    if (this.cartItems.length === 0) {
+      if (this.platform === 'mobile') {
+        this.presentToast('Your cart is empty', 'warning');
+      } else {
+        alert('Your cart is empty');
+      }
+      return;
+    }
+    if (this.platform === 'mobile') {
+      this.router.navigate(['/checkout']);
+    } else {
+      this.router.navigate(['/shop/checkout']);
+    }
   }
 
   continueShopping() {
-    this.router.navigate(['/']);
+    if (this.platform === 'mobile') {
+      this.router.navigate(['/tabs/home']);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 }

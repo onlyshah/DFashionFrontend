@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { ProfilePageRoutingModule } from './profile-routing.module';
-import { ProfilePage } from './profile.page';
+import { ProfileComponent } from '../../enduser-app/features/profile/pages/profile/profile.component';
 
 @NgModule({
   imports: [
@@ -12,7 +12,7 @@ import { ProfilePage } from './profile.page';
     FormsModule,
     IonicModule,
     ProfilePageRoutingModule,
-    ProfilePage
+    ProfileComponent
   ]
 })
 export class ProfilePageModule {}

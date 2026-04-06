@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { WishlistNewService, WishlistItem } from '../../../core/services/wishlist-new.service';
 import { CartNewService } from '../../../core/services/cart-new.service';
+import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from 'src/environments/environment';
 
@@ -388,6 +389,267 @@ import { environment } from 'src/environments/environment';
       100% { transform: rotate(360deg); }
     }
 
+    /* Shop mode styles */
+    .shop-layout .wishlist-page {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .shop-layout .wishlist-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .shop-layout .wishlist-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .shop-layout .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .shop-layout .wishlist-item {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .shop-layout .wishlist-item:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .shop-layout .item-image {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+    }
+
+    .shop-layout .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .shop-layout .remove-btn {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: #dc3545;
+    }
+
+    .shop-layout .remove-btn:hover {
+      background: #dc3545;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .shop-layout .item-details {
+      padding: 1rem;
+    }
+
+    .shop-layout .item-details h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .shop-layout .brand {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .shop-layout .price {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .shop-layout .current-price {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #e91e63;
+    }
+
+    .shop-layout .original-price {
+      font-size: 1rem;
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    .shop-layout .discount {
+      background: #e91e63;
+      color: white;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .shop-layout .rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .shop-layout .stars {
+      display: flex;
+      gap: 2px;
+    }
+
+    .shop-layout .stars i {
+      color: #ffc107;
+      font-size: 0.9rem;
+    }
+
+    .shop-layout .item-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .shop-layout .add-to-cart-btn {
+      flex: 1;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .shop-layout .add-to-cart-btn:hover {
+      background: #0056b3;
+    }
+
+    .shop-layout .view-product-btn {
+      flex: 1;
+      background: transparent;
+      color: #007bff;
+      border: 2px solid #007bff;
+      padding: 0.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .shop-layout .view-product-btn:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    .shop-layout .wishlist-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .shop-layout .clear-wishlist-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .shop-layout .clear-wishlist-btn:hover {
+      background: #c82333;
+    }
+
+    .shop-layout .continue-shopping-btn {
+      background: transparent;
+      color: #007bff;
+      border: 2px solid #007bff;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .shop-layout .continue-shopping-btn:hover {
+      background: #007bff;
+      color: white;
+    }
+
+    .shop-layout .empty-wishlist {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #666;
+    }
+
+    .shop-layout .empty-wishlist i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      color: #e91e63;
+    }
+
+    .shop-layout .loading-container {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .shop-layout .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #007bff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .shop-layout .wishlist-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .shop-layout .wishlist-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .shop-layout .clear-wishlist-btn,
+      .shop-layout .continue-shopping-btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+
     @media (max-width: 768px) {
       .wishlist-header h1 {
         font-size: 2rem;
@@ -420,22 +682,34 @@ import { environment } from 'src/environments/environment';
   `]
 })
 export class WishlistComponent implements OnInit {
+  @Input() mode: 'main' | 'shop' = 'main';
+  platform: 'web' | 'mobile' = 'web';
   wishlistItems: WishlistItem[] = [];
   sortedWishlistItems: WishlistItem[] = [];
+  selectedItems: string[] = [];
   loading = true;
   sortBy = 'recent';
-   imageUrl = environment.apiUrl
+  imageUrl = environment.apiUrl;
 
   constructor(
     private router: Router,
     private wishlistService: WishlistNewService,
     private cartService: CartNewService,
+    private cartServiceOld: CartService,
     private authService: AuthService
-  ) {}
+  ) {
+    if (this.router.url.includes('/mobile/')) {
+      this.platform = 'mobile';
+    }
+  }
 
   ngOnInit() {
-  this.loadWishlist();
-  this.subscribeToWishlistUpdates();
+    // Detect mode from route
+    if (this.router.url.includes('/shop/')) {
+      this.mode = 'shop';
+    }
+    this.loadWishlist();
+    this.subscribeToWishlistUpdates();
   }
 
   loadWishlist() {
@@ -455,13 +729,124 @@ export class WishlistComponent implements OnInit {
   subscribeToWishlistUpdates() {
     this.wishlistService.wishlist$.subscribe((wishlist: any) => {
       this.wishlistItems = wishlist?.items || [];
+      this.selectedItems = this.selectedItems.filter(id => this.wishlistItems.some(item => item._id === id));
       this.sortWishlist();
     });
+  }
+
+  toggleItemSelection(itemId: string) {
+    const index = this.selectedItems.indexOf(itemId);
+    if (index > -1) {
+      this.selectedItems.splice(index, 1);
+    } else {
+      this.selectedItems.push(itemId);
+    }
+  }
+
+  isItemSelected(itemId: string): boolean {
+    return this.selectedItems.includes(itemId);
+  }
+
+  toggleSelectAll() {
+    if (this.allItemsSelected()) {
+      this.selectedItems = [];
+    } else {
+      this.selectedItems = this.wishlistItems.map(item => item._id);
+    }
+  }
+
+  allItemsSelected(): boolean {
+    return this.wishlistItems.length > 0 && this.selectedItems.length === this.wishlistItems.length;
+  }
+
+  async bulkRemoveItems() {
+    if (this.selectedItems.length === 0) return;
+
+    if (!confirm(`Remove ${this.selectedItems.length} selected item(s) from your wishlist?`)) {
+      return;
+    }
+
+    const itemsToRemove = [...this.selectedItems];
+    this.selectedItems = [];
+
+    itemsToRemove.forEach(itemId => {
+      const item = this.wishlistItems.find(i => i._id === itemId);
+      if (item) {
+        this.removeFromWishlist(item);
+      }
+    });
+  }
+
+  async bulkMoveToCart() {
+    if (this.selectedItems.length === 0) return;
+
+    if (!confirm(`Move ${this.selectedItems.length} selected item(s) to cart?`)) {
+      return;
+    }
+
+    const itemsToMove = [...this.selectedItems];
+    this.selectedItems = [];
+
+    itemsToMove.forEach(itemId => {
+      const item = this.wishlistItems.find(i => i._id === itemId);
+      if (item) {
+        this.moveToCart(item);
+      }
+    });
+  }
+
+  moveToCart(item: WishlistItem) {
+    if (this.mode === 'shop') {
+      this.cartServiceOld.addToCart(item.product._id, 1).subscribe({
+        next: () => {
+          this.removeFromWishlist(item);
+          this.showNotification('Item moved to cart successfully!');
+        },
+        error: (error) => {
+          console.error('Failed to move item to cart:', error);
+          this.showNotification('Failed to move item to cart');
+        }
+      });
+      return;
+    }
+
+    this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
+      next: (response: any) => {
+        if (response.success) {
+          this.removeFromWishlist(item);
+          this.showNotification('Item moved to cart successfully!');
+        }
+      },
+      error: (error: any) => {
+        console.error('Error moving item to cart:', error);
+        this.showNotification('Failed to move item to cart');
+      }
+    });
+  }
+
+  doRefresh(event: any) {
+    this.loadWishlist();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
+  }
+
+  trackByItemId(index: number, item: any): string {
+    return item._id;
+  }
+
+  getImageUrl(image: any): string {
+    if (!image) return '/uploads/placeholder.jpg';
+    if (typeof image === 'string') {
+      return image;
+    }
+    return image?.url || '/uploads/placeholder.jpg';
   }
 
   // Removed mock data - now using real API data from seeder
 
   sortWishlist() {
+    if (this.mode === 'shop') return; // No sorting in shop mode
     let sorted = [...this.wishlistItems];
     
     switch (this.sortBy) {
@@ -516,21 +901,34 @@ export class WishlistComponent implements OnInit {
   }
 
   addToCart(item: WishlistItem) {
-    this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          // Optionally remove from wishlist after adding to cart
-          // this.removeFromWishlist(item);
+    if (this.mode === 'shop') {
+      this.cartServiceOld.addToCart(item.product._id, 1).subscribe({
+        next: () => {
+          this.showNotification('Added to cart successfully!');
+        },
+        error: (error) => {
+          console.error('Failed to add to cart:', error);
+          this.showNotification('Failed to add to cart');
         }
-      },
-      error: (error: any) => {
-        console.error('Error adding to cart:', error);
-      }
-    });
+      });
+    } else {
+      this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            // Optionally remove from wishlist after adding to cart
+            // this.removeFromWishlist(item);
+          }
+        },
+        error: (error: any) => {
+          console.error('Error adding to cart:', error);
+        }
+      });
+    }
   }
 
-  removeFromWishlist(item: WishlistItem) {
-    this.wishlistService.removeFromWishlist(item._id).subscribe({
+  removeFromWishlist(item: WishlistItem | string) {
+    const productId = typeof item === 'string' ? item : item._id;
+    this.wishlistService.removeFromWishlist(productId).subscribe({
       next: (response: any) => {
         if (response.success) {
           // Refresh the wishlist to get updated data and count
@@ -588,5 +986,49 @@ export class WishlistComponent implements OnInit {
 
   browsePosts() {
     this.router.navigate(['/posts']);
+  }
+
+  // Shop mode methods
+  getDiscount(product: any): number {
+    if (!product.originalPrice || product.originalPrice <= product.price) return 0;
+    return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+  }
+
+  getStarsShop(rating: number): string[] {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      if (i <= rating) {
+        stars.push('fas fa-star');
+      } else if (i - 0.5 <= rating) {
+        stars.push('fas fa-star-half-alt');
+      } else {
+        stars.push('far fa-star');
+      }
+    }
+    return stars;
+  }
+
+  continueShopping() {
+    this.router.navigate(['/']);
+  }
+
+  private showNotification(message: string) {
+    // Create a simple notification
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    z-index: 1000;
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+      document.body.removeChild(notification);
+    }, 3000);
   }
 }

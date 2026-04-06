@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CartPage } from './cart.page';
+import { CartComponent } from '../../enduser-app/features/shop/pages/cart/cart.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: CartPage
+    component: CartComponent
   }
 ];
 
@@ -19,7 +19,7 @@ const routes: Routes = [
     FormsModule,
     IonicModule,
     RouterModule.forChild(routes),
-    CartPage
+    CartComponent
   ]
 })
 export class CartPageModule {}
