@@ -4,7 +4,7 @@ import { AlertController, ToastController } from '@ionic/angular';
 import { CartService, CartItem, CartSummary } from '../../core/services/cart.service';
 
 @Component({
-  selector: 'app-cart',
+  selector: 'app-mobile-cart',
   templateUrl: './cart.page.html',
   styleUrls: ['./cart.page.scss'],
 })

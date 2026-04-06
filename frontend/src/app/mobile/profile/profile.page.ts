@@ -4,7 +4,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { firstValueFrom } from 'rxjs';
 
 @Component({
-  selector: 'app-profile',
+  selector: 'app-mobile-profile',
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
 })

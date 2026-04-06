@@ -6,7 +6,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 
 @Component({
-  selector: 'app-search',
+  selector: 'app-mobile-search',
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
 })

@@ -18,7 +18,7 @@ interface SupportTicket {
 }
 
 @Component({
-  selector: 'app-support-tickets',
+  selector: 'app-admin-support-tickets',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatTableModule, MatChipsModule],
   template: `

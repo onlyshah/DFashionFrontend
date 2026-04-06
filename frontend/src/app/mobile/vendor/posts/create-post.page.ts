@@ -5,7 +5,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ActionSheetController, LoadingController, ToastController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-create-post',
+  selector: 'app-mobile-create-post',
   templateUrl: './create-post.page.html',
   styleUrls: ['./create-post.page.scss'],
 })

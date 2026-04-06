@@ -14,7 +14,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AdminProductService } from '../../services/product.service';
 
 @Component({
-  selector: 'app-product-detail',
+  selector: 'app-admin-product-detail',
   standalone: true,
   imports: [
     CommonModule,

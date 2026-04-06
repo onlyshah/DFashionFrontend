@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Input, Renderer2, OnInit } from '@angular/core';
 
 @Directive({
-  selector: '[appImageFallback]',
+  selector: '[appImageFallbackLegacy]',
   standalone: true
 })
 export class ImageFallbackDirective implements OnInit {

@@ -24,7 +24,7 @@ export interface SystemLog {
 }
 
 @Component({
-  selector: 'app-system-logs',
+  selector: 'app-admin-system-logs',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './system-logs.component.html',

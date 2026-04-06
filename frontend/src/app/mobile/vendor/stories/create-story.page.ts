@@ -5,7 +5,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { ActionSheetController, LoadingController, ToastController } from '@ionic/angular';
 
 @Component({
-  selector: 'app-create-story',
+  selector: 'app-mobile-create-story',
   templateUrl: './create-story.page.html',
   styleUrls: ['./create-story.page.scss'],
 })

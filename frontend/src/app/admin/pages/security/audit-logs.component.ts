@@ -16,7 +16,7 @@ interface AuditLog {
 }
 
 @Component({
-  selector: 'app-audit-logs',
+  selector: 'app-security-audit-logs',
   standalone: true,
   imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatTableModule, MatPaginatorModule],
   template: `

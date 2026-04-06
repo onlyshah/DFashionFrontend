@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-category-management',
+  selector: 'app-admin-category-management',
   standalone: true,
   imports: [CommonModule],
   template: `

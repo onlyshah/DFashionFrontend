@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-vendor-dashboard',
+  selector: 'app-admin-vendor-dashboard',
   templateUrl: './vendor-dashboard.component.html',
   styleUrls: ['./vendor-dashboard.component.scss']
 })

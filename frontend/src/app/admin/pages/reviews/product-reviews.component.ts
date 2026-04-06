@@ -16,7 +16,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-product-reviews',
+  selector: 'app-admin-product-reviews',
   standalone: true,
   imports: [
     CommonModule,

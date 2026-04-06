@@ -6,7 +6,7 @@ import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-mobile-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
 })

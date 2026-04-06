@@ -5,7 +5,7 @@ import { WishlistNewService, WishlistItem } from '../../core/services/wishlist-n
 import { CartService } from '../../core/services/cart.service';
 
 @Component({
-  selector: 'app-wishlist',
+  selector: 'app-mobile-wishlist',
   templateUrl: './wishlist.page.html',
   styleUrls: ['./wishlist.page.scss'],
 })

@@ -12,7 +12,7 @@ import { MatTabsModule, MatTabGroup } from '@angular/material/tabs';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-settings',
+    selector: 'app-admin-settings',
     styleUrls: ['./settings.component.scss'],
     standalone: true,
     templateUrl: './settings.component.html',

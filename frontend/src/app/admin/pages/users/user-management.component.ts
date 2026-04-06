@@ -29,7 +29,7 @@ export interface User {
 }
 
 @Component({
-  selector: 'app-user-management',
+  selector: 'app-admin-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
   standalone: true,

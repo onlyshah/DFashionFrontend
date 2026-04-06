@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../../core/services/product.service';
 
 @Component({
-    selector: 'app-category',
+    selector: 'app-shop-category',
     imports: [CommonModule],
     styles: [`
     .category-page {

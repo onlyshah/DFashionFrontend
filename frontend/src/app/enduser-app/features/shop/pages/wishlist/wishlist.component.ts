@@ -7,7 +7,7 @@ import { CartService } from '../../../../../core/services/cart.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-    selector: 'app-wishlist',
+    selector: 'app-shop-wishlist',
     imports: [CommonModule],
     styles: [`
     .wishlist-page {
