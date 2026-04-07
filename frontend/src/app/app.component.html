@@ -4,13 +4,14 @@
   *ngIf="isMobile"
   [showHeader]="showHeader"
   [showFooter]="false"
-  [showBottomNav]="true">
+  [showBottomNav]="showMobileBottomNav"
+  (sidebarToggle)="toggleSidebar()">
   <router-outlet></router-outlet>
 </app-mobile-layout>
 
 <!-- Desktop Layout for Desktop/Tablet (also fallback if isMobile not yet determined) -->
 <div *ngIf="!isMobile" class="app-container">
-  <app-header *ngIf="showHeader && isLoggedIn"></app-header>
+  <app-header *ngIf="showHeader && isLoggedIn" [isMobile]="isMobile" (toggleSidebar)="toggleSidebar()"></app-header>
   <main class="main-content" [class.with-header]="showHeader && isLoggedIn" [class.no-sidebar]="!isLoggedIn">
     <router-outlet></router-outlet>
   </main>
@@ -88,11 +89,7 @@
     </nav>
   </aside>
 
-  <button class="sidebar-toggle-btn" type="button" aria-label="Toggle sidebar" (click)="toggleSidebar()">
-    ☰
-  </button>
-
-  <button class="message-float-btn" type="button" aria-label="Messages" routerLink="/messages">
+  <button *ngIf="!isMobile" class="message-float-btn" type="button" aria-label="Messages" routerLink="/messages">
     <span class="msg-icon">✉️</span>
     <span class="msg-text">Messages</span>
     <span class="msg-badge" *ngIf="messageCount > 0">{{messageCount}}</span>

@@ -136,6 +136,19 @@
   }
 }
 
+.header-btn.sidebar-toggle-btn {
+  background: #1da1f2;
+  color: white;
+  
+  &:hover {
+    background: #1a91da;
+  }
+  
+  i {
+    color: white;
+  }
+}
+
 .header-logo {
   display: flex;
   align-items: center;
@@ -161,6 +174,12 @@
 }
 
 .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.header-left-actions {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -747,6 +766,55 @@
     opacity: 1;
     visibility: visible;
   }
+}
+
+.trending-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 2000;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 12px 12px;
+}
+
+.trending-modal.active {
+  display: flex;
+}
+
+.trending-modal-content {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
+  padding: 1.2rem;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.trending-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.trending-modal-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.trending-modal-header .close-btn {
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  font-size: 1.3rem;
+  padding: 0.4rem;
 }
 
 // Create Menu

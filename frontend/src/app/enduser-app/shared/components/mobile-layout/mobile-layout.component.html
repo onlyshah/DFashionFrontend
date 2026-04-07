@@ -6,11 +6,21 @@
   <!-- Mobile Header -->
   <header *ngIf="showHeader" class="mobile-header">
     <div class="header-content">
-      <!-- Menu Button (remains in header) -->
-      <button class="header-btn menu-btn" (click)="toggleMenu()">
-        <i class="fas fa-bars" *ngIf="!isMenuOpen"></i>
-        <i class="fas fa-times" *ngIf="isMenuOpen"></i>
-      </button>
+      <!-- Left Actions -->
+      <div class="header-left-actions">
+        <!-- Menu Button -->
+        <button class="header-btn menu-btn" (click)="toggleMenu()">
+          <i class="fas fa-bars" *ngIf="!isMenuOpen"></i>
+          <i class="fas fa-times" *ngIf="isMenuOpen"></i>
+        </button>
+
+        <!-- Sidebar Toggle Button -->
+        <button class="header-btn sidebar-toggle-btn"
+                type="button" aria-label="Open sidebar" 
+                (click)="toggleSidebarPanel()">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
 
       <!-- Logo -->
       <div class="header-logo" routerLink="/">
@@ -206,12 +216,12 @@
       <span>Shop</span>
     </a>
     <!-- Trending Button (Mobile) -->
-    <button class="nav-item trending-nav" (click)="openTrending()" [class.active]="isTrendingOpen">
+    <a class="nav-item trending-nav" (click)="openTrending()" [class.active]="isTrendingOpen">
       <div class="trending-btn">
         <i class="fas fa-fire"></i>
       </div>
       <span>Trending</span>
-    </button>
+    </a>
     <!-- Trending Modal (Mobile) -->
     <div class="trending-modal" [class.active]="isTrendingOpen" (click)="closeTrending()">
       <div class="trending-modal-content" (click)="$event.stopPropagation()">
@@ -230,6 +240,11 @@
       </div>
       <span>Create</span>
     </button>
+     <a routerLink="/wishlist" class="nav-item" [class.active]="isCurrentRoute('/wishlist')">
+      <i class="fas fa-compass"></i>
+      <span>Explore</span>
+      <span *ngIf="wishlistCount > 0" class="nav-badge">{{ formatCount(wishlistCount) }}</span>
+    </a>
     <a routerLink="/wishlist" class="nav-item" [class.active]="isCurrentRoute('/wishlist')">
       <i class="fas fa-heart"></i>
       <span>Wishlist</span>

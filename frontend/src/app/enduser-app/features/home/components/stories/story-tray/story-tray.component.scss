@@ -1,31 +1,44 @@
 .story-tray-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+  max-width: 100%;
   position: relative;
   padding: 24px 0 0;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .story-tray-inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 16px;
+  width: 100%;
   position: relative;
-  padding-left: 120px;
+  padding: 0 14px;
+  min-width: 0;
+  box-sizing: border-box;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
 }
 
 .your-story-static {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 96px;
-  min-width: 96px;
+  position: relative;
+  width: 92px;
+  min-width: 92px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 18px 0 12px;
+  gap: 8px;
+  padding: 14px 0 10px;
   background: #ffffff;
-  border-radius: 28px;
+  border-radius: 22px;
   border: 1px solid rgba(33, 33, 33, 0.08);
-  box-shadow: 0 24px 60px rgba(12, 23, 56, 0.08);
+  box-shadow: 0 14px 32px rgba(12, 23, 56, 0.08);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  scroll-snap-align: start;
 }
 
 .your-story-static:hover {
@@ -115,17 +128,17 @@
 
 .statuses {
   margin-bottom: 0;
-  width: 100%;
+  flex: 1;
   background-color: #f8f9fb;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: flex-start;
-  padding: 18px 12px 18px 18px;
-  border-radius: 28px;
+  padding: 14px 12px;
+  border-radius: 24px;
   border: 1px solid rgba(33, 33, 33, 0.06);
   overflow-x: auto;
   overflow-y: hidden;
-  gap: 14px;
+  gap: 12px;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -267,7 +280,7 @@
 
 @media (max-width: 992px) {
   .story-tray-inner {
-    padding-left: 108px;
+    padding: 0 14px;
   }
 
   .your-story-static {
@@ -277,8 +290,8 @@
   }
 
   .status {
-    width: 78px;
-    min-width: 78px;
+    width: clamp(72px, 18vw, 78px);
+    min-width: clamp(72px, 18vw, 78px);
   }
 
   .status-ring {
@@ -289,30 +302,91 @@
 
 @media (max-width: 768px) {
   .story-tray-container {
-    padding: 18px 0 0;
+    padding: 10px 0 0;
   }
 
   .story-tray-inner {
-    padding-left: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    width: 100%;
+    overflow-x: auto;
   }
 
   .your-story-static {
     position: relative;
-    left: auto;
-    top: auto;
-    width: 76px;
-    margin: 0 auto 14px auto;
-    padding: 14px 0 10px;
-    box-shadow: 0 16px 40px rgba(12, 23, 56, 0.08);
+    width: 72px;
+    min-width: 72px;
+    margin: 0;
+    padding: 10px 0 8px;
+    box-shadow: 0 12px 24px rgba(12, 23, 56, 0.08);
   }
 
   .statuses {
-    padding-left: 0;
-    padding-top: 0;
+    padding: 10px 10px;
     gap: 10px;
+    overflow-x: auto;
+    scroll-padding-left: 0;
+    width: auto;
+    min-width: calc(100% - 88px);
+    box-sizing: border-box;
+    align-items: center;
+  }
+
+  .status {
+    width: clamp(64px, 18vw, 72px);
+    min-width: clamp(64px, 18vw, 72px);
+  }
+
+  .status-ring {
+    width: 58px;
+    height: 58px;
+  }
+
+  .story-label,
+  .suggestion-text {
+    max-width: 100%;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .slide-controls {
     justify-content: center;
+    width: 100%;
+    padding: 0 12px;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 576px) {
+  .story-tray-container {
+    padding: 10px 0 0;
+  }
+
+  .story-tray-inner {
+    gap: 12px;
+  }
+
+  .your-story-static {
+    width: 68px;
+    min-width: 68px;
+    padding: 10px 0 8px;
+  }
+
+  .statuses {
+    padding: 8px 10px;
+  }
+
+  .status {
+    width: 64px;
+    min-width: 64px;
+  }
+
+  .status-ring {
+    width: 56px;
+    height: 56px;
   }
 }

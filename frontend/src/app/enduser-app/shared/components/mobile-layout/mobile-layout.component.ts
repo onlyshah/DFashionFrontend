@@ -47,6 +47,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
   @Input() showFooter = true;
   @Input() showBottomNav = true;
   @Output() menuToggle = new EventEmitter<boolean>();
+  @Output() sidebarToggle = new EventEmitter<void>();
 
   deviceInfo: DeviceInfo | null = null;
   breakpoints: ViewportBreakpoints | null = null;
@@ -210,6 +211,10 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
     } else {
       this.mobileService.enableBodyScroll();
     }
+  }
+
+  toggleSidebarPanel() {
+    this.sidebarToggle.emit();
   }
 
   closeMenu() {

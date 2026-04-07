@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -17,6 +17,9 @@ import { User } from '../../../../core/models/user.model';
     styleUrls: ['./header.component.scss']
    })
 export class HeaderComponent implements OnInit {
+  @Input() isMobile = false;
+  @Output() toggleSidebar = new EventEmitter<void>();
+
   currentUser: User | null = null;
   searchQuery = '';
   showUserMenu = false;
@@ -220,7 +223,10 @@ export class HeaderComponent implements OnInit {
     this.showUserMenu = false;
   }
 
-  
+  onToggleSidebar() {
+    this.toggleSidebar.emit();
+  }
+
   onAvatarError(event: any) {
     // Fallback to backend-served default avatar if the current one fails to load
     event.target.src = this.backendDefaultAvatar + 'default-avatar.svg';

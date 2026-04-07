@@ -1,12 +1,16 @@
 :host {
   display: block;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 // Two-column Instagram-style layout
 .login-wrapper {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   background: #fafafa;
 
   // LEFT SIDE - Marketing/Branding

@@ -11,13 +11,8 @@ import { ProductService } from '../../../../../core/services/product.service';
 import { PostService } from '../../../../../core/services/post.service';
 
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
-import { TrendingProductsComponent } from '../../components/trending-products/trending-products.component';
-import { FeaturedBrandsComponent } from '../../components/featured-brands/featured-brands.component';
-import { NewArrivalsComponent } from '../../components/new-arrivals/new-arrivals.component';
-import { SuggestedForYouComponent } from '../../components/suggested-for-you/suggested-for-you.component';
-import { TopFashionInfluencersComponent } from '../../components/top-fashion-influencers/top-fashion-influencers.component';
 import { StoryTrayComponent } from '../../components/stories/story-tray/story-tray.component';
-import { ViewStoriesComponent } from '../../components/stories/view-stories/view-stories.component';
+//import { ViewStoriesComponent } from '../../components/stories/view-stories/view-stories.component';
 import { FeedComponent } from '../../components/feed/feed.component';
 //import { ShopByCategoryComponent } from '../../components/shop-by-category/shop-by-category.component';
 
@@ -27,14 +22,9 @@ import { FeedComponent } from '../../components/feed/feed.component';
         CommonModule,
         IonicModule,
         StoryTrayComponent,
-        ViewStoriesComponent,
+        //ViewStoriesComponent,
         FeedComponent,
         SidebarComponent,
-        TrendingProductsComponent,
-        FeaturedBrandsComponent,
-        NewArrivalsComponent,
-        SuggestedForYouComponent,
-        TopFashionInfluencersComponent,
         //ShopByCategoryComponent
     ],
     templateUrl: './home.component.html',
@@ -44,12 +34,12 @@ export class HomeComponent implements OnInit, OnDestroy {
   @Input() platform: 'web' | 'mobile' = 'web';
 
   isMobile = false;
-  isSidebarOpen = false;
-  isTabMenuOpen = false;
-  isSidebarContentOpen = false;
-  currentSidebarTab = '';
-  currentSidebarTitle = '';
-  hasNotifications = true;
+  // isSidebarOpen = false; // Removed - using mobile-layout component
+  // isTabMenuOpen = false; // Removed - using mobile-layout component
+  // isSidebarContentOpen = false; // Removed - using mobile-layout component
+  // currentSidebarTab = ''; // Removed - using mobile-layout component
+  // currentSidebarTitle = ''; // Removed - using mobile-layout component
+  // hasNotifications = true; // Removed - using mobile-layout component
   window = window;
   isLiked = false;
   socialStories: any[] = [];
@@ -104,14 +94,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.checkScreenSize();
       this.loadStories();
       this.loadCategories();
-      document.addEventListener('touchmove', this.preventScroll, { passive: false });
       console.log('🏠 Home component initialized:', { isMobile: this.isMobile, storiesCount: this.socialStories.length });
     }
   }
 
   ngOnDestroy() {
     if (this.platform === 'web') {
-      document.removeEventListener('touchmove', this.preventScroll);
+      // Touch event listeners removed - using mobile-layout component
     }
   }
 
@@ -138,9 +127,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   @HostListener('window:resize', ['$event'])
   onResize(_event: any) {
     this.checkScreenSize();
-    if (!this.isMobile && this.isSidebarOpen) {
-      this.closeSidebar();
-    }
+    // Sidebar management removed - using mobile-layout component
   }
 
   private checkScreenSize() {
@@ -155,65 +142,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     console.log('📱 Screen size check:', { width, isMobile: this.isMobile, userAgent: userAgent.substring(0, 50) });
   }
 
-  toggleSidebar() {
-    this.isSidebarOpen = !this.isSidebarOpen;
-    this.toggleBodyScroll();
-  }
-
-  closeSidebar() {
-    this.isSidebarOpen = false;
-    this.toggleBodyScroll();
-  }
-
-  private toggleBodyScroll() {
-    if (this.isSidebarOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  }
-
-  private preventScroll = (e: TouchEvent) => {
-    if (this.isSidebarOpen || this.isTabMenuOpen || this.isSidebarContentOpen) {
-      e.preventDefault();
-    }
-  }
-
-  // Tab Menu Methods
-  toggleTabMenu() {
-    this.isTabMenuOpen = !this.isTabMenuOpen;
-    this.toggleBodyScroll();
-  }
-
-  closeTabMenu() {
-    this.isTabMenuOpen = false;
-    this.toggleBodyScroll();
-  }
-
-  openSidebarTab(tabType: string) {
-    this.currentSidebarTab = tabType;
-    this.isSidebarContentOpen = true;
-    this.isTabMenuOpen = false;
-
-    // Set title based on tab type
-    const titles: { [key: string]: string } = {
-      'trending': 'Trending Products',
-      'brands': 'Featured Brands',
-      'arrivals': 'New Arrivals',
-      'suggested': 'Suggested for You',
-      'influencers': 'Fashion Influencers',
-      'categories': 'Categories'
-    };
-
-    this.currentSidebarTitle = titles[tabType] || 'Discover';
-    this.toggleBodyScroll();
-  }
-
-  closeSidebarContent() {
-    this.isSidebarContentOpen = false;
-    this.currentSidebarTab = '';
-    this.toggleBodyScroll();
-  }
+  // Mobile navigation methods removed - using mobile-layout component
 
   // TikTok-style interaction methods
   toggleLike() {
@@ -412,16 +341,16 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   navigateToDashboard(): void {
     this.router.navigate(['/user-dashboard']);
-    this.closeSidebar();
+    // Sidebar management removed - using mobile-layout component
   }
 
   navigateToProfile(): void {
     this.router.navigate(['/profile']);
-    this.closeSidebar();
+    // Sidebar management removed - using mobile-layout component
   }
 
   navigateToSettings(): void {
     this.router.navigate(['/profile/settings']);
-    this.closeSidebar();
+    // Sidebar management removed - using mobile-layout component
   }
 }

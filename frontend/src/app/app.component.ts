@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
 import { AuthService } from './core/services/auth.service';
 import { MobileOptimizationService } from './core/services/mobile-optimization.service';
 import { LayoutService } from './core/services/layout.service';
-import { Subscription } from 'rxjs';
+import { Subscription, filter } from 'rxjs';
 import { MobileLayoutComponent } from './enduser-app/shared/components/mobile-layout/mobile-layout.component';
 
 @Component({
@@ -25,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
   moreMenuOpen = false;
   createMenuOpen = false;
   isLoggedIn = false;
+  isAuthRoute = false;
   private subscription = new Subscription();
 
   constructor(
@@ -91,6 +92,25 @@ export class AppComponent implements OnInit, OnDestroy {
         this.showHeader = state.showHeader;
       })
     );
+
+    // Track auth routes so mobile bottom nav is hidden on login/register paths
+    this.updateRouteFlags(this.router.url);
+    this.subscription.add(
+      this.router.events.pipe(
+        filter(event => event instanceof NavigationEnd)
+      ).subscribe((event: NavigationEnd) => {
+        this.updateRouteFlags(event.urlAfterRedirects || event.url);
+      })
+    );
+  }
+
+  private updateRouteFlags(url: string): void {
+    const normalizedUrl = url.toLowerCase();
+    this.isAuthRoute = normalizedUrl.includes('/auth') || normalizedUrl.includes('/login') || normalizedUrl.includes('/register');
+  }
+
+  get showMobileBottomNav(): boolean {
+    return this.isLoggedIn && !this.isAuthRoute;
   }
 
   ngOnDestroy(): void {

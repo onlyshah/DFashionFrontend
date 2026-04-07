@@ -29,7 +29,9 @@
 
   @media (max-width: 768px) {
     margin-left: 0;
-    margin-bottom: 50px;
+    // Remove margin-bottom when wrapped in mobile-layout component
+    // margin-bottom: 50px;
+    flex-direction: column;
   }
 }
 
@@ -50,6 +52,8 @@
     border-bottom: 1px solid var(--border-color);
     padding: 8px 0;
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
     position: sticky;
     top: 0;
     z-index: 50;
@@ -120,11 +124,15 @@
 // Mobile Layout
 .mobile-layout {
   width: 100%;
+  max-width: 100%;
+  padding-top: 52px;
 
   .content-grid {
     display: flex;
     flex-direction: column;
     width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   .main-content {
@@ -137,209 +145,18 @@
     }
   }
 
+  .desktop-sidebar {
+    display: none !important;
+  }
+
   @media (min-width: 769px) {
     display: none;
   }
 }
 
-// Mobile Header
-.mobile-header {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 44px;
-  background: var(--bg-white);
-  border-bottom: 1px solid var(--border-color);
-  z-index: 1001;
-  padding: 0 16px;
-  align-items: center;
-  justify-content: space-between;
+// Mobile Header removed - using mobile-layout component header
 
-  @media (max-width: 768px) {
-    display: flex;
-  }
-
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    .app-logo {
-      font-family: 'Billabong', cursive;
-      font-size: 24px;
-      font-weight: 400;
-      color: var(--text-primary);
-      margin: 0;
-      letter-spacing: -1px;
-    }
-
-    .logo-dropdown {
-      font-size: 16px;
-      color: var(--text-primary);
-    }
-  }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    .header-icon {
-      font-size: 24px;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-
-    .menu-icon-container {
-      position: relative;
-      cursor: pointer;
-
-      .notification-dot {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        background: #ff3040;
-        color: white;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        font-size: 10px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-    }
-  }
-}
-
-// Tab menu overlay
-.tab-menu-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 998;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-
-  &.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-}
-
-// Sidebar overlay (mobile)
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 998;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
-
-  &.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-}
-
-// Instagram tab menu
-.instagram-tab-menu {
-  display: none;
-  position: fixed;
-  bottom: 50px;
-  left: 0;
-  right: 0;
-  background: var(--bg-white);
-  z-index: 999;
-  max-height: calc(100vh - 50px);
-  overflow-y: auto;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-
-  &.active {
-    transform: translateY(0);
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-
-  .tab-menu-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
-
-    h3 {
-      margin: 0;
-      font-size: 18px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .close-icon {
-      font-size: 24px;
-      color: var(--text-primary);
-      cursor: pointer;
-    }
-  }
-
-  .tab-menu-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 8px;
-  }
-
-  .tab-item {
-    padding: 12px;
-    text-align: center;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background 0.2s ease;
-
-    &:hover {
-      background: #f0f0f0;
-    }
-
-    .tab-icon {
-      font-size: 32px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 40px;
-
-      &.trending {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 8px;
-        color: white;
-      }
-    }
-  }
-}
+// Mobile navigation removed - using mobile-layout component navigation
 
 // Responsive adjustments
 @media (max-width: 1200px) {
