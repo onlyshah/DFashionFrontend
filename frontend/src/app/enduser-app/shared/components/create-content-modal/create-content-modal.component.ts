@@ -1,12 +1,15 @@
 import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
-import { Platform, ActionSheetController, ToastController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Platform, ActionSheetController, ToastController, IonicModule } from '@ionic/angular';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
     selector: 'app-create-content-modal',
+    standalone: true,
+    imports: [CommonModule, FormsModule, IonicModule, RouterModule],
     templateUrl: './create-content-modal.component.html',
-    styleUrls: ['./create-content-modal.component.scss'],
-    standalone: false
+    styleUrls: ['./create-content-modal.component.scss']
 })
 export class CreateContentModalComponent implements OnInit, OnDestroy {
   @Input() isOpen: boolean = false;
@@ -16,6 +19,8 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
   @Output() createReel = new EventEmitter<any>();
   @Output() goLive = new EventEmitter<void>();
   @Output() moreOptions = new EventEmitter<void>();
+
+  drafts: any[] = [];
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   @ViewChild('cameraVideo') cameraVideo!: ElementRef<HTMLVideoElement>;
@@ -365,7 +370,7 @@ export class CreateContentModalComponent implements OnInit, OnDestroy {
     });
     await toast.present();
     
-    this.drafts = this.drafts.filter(d => d.id !== draft.id);
+    this.drafts = this.drafts.filter((d: any) => d.id !== draft.id);
   }
 
   // Utility Methods

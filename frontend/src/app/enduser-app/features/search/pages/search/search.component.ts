@@ -12,6 +12,7 @@ import { AdvancedSearchComponent } from '../../../../shared/components/advanced-
 
 @Component({
     selector: 'app-search',
+    standalone: true,
     imports: [CommonModule, FormsModule, IonicModule, AdvancedSearchComponent],
     templateUrl: './search.component.html',
     styles: [`

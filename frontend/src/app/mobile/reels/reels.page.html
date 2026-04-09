@@ -37,9 +37,9 @@
               #videoPlayer
               [src]="reel.media.url" 
               [poster]="reel.media.thumbnail"
-              [muted]="true"
-              [loop]="true"
-              [playsinline]="true"
+              muted
+              loop
+              playsinline
               class="reel-video"
               (click)="togglePlayPause(videoPlayer)"
               (loadedmetadata)="onVideoLoaded(videoPlayer, i)"

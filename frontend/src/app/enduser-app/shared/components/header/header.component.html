@@ -85,49 +85,17 @@
         </div>
 
         <!-- User Menu for logged in users -->
-        <div *ngIf="currentUser" class="user-menu" (click)="toggleUserMenu()">
-       <img
-  [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar + 'default-avatar.svg')"
-  [alt]="currentUser.fullName"
-  class="user-avatar"
-  (error)="onAvatarError($event)"
->
-
-          
-          
-          <span class="username">{{ currentUser.username }}</span>
-          <i class="fas fa-chevron-down"></i>
-          
-          <!-- Dropdown Menu -->
-          <div class="dropdown-menu" [class.show]="showUserMenu">
-            <a routerLink="/profile" class="dropdown-item">
-              <i class="fas fa-user"></i>
-              Profile
-            </a>
-            <a routerLink="/settings" class="dropdown-item">
-              <i class="fas fa-cog"></i>
-              Settings
-            </a>
-            <div class="dropdown-divider"></div>
-            <!-- Customer Dashboard Link -->
-            <a *ngIf="currentUser.role === 'end_user' || currentUser.role === 'customer'" routerLink="/customer/dashboard" class="dropdown-item">
-              <i class="fas fa-tachometer-alt"></i>
-              Customer Dashboard
-            </a>
-            <a *ngIf="currentUser.role === 'vendor'" routerLink="/vendor/dashboard" class="dropdown-item">
-              <i class="fas fa-store"></i>
-              Vendor Dashboard
-            </a>
-            <a *ngIf="currentUser.role === 'admin'" routerLink="/admin" class="dropdown-item">
-              <i class="fas fa-shield-alt"></i>
-              Admin Panel
-            </a>
-            <div class="dropdown-divider"></div>
-            <button (click)="logout()" class="dropdown-item logout">
-              <i class="fas fa-sign-out-alt"></i>
-              Logout
-            </button>
-          </div>
+        <div *ngIf="currentUser" class="user-menu-wrapper">
+          <button type="button" class="user-menu" [class.active]="showUserMenu" aria-haspopup="true" [attr.aria-expanded]="showUserMenu" (click)="toggleUserMenu($event)">
+            <img
+              [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar + 'default-avatar.svg')"
+              [alt]="currentUser.fullName"
+              class="user-avatar"
+              (error)="onAvatarError($event)"
+            >
+            <span class="username">{{ currentUser.username }}</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
         </div>
 
         <!-- Login/Register for guest users -->
@@ -136,6 +104,37 @@
           <a routerLink="/auth/register" class="btn btn-primary">Sign Up</a>
         </div>
       </nav>
+
+      <!-- User Dropdown Menu - Positioned outside nav to avoid overflow clipping -->
+      <div *ngIf="currentUser" class="dropdown-menu" [class.show]="showUserMenu" (click)="$event.stopPropagation()">
+        <a routerLink="/profile" class="dropdown-item">
+          <i class="fas fa-user"></i>
+          Profile
+        </a>
+        <a routerLink="/settings" class="dropdown-item">
+          <i class="fas fa-cog"></i>
+          Settings
+        </a>
+        <div class="dropdown-divider"></div>
+        <!-- Customer Dashboard Link -->
+        <a *ngIf="currentUser?.role === 'end_user' || currentUser?.role === 'customer'" routerLink="/customer/dashboard" class="dropdown-item">
+          <i class="fas fa-tachometer-alt"></i>
+          Customer Dashboard
+        </a>
+        <a *ngIf="currentUser?.role === 'vendor'" routerLink="/vendor/dashboard" class="dropdown-item">
+          <i class="fas fa-store"></i>
+          Vendor Dashboard
+        </a>
+        <a *ngIf="currentUser?.role === 'admin'" routerLink="/admin" class="dropdown-item">
+          <i class="fas fa-shield-alt"></i>
+          Admin Panel
+        </a>
+        <div class="dropdown-divider"></div>
+        <button (click)="logout()" class="dropdown-item logout">
+          <i class="fas fa-sign-out-alt"></i>
+          Logout
+        </button>
+      </div>
     </div>
   </div>
 </header>

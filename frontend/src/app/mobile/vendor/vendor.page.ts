@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 import { AuthService } from '../../core/services/auth.service';
 import { VendorService, VendorStats } from '../../core/services/vendor.service';
 
 @Component({
   selector: 'app-vendor',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
   templateUrl: './vendor.page.html',
   styleUrls: ['./vendor.page.scss'],
 })
@@ -28,28 +33,32 @@ export class VendorPage implements OnInit {
       subtitle: 'Create new product listing',
       icon: 'add-circle',
       color: 'primary',
-      route: '/vendor/products/create'
+      route: '/vendor/products/create',
+      label: 'Add Product'
     },
     {
       title: 'Create Post',
       subtitle: 'Share product post',
       icon: 'camera',
       color: 'secondary',
-      route: '/vendor/posts/create'
+      route: '/vendor/posts/create',
+      label: 'Create Post'
     },
     {
       title: 'Add Story',
       subtitle: 'Create product story',
       icon: 'videocam',
       color: 'tertiary',
-      route: '/vendor/stories/create'
+      route: '/vendor/stories/create',
+      label: 'Add Story'
     },
     {
       title: 'View Orders',
       subtitle: 'Manage your orders',
       icon: 'receipt',
       color: 'success',
-      route: '/vendor/orders'
+      route: '/vendor/orders',
+      label: 'View Orders'
     }
   ];
 
@@ -58,31 +67,36 @@ export class VendorPage implements OnInit {
       title: 'My Products',
       icon: 'cube',
       route: '/vendor/products',
-      count: this.stats.totalProducts
+      count: this.stats.totalProducts,
+      label: 'My Products'
     },
     {
       title: 'My Posts',
       icon: 'images',
       route: '/vendor/posts',
-      count: this.stats.totalPosts
+      count: this.stats.totalPosts,
+      label: 'My Posts'
     },
     {
       title: 'My Stories',
       icon: 'play-circle',
       route: '/vendor/stories',
-      count: this.stats.totalStories
+      count: this.stats.totalStories,
+      label: 'My Stories'
     },
     {
       title: 'Orders',
       icon: 'bag',
       route: '/vendor/orders',
-      count: this.stats.totalOrders
+      count: this.stats.totalOrders,
+      label: 'Orders'
     },
     {
       title: 'Analytics',
       icon: 'analytics',
       route: '/vendor/analytics',
-      count: 0
+      count: 0,
+      label: 'Analytics'
     }
   ];
 

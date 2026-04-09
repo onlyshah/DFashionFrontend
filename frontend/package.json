@@ -9,7 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "serve": "ng serve --proxy-config proxy.conf.json",
     "ionic:build": "ng build",
-    "ionic:serve": "ng serve --proxy-config proxy.conf.json",
+    "ionic:serve": "node ./scripts/ionic-serve.js",
     "build:mobile": "ng build --configuration production",
     "cap:add": "npx cap add",
     "cap:copy": "npx cap copy",

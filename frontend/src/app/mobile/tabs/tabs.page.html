@@ -42,11 +42,10 @@
 </app-create-content-modal>
 
 <!-- Stories Viewer -->
-<app-stories-viewer
+<app-view-stories
   [stories]="currentStories"
-  [initialIndex]="currentStoryIndex"
-  [isVisible]="showStoriesViewer"
+  [currentIndex]="currentStoryIndex"
+  [visible]="showStoriesViewer"
   (close)="onStoriesViewerClose()"
-  (storyChange)="onStoryChange($event)"
-  (productClick)="onStoryProductClick($event)">
-</app-stories-viewer>
+  (changeIndex)="onStoryChange($event)">
+</app-view-stories>

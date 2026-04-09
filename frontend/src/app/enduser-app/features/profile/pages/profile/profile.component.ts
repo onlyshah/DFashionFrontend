@@ -11,6 +11,7 @@ import { OptimizedImageComponent } from '../../../../shared/components/optimized
 
 @Component({
     selector: 'app-profile',
+    standalone: true,
     imports: [CommonModule, FormsModule, IonicModule, OptimizedImageComponent],
     templateUrl: './profile.component.html',
     styles: [`

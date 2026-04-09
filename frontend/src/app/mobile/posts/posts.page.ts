@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
-import { IonContent, IonInfiniteScroll } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { IonicModule, IonContent, IonInfiniteScroll } from '@ionic/angular';
 import { PostService } from '../../core/services/post.service';
 import { AuthService } from '../../core/services/auth.service';
 import { SocialInteractionsService } from '../../core/services/social-interactions.service';
@@ -9,6 +11,8 @@ import { WishlistService } from '../../core/services/wishlist.service';
 
 @Component({
   selector: 'app-posts',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
   templateUrl: './posts.page.html',
   styleUrls: ['./posts.page.scss'],
 })

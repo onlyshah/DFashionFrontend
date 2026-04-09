@@ -1,14 +1,27 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { IonicModule } from '@ionic/angular';
+import { register } from 'swiper/element/bundle';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-reels',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
+  schemas: [NO_ERRORS_SCHEMA],
   templateUrl: './reels.page.html',
   styleUrls: ['./reels.page.scss'],
 })
 export class ReelsPage implements OnInit, OnDestroy {
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {
+    register();
+  }
+
   @ViewChildren('videoPlayer') videoPlayers!: QueryList<ElementRef<HTMLVideoElement>>;
 
   reels: any[] = [];
@@ -37,11 +50,6 @@ export class ReelsPage implements OnInit, OnDestroy {
       onlyInViewport: true
     }
   };
-
-  constructor(
-    private router: Router,
-    private http: HttpClient
-  ) {}
 
   ngOnInit() {
     console.log('📱 Reels Page: Initializing...');

@@ -96,42 +96,6 @@
     }
   }
 }
-          color: #ffffff;
-          border-radius: 8px;
-          padding: 4px;
-          font-size: 20px;
-        }
-      }
-
-      &.tab-selected {
-        .tab-content {
-          ion-icon {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            transform: scale(1.1);
-          }
-        }
-      }
-    }
-
-    // Hover effects for better responsiveness
-    &:hover {
-      .tab-content {
-        ion-icon {
-          transform: scale(1.05);
-        }
-      }
-    }
-
-    // Active/pressed state
-    &:active {
-      .tab-content {
-        ion-icon {
-          transform: scale(0.95);
-        }
-      }
-    }
-  }
-}
 
 // Responsive Design
 @media (max-width: 375px) {

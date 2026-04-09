@@ -18,6 +18,7 @@ import { FeedComponent } from '../../components/feed/feed.component';
 
 @Component({
     selector: 'app-home',
+    standalone: true,
     imports: [
         CommonModule,
         IonicModule,

@@ -1,10 +1,13 @@
 import { Component, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { GestureController, Platform } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { GestureController, Platform, IonicModule } from '@ionic/angular';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-stories',
+  standalone: true,
+  imports: [CommonModule, IonicModule, RouterModule],
   templateUrl: './stories.page.html',
   styleUrls: ['./stories.page.scss'],
 })

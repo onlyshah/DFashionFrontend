@@ -1,12 +1,18 @@
 import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { environment } from '../../../../environments/environment';
+import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistNewService } from '../../core/services/wishlist-new.service';
+import { CreateContentModalComponent } from '../../enduser-app/shared/components/create-content-modal/create-content-modal.component';
+import { ViewStoriesComponent } from '../../enduser-app/features/home/components/stories/view-stories/view-stories.component';
 
 @Component({
   selector: 'app-tabs',
+  standalone: true,
+  imports: [CommonModule, IonicModule, RouterModule, CreateContentModalComponent, ViewStoriesComponent],
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss']
 })

@@ -12,6 +12,7 @@ import { environment } from 'src/environments/environment';
 
 @Component({
     selector: 'app-wishlist',
+    standalone: true,
     imports: [CommonModule, FormsModule],
     templateUrl: './wishlist.component.html',
     styles: [`

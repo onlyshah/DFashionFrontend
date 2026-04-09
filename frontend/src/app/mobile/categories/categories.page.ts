@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import { ProductService } from '../../core/services/product.service';
 import { CategoryService } from '../../core/services/category.service';
@@ -8,6 +11,8 @@ import { WishlistService } from '../../core/services/wishlist.service';
 
 @Component({
   selector: 'app-categories',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
   templateUrl: './categories.page.html',
   styleUrls: ['./categories.page.scss'],
 })

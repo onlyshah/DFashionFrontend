@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -102,16 +102,25 @@ export class HeaderComponent implements OnInit {
     this.cartService.loadCart();
     this.wishlistService.loadWishlist();
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest('.user-menu')) {
-        this.showUserMenu = false;
-      }
-    });
   }
 
-  toggleUserMenu() {
+  @HostListener('document:click', ['$event'])
+  @HostListener('document:touchstart', ['$event'])
+  onOutsideClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const isClickOnButton = target.closest('.user-menu-wrapper');
+    const isClickOnMenu = target.closest('.dropdown-menu');
+    
+    if (!isClickOnButton && !isClickOnMenu) {
+      this.showUserMenu = false;
+    }
+  }
+
+  toggleUserMenu(event?: Event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
     this.showUserMenu = !this.showUserMenu;
   }
 

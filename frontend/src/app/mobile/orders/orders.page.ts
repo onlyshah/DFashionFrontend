@@ -1,15 +1,22 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
+import { environment } from '../../../environments/environment';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-orders',
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule],
   templateUrl: './orders.page.html',
   styleUrls: ['./orders.page.scss'],
 })
 export class OrdersPage implements OnInit {
-  orders: any[] = [];
+  orders: any[] = []; 
+  apiUrl = environment.apiUrl;
   filteredOrders: any[] = [];
   isLoading = true;
   isAuthenticated = false;

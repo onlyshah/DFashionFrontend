@@ -64,15 +64,10 @@ const routes: Routes = [
     path: 'story',
     loadComponent: () => import('./enduser-app/features/home/components/stories/story-tray/story-tray.component').then(m => m.StoryTrayComponent)
   },
-  /*
   {
     path: 'tabs',
     loadChildren: () => import('./mobile/tabs/tabs.module').then(m => m.TabsPageModule)
   },
-  */
-  // MOBILE ROUTES TEMPORARILY DISABLED DUE TO COMPILATION ISSUES
-  // TODO: Fix standalone component declarations in mobile modules
-  /*
   {
     path: 'mobile-cart',
     loadChildren: () => import('./mobile/cart/cart.module').then(m => m.CartPageModule)
@@ -105,7 +100,6 @@ const routes: Routes = [
     path: 'mobile-vendor',
     loadChildren: () => import('./mobile/vendor/vendor.module').then(m => m.VendorPageModule)
   },
-  */
   {
     path: 'vendor/dashboard',
     loadComponent: () => import('./enduser-app/features/vendor/pages/dashboard/vendor-dashboard.component').then(m => m.VendorDashboardComponent),
