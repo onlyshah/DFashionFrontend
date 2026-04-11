@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface MediaItem {
   id: string;
@@ -28,7 +29,7 @@ export class MediaService {
 
   // Fallback images for different scenarios
   private readonly fallbackImages = {
-  user: 'http://localhost:3000/uploads/avatars/default-avatar.svg',
+  user: environment.apiUrl + '/uploads/avatars/default-avatar.svg',
     product: '/uploadsdefault-product.svg',
     post: '/uploadsdefault-post.svg',
     story: '/uploadsdefault-story.svg'
@@ -145,7 +146,7 @@ export class MediaService {
     const urlMappings: { [key: string]: string } = {
       'summer-collection': '/uploadsplaceholder-product.svg',
       'behind-scenes': '/uploadsplaceholder.svg',
-  'customer-spotlight': 'http://localhost:3000/upload/avatars/default-avatar.png',
+  'customer-spotlight': environment.apiUrl + '/uploads/avatars/default-avatar.png',
       'styling-tips': '/uploadsplaceholder.svg',
       'design': '/uploadsplaceholder.svg'
     };

@@ -8,6 +8,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
 import { Subscription } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { StoryTrayComponent } from '../home/components/stories/story-tray/story-tray.component';
 
 type Story = any;
@@ -783,7 +784,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
         _id: 'guest-user',
         username: 'guest',
         fullName: 'Guest User',
-  avatar: 'http://localhost:3000/uploads/avatars/default-avatar.svg'
+  avatar: environment.apiUrl + '/uploads/avatars/default-avatar.svg'
       };
     }
     console.log('Social Feed - Current User loaded:', this.currentUser);

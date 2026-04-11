@@ -6,20 +6,22 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { RBACService } from '../../core/services/rbac.service';
 import { getRedirectPathForRole } from '../../config/roleRedirectMap';
+import { environment } from '../../../environments/environment';
+import { ImageCardSliderComponent } from '../image-card-slider/image-card-slider.component';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ImageCardSliderComponent]
 })
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   isLoading = false;
   errorMessage: string = '';
   showPassword = false;
-  apiUrl = '/api';
+  apiUrl = environment.apiUrl;
 
   // Carousel properties
   currentSlide = 0;

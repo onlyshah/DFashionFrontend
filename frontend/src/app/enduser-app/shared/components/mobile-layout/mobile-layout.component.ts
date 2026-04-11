@@ -138,12 +138,10 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
   private updateLayoutForBreakpoint() {
     if (!this.breakpoints) return;
 
-    // Adjust layout based on breakpoints
+    // Adjust layout based on breakpoints without overriding the parent input
     if (this.breakpoints.xs || this.breakpoints.sm) {
-      this.showBottomNav = true;
       this.enableCompactMode();
     } else {
-      this.showBottomNav = false;
       this.disableCompactMode();
     }
   }
@@ -330,7 +328,7 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   // Get current user avatar
   getCurrentUserAvatar(): string {
-  return this.currentUser?.avatar || 'http://localhost:3000/uploads/avatars/default-avatar.svg';
+  return this.currentUser?.avatar || environment.apiUrl + '/uploads/avatars/default-avatar.svg';
   }
 
   // Performance Optimization
@@ -340,6 +338,6 @@ export class MobileLayoutComponent implements OnInit, OnDestroy {
 
   onAvatarError(event: any) {
     // Fallback to default avatar if the current one fails to load
-  event.target.src = 'http://localhost:3000/uploads/avatars/default-avatar.svg';
+  event.target.src = environment.apiUrl + '/uploads/avatars/default-avatar.svg';
   }
 }

@@ -1,0 +1,26 @@
+<div class="image-card-slider">
+  <ng-container *ngIf="images$ | async as images">
+    <div class="card-stack">
+      <div
+        *ngFor="let image of images | slice:0:6; let idx = index; trackBy: trackByUrl"
+        class="card"
+        [class.top]="getPosition(idx) === 'top'"
+        [class.next]="getPosition(idx) === 'next'"
+        [class.stack-2]="getPosition(idx) === 'stack-2'"
+        [class.stack-3]="getPosition(idx) === 'stack-3'"
+        [class.stack-4]="getPosition(idx) === 'stack-4'"
+        [class.hidden]="getPosition(idx) === 'hidden'"
+        [style.zIndex]="6 - idx"
+      >
+        <img [src]="image" alt="Login preview" loading="lazy" />
+      </div>
+    </div>
+
+    <div class="indicator-row" *ngIf="images.length > 1">
+      <span
+        *ngFor="let image of images | slice:0:6; let idx = index"
+        [class.active]="idx === currentIndex"
+      ></span>
+    </div>
+  </ng-container>
+</div>

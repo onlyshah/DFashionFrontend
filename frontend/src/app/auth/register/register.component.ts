@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -61,7 +62,7 @@ export class RegisterComponent implements OnInit {
 
       try {
         const formData = this.registerForm.value;
-        const response = await firstValueFrom(this.authService.register(formData));
+        const response: any = await firstValueFrom(this.authService.register(formData));
 
         if (response?.success || response?.data) {
           this.router.navigate(['/auth/login'], { 

@@ -76,6 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.authService.currentUser$.subscribe(user => {
         this.isLoggedIn = !!user;
+        console.log('Auth State Changed - isLoggedIn:', this.isLoggedIn);
       })
     );
 
@@ -83,6 +84,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.mobileOptimizationService.getDeviceInfo$().subscribe(info => {
         this.isMobile = info.isMobile;
+        console.log('Device Info - isMobile:', this.isMobile, 'screenWidth:', info.screenWidth);
       })
     );
 
@@ -90,6 +92,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.layoutService.layoutState$.subscribe(state => {
         this.showHeader = state.showHeader;
+        console.log('Layout State - showHeader:', this.showHeader);
       })
     );
 
@@ -106,7 +109,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private updateRouteFlags(url: string): void {
     const normalizedUrl = url.toLowerCase();
-    this.isAuthRoute = normalizedUrl.includes('/auth') || normalizedUrl.includes('/login') || normalizedUrl.includes('/register');
+    // Hide bottom nav on auth/login/register pages
+    this.isAuthRoute = normalizedUrl.includes('/auth') || 
+                       normalizedUrl.includes('/login') || 
+                       normalizedUrl.includes('/register') ||
+                       normalizedUrl.includes('/forgot-password') ||
+                       normalizedUrl.includes('/reset-password');
+    console.log('Route:', url, '| isAuthRoute:', this.isAuthRoute, '| showBottomNav:', this.showMobileBottomNav);
   }
 
   get showMobileBottomNav(): boolean {
