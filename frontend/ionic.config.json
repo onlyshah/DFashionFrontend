@@ -4,5 +4,6 @@
     "capacitor": {}
   },
   "type": "angular",
+  "project": "dfashion-frontend",
   "id": "dfashion-mobile"
 }

@@ -2,10 +2,10 @@
   <div class="navbar-brand-wrapper d-flex justify-content-center">
     <div class="navbar-brand-inner-wrapper d-flex justify-content-between align-items-center w-100">
       <a class="navbar-brand brand-logo" routerLink="/admin/dashboard" aria-label="DFashion dashboard">
-        <img [src]="'/uploads/logo/logo.svg'" alt="logo" (error)="handleImageError($event)" />
+        <img [src]="apiUrl + '/uploads/logo/logo.png'" alt="logo" (error)="handleImageError($event)" />
       </a>
       <a class="navbar-brand brand-logo-mini" routerLink="/admin/dashboard" aria-hidden="true">
-        <img [src]="'/uploads/logo/logo-mini.svg'" alt="logo-mini" (error)="handleImageError($event)" />
+        <img [src]="apiUrl + '/uploads/logo/logo.png'" alt="logo-mini" (error)="handleImageError($event)" />
       </a>
       <button class="navbar-toggler navbar-toggler align-self-center" type="button" (click)="toggleSidebar()">
         <span class="typcn typcn-th-menu"></span>

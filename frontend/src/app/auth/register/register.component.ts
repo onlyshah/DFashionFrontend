@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +16,7 @@ export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
   isLoading = false;
   errorMessage: string = '';
-  apiUrl = '/api';
+  apiUrl = environment.apiUrl;
 
   constructor(
     private fb: FormBuilder,

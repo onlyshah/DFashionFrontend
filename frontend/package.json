@@ -8,7 +8,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "serve": "ng serve --proxy-config proxy.conf.json",
-    "ionic:build": "ng build",
+    "ionic:build": "ng build dfashion-frontend",
     "ionic:serve": "node ./scripts/ionic-serve.js",
     "build:mobile": "ng build --configuration production",
     "cap:add": "npx cap add",
