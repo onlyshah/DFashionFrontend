@@ -193,11 +193,17 @@ export class ShopComponent implements OnInit {
     }
     // TODO: Implement add to cart API call
     console.log('Add to cart:', product);
-  this.showSuccessMessage(product.name + ' added to cart!');
+    this.showSuccessMessage(product.name + ' added to cart!');
   }
 
   getProductImage(product: Product): string {
-    return this.imageUrl+product.images[0]?.url || '/uploads/default/placeholder.jpg';
+    const imagePath = product?.images?.[0]?.url;
+    if (!imagePath) {
+      return `${this.imageUrl}/uploads/default/placeholder.jpg`;
+    }
+    return imagePath.startsWith('http')
+      ? imagePath
+      : `${this.imageUrl}${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
   }
 
   getDiscountPercentage(product: Product): number {
