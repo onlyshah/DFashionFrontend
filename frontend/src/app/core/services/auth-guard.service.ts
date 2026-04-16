@@ -84,7 +84,7 @@ export class AuthGuardService {
 
   // Safe method to check authentication without triggering API calls
   isAuthenticatedSync(): boolean {
-    const token = localStorage.getItem('token');
+    const token = this.authService.getToken();
     return !!token && this.authService.isAuthenticated;
   }
 

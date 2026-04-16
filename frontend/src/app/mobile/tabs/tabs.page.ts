@@ -2,10 +2,12 @@ import { Component, OnInit, OnDestroy, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
-import { WishlistNewService } from '../../core/services/wishlist-new.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 import { CreateContentModalComponent } from '../../enduser-app/shared/components/create-content-modal/create-content-modal.component';
 import { ViewStoriesComponent } from '../../enduser-app/features/home/components/stories/view-stories/view-stories.component';
 
@@ -32,6 +34,8 @@ export class TabsPage implements OnInit, OnDestroy {
   currentStories: any[] = [];
   currentStoryIndex = 0;
 
+  private destroy$ = new Subject<void>();
+
   // User display properties
   get userName(): string {
     return this.currentUser?.fullName || this.currentUser?.username || 'User';
@@ -49,31 +53,39 @@ export class TabsPage implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private cartService: CartService,
-  private wishlistService: WishlistNewService,
+    private wishlistService: WishlistService,
     private elementRef: ElementRef
   ) {}
 
   ngOnInit() {
     // Subscribe to auth state
-    this.authService.isAuthenticated$.subscribe(
-      isAuth => this.isAuthenticated = isAuth
-    );
+    this.authService.isAuthenticated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        isAuth => this.isAuthenticated = isAuth
+      );
 
     // Subscribe to current user
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-      this.isVendor = user?.role === 'vendor' || user?.role === 'admin';
-    });
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+        this.isVendor = user?.role === 'vendor' || user?.role === 'admin';
+      });
 
     // Subscribe to cart count
-    this.cartService.cartItemCount$.subscribe(
-      count => this.cartItemCount = count
-    );
+    this.cartService.cartItemCount$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        count => this.cartItemCount = count
+      );
 
     // Subscribe to wishlist count
-    this.wishlistService.wishlistItemCount$.subscribe(
-      count => this.wishlistItemCount = count
-    );
+    this.wishlistService.wishlistCount$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(
+        (count: number) => this.wishlistItemCount = count
+      );
 
     // Listen for stories events from child components
     this.elementRef.nativeElement.addEventListener('openStories', (event: CustomEvent) => {
@@ -90,6 +102,10 @@ export class TabsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    // Clean up subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+    
     // Clean up event listeners
     this.elementRef.nativeElement.removeEventListener('openStories', this.openStoriesViewer);
   }

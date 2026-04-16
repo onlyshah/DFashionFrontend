@@ -129,14 +129,14 @@
         <div class="product-actions">
           <button 
             class="cart-btn" 
-            (click)="onAddToCart(product, $event)"
+            (click)="onCartToggle($event, product, !isProductInCart(product))"
           >
             <ion-icon name="bag-add-outline"></ion-icon>
-            Add to Cart
+            {{ getCartButtonText(product) }}
           </button>
           <button 
             class="wishlist-btn" 
-            (click)="onAddToWishlist(product, $event)"
+            (click)="onWishlistToggle($event, product, !isProductInWishlist(product))"
           >
             <ion-icon name="heart-outline"></ion-icon>
           </button>

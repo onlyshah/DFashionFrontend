@@ -13,6 +13,9 @@ import { Subscription } from 'rxjs';
 import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
 import { Product } from '../../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../../core/services/social-interactions.service';
+import { CartService } from '../../../../../core/services/cart.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { ProductStateService } from '../../../../../core/services/product-state.service';
 import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 
@@ -27,6 +30,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: string | null = null;
   likedProducts = new Set<string>();
+  loadingProductIds = new Set<string>();
   private subscription: Subscription = new Subscription();
 
   // Slider properties
@@ -41,15 +45,19 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 5000; // 5 seconds for brands
   isAutoSliding = true;
   isPaused = false;
-   imageUrl = environment.apiUrl
+  imageUrl = environment.apiUrl;
+
   constructor(
-  private unifiedApi: UnifiedApiService,
+    private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
+    private cartService: CartService,
+    private wishlistService: WishlistService,
+    private productStateService: ProductStateService,
     private router: Router
   ) {}
 
   ngOnInit() {
-  this.loadFeaturedBrands();
+    this.loadFeaturedBrands();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -59,8 +67,6 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.stopAutoSlide();
   }
-
-  // No longer needed: subscribeFeaturedBrands
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -76,7 +82,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     this.unifiedApi.getFeaturedBrands(1, 8).subscribe(
       (response) => {
         this.featuredBrands = response?.data || response?.brands || [];
-         console.log('featuredBrands' ,this.featuredBrands)
+        console.log('featuredBrands' ,this.featuredBrands)
         this.isLoading = false;
         this.updateSliderOnBrandsLoad();
       },
@@ -114,11 +120,16 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
 
   async onShareProduct(product: Product, event: Event) {
     event.stopPropagation();
+    const productId = product._id || product.id;
+    if (!productId) {
+      console.warn('Product ID not found');
+      return;
+    }
     try {
-      const productUrl = `${window.location.origin}/product/${product._id}`;
+      const productUrl = `${window.location.origin}/product/${productId}`;
       await navigator.clipboard.writeText(productUrl);
 
-      await this.socialService.shareProduct(product._id, {
+      await this.socialService.shareProduct(productId, {
         platform: 'copy_link',
         message: `Check out this amazing ${product.name} from ${product.brand}!`
       });
@@ -135,6 +146,123 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
       currency: 'INR',
       minimumFractionDigits: 0
     }).format(price);
+  }
+
+  onCartToggle(event: { product: Product; newState: boolean }): void {
+    const { product, newState } = event;
+    const productId = product.id || product._id;
+
+    if (!productId) {
+      console.error('Product ID not found for cart toggle');
+      return;
+    }
+
+    if (this.loadingProductIds.has(productId)) {
+      console.warn('Cart operation already in progress for product:', productId);
+      return;
+    }
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to cart
+      this.cartService.addToCart(productId, 1).subscribe({
+        next: () => {
+          this.productStateService.setCartState(productId, true);
+          console.log('Product added to cart:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('Error adding to cart:', err);
+          this.productStateService.setCartState(productId, false);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    } else {
+      // Remove from cart
+      const cartItems = this.cartService.getCartItems() || [];
+      const cartItem = cartItems.find((item: any) => item.product?._id === productId || item.product?.id === productId);
+
+      if (cartItem) {
+        this.cartService.removeFromCart(cartItem._id).subscribe({
+          next: () => {
+            this.productStateService.setCartState(productId, false);
+            console.log('Product removed from cart:', productId);
+            this.loadingProductIds.delete(productId);
+          },
+          error: (err) => {
+            console.error('Error removing from cart:', err);
+            this.productStateService.setCartState(productId, true);
+            this.loadingProductIds.delete(productId);
+          }
+        });
+      } else {
+        this.loadingProductIds.delete(productId);
+      }
+    }
+  }
+
+  onWishlistToggle(event: { product: Product; newState: boolean }): void {
+    const { product, newState } = event;
+    const productId = product.id || product._id;
+
+    if (!productId) {
+      console.error('Product ID not found for wishlist toggle');
+      return;
+    }
+
+    if (this.loadingProductIds.has(productId)) {
+      console.warn('Wishlist operation already in progress for product:', productId);
+      return;
+    }
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to wishlist
+      this.wishlistService.addToWishlist(productId).subscribe({
+        next: () => {
+          this.productStateService.setWishlistState(productId, true);
+          console.log('Product added to wishlist:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('Error adding to wishlist:', err);
+          this.productStateService.setWishlistState(productId, false);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    } else {
+      // Remove from wishlist
+      this.wishlistService.removeFromWishlist(productId).subscribe({
+        next: () => {
+          this.productStateService.setWishlistState(productId, false);
+          console.log('Product removed from wishlist:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('Error removing from wishlist:', err);
+          this.productStateService.setWishlistState(productId, true);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    }
+  }
+
+  /**
+   * Check if product is in cart (for template)
+   */
+  isProductInCart(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInCart().includes(productId);
+  }
+
+  /**
+   * Check if product is in wishlist (for template)
+   */
+  isProductInWishlist(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInWishlist().includes(productId);
   }
 
   formatNumber(num: number): string {

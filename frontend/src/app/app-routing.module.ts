@@ -34,12 +34,29 @@ const routes: Routes = [
     loadComponent: () => import('./enduser-app/features/category/category.component').then(m => m.CategoryComponent)
   },
   {
+    path: 'brand/:id',
+    redirectTo: '/shop',
+    pathMatch: 'full'
+  },
+  {
     path: 'products/:id',
     loadComponent: () => import('./enduser-app/features/shop/pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
     path: 'search',
     loadChildren: () => import('./enduser-app/features/search/search.routes').then(m => m.searchRoutes)
+  },
+  // ✨ NEW: Posts routing (social media posts)
+  {
+    path: 'posts',
+    loadChildren: () => import('./enduser-app/features/posts/posts.routes').then(m => m.postsRoutes),
+    data: { title: 'Posts' }
+  },
+  // 🔄 STANDARDIZED: Redirect duplicate product route to primary route
+  {
+    path: 'shop/product/:id',
+    redirectTo: '/products/:id',
+    pathMatch: 'full'
   },
   {
     path: 'cart',

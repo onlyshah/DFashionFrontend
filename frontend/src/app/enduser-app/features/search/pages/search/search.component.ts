@@ -7,7 +7,7 @@ import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/o
 import { Subject } from 'rxjs';
 
 import { ProductService } from '../../../../../core/services/product.service';
-import { SearchService, SearchFilters, SearchSuggestion } from '../../../../../core/services/search.service';
+import { SearchService, SearchFilters, SearchSuggestion, CategorizedSearchResult } from '../../../../../core/services/search.service';
 import { AdvancedSearchComponent } from '../../../../shared/components/advanced-search/advanced-search.component';
 
 @Component({
@@ -500,6 +500,11 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   searchQuery = '';
   searchResults: any[] = [];
+  
+  // ✨ NEW: Categorized search results
+  categorizedResults: CategorizedSearchResult | null = null;
+  useCategorizedSearch = true; // Enable categorized search by default
+  
   recentSearches: string[] = [];
   isLoading = false;
   hasSearched = false;
@@ -562,15 +567,30 @@ export class SearchComponent implements OnInit, OnDestroy {
       switchMap(query => {
         if (query.trim().length > 0) {
           this.isLoading = true;
-          return this.productService.searchProducts(query, {
-            category: this.selectedCategory,
-            minPrice: this.getPriceRange().min,
-            maxPrice: this.getPriceRange().max,
-            sortBy: this.getSortField(),
-            sortOrder: this.getSortOrder()
-          });
+          this.searchStartTime = Date.now();
+          
+          // Use categorized search if enabled (shows posts + products)
+          if (this.useCategorizedSearch) {
+            return this.searchService.performCategorizedSearch(query, {
+              category: this.selectedCategory,
+              minPrice: this.getPriceRange().min,
+              maxPrice: this.getPriceRange().max,
+              sortBy: this.getSortField(),
+              sortOrder: this.getSortOrder()
+            });
+          } else {
+            // Fallback to traditional product-only search
+            return this.productService.searchProducts(query, {
+              category: this.selectedCategory,
+              minPrice: this.getPriceRange().min,
+              maxPrice: this.getPriceRange().max,
+              sortBy: this.getSortField(),
+              sortOrder: this.getSortOrder()
+            });
+          }
         } else {
           this.searchResults = [];
+          this.categorizedResults = null;
           this.hasSearched = false;
           this.isLoading = false;
           return [];
@@ -579,7 +599,23 @@ export class SearchComponent implements OnInit, OnDestroy {
     ).subscribe({
       next: (response: any) => {
         console.log('Search response:', response);
-        this.searchResults = response.products || response.data?.products || [];
+        
+        // Handle categorized results
+        if (this.useCategorizedSearch && response.social) {
+          this.categorizedResults = response;
+          // Also populate flat results for components expecting it
+          this.searchResults = [
+            ...response.social.posts,
+            ...response.social.reels,
+            ...response.social.stories,
+            ...response.ecommerce.products
+          ];
+        } else {
+          // Handle traditional results
+          this.searchResults = response.products || response.data?.products || [];
+          this.categorizedResults = null;
+        }
+        
         this.hasSearched = true;
         this.isLoading = false;
       },
@@ -588,6 +624,7 @@ export class SearchComponent implements OnInit, OnDestroy {
         this.isLoading = false;
         this.hasSearched = true;
         this.searchResults = [];
+        this.categorizedResults = null;
         // Show user-friendly error message
         if (this.platform === 'mobile') {
           this.showErrorToast('Search failed. Please try again.');
@@ -653,7 +690,11 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   viewProduct(productId: string) {
-    this.router.navigate(['/shop/product', productId]);
+    if (!productId) {
+      console.warn('Cannot navigate: no product ID');
+      return;
+    }
+    this.router.navigate(['/products', productId]);
   }
 
   toggleWishlist(productId: string) {

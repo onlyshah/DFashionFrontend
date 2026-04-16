@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
 import { VendorService, VendorStats } from '../../core/services/vendor.service';
 
@@ -13,7 +15,7 @@ import { VendorService, VendorStats } from '../../core/services/vendor.service';
   templateUrl: './vendor.page.html',
   styleUrls: ['./vendor.page.scss'],
 })
-export class VendorPage implements OnInit {
+export class VendorPage implements OnInit, OnDestroy {
   currentUser: any = null;
   stats: VendorStats = {
     totalProducts: 0,
@@ -101,6 +103,7 @@ export class VendorPage implements OnInit {
   ];
 
   recentActivity: any[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
@@ -114,15 +117,19 @@ export class VendorPage implements OnInit {
   }
 
   loadUserData() {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser = user;
-    });
+    this.authService.currentUser$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+      });
   }
 
   loadStats() {
     this.loading = true;
 
-    this.vendorService.getDashboardStats().subscribe({
+    this.vendorService.getDashboardStats()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (response) => {
         if (response.success && response.data) {
           this.stats = response.data.stats;
@@ -135,6 +142,11 @@ export class VendorPage implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   formatCurrency(amount: number): string {

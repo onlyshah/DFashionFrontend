@@ -1,4 +1,5 @@
 export interface Product {
+  id?: string;
   _id: string;
   name: string;
   description: string;
@@ -8,6 +9,8 @@ export interface Product {
   category: string;
   subcategory: string;
   brand: string;
+  brandImage?: string;  // URL to brand image
+  brandLogo?: string;   // URL to brand logo
   images: ProductImage[];
   sizes: ProductSize[];
   colors: ProductColor[];

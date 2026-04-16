@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { LogisticsService } from '../../services/logistics.service';
 
 @Component({
@@ -6,10 +8,11 @@ import { LogisticsService } from '../../services/logistics.service';
   templateUrl: './logistics.component.html',
   styleUrls: ['./logistics.component.scss']
 })
-export class LogisticsComponent implements OnInit {
+export class LogisticsComponent implements OnInit, OnDestroy {
   shipments: any[] = [];
   isLoading = false;
   error: string | null = null;
+  private destroy$ = new Subject<void>();
 
   constructor(private logisticsService: LogisticsService) {}
 
@@ -20,7 +23,9 @@ export class LogisticsComponent implements OnInit {
   loadShipments(): void {
     this.isLoading = true;
     this.error = null;
-    this.logisticsService.getShipments().subscribe({
+    this.logisticsService.getShipments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (res) => {
         this.shipments = res || [];
         this.isLoading = false;
@@ -31,6 +36,11 @@ export class LogisticsComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getStatusColor(status: string): string {

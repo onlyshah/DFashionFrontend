@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'app-price-display',
     styleUrls: ['./price-display.component.scss'],
-    templateUrl: './price-display.component.html'
+    templateUrl: './price-display.component.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PriceDisplayComponent {
     @Input() currentPrice: number = 0;

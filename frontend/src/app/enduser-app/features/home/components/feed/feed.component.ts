@@ -80,22 +80,101 @@ export class FeedComponent implements OnInit {
     // Optionally scroll to comment input or set focus
   }
 
+  // Get brand image URL
+  getBrandImageUrl(product: any): string {
+    if (product?.brandImage) {
+      return product.brandImage.startsWith('http') 
+        ? product.brandImage 
+        : `${this.imageUrl}${product.brandImage}`;
+    }
+    if (product?.brandLogo) {
+      return product.brandLogo.startsWith('http') 
+        ? product.brandLogo 
+        : `${this.imageUrl}${product.brandLogo}`;
+    }
+    // Fallback to default brand placeholder
+    return `${this.imageUrl}/uploads/brands/default-brand.png`;
+  }
+
   // Share post
   sharePost(post: any) {
-    const url = `${environment.apiUrl}/api/posts/${post.id}/share`;
-    this.http.post(url, {}).subscribe();
-    // Optionally show share UI
+    const postId = post.id || post._id;
+    if (!postId) {
+      console.warn('Cannot share post: no ID found', post);
+      return;
+    }
+    const url = `${environment.apiUrl}/api/posts/${postId}/share`;
+    this.http.post(url, {}).subscribe({
+      next: () => {
+        post.shares = (post.shares || 0) + 1;
+      },
+      error: (err) => console.error('Share failed:', err)
+    });
+  }
+
+  // Open post options menu
+  openPostOptions(post: any, event: Event): void {
+    event.stopPropagation();
+    this.selectedPostForOptions = post;
+    this.isPostOptionsOpen = true;
+  }
+
+  // Close post options menu
+  closePostOptions(): void {
+    this.isPostOptionsOpen = false;
+    this.selectedPostForOptions = null;
+  }
+
+  // Save post option
+  onSavePost(): void {
+    if (this.selectedPostForOptions) {
+      this.toggleSave(this.selectedPostForOptions);
+      this.closePostOptions();
+    }
+  }
+
+  // Share post option
+  onSharePostOption(): void {
+    if (this.selectedPostForOptions) {
+      this.sharePost(this.selectedPostForOptions);
+      this.closePostOptions();
+    }
+  }
+
+  // Report post option
+  onReportPost(): void {
+    if (this.selectedPostForOptions) {
+      alert('Report post: ' + (this.selectedPostForOptions.caption || 'Post'));
+      this.closePostOptions();
+    }
+  }
+
+  // Copy post URL option
+  onCopyPostUrl(): void {
+    if (this.selectedPostForOptions) {
+      const postId = this.selectedPostForOptions.id || this.selectedPostForOptions._id;
+      const postUrl = `${window.location.origin}/post/${postId}`;
+      navigator.clipboard.writeText(postUrl).then(() => {
+        alert('Post URL copied to clipboard!');
+        this.closePostOptions();
+      });
+    }
   }
 
   // Save/unsave post
   toggleSave(post: any) {
-    const url = `${environment.apiUrl}/api/posts/${post.id}/save`;
+    const postId = post.id || post._id;
+    if (!postId) {
+      console.warn('Cannot save post: no ID found', post);
+      return;
+    }
+    const url = `${environment.apiUrl}/api/posts/${postId}/save`;
     this.http.post(url, {}).subscribe({
       next: () => {
         post.isSaved = !post.isSaved;
         post.saves = post.isSaved ? post.saves + 1 : post.saves - 1;
       },
-      error: () => {}
+      error: (err) => console.error('Save failed:', err)
     });
   }
 
@@ -126,36 +205,87 @@ export class FeedComponent implements OnInit {
 
   // Add product to cart
   addToCart(product: any) {
-    // For now, just show a placeholder action since products aren't loaded
-    console.log('Add to cart clicked for post:', product.id);
-    // this.cartService.addToCart(product.product || product);
+    const productId = product.id || product._id || product.product?._id;
+    if (!productId) {
+      console.warn('Cannot add to cart: no product ID');
+      return;
+    }
+    
+    this.cartService.addToCart(productId, 1).subscribe({
+      next: (response) => {
+        if (response.itemExists) {
+          // Show prompt to increase quantity
+          if (confirm(`${product.name || 'Product'} is already in your cart (qty: ${response.currentQuantity || 1}). Would you like to increase the quantity?`)) {
+            const newQty = (response.currentQuantity || 1) + 1;
+            this.cartService.updateCartItemQuantity(productId, newQty).subscribe({
+              next: () => alert(`Quantity updated to ${newQty}`),
+              error: (err) => console.error('Failed to update quantity:', err)
+            });
+          }
+        } else {
+          alert(`✓ ${product.name || 'Product'} added to cart!`);
+        }
+      },
+      error: (err) => console.error('Error adding to cart:', err)
+    });
   }
 
   // Add product to wishlist
   addToWishlist(product: any) {
-    // For now, just show a placeholder action since products aren't loaded
-    console.log('Add to wishlist clicked for post:', product.id);
-    // this.wishlistService.addToWishlist(product.product || product);
+    const productId = product.id || product._id || product.product?._id;
+    if (!productId) {
+      console.warn('Cannot add to wishlist: no product ID');
+      return;
+    }
+    
+    this.wishlistService.addToWishlist(productId).subscribe({
+      next: (response) => {
+        if (response.itemExists) {
+          alert('✓ This product is already in your wishlist');
+        } else {
+          alert(`✓ ${product.name || 'Product'} added to wishlist!`);
+        }
+      },
+      error: (err) => console.error('Error adding to wishlist:', err)
+    });
   }
 
   // Buy now (navigate to product page)
   buyNow(product: any) {
-    // For now, just show a placeholder action since products aren't loaded
-    console.log('Buy now clicked for post:', product.id);
-    // const prodId = product.product?._id || product._id;
-    // if (prodId) {
-    //   this.router.navigate(['/product', prodId]);
-    // }
+    const productId = product.id || product._id || product.product?._id;
+    if (!productId) {
+      console.warn('Cannot buy: no product ID found', product);
+      return;
+    }
+    // Navigate to product detail page
+    this.router.navigate(['/products', productId], {
+      queryParams: { from: 'post' }
+    });
+  }
+
+  // Navigate to product detail from product card
+  goToProductDetail(product: any) {
+    const productId = product.id || product._id || product.product?._id;
+    if (!productId) {
+      console.warn('Cannot navigate: no product ID');
+      return;
+    }
+    this.router.navigate(['/products', productId]);
   }
 
   // Toggle notification for post updates
   toggleNotification(post: any) {
-    const url = `${environment.apiUrl}/api/posts/${post.id}/notification`;
+    const postId = post.id || post._id;
+    if (!postId) {
+      console.warn('Cannot toggle notification: no post ID found', post);
+      return;
+    }
+    const url = `${environment.apiUrl}/api/posts/${postId}/notification`;
     this.http.post(url, {}).subscribe({
       next: () => {
         post.isNotified = !post.isNotified;
       },
-      error: () => {}
+      error: (err) => console.error('Notification toggle failed:', err)
     });
   }
 
@@ -250,9 +380,9 @@ fetchPosts(page: number = 1, append = false) {
         });
 
         return {
-          id: p._id,
-          caption: p.caption,
-          content: p.caption,
+          id: p.id || p._id,
+          caption: p.caption || p.content,
+          content: p.caption || p.content,
           mediaType,
           mediaUrl,
           hashtags: p.hashtags || [],
@@ -303,14 +433,9 @@ openPostCreator() {
 }
 
 showPostOptions(post: any) {
-  this.selectedPostForOptions = post;
-  this.isPostOptionsOpen = true;
-}
-
-closePostOptions() {
-  this.isPostOptionsOpen = false;
-  this.selectedPostForOptions = null;
-}
+    this.selectedPostForOptions = post;
+    this.isPostOptionsOpen = true;
+  }
 
 toggleMessagesPanel() {
   this.messagesPanelOpen = !this.messagesPanelOpen;

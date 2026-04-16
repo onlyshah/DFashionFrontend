@@ -131,7 +131,11 @@ export class ShopComponent implements OnInit {
   }
 
   viewProduct(product: any) {
-    this.router.navigate(['/product', product._id]);
+    if (!product._id) {
+      console.warn('Cannot navigate: no product ID');
+      return;
+    }
+    this.router.navigate(['/products', product._id]);
   }
 
   likeProduct(product: any, event: Event) {

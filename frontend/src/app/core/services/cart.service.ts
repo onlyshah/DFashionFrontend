@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { StorageService } from './storage.service';
 import { ToastController } from '@ionic/angular';
 import { environment } from '../../../environments/environment';
+import { ProductStateService } from './product-state.service';
+import { AuthService } from './auth.service';
 
 export interface CartItem {
   _id: string;
@@ -55,14 +57,23 @@ export class CartService {
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private productStateService: ProductStateService,
+    private authService: AuthService
   ) {
     // Initialize cart on service creation - but only load from storage for guest users
     this.initializeCart();
   }
 
+  /**
+   * Get authentication token from AuthService (handles all storage scenarios)
+   */
+  private getAuthToken(): string | null {
+    return this.authService.getToken();
+  }
+
   private initializeCart() {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (token) {
       // User is authenticated, load from API
       this.loadCart();
@@ -75,7 +86,7 @@ export class CartService {
 
   // Get cart from API
   getCart(): Observable<{ success: boolean; cart: any; summary: any }> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -84,7 +95,7 @@ export class CartService {
 
   // Get cart count only (lightweight endpoint) - returns total quantities
   getCartCount(): Observable<{ success: boolean; count: number; totalItems: number; itemCount: number; totalAmount: number; showTotalPrice: boolean }> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -93,7 +104,7 @@ export class CartService {
 
   // Get total count for logged-in user (cart + wishlist)
   getTotalCount(): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -102,7 +113,7 @@ export class CartService {
 
   // Debug cart data
   debugCart(): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -116,7 +127,7 @@ export class CartService {
 
   // Recalculate cart totals
   recalculateCart(): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -131,7 +142,7 @@ export class CartService {
   // Load cart and update local state
   loadCart() {
     // Always use real database integration
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
 
     if (token) {
       // User is logged in - load from API
@@ -149,7 +160,7 @@ export class CartService {
   // Load cart from API for logged-in users
   private loadCartFromAPI() {
     // Check if user is authenticated
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (!token) {
       console.log('❌ No authentication token, using local storage fallback');
       this.loadCartFromStorage();
@@ -172,6 +183,13 @@ export class CartService {
           this.cartItems.next(items);
           this.cartSummary.next(response.summary);
           this.updateCartCount();
+          
+          // Update product state service with current cart items
+          const cartProductIds = items.map((item: any) => item.product?._id || item.productId);
+          cartProductIds.forEach((productId: string) => {
+            this.productStateService.setCartState(productId, true);
+          });
+          
           console.log('✅ Cart loaded from API:', items.length, 'items');
           console.log('🛒 Cart items details:', items.map((item: any) => ({
             id: item._id,
@@ -257,7 +275,7 @@ export class CartService {
 
   // Method to refresh total count (cart + wishlist) for logged-in user
   refreshTotalCount() {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (token) {
       // Skip debug for now and go directly to getting total count
       console.log('🔄 Refreshing total count for logged-in user...');
@@ -270,7 +288,7 @@ export class CartService {
 
   private getTotalCountAfterRecalculation() {
     // Only refresh if user is authenticated
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (!token) {
       console.log('🔒 No authentication token, skipping cart count refresh');
       this.resetAllCounts();
@@ -349,17 +367,67 @@ export class CartService {
     }
   }
 
+  // Check if product already exists in cart
+  isProductInCart(productId: string): boolean {
+    const items = this.cartItems.getValue();
+    return items.some(item => item.product._id === productId || item.product._id === productId);
+  }
+
+  // Get all cart items (synchronous)
+  getCartItems(): CartItem[] {
+    return this.cartItems.getValue();
+  }
+
+  // Get existing cart item by product ID
+  getCartItemByProductId(productId: string): CartItem | undefined {
+    const items = this.cartItems.getValue();
+    return items.find(item => item.product._id === productId);
+  }
+
   // Add item to cart via API
-  addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string }> {
+  addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; itemExists?: boolean; currentQuantity?: number }> {
+    // Check if product already in cart
+    const existingItem = this.getCartItemByProductId(productId);
+    if (existingItem) {
+      // Return result indicating item exists and suggest quantity increase
+      return of({
+        success: false,
+        message: `This product is already in your cart with quantity ${existingItem.quantity}`,
+        itemExists: true,
+        currentQuantity: existingItem.quantity
+      });
+    }
+
     const payload = { productId, quantity, size, color };
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
-  return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart/add`, payload, options).pipe(
+    return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart/add`, payload, options).pipe(
       tap(response => {
         if (response.success) {
+          // Update product state to reflect it's in cart
+          this.productStateService.setCartState(productId, true);
           // Immediately refresh cart to get updated count
+          this.loadCartFromAPI();
+        }
+      })
+    );
+  }
+
+  // Update cart item quantity
+  updateCartItemQuantity(productId: string, newQuantity: number): Observable<any> {
+    const token = this.getAuthToken();
+    const options = token ? {
+      headers: { 'Authorization': `Bearer ${token}` }
+    } : {};
+
+    return this.http.put<any>(`${this.API_URL}/api/cart/update`, {
+      productId,
+      quantity: newQuantity
+    }, options).pipe(
+      tap(response => {
+        if (response?.success) {
           this.loadCartFromAPI();
         }
       })
@@ -429,13 +497,22 @@ export class CartService {
 
   // Remove item from cart via API
   removeFromCart(itemId: string): Observable<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
+    // Find the product ID for this cart item before removal
+    const items = this.cartItems.getValue();
+    const cartItem = items.find(item => item._id === itemId);
+    const productId = cartItem?.product?._id;
+
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
     return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart/remove/${itemId}`, options).pipe(
       tap(response => {
         if (response.success) {
+          // Update product state if we know the product ID
+          if (productId) {
+            this.productStateService.setCartState(productId, false);
+          }
           // Immediately refresh cart to get updated count
           this.loadCartFromAPI();
         }
@@ -445,7 +522,7 @@ export class CartService {
 
   // Bulk remove items from cart
   bulkRemoveFromCart(itemIds: string[]): Observable<{ success: boolean; message: string; removedCount: number }> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       body: { itemIds },
       headers: { 'Authorization': `Bearer ${token}` }
@@ -478,7 +555,7 @@ export class CartService {
 
   // Update cart item quantity via API
   updateCartItem(itemId: string, quantity: number): Observable<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -512,7 +589,7 @@ export class CartService {
 
   // Clear cart via API
   clearCartAPI(): Observable<{ success: boolean; message: string }> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -586,12 +663,12 @@ export class CartService {
   // Load cart count on user login
   async loadCartCountOnLogin(): Promise<void> {
     try {
-      // Get token with fallback to localStorage
+      // Get token with fallback to this.getAuthToken()
       let token: string | null = null;
 
       if (!this.storageService) {
-        console.warn('Storage service not available, using localStorage fallback');
-        token = localStorage.getItem('token');
+        console.warn('Storage service not available, using auth service');
+        token = this.getAuthToken();
       } else {
         token = await this.storageService.get('token');
       }

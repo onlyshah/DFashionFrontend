@@ -7,6 +7,7 @@ import { Product } from '../../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { ProductStateService } from '../../../../../core/services/product-state.service';
 import { IonicModule } from '@ionic/angular';
 import { environment } from 'src/environments/environment';
 
@@ -21,6 +22,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: string | null = null;
   likedProducts = new Set<string>();
+  loadingProductIds = new Set<string>();
   private subscription: Subscription = new Subscription();
 
   // Slider properties
@@ -35,17 +37,19 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 4000; // 4 seconds for products
   isAutoSliding = true;
   isPaused = false;
-   imageUrl = environment.apiUrl
+  imageUrl = environment.apiUrl;
+
   constructor(
-  private unifiedApi: UnifiedApiService,
+    private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
     private cartService: CartService,
     private wishlistService: WishlistService,
+    private productStateService: ProductStateService,
     private router: Router
   ) {}
 
   ngOnInit() {
-  this.loadNewArrivals();
+    this.loadNewArrivals();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -55,8 +59,6 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
     this.stopAutoSlide();
   }
-
-  // No longer needed: subscribeNewArrivals
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -102,11 +104,16 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
 
   async onShareProduct(product: Product, event: Event) {
     event.stopPropagation();
+    const productId = product._id || product.id;
+    if (!productId) {
+      console.warn('Product ID not found');
+      return;
+    }
     try {
-      const productUrl = `${window.location.origin}/product/${product._id}`;
+      const productUrl = `${window.location.origin}/product/${productId}`;
       await navigator.clipboard.writeText(productUrl);
 
-      await this.socialService.shareProduct(product._id, {
+      await this.socialService.shareProduct(productId, {
         platform: 'copy_link',
         message: `Check out this fresh arrival: ${product.name} from ${product.brand}!`
       });
@@ -137,6 +144,22 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Check if product is in cart (for template)
+   */
+  isProductInCart(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInCart().includes(productId);
+  }
+
+  /**
+   * Check if product is in wishlist (for template)
+   */
+  isProductInWishlist(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInWishlist().includes(productId);
+  }
+
   getDiscountPercentage(product: Product): number {
     if (product.originalPrice && product.originalPrice > product.price) {
       return Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
@@ -150,6 +173,121 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       currency: 'INR',
       minimumFractionDigits: 0
     }).format(price);
+  }
+
+  onCartToggle(event: Event, product: Product, newState: boolean): void {
+    event.stopPropagation();
+    event.preventDefault();
+    
+    const productId = product.id || product._id;
+
+    if (!productId) {
+      console.error('Product ID not found for cart toggle');
+      return;
+    }
+
+    if (this.loadingProductIds.has(productId)) {
+      console.warn('Cart operation already in progress for product:', productId);
+      return;
+    }
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to cart
+      this.cartService.addToCart(productId, 1).subscribe({
+        next: () => {
+          this.productStateService.setCartState(productId, true);
+          console.log('✅ Product added to cart:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('❌ Error adding to cart:', err);
+          this.productStateService.setCartState(productId, false);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    } else {
+      // Remove from cart
+      const cartItems = this.cartService.getCartItems() || [];
+      const cartItem = cartItems.find((item: any) => item.product?._id === productId || item.product?.id === productId);
+
+      if (cartItem) {
+        this.cartService.removeFromCart(cartItem._id).subscribe({
+          next: () => {
+            this.productStateService.setCartState(productId, false);
+            console.log('✅ Product removed from cart:', productId);
+            this.loadingProductIds.delete(productId);
+          },
+          error: (err) => {
+            console.error('❌ Error removing from cart:', err);
+            this.productStateService.setCartState(productId, true);
+            this.loadingProductIds.delete(productId);
+          }
+        });
+      } else {
+        this.loadingProductIds.delete(productId);
+      }
+    }
+  }
+
+  onWishlistToggle(event: Event, product: Product, newState: boolean): void {
+    event.stopPropagation();
+    event.preventDefault();
+    
+    const productId = product.id || product._id;
+
+    if (!productId) {
+      console.error('Product ID not found for wishlist toggle');
+      return;
+    }
+
+    if (this.loadingProductIds.has(productId)) {
+      console.warn('Wishlist operation already in progress for product:', productId);
+      return;
+    }
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to wishlist
+      this.wishlistService.addToWishlist(productId).subscribe({
+        next: () => {
+          this.productStateService.setWishlistState(productId, true);
+          console.log('✅ Product added to wishlist:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('❌ Error adding to wishlist:', err);
+          this.productStateService.setWishlistState(productId, false);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    } else {
+      // Remove from wishlist
+      this.wishlistService.removeFromWishlist(productId).subscribe({
+        next: () => {
+          this.productStateService.setWishlistState(productId, false);
+          console.log('✅ Product removed from wishlist:', productId);
+          this.loadingProductIds.delete(productId);
+        },
+        error: (err) => {
+          console.error('❌ Error removing from wishlist:', err);
+          this.productStateService.setWishlistState(productId, true);
+          this.loadingProductIds.delete(productId);
+        }
+      });
+    }
+  }
+
+  /**
+   * Get cart button text for a product
+   */
+  getCartButtonText(product: Product): string {
+    const productId = product.id || product._id;
+    const isLoading = this.loadingProductIds.has(productId);
+    const isInCart = this.isProductInCart(product);
+    return isLoading ? 'Loading...' : (isInCart ? 'Remove from Cart' : 'Add to Cart');
   }
 
   getDaysAgo(createdAt: Date): number {

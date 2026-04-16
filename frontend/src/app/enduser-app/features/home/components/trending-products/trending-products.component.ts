@@ -7,6 +7,7 @@ import { Product } from '../../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { ProductStateService } from '../../../../../core/services/product-state.service';
 import { IonicModule } from '@ionic/angular';
 //import { ImageFallbackDirective } from '../../../../shared/directives/image-fallback.directive';
 import { environment } from 'src/environments/environment';
@@ -22,12 +23,13 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   isLoading = true;
   error: string | null = null;
   likedProducts = new Set<string>();
+  loadingProductIds = new Set<string>(); // Track which products are currently loading
   private subscription: Subscription = new Subscription();
 
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 256; // Width of each product card (240px) + gap (16px)
+  cardWidth = 256; // Width of each product card (240px) +gap (16px)
   visibleCards = 2; // Number of cards visible at once
   maxSlide = 0;
 
@@ -36,42 +38,53 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   autoSlideDelay = 3500; // 3.5 seconds for trending products
   isAutoSliding = true;
   isPaused = false;
-   imageUrl = environment.apiUrl
+  imageUrl = environment.apiUrl
 
   backendProductPlaceholder = environment.apiUrl + '/uploads/products/placeholder-product.png';
 
   getProductImageUrl(product: Product): string {
-    if (product.images && product.images.length > 0) {
-      const url = product.images[0].url;
-      return url.startsWith('http') ? url : environment.apiUrl + url;
+    if (!product || !product.images || product.images.length === 0) {
+      return this.backendProductPlaceholder;
     }
+
+    const url = product.images[0].url || product.images[0];
+    
+    // If already absolute URL, return as-is
+    if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
+      return url;
+    }
+
+    // If relative path, prepend API URL
+    if (typeof url === 'string' && url.startsWith('/')) {
+      return environment.apiUrl + url;
+    }
+
+    // Fallback to placeholder
     return this.backendProductPlaceholder;
   }
 
   constructor(
-  private unifiedApi: UnifiedApiService,
+    private unifiedApi: UnifiedApiService,
     private socialService: SocialInteractionsService,
     private cartService: CartService,
     private wishlistService: WishlistService,
+    private productStateService: ProductStateService,
     private router: Router
   ) {
    
   }
 
   ngOnInit() {
-  this.loadTrendingProducts();
+    this.loadTrendingProducts();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
     this.setupResizeListener();
-    
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
     this.stopAutoSlide();
   }
-
-  // No longer needed: subscribeTrendingProducts
 
   private subscribeLikedProducts() {
     this.subscription.add(
@@ -102,13 +115,20 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   onProductClick(product: Product) {
-    this.router.navigate(['/product', product._id]);
+    const productId = product.id || product._id;
+    if (!product || !productId) {
+      console.error('Product or product ID is undefined', product);
+      return;
+    }
+    this.router.navigate(['/products', productId]);
   }
 
   async onLikeProduct(product: Product, event: Event) {
     event.stopPropagation();
+    const productId = product.id || product._id;
+    if (!productId) return;
     try {
-      const result = await this.socialService.likeProduct(product._id);
+      const result = await this.socialService.likeProduct(productId);
       if (result.success) {
         console.log(result.message);
       } else {
@@ -121,13 +141,15 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
 
   async onShareProduct(product: Product, event: Event) {
     event.stopPropagation();
+    const productId = product.id || product._id;
+    if (!productId) return;
     try {
       // For now, copy link to clipboard
-      const productUrl = `${window.location.origin}/product/${product._id}`;
+      const productUrl = `${window.location.origin}/products/${productId}`;
       await navigator.clipboard.writeText(productUrl);
 
       // Track the share
-      await this.socialService.shareProduct(product._id, {
+      await this.socialService.shareProduct(productId, {
         platform: 'copy_link',
         message: `Check out this amazing ${product.name} from ${product.brand}!`
       });
@@ -138,24 +160,130 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     }
   }
 
-  onAddToCart(product: Product, event: Event) {
+  /**
+   * Toggle cart state for a product
+   */
+  onCartToggle(event: Event, product: Product, newState: boolean): void {
     event.stopPropagation();
-    try {
-      this.cartService.addToCart(product._id, 1);
-      console.log('Product added to cart!');
-    } catch (error) {
-      console.error('Error adding to cart:', error);
+    event.preventDefault();
+    
+    const productId = product.id || product._id;
+    if (!productId) return;
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to cart
+      this.subscription.add(
+        this.cartService.addToCart(productId, 1).subscribe({
+          next: (response) => {
+            this.productStateService.setCartState(productId, true);
+            this.loadingProductIds.delete(productId);
+            console.log('✅ Product added to cart:', productId);
+          },
+          error: (error) => {
+            this.productStateService.setCartState(productId, false);
+            this.loadingProductIds.delete(productId);
+            console.error('❌ Error adding to cart:', error);
+          }
+        })
+      );
+    } else {
+      // Remove from cart - need to find the cart item ID
+      const cartItems = this.cartService.getCartItems() || [];
+      const cartItem = cartItems.find((item: any) => item.product?._id === productId || item.product?.id === productId);
+      if (cartItem) {
+        this.subscription.add(
+          this.cartService.removeFromCart(cartItem._id).subscribe({
+            next: (response) => {
+              this.productStateService.setCartState(productId, false);
+              this.loadingProductIds.delete(productId);
+              console.log('✅ Product removed from cart:', productId);
+            },
+            error: (error) => {
+              this.productStateService.setCartState(productId, true);
+              this.loadingProductIds.delete(productId);
+              console.error('❌ Error removing from cart:', error);
+            }
+          })
+        );
+      } else {
+        this.loadingProductIds.delete(productId);
+      }
     }
   }
 
-  onAddToWishlist(product: Product, event: Event) {
+  /**
+   * Toggle wishlist state for a product
+   */
+  onWishlistToggle(event: Event, product: Product, newState: boolean): void {
     event.stopPropagation();
-    try {
-      this.wishlistService.addToWishlist(product._id);
-      console.log('Product added to wishlist!');
-    } catch (error) {
-      console.error('Error adding to wishlist:', error);
+    event.preventDefault();
+    
+    const productId = product.id || product._id;
+    if (!productId) return;
+
+    this.loadingProductIds.add(productId);
+
+    if (newState) {
+      // Add to wishlist
+      this.subscription.add(
+        this.wishlistService.addToWishlist(productId).subscribe({
+          next: (response) => {
+            this.productStateService.setWishlistState(productId, true);
+            this.loadingProductIds.delete(productId);
+            console.log('✅ Product added to wishlist:', productId);
+          },
+          error: (error) => {
+            this.productStateService.setWishlistState(productId, false);
+            this.loadingProductIds.delete(productId);
+            console.error('❌ Error adding to wishlist:', error);
+          }
+        })
+      );
+    } else {
+      // Remove from wishlist
+      this.subscription.add(
+        this.wishlistService.removeFromWishlist(productId).subscribe({
+          next: (response) => {
+            this.productStateService.setWishlistState(productId, false);
+            this.loadingProductIds.delete(productId);
+            console.log('✅ Product removed from wishlist:', productId);
+          },
+          error: (error) => {
+            this.productStateService.setWishlistState(productId, true);
+            this.loadingProductIds.delete(productId);
+            console.error('❌ Error removing from wishlist:', error);
+          }
+        })
+      );
     }
+  }
+
+  /**
+   * Get cart button text for a product
+   */
+  getCartButtonText(product: Product): string {
+    const productId = product.id || product._id;
+    const isLoading = this.loadingProductIds.has(productId);
+    const isInCart = this.isProductInCart(product);
+    return isLoading ? 'Loading...' : (isInCart ? 'Remove from Cart' : 'Add to Cart');
+  }
+
+  /**
+   * Check if product is in cart (for template)
+   */
+  isProductInCart(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInCart().includes(productId);
+  }
+
+  /**
+   * Check if product is in wishlist (for template)
+   */
+  isProductInWishlist(product: Product): boolean {
+    const productId = product.id || product._id;
+    return this.productStateService.getProductsInWishlist().includes(productId);
   }
 
   getDiscountPercentage(product: Product): number {
@@ -188,7 +316,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   trackByProductId(_index: number, product: Product): string {
-    return product._id;
+    return product.id || product._id;
   }
 
   onImageError(event: Event) {

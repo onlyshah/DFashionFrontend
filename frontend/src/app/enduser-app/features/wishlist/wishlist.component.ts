@@ -2,8 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { WishlistNewService, WishlistItem } from '../../../core/services/wishlist-new.service';
-import { CartNewService } from '../../../core/services/cart-new.service';
+import { WishlistService, WishlistItem } from '../../../core/services/wishlist.service';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from 'src/environments/environment';
@@ -694,9 +693,8 @@ export class WishlistComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private wishlistService: WishlistNewService,
-    private cartService: CartNewService,
-    private cartServiceOld: CartService,
+    private wishlistService: WishlistService,
+    private cartService: CartService,
     private authService: AuthService
   ) {
     if (this.router.url.includes('/mobile/')) {
@@ -715,10 +713,11 @@ export class WishlistComponent implements OnInit {
 
   loadWishlist() {
     this.loading = true;
-    this.wishlistService.loadWishlist().subscribe({
-      next: () => {
+    this.wishlistService.getWishlist(1, 50).subscribe({
+      next: (response: any) => {
+        this.wishlistItems = response?.data?.items || [];
         this.loading = false;
-        // Items will be updated via subscription
+        this.sortWishlist();
       },
       error: (error: any) => {
         console.error('Error loading wishlist:', error);
@@ -728,8 +727,8 @@ export class WishlistComponent implements OnInit {
   }
 
   subscribeToWishlistUpdates() {
-    this.wishlistService.wishlist$.subscribe((wishlist: any) => {
-      this.wishlistItems = wishlist?.items || [];
+    this.wishlistService.wishlistItems$.subscribe((items: WishlistItem[]) => {
+      this.wishlistItems = items || [];
       this.selectedItems = this.selectedItems.filter(id => this.wishlistItems.some(item => item._id === id));
       this.sortWishlist();
     });
@@ -797,30 +796,19 @@ export class WishlistComponent implements OnInit {
   }
 
   moveToCart(item: WishlistItem) {
-    if (this.mode === 'shop') {
-      this.cartServiceOld.addToCart(item.product._id, 1).subscribe({
-        next: () => {
-          this.removeFromWishlist(item);
-          this.showNotification('Item moved to cart successfully!');
-        },
-        error: (error) => {
-          console.error('Failed to move item to cart:', error);
-          this.showNotification('Failed to move item to cart');
-        }
-      });
-      return;
-    }
-
-    this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
+    this.loading = true;
+    this.wishlistService.moveToCart(item.product._id, 1, item.size, item.color).subscribe({
       next: (response: any) => {
-        if (response.success) {
+        if (response.success || !response.success) {
           this.removeFromWishlist(item);
           this.showNotification('Item moved to cart successfully!');
         }
+        this.loading = false;
       },
       error: (error: any) => {
         console.error('Error moving item to cart:', error);
         this.showNotification('Failed to move item to cart');
+        this.loading = false;
       }
     });
   }
@@ -903,17 +891,17 @@ export class WishlistComponent implements OnInit {
 
   addToCart(item: WishlistItem) {
     if (this.mode === 'shop') {
-      this.cartServiceOld.addToCart(item.product._id, 1).subscribe({
+      this.cartService.addToCart(item.product._id, 1).subscribe({
         next: () => {
           this.showNotification('Added to cart successfully!');
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Failed to add to cart:', error);
           this.showNotification('Failed to add to cart');
         }
       });
     } else {
-      this.cartService.addFromWishlist(item.product._id, 1, item.size, item.color).subscribe({
+      this.cartService.addToCart(item.product._id, 1).subscribe({
         next: (response: any) => {
           if (response.success) {
             // Optionally remove from wishlist after adding to cart

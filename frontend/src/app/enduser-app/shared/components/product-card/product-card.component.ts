@@ -1,4 +1,6 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ProductStateService, ProductState } from '../../../../../core/services/product-state.service';
 
 export interface Product {
   _id: string;
@@ -21,9 +23,10 @@ export interface Product {
     selector: 'app-product-card',
     templateUrl: './product-card.component.html',
     styleUrls: ['./product-card.component.scss'],
-    standalone: false
+    standalone: false,
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductCardComponent {
+export class ProductCardComponent implements OnInit {
   @Input() product!: Product;
   @Input() showDescription: boolean = true;
   @Input() showRating: boolean = true;
@@ -31,9 +34,27 @@ export class ProductCardComponent {
   @Input() priceSize: 'small' | 'medium' | 'large' = 'medium';
 
   @Output() productClick = new EventEmitter<Product>();
-  @Output() wishlistToggle = new EventEmitter<Product>();
-  @Output() addToCart = new EventEmitter<Product>();
+  @Output() wishlistToggle = new EventEmitter<{ product: Product; newState: boolean }>();
+  @Output() cartToggle = new EventEmitter<{ product: Product; newState: boolean }>();
   @Output() buyNow = new EventEmitter<Product>();
+
+  // State observables
+  productState$: Observable<ProductState> | null = null;
+  isInCart = false;
+  isInWishlist = false;
+  isLoading = false;
+
+  constructor(private productStateService: ProductStateService) {}
+
+  ngOnInit(): void {
+    if (this.product?._id) {
+      this.productState$ = this.productStateService.getProductState$(this.product._id);
+      this.productState$.subscribe(state => {
+        this.isInCart = state.isInCart;
+        this.isInWishlist = state.isInWishlist;
+      });
+    }
+  }
 
   onProductClick(): void {
     this.productClick.emit(this.product);
@@ -41,16 +62,26 @@ export class ProductCardComponent {
 
   onWishlistToggle(event: Event): void {
     event.stopPropagation();
-    this.wishlistToggle.emit(this.product);
+    const newState = !this.isInWishlist;
+    this.wishlistToggle.emit({ product: this.product, newState });
   }
 
-  onAddToCart(event: Event): void {
+  onCartToggle(event: Event): void {
     event.stopPropagation();
-    this.addToCart.emit(this.product);
+    const newState = !this.isInCart;
+    this.cartToggle.emit({ product: this.product, newState });
   }
 
   onBuyNow(event: Event): void {
     event.stopPropagation();
     this.buyNow.emit(this.product);
+  }
+
+  getCartButtonText(): string {
+    return this.isLoading ? 'Loading...' : (this.isInCart ? 'Remove from Cart' : 'Add to Cart');
+  }
+
+  getCartButtonColor(): string {
+    return this.isInCart ? 'danger' : 'primary';
   }
 }

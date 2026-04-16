@@ -17,6 +17,8 @@ export interface SearchFilters {
   colors?: string[];
   sizes?: string[];
   tags?: string[];
+  sortBy?: string;
+  sortOrder?: string;
 }
 
 export interface SearchOptions {
@@ -78,6 +80,37 @@ export interface SearchAnalytics {
   };
 }
 
+// ✨ NEW: Categorized search results with social content prioritization
+export interface CategorizedSearchResult {
+  success: boolean;
+  social: {
+    posts: any[];
+    reels: any[];
+    stories: any[];
+    totalSocial: number;
+  };
+  ecommerce: {
+    products: any[];
+    brands: any[];
+    categories: any[];
+    totalProducts: number;
+  };
+  pagination: {
+    current: number;
+    pages: number;
+    total: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+  searchMeta: {
+    query: string;
+    filters: SearchFilters;
+    resultsCount: number;
+    searchTime: number;
+    suggestions: SearchSuggestion[];
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -91,12 +124,18 @@ export class SearchService {
   private searchLoadingSubject = new BehaviorSubject<boolean>(false);
   private searchSuggestionsSubject = new BehaviorSubject<SearchSuggestion[]>([]);
   
+  // ✨ NEW: Categorized search results subject
+  private categorizedSearchResultsSubject = new BehaviorSubject<CategorizedSearchResult | null>(null);
+  
   // Public observables
   public searchQuery$ = this.searchQuerySubject.asObservable();
   public searchFilters$ = this.searchFiltersSubject.asObservable();
   public searchResults$ = this.searchResultsSubject.asObservable();
   public searchLoading$ = this.searchLoadingSubject.asObservable();
   public searchSuggestions$ = this.searchSuggestionsSubject.asObservable();
+  
+  // ✨ NEW: Categorized search results observable
+  public categorizedSearchResults$ = this.categorizedSearchResultsSubject.asObservable();
   
   // Search input subject for debouncing
   private searchInputSubject = new Subject<string>();
@@ -193,6 +232,55 @@ export class SearchService {
           pagination: { current: 1, pages: 0, total: 0, hasNext: false, hasPrev: false },
           searchMeta: { query, filters, resultsCount: 0, searchTime: Date.now(), suggestions: [] }
         });
+      })
+    );
+  }
+
+  // ✨ NEW: Perform categorized search (social first, then products)
+  performCategorizedSearch(query: string, filters: SearchFilters = {}, options: SearchOptions = {}): Observable<CategorizedSearchResult> {
+    this.searchLoadingSubject.next(true);
+    
+    let params = new HttpParams().set('categorized', 'true');
+    
+    if (query) params = params.set('q', query);
+    
+    // Add filters
+    Object.keys(filters).forEach(key => {
+      const value = (filters as any)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        if (Array.isArray(value)) {
+          params = params.set(key, value.join(','));
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
+    
+    // Add options
+    Object.keys(options).forEach(key => {
+      const value = (options as any)[key];
+      if (value !== undefined && value !== null && value !== '') {
+        params = params.set(key, value.toString());
+      }
+    });
+
+    return this.http.get<CategorizedSearchResult>(`${this.API_URL}/search`, { params }).pipe(
+      tap(result => {
+        this.categorizedSearchResultsSubject.next(result);
+        this.searchLoadingSubject.next(false);
+      }),
+      catchError(error => {
+        console.error('Categorized search error:', error);
+        this.searchLoadingSubject.next(false);
+        const emptyResult: CategorizedSearchResult = {
+          success: false,
+          social: { posts: [], reels: [], stories: [], totalSocial: 0 },
+          ecommerce: { products: [], brands: [], categories: [], totalProducts: 0 },
+          pagination: { current: 1, pages: 0, total: 0, hasNext: false, hasPrev: false },
+          searchMeta: { query, filters, resultsCount: 0, searchTime: Date.now(), suggestions: [] }
+        };
+        this.categorizedSearchResultsSubject.next(emptyResult);
+        return of(emptyResult);
       })
     );
   }
@@ -365,6 +453,7 @@ export class SearchService {
     this.searchResultsSubject.next(null);
     this.searchLoadingSubject.next(false);
     this.searchSuggestionsSubject.next([]);
+    this.categorizedSearchResultsSubject.next(null);
   }
 
   // Clear caches
@@ -386,6 +475,11 @@ export class SearchService {
       results: this.searchResultsSubject.value,
       loading: this.searchLoadingSubject.value
     };
+  }
+
+  // ✨ NEW: Get current categorized search state
+  getCategorizedSearchResults(): CategorizedSearchResult | null {
+    return this.categorizedSearchResultsSubject.value;
   }
 
   // Enhanced search with AI-powered recommendations

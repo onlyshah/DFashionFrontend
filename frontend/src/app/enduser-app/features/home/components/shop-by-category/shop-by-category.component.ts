@@ -103,8 +103,46 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     return defaultImages[name] || '/uploads/categories/fashion.svg';
   }
 
+  /**
+   * Properly construct category image URLs with API base URL
+   */
+  getCategoryImageUrl(imagePath: string | undefined): string {
+    if (!imagePath) {
+      return environment.apiUrl + '/uploads/categories/fashion.svg';
+    }
+
+    // If already absolute URL, return as-is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+
+    // If relative path, prepend API URL
+    if (imagePath.startsWith('/')) {
+      return environment.apiUrl + imagePath;
+    }
+
+    // If undefined or empty, return default
+    return environment.apiUrl + '/uploads/categories/fashion.svg';
+  }
+
   onCategoryClick(category: Category) {
-    this.router.navigate(['/category', category._id]);
+    if (!category) {
+      console.error('Category is undefined');
+      return;
+    }
+    
+    // Handle both MongoDB (_id) and PostgreSQL (id) formats
+    const categoryId = category._id || (category as any).id;
+    const categorySlug = (category as any).slug || category.name?.toLowerCase().replace(/\s+/g, '-');
+    
+    if (!categoryId && !categorySlug) {
+      console.error('Category ID and slug are both undefined');
+      return;
+    }
+    
+    // Navigate to shop category page
+    const navigationPath = categoryId || categorySlug;
+    this.router.navigate(['/shop/category', navigationPath]);
   }
 
   formatProductCount(count?: number): string {

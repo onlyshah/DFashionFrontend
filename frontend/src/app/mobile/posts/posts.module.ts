@@ -1,25 +1,21 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
 import { RouterModule, Routes } from '@angular/router';
-
-import { PostsPage } from './posts.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: PostsPage
+    loadComponent: () => import('./posts.page').then(m => m.PostsPage)
+  },
+  {
+    path: ':id',
+    loadComponent: () => import('./post-detail.page').then(m => m.PostDetailPageComponent)
   }
 ];
 
 @NgModule({
   imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    RouterModule.forChild(routes),
-    PostsPage
+    RouterModule.forChild(routes)
   ]
 })
-export class PostsPageModule {}
+export class PostsPageModule { }
+

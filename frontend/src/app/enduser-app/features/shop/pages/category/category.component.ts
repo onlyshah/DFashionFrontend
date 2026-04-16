@@ -228,10 +228,28 @@ export class CategoryComponent implements OnInit {
 
     loadProducts() {
         this.isLoading = true;
-        // Load from real API
-        this.products = [];
-        this.productCount = 0;
-        this.isLoading = false;
+        
+        if (!this.categoryName) {
+            console.error('Category name is required');
+            this.isLoading = false;
+            return;
+        }
+        
+        // Call ProductService to get products for this category
+        this.productService.getCategoryProducts(this.categoryName).subscribe({
+            next: (response) => {
+                console.log('Category products loaded:', response);
+                this.products = response?.products || [];
+                this.productCount = response?.total || this.products.length;
+                this.isLoading = false;
+            },
+            error: (error) => {
+                console.error('Error loading category products:', error);
+                this.products = [];
+                this.productCount = 0;
+                this.isLoading = false;
+            }
+        });
     }
 
     viewProduct(productId: string) {

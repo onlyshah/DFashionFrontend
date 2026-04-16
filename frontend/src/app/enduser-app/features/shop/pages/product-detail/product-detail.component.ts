@@ -125,6 +125,7 @@ export class ProductDetailComponent implements OnInit {
     productId: string | null = null;
     product: any = null;
     loading = true;
+    quantity = 1;
 
     constructor(
         private route: ActivatedRoute,
@@ -147,8 +148,10 @@ export class ProductDetailComponent implements OnInit {
         this.loading = true;
         this.productService.getProductById(this.productId).subscribe({
             next: (response) => {
-                this.product = response?.data || null;
+                // Handle multiple response formats
+                this.product = response?.data?.product || response?.data || response?.product || null;
                 this.loading = false;
+                console.log('Product loaded:', this.product);
             },
             error: (error) => {
                 console.error('Error loading product:', error);
@@ -164,5 +167,27 @@ export class ProductDetailComponent implements OnInit {
 
     goBack() {
         this.router.navigate(['/']);
+    }
+
+    addToCart() {
+        if (!this.product) return;
+        // TODO: Implement cart service integration
+        console.log('Added to cart:', this.product.name, 'Quantity:', this.quantity);
+        alert(`Added ${this.quantity}x ${this.product.name} to cart`);
+    }
+
+    addToWishlist() {
+        if (!this.product) return;
+        // TODO: Implement wishlist service integration
+        console.log('Added to wishlist:', this.product.name);
+        alert(`Added ${this.product.name} to wishlist`);
+    }
+
+    buyNow() {
+        if (!this.product) return;
+        // Navigate to checkout with product info
+        this.router.navigate(['/checkout'], {
+            queryParams: { productId: this.product._id || this.product.id, quantity: this.quantity }
+        });
     }
 }

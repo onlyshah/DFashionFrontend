@@ -7,6 +7,7 @@ import { switchMap, takeUntil } from 'rxjs/operators';
 import { User, LoginRequest, RegisterRequest, AuthResponse } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { ValidationService } from './validation.service';
+import { ProductStateService } from './product-state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +42,8 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private validationService: ValidationService
+    private validationService: ValidationService,
+    private productStateService: ProductStateService
   ) {
     this.initializeAuth();
     this.setupSessionTimeout();
@@ -236,12 +238,12 @@ export class AuthService {
       try {
         // Import services dynamically to avoid circular dependency
         import('./cart.service').then(({ CartService }) => {
-          const cartService = new CartService(this.http, null as any, null as any);
+          const cartService = new CartService(this.http, null as any, null as any, this.productStateService, this);
           cartService.loadCartCountOnLogin();
         });
 
         import('./wishlist.service').then(({ WishlistService }) => {
-          const wishlistService = new WishlistService(this.http);
+          const wishlistService = new WishlistService(this.http, this.productStateService, this);
           wishlistService.syncWithServer().subscribe();
         });
       } catch (error) {
@@ -256,12 +258,12 @@ export class AuthService {
       try {
         // Import services dynamically to avoid circular dependency
         import('./cart.service').then(({ CartService }) => {
-          const cartService = new CartService(this.http, null as any, null as any);
+          const cartService = new CartService(this.http, null as any, null as any, this.productStateService, this);
           cartService.clearCartData();
         });
 
         import('./wishlist.service').then(({ WishlistService }) => {
-          const wishlistService = new WishlistService(this.http);
+          const wishlistService = new WishlistService(this.http, this.productStateService, this);
           wishlistService.clearWishlist().subscribe({
             next: () => console.log('✅ Wishlist cleared on logout'),
             error: (error) => console.warn('⚠️ Could not clear wishlist on logout:', error)

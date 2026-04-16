@@ -35,9 +35,18 @@ const routes: Routes = [
         path: 'cart',
         loadChildren: () => import('../cart/cart.module').then(m => m.CartPageModule)
       },
+      // ✨ NEW: Checkout route (CRITICAL for e-commerce flow)
+      {
+        path: 'checkout/:id',
+        loadChildren: () => import('../checkout/checkout.module').then(m => m.CheckoutPageModule)
+      },
       {
         path: 'profile',
         loadChildren: () => import('../profile/profile.module').then(m => m.ProfilePageModule)
+      },
+      {
+        path: 'shop',
+        loadComponent: () => import('../shop/shop.page').then(m => m.ShopPageComponent)
       },
       {
         path: '',
@@ -57,6 +66,62 @@ const routes: Routes = [
   {
     path: 'orders',
     loadChildren: () => import('../orders/orders.module').then(m => m.OrdersPageModule)
+  },
+  {
+    path: 'order-confirmation/:id',
+    loadComponent: () => import('../order-confirmation/order-confirmation.component').then(m => m.OrderConfirmationComponent)
+  },
+  {
+    path: 'create-post',
+    loadComponent: () => import('../create-post/create-post.page').then(m => m.CreatePostComponent)
+  },
+  {
+    path: 'create-story',
+    loadComponent: () => import('../create-post/create-story.page').then(m => m.CreateStoryComponent)
+  },
+  {
+    path: 'create-reel',
+    loadComponent: () => import('../create-post/create-reel.page').then(m => m.CreateReelComponent)
+  },
+  {
+    path: 'go-live',
+    loadComponent: () => import('../create-post/go-live.page').then(m => m.GoLiveComponent)
+  },
+  {
+    path: 'notifications',
+    loadComponent: () => import('../notifications/notifications.page').then(m => m.NotificationsPageComponent)
+  },
+  {
+    path: 'messages',
+    loadComponent: () => import('../messages/messages.page').then(m => m.MessagesPageComponent)
+  },
+  {
+    path: 'order-tracking/:id',
+    loadComponent: () => import('../order-tracking/order-tracking.page').then(m => m.OrderTrackingComponent)
+  },
+  {
+    path: 'product/:id',
+    loadComponent: () => import('../product/product-detail.page').then(m => m.ProductDetailPageComponent)
+  },
+  {
+    path: 'payment-methods',
+    loadComponent: () => import('../payment/payment-methods.page').then(m => m.PaymentMethodsPageComponent)
+  },
+  {
+    path: 'returns',
+    loadComponent: () => import('../returns/returns-refunds.page').then(m => m.ReturnsRefundsPageComponent)
+  },
+  {
+    path: 'review/:id',
+    loadComponent: () => import('../reviews/write-review.page').then(m => m.WriteReviewPageComponent)
+  },
+  {
+    path: 'vendor/:id',
+    loadComponent: () => import('../vendor/vendor-profile.page').then(m => m.VendorProfilePageComponent)
+  },
+  {
+    path: 'order-history',
+    loadComponent: () => import('../orders/order-history.page').then(m => m.OrderHistoryPageComponent)
   }
 ];
 

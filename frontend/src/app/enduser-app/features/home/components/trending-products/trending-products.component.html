@@ -81,11 +81,11 @@
         <div class="action-buttons">
           <button
             class="action-btn like-btn"
-            [class.liked]="isProductLiked(product._id)"
+            [class.liked]="isProductLiked(product.id || product._id)"
             (click)="onLikeProduct(product, $event)"
             [attr.aria-label]="'Like ' + product.name"
           >
-            <ion-icon [name]="isProductLiked(product._id) ? 'heart' : 'heart-outline'"></ion-icon>
+            <ion-icon [name]="isProductLiked(product.id || product._id) ? 'heart' : 'heart-outline'"></ion-icon>
           </button>
           <button 
             class="action-btn share-btn" 
@@ -125,14 +125,14 @@
         <div class="product-actions">
           <button 
             class="cart-btn" 
-            (click)="onAddToCart(product, $event)"
+            (click)="onCartToggle($event, product, !isProductInCart(product))"
           >
             <ion-icon name="bag-add-outline"></ion-icon>
-            Add to Cart
+            {{ getCartButtonText(product) }}
           </button>
           <button 
             class="wishlist-btn" 
-            (click)="onAddToWishlist(product, $event)"
+            (click)="onWishlistToggle($event, product, !isProductInWishlist(product))"
           >
             <ion-icon name="heart-outline"></ion-icon>
           </button>

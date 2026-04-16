@@ -486,7 +486,11 @@ export class CategoryComponent implements OnInit {
     }
 
     viewProduct(product: Product) {
-        this.router.navigate(['/product', product._id]);
+        if (!product._id) {
+            console.warn('Cannot navigate: no product ID');
+            return;
+        }
+        this.router.navigate(['/products', product._id]);
     }
 
     addToWishlist(product: Product, event: Event) {

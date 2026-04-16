@@ -36,7 +36,7 @@
               </h3>
             </div>
             <div>
-              <span class="dot">
+              <span class="dot" (click)="openPostOptions(post, $event)">
                 <i class="fas fa-ellipsis-h"></i>
               </span>
             </div>
@@ -101,7 +101,7 @@
                 <button class="ecommerce-icon-btn wishlist-btn" (click)="addToWishlist(post)" title="Add to Wishlist">
                   <i class="fas fa-heart"></i>
                 </button>
-                <button class="ecommerce-icon-btn notification-btn" (click)="toggleNotification(post)" title="Get Notified">
+                <button class="ecommerce-icon-btn notification-btn" disabled title="Notifications feature coming soon">
                   <i class="fas fa-bell"></i>
                 </button>
                 <button class="ecommerce-icon-btn buy-now-btn" (click)="buyNow(post)" title="Buy Now">
@@ -152,15 +152,15 @@
             <div *ngIf="post.products && post.products.length > 0" class="ecommerce-section">
               <h4 style="margin-bottom: 12px; font-weight: 600;">Tagged Products</h4>
               <div class="product-showcase">
-                <div class="featured-product" *ngFor="let product of post.products">
+                <div class="featured-product" *ngFor="let product of post.products" (click)="goToProductDetail(product)" style="cursor: pointer;">
                   <img [src]="product.image" [alt]="product.name" class="product-thumbnail">
                   <div class="product-details">
-                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-name" style="cursor: pointer; color: #0095f6;">{{ product.name }}</div>
                     <div class="product-price" *ngIf="product.price">{{ formatPrice(product.price) }}</div>
                   </div>
                   <div class="product-actions">
-                    <button class="cart-btn" (click)="addToCart(product)">🛒</button>
-                    <button class="wishlist-btn" (click)="addToWishlist(product)">💖</button>
+                    <button class="cart-btn" (click)="addToCart(product); $event.stopPropagation()">🛒</button>
+                    <button class="wishlist-btn" (click)="addToWishlist(product); $event.stopPropagation()">💖</button>
                   </div>
                 </div>
               </div>
@@ -190,6 +190,29 @@
     </div>
   </div>
 </main>
+
+<!-- Post Options Menu Modal -->
+<div class="post-options-modal" *ngIf="isPostOptionsOpen" (click)="closePostOptions()">
+  <div class="post-options-menu" (click)="$event.stopPropagation()">
+    <button class="option-item" (click)="onSavePost()">
+      <i class="fas fa-bookmark"></i>
+      <span>Save Post</span>
+    </button>
+    <button class="option-item" (click)="onSharePostOption()">
+      <i class="fas fa-share"></i>
+      <span>Share to Feed</span>
+    </button>
+    <button class="option-item" (click)="onCopyPostUrl()">
+      <i class="fas fa-link"></i>
+      <span>Copy Link</span>
+    </button>
+    <hr>
+    <button class="option-item danger" (click)="onReportPost()">
+      <i class="fas fa-flag"></i>
+      <span>Report Post</span>
+    </button>
+  </div>
+</div>
 
 <!-- Story Viewer Overlay -->
 <div class="story-viewer-overlay" *ngIf="storyViewerOpen">

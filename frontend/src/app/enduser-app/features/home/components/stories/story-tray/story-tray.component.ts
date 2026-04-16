@@ -73,7 +73,7 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
     console.log('Story clicked:', story);
     this.viewerIndex = index;
     this.viewerVisible = true;
-    this.openStory(story, isOwn);
+    // Story viewer modal is now visible - no additional action needed
   }
 
   scrollLeft(): void {

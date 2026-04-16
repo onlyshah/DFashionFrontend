@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CartService } from '../../../core/services/cart.service';
 import { WishlistService } from '../../../core/services/wishlist.service';
+import { PostProductLinkingService } from '../../../core/services/post-product-linking.service';
+import { UnifiedNavigationService } from '../../../core/services/unified-navigation.service';
 import { environment } from '../../../../environments/environment';
 
 interface Post {
@@ -595,7 +597,9 @@ export class PostDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private cartService: CartService,
-    private wishlistService: WishlistService
+    private wishlistService: WishlistService,
+    private postProductLinkingService: PostProductLinkingService,
+    private navigationService: UnifiedNavigationService
   ) {}
 
   ngOnInit() {
@@ -742,11 +746,13 @@ export class PostDetailComponent implements OnInit {
   }
 
   // E-commerce actions
-  buyNow() {
+  async buyNow() {
     if (this.post && this.post.products.length > 0) {
       const product = this.post.products[0].product;
-      this.router.navigate(['/checkout'], { 
-        queryParams: { productId: product._id, source: 'post' } 
+      // Use unified navigation to route to correc platform checkout
+      await this.navigationService.goToCheckout(product._id, { 
+        source: 'post', 
+        postId: this.post._id 
       });
     }
   }
@@ -769,6 +775,13 @@ export class PostDetailComponent implements OnInit {
           alert('Error adding product to cart');
         }
       });
+      
+      // Track interaction
+      this.postProductLinkingService.trackPostProductInteraction(
+        this.post._id,
+        product._id,
+        'add_to_cart'
+      ).subscribe();
     }
   }
 
@@ -790,28 +803,45 @@ export class PostDetailComponent implements OnInit {
           alert('Error adding product to wishlist');
         }
       });
+      
+      // Track interaction
+      this.postProductLinkingService.trackPostProductInteraction(
+        this.post._id,
+        product._id,
+        'add_to_wishlist'
+      ).subscribe();
     }
   }
 
   // Product modal
   showProductDetails(product: any) {
     this.selectedProduct = product;
+    // Could also use: this.postProductLinkingService.viewProductFromPost(this.post._id, product._id)
   }
 
   closeProductModal() {
     this.selectedProduct = null;
   }
 
-  buyProductNow() {
-    if (this.selectedProduct) {
-      this.router.navigate(['/checkout'], { 
-        queryParams: { productId: this.selectedProduct._id, source: 'post' } 
+  async buyProductNow() {
+    if (this.selectedProduct && this.post) {
+      // Use unified navigation service for consistent routing
+      await this.navigationService.goToCheckout(this.selectedProduct._id, { 
+        source: 'post', 
+        postId: this.post._id 
       });
+      
+      // Track the conversion
+      this.postProductLinkingService.trackPostProductInteraction(
+        this.post._id,
+        this.selectedProduct._id,
+        'buy_now'
+      ).subscribe();
     }
   }
 
   addProductToCart() {
-    if (this.selectedProduct) {
+    if (this.selectedProduct && this.post) {
       console.log('Add product to cart:', this.selectedProduct);
 
       this.cartService.addToCart(this.selectedProduct._id, 1, undefined, undefined).subscribe({
@@ -828,15 +858,29 @@ export class PostDetailComponent implements OnInit {
           alert('Error adding product to cart');
         }
       });
+      
+      // Track interaction
+      this.postProductLinkingService.trackPostProductInteraction(
+        this.post._id,
+        this.selectedProduct._id,
+        'add_to_cart'
+      ).subscribe();
     }
   }
 
   addProductToWishlist() {
-    if (this.selectedProduct) {
+    if (this.selectedProduct && this.post) {
       // TODO: Add to wishlist via service
       console.log('Add product to wishlist:', this.selectedProduct);
       alert(`${this.selectedProduct.name} added to wishlist!`);
       this.closeProductModal();
+      
+      // Track interaction
+      this.postProductLinkingService.trackPostProductInteraction(
+        this.post._id,
+        this.selectedProduct._id,
+        'add_to_wishlist'
+      ).subscribe();
     }
   }
 

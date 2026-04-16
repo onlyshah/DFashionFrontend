@@ -438,11 +438,8 @@ export class CartComponent implements OnInit {
       }
       return;
     }
-    if (this.platform === 'mobile') {
-      this.router.navigate(['/checkout']);
-    } else {
-      this.router.navigate(['/shop/checkout']);
-    }
+    // Use consistent route for both web and mobile
+    this.router.navigate(['/checkout']);
   }
 
   continueShopping() {

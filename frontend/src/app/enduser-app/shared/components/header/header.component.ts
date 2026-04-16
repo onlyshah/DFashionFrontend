@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { CartService } from '../../../../core/services/cart.service';
-import { WishlistNewService } from '../../../../core/services/wishlist-new.service';
+import { WishlistService } from '../../../../core/services/wishlist.service';
 import { User } from '../../../../core/models/user.model';
 
 @Component({
@@ -39,7 +39,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private cartService: CartService,
-    private wishlistService: WishlistNewService,
+    private wishlistService: WishlistService,
     private router: Router
   ) {}
 
@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
     });
 
     // Subscribe to individual wishlist count
-    this.wishlistService.wishlistItemCount$.subscribe((count: number) => {
+    this.wishlistService.wishlistCount$.subscribe((count: number) => {
       this.wishlistItemCount = count;
       console.log('💝 Header wishlist count updated:', count);
     });
@@ -95,12 +95,13 @@ export class HeaderComponent implements OnInit {
     // Refresh counts when user logs in
     if (this.currentUser) {
       this.cartService.refreshTotalCount();
-      this.wishlistService.refreshWishlistOnLogin();
+      // Refresh wishlist on login via getWishlist call
+      this.wishlistService.getWishlist(1, 50).subscribe();
     }
 
     // Load cart and wishlist on init
     this.cartService.loadCart();
-    this.wishlistService.loadWishlist();
+this.wishlistService.getWishlist(1, 50).subscribe();
 
   }
 

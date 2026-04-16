@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ProductStateService } from './product-state.service';
+import { AuthService } from './auth.service';
 
 export interface WishlistItem {
   _id: string;
@@ -22,8 +24,12 @@ export interface WishlistItem {
       views: number;
       likes: number;
     };
+    isActive?: boolean;
   };
   addedAt: Date;
+  addedFrom?: string;
+  size?: string;
+  color?: string;
 }
 
 export interface WishlistResponse {
@@ -52,12 +58,23 @@ export class WishlistService {
   public wishlistItems$ = this.wishlistItemsSubject.asObservable();
   public wishlistCount$ = this.wishlistCountSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private productStateService: ProductStateService,
+    private authService: AuthService
+  ) {
     this.initializeWishlist();
   }
 
+  /**
+   * Get authentication token from AuthService (handles all storage scenarios)
+   */
+  private getAuthToken(): string | null {
+    return this.authService.getToken();
+  }
+
   private initializeWishlist(): void {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (token) {
       // User is authenticated, load from API
       this.loadWishlist();
@@ -69,7 +86,7 @@ export class WishlistService {
   }
 
   getWishlist(page: number = 1, limit: number = 12): Observable<WishlistResponse> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -79,6 +96,14 @@ export class WishlistService {
         if (response && response.success && response.data && Array.isArray(response.data.items)) {
           this.wishlistItemsSubject.next(response.data.items);
           this.wishlistCountSubject.next(response.data.pagination?.totalItems || response.data.items.length);
+          
+          // Update product state service with current wishlist items
+          response.data.items.forEach(item => {
+            const productId = item.product?._id;
+            if (productId) {
+              this.productStateService.setWishlistState(productId, true);
+            }
+          });
         } else {
           this.wishlistItemsSubject.next([]);
           this.wishlistCountSubject.next(0);
@@ -87,36 +112,55 @@ export class WishlistService {
     );
   }
 
+  // Check if product already exists in wishlist
+  isProductInWishlist(productId: string): boolean {
+    const items = this.wishlistItemsSubject.getValue();
+    return items.some((item: any) => item._id === productId || item.product?._id === productId);
+  }
+
   addToWishlist(productId: string): Observable<any> {
-    const token = localStorage.getItem('token');
+    // Check if already in wishlist
+    if (this.isProductInWishlist(productId)) {
+      return of({
+        success: false,
+        message: 'This product is already in your wishlist',
+        itemExists: true
+      });
+    }
+
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.post(`${this.API_URL}/api/wishlist`, {
+    return this.http.post(`${this.API_URL}/api/wishlist/add`, {
       productId
     }, options).pipe(
       tap(() => {
+        // Update product state to reflect it's in wishlist
+        this.productStateService.setWishlistState(productId, true);
         this.loadWishlist(); // Refresh wishlist after adding
       })
     );
   }
 
   removeFromWishlist(productId: string): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
 
-    return this.http.delete(`${this.API_URL}/api/wishlist/${productId}`, options).pipe(
+    return this.http.delete(`${this.API_URL}/api/wishlist/remove/${productId}`, options).pipe(
       tap(() => {
+        // Update product state to reflect it's not in wishlist
+        this.productStateService.setWishlistState(productId, false);
         this.loadWishlist(); // Refresh wishlist after removing
       })
     );
   }
 
   clearWishlist(): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     // If there's no token, just clear local data and return success
     if (!token) {
       this.wishlistItemsSubject.next([]);
@@ -158,7 +202,7 @@ export class WishlistService {
   }
 
   moveToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<any> {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }
     } : {};
@@ -192,7 +236,7 @@ export class WishlistService {
   }
 
   private loadWishlist(): void {
-    const token = localStorage.getItem('token');
+    const token = this.getAuthToken();
     if (!token) {
       console.log('❌ No authentication token, using local storage fallback');
       this.loadWishlistFromLocalStorage();

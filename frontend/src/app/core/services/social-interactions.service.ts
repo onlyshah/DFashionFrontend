@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 export interface SocialInteractionResponse {
   success: boolean;
@@ -45,7 +46,7 @@ export class SocialInteractionsService {
   public likedProducts$ = this.likedProductsSubject.asObservable();
   public likedPosts$ = this.likedPostsSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private authService: AuthService) {
     this.loadUserLikes();
   }
 
@@ -56,7 +57,7 @@ export class SocialInteractionsService {
    */
   async likeProduct(productId: string): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -90,20 +91,24 @@ export class SocialInteractionsService {
    */
   async shareProduct(productId: string, shareData: ShareData): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
-        throw new Error('Authentication required');
+        console.warn('User not authenticated for sharing product');
+        return { success: false, message: 'Please login to share products' };
       }
 
       const response = await this.http.post<SocialInteractionResponse>(
-  `${this.API_URL}/ecommerce/products/${productId}/share`,
+        `${this.API_URL}/product-shares/${productId}/share`,
         shareData,
         { headers: { Authorization: `Bearer ${token}` } }
       ).toPromise();
 
       return response || { success: false, message: 'Unknown error' };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sharing product:', error);
+      if (error?.status === 401) {
+        return { success: false, message: 'Session expired. Please login again.' };
+      }
       return { success: false, message: 'Failed to share product' };
     }
   }
@@ -113,7 +118,7 @@ export class SocialInteractionsService {
    */
   async commentOnProduct(productId: string, text: string, rating: number): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -157,7 +162,7 @@ export class SocialInteractionsService {
    */
   async likePost(postId: string): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -191,7 +196,7 @@ export class SocialInteractionsService {
    */
   async sharePost(postId: string, shareData: ShareData): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -214,7 +219,7 @@ export class SocialInteractionsService {
    */
   async commentOnPost(postId: string, text: string): Promise<SocialInteractionResponse> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) {
         throw new Error('Authentication required');
       }
@@ -253,32 +258,48 @@ export class SocialInteractionsService {
    */
   private async loadUserLikes(): Promise<void> {
     try {
-      const token = localStorage.getItem('token');
+      const token = this.authService.getToken();
       if (!token) return;
 
       // Load liked products
-      const productsResponse = await this.http.get<any>(
-  `${this.API_URL}/user/liked-products`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      ).toPromise();
+      try {
+        const productsResponse = await this.http.get<any>(
+          `${this.API_URL}/users/liked-products`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        ).toPromise();
 
-      if (productsResponse?.success) {
-        const likedProductIds = new Set<string>(productsResponse.data.map((item: any) => item._id));
-        this.likedProductsSubject.next(likedProductIds);
+        if (productsResponse?.success || Array.isArray(productsResponse)) {
+          const data = Array.isArray(productsResponse) ? productsResponse : productsResponse?.data || [];
+          const likedProductIds = new Set<string>(data.map((item: any) => item._id || item.id));
+          this.likedProductsSubject.next(likedProductIds);
+        }
+      } catch (error: any) {
+        // Silently handle 404 - endpoint may not be available
+        if (error?.status !== 404) {
+          console.warn('⚠️ Could not load liked products:', error?.message);
+        }
       }
 
       // Load liked posts
-      const postsResponse = await this.http.get<any>(
-  `${this.API_URL}/user/liked-posts`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      ).toPromise();
+      try {
+        const postsResponse = await this.http.get<any>(
+          `${this.API_URL}/users/liked-posts`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        ).toPromise();
 
-      if (postsResponse?.success) {
-        const likedPostIds = new Set<string>(postsResponse.data.map((item: any) => item._id));
-        this.likedPostsSubject.next(likedPostIds);
+        if (postsResponse?.success || Array.isArray(postsResponse)) {
+          const data = Array.isArray(postsResponse) ? postsResponse : postsResponse?.data || [];
+          const likedPostIds = new Set<string>(data.map((item: any) => item._id || item.id));
+          this.likedPostsSubject.next(likedPostIds);
+        }
+      } catch (error: any) {
+        // Silently handle 404 - endpoint may not be available
+        if (error?.status !== 404) {
+          console.warn('⚠️ Could not load liked posts:', error?.message);
+        }
       }
     } catch (error) {
-      console.error('Error loading user likes:', error);
+      console.warn('⚠️ Error loading user likes:', error);
     }
   }
 

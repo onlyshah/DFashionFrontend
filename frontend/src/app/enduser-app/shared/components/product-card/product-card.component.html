@@ -18,9 +18,10 @@
     <ion-button 
       fill="clear" 
       class="wishlist-button"
-      [color]="product.isWishlisted ? 'danger' : 'medium'"
+      [color]="isInWishlist ? 'danger' : 'medium'"
+      [disabled]="isLoading"
       (click)="onWishlistToggle($event)">
-            <ion-icon [name]="product.isWishlisted ? 'heart' : 'heart-outline'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="product.isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'" tabindex="0"></ion-icon>
+      <ion-icon [name]="isInWishlist ? 'heart' : 'heart-outline'" data-bs-toggle="tooltip" data-bs-placement="top" [attr.title]="isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'" tabindex="0"></ion-icon>
     </ion-button>
   </div>
   <!-- Product Info -->
@@ -53,15 +54,17 @@
     <ion-button 
       expand="block" 
       fill="solid" 
-      color="primary"
-      (click)="onAddToCart($event)">
-      <ion-icon name="bag-add" slot="start" data-bs-toggle="tooltip" data-bs-placement="right" title="Add to cart" tabindex="0"></ion-icon>
-      Add to Cart
+      [color]="getCartButtonColor()"
+      [disabled]="isLoading"
+      (click)="onCartToggle($event)">
+      <ion-icon [name]="isInCart ? 'trash' : 'bag-add'" slot="start" [attr.title]="getCartButtonText()" tabindex="0"></ion-icon>
+      {{ getCartButtonText() }}
     </ion-button>
     <ion-button 
       expand="block" 
       fill="outline" 
       color="primary"
+      [disabled]="isLoading"
       (click)="onBuyNow($event)">
       Buy Now
     </ion-button>

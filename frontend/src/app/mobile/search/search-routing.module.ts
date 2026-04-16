@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SearchComponent } from '../../enduser-app/features/search/pages/search/search.component';
+import { SearchPageComponent } from './search.page';
 
 const routes: Routes = [
   {
     path: '',
-    component: SearchComponent
+    component: SearchPageComponent
   }
 ];
 

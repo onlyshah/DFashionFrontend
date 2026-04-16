@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { NotificationService, Notification } from '../../../../core/services/notification.service';
 
 @Component({
@@ -7,17 +9,26 @@ import { NotificationService, Notification } from '../../../../core/services/not
   standalone: true,
     imports: [CommonModule],
     templateUrl: './notification.component.html',
-    styleUrls: ['./notification.component.scss']
+    styleUrls: ['./notification.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NotificationComponent implements OnInit {
+export class NotificationComponent implements OnInit, OnDestroy {
   notifications: Notification[] = [];
+  private destroy$ = new Subject<void>();
 
   constructor(private notificationService: NotificationService) {}
 
   ngOnInit() {
-    this.notificationService.notifications$.subscribe((notifications: Notification[]) => {
-      this.notifications = notifications;
-    });
+    this.notificationService.notifications$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((notifications: Notification[]) => {
+        this.notifications = notifications;
+      });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   getIcon(type: string): string {
