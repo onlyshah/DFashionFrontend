@@ -386,16 +386,13 @@ export class CartService {
 
   // Add item to cart via API
   addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; itemExists?: boolean; currentQuantity?: number }> {
-    // Check if product already in cart
+    // Check if product already in cart - if so, increase quantity
     const existingItem = this.getCartItemByProductId(productId);
     if (existingItem) {
-      // Return result indicating item exists and suggest quantity increase
-      return of({
-        success: false,
-        message: `This product is already in your cart with quantity ${existingItem.quantity}`,
-        itemExists: true,
-        currentQuantity: existingItem.quantity
-      });
+      // Product already in cart - update quantity instead
+      const newQuantity = existingItem.quantity + quantity;
+      console.log(`📦 Product already in cart. Updating quantity from ${existingItem.quantity} to ${newQuantity}`);
+      return this.updateCartItemQuantity(productId, newQuantity);
     }
 
     const payload = { productId, quantity, size, color };
@@ -500,6 +497,12 @@ export class CartService {
     // Find the product ID for this cart item before removal
     const items = this.cartItems.getValue();
     const cartItem = items.find(item => item._id === itemId);
+    
+    // If item not found in local state, still try API (idempotent)
+    if (!cartItem) {
+      console.log(`🗑️ Cart item not found locally: ${itemId} - still attempting removal from API (idempotent)`);
+    }
+    
     const productId = cartItem?.product?._id;
 
     const token = this.getAuthToken();
@@ -516,6 +519,19 @@ export class CartService {
           // Immediately refresh cart to get updated count
           this.loadCartFromAPI();
         }
+      }),
+      catchError(error => {
+        // If 404 (item not found), treat as success (idempotent)
+        if (error?.status === 404) {
+          console.log(`🗑️ Cart item already removed: ${itemId}`);
+          if (productId) {
+            this.productStateService.setCartState(productId, false);
+          }
+          this.loadCartFromAPI();
+          return of({ success: true, message: 'Item already removed from cart' });
+        }
+        // Re-throw other errors
+        throw error;
       })
     );
   }

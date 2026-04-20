@@ -119,11 +119,12 @@ export class WishlistService {
   }
 
   addToWishlist(productId: string): Observable<any> {
-    // Check if already in wishlist
+    // If already in wishlist, return success (idempotent operation)
     if (this.isProductInWishlist(productId)) {
+      console.log(`❤️ Product already in wishlist: ${productId} - returning success (idempotent)`);
       return of({
-        success: false,
-        message: 'This product is already in your wishlist',
+        success: true,
+        message: 'Product is in your wishlist',
         itemExists: true
       });
     }
@@ -145,6 +146,15 @@ export class WishlistService {
   }
 
   removeFromWishlist(productId: string): Observable<any> {
+    // If not in wishlist, return success (idempotent operation)
+    if (!this.isProductInWishlist(productId)) {
+      console.log(`❤️ Product not in wishlist: ${productId} - returning success (idempotent)`);
+      return of({
+        success: true,
+        message: 'Product removed from wishlist'
+      });
+    }
+
     const token = this.getAuthToken();
     const options = token ? {
       headers: { 'Authorization': `Bearer ${token}` }

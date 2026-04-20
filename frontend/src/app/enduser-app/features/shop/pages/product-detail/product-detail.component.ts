@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProductService } from '../../../../../core/services/product.service';
+import { CartService } from '../../../../../core/services/cart.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { ProductStateService } from '../../../../../core/services/product-state.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 @Component({
     selector: 'app-product-detail',
@@ -130,7 +134,11 @@ export class ProductDetailComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private productService: ProductService
+        private productService: ProductService,
+        private cartService: CartService,
+        private wishlistService: WishlistService,
+        private productStateService: ProductStateService,
+        private authService: AuthService
     ) { }
 
     ngOnInit() {
@@ -171,16 +179,54 @@ export class ProductDetailComponent implements OnInit {
 
     addToCart() {
         if (!this.product) return;
-        // TODO: Implement cart service integration
-        console.log('Added to cart:', this.product.name, 'Quantity:', this.quantity);
-        alert(`Added ${this.quantity}x ${this.product.name} to cart`);
+        
+        if (!this.authService.isAuthenticated) {
+            this.router.navigate(['/auth/login']);
+            return;
+        }
+
+        this.cartService.addToCart(this.product._id, this.quantity).subscribe({
+            next: (response) => {
+                if (response?.success) {
+                    this.productStateService.setCartState(this.product._id, true);
+                    alert(`Added ${this.quantity}x ${this.product.name} to cart`);
+                    console.log('✅ Product added to cart:', this.product.name);
+                } else {
+                    console.warn('⚠️ Unexpected response from addToCart:', response);
+                    alert('Failed to add to cart. Please try again.');
+                }
+            },
+            error: (error) => {
+                console.error('❌ Error adding to cart:', error);
+                alert('Failed to add to cart. Please try again.');
+            }
+        });
     }
 
     addToWishlist() {
         if (!this.product) return;
-        // TODO: Implement wishlist service integration
-        console.log('Added to wishlist:', this.product.name);
-        alert(`Added ${this.product.name} to wishlist`);
+        
+        if (!this.authService.isAuthenticated) {
+            this.router.navigate(['/auth/login']);
+            return;
+        }
+
+        this.wishlistService.addToWishlist(this.product._id).subscribe({
+            next: (response) => {
+                if (response?.success) {
+                    this.productStateService.setWishlistState(this.product._id, true);
+                    alert(`Added ${this.product.name} to wishlist`);
+                    console.log('✅ Product added to wishlist:', this.product.name);
+                } else {
+                    console.warn('⚠️ Unexpected response from addToWishlist:', response);
+                    alert('Failed to add to wishlist. Please try again.');
+                }
+            },
+            error: (error) => {
+                console.error('❌ Error adding to wishlist:', error);
+                alert('Failed to add to wishlist. Please try again.');
+            }
+        });
     }
 
     buyNow() {

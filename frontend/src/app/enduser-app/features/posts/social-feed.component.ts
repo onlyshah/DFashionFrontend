@@ -1151,7 +1151,14 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             if (response.success) {
               // Track analytics using new service
               this.socialFeaturesService.trackProductClick('post', post._id, product._id, 'add_to_cart').subscribe();
-              alert(`${product.name} added to cart!`);
+              // Only show alert if it's not an existing item (no itemExists flag or itemExists is false)
+              if (!response.itemExists) {
+                alert(`${product.name} added to cart!`);
+              } else {
+                console.log('📦 Product already in cart - quantity updated');
+              }
+            } else {
+              console.warn('Unexpected response from addToCart:', response);
             }
           },
           error: (error: any) => {
@@ -1180,7 +1187,14 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
             if (response.success) {
               // Track analytics using new service
               this.socialFeaturesService.trackProductClick('post', post._id, product._id, 'add_to_wishlist').subscribe();
-              alert(`${product.name} added to wishlist!`);
+              // Only show alert if it's not an existing item (no itemExists flag or itemExists is false)
+              if (!response.itemExists) {
+                alert(`${product.name} added to wishlist!`);
+              } else {
+                console.log('❤️ Product already in wishlist');
+              }
+            } else {
+              console.warn('Unexpected response from addToWishlist:', response);
             }
           },
           error: (error: any) => {

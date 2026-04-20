@@ -679,6 +679,17 @@ import { environment } from 'src/environments/environment';
         align-items: center;
       }
     }
+      .shop-now-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
   `]
 })
 export class WishlistComponent implements OnInit {
@@ -890,33 +901,27 @@ export class WishlistComponent implements OnInit {
   }
 
   addToCart(item: WishlistItem) {
-    if (this.mode === 'shop') {
-      this.cartService.addToCart(item.product._id, 1).subscribe({
-        next: () => {
+    this.cartService.addToCart(item.product._id, 1).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
           this.showNotification('Added to cart successfully!');
-        },
-        error: (error: any) => {
-          console.error('Failed to add to cart:', error);
-          this.showNotification('Failed to add to cart');
+          console.log('✅ Product added to cart from wishlist');
+          // Optionally remove from wishlist after adding to cart
+          // this.removeFromWishlist(item);
+        } else {
+          console.warn('⚠️ Unexpected response from addToCart:', response);
+          this.showNotification('Added to cart!');
         }
-      });
-    } else {
-      this.cartService.addToCart(item.product._id, 1).subscribe({
-        next: (response: any) => {
-          if (response.success) {
-            // Optionally remove from wishlist after adding to cart
-            // this.removeFromWishlist(item);
-          }
-        },
-        error: (error: any) => {
-          console.error('Error adding to cart:', error);
-        }
-      });
-    }
+      },
+      error: (error: any) => {
+        console.error('Error adding to cart:', error);
+        this.showNotification('Failed to add to cart');
+      }
+    });
   }
 
   removeFromWishlist(item: WishlistItem | string) {
-    const productId = typeof item === 'string' ? item : item._id;
+    const productId = typeof item === 'string' ? item : item.product._id;
     this.wishlistService.removeFromWishlist(productId).subscribe({
       next: (response: any) => {
         if (response.success) {

@@ -177,9 +177,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.cartService.addToCart(productId, 1).subscribe({
           next: (response) => {
-            this.productStateService.setCartState(productId, true);
+            if (response?.success) {
+              this.productStateService.setCartState(productId, true);
+              console.log('✅ Product added to cart:', productId);
+            } else {
+              console.warn('⚠️ Unexpected response from addToCart:', response);
+              this.productStateService.setCartState(productId, true); // Still update state
+            }
             this.loadingProductIds.delete(productId);
-            console.log('✅ Product added to cart:', productId);
           },
           error: (error) => {
             this.productStateService.setCartState(productId, false);
@@ -196,9 +201,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
         this.subscription.add(
           this.cartService.removeFromCart(cartItem._id).subscribe({
             next: (response) => {
-              this.productStateService.setCartState(productId, false);
+              if (response?.success) {
+                this.productStateService.setCartState(productId, false);
+                console.log('✅ Product removed from cart:', productId);
+              } else {
+                console.warn('⚠️ Unexpected response from removeFromCart:', response);
+                this.productStateService.setCartState(productId, false); // Still update state
+              }
               this.loadingProductIds.delete(productId);
-              console.log('✅ Product removed from cart:', productId);
             },
             error: (error) => {
               this.productStateService.setCartState(productId, true);
@@ -230,9 +240,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.wishlistService.addToWishlist(productId).subscribe({
           next: (response) => {
-            this.productStateService.setWishlistState(productId, true);
+            if (response?.success) {
+              this.productStateService.setWishlistState(productId, true);
+              console.log('✅ Product added to wishlist:', productId);
+            } else {
+              console.warn('⚠️ Unexpected response from addToWishlist:', response);
+              this.productStateService.setWishlistState(productId, true); // Still update state
+            }
             this.loadingProductIds.delete(productId);
-            console.log('✅ Product added to wishlist:', productId);
           },
           error: (error) => {
             this.productStateService.setWishlistState(productId, false);
@@ -246,9 +261,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.wishlistService.removeFromWishlist(productId).subscribe({
           next: (response) => {
-            this.productStateService.setWishlistState(productId, false);
+            if (response?.success) {
+              this.productStateService.setWishlistState(productId, false);
+              console.log('✅ Product removed from wishlist:', productId);
+            } else {
+              console.warn('⚠️ Unexpected response from removeFromWishlist:', response);
+              this.productStateService.setWishlistState(productId, false); // Still update state
+            }
             this.loadingProductIds.delete(productId);
-            console.log('✅ Product removed from wishlist:', productId);
           },
           error: (error) => {
             this.productStateService.setWishlistState(productId, true);
