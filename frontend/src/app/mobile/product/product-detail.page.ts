@@ -11,6 +11,9 @@ import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
+import { WishlistService } from '../../core/services/wishlist.service';
 
 interface Product {
   id: string;
@@ -72,7 +75,7 @@ interface Review {
         </ion-buttons>
         <ion-buttons slot="end">
           <ion-button (click)="toggleWishlist()">
-            <ion-icon [name]="isWishlisted ? 'heart' : 'heart-outline'" color="danger"></ion-icon>
+            <ion-icon [name]="isWishlisted ? 'heart' : 'heart-outline'" [color]="isWishlisted ? 'danger' : 'medium'"></ion-icon>
           </ion-button>
           <ion-button (click)="shareProduct()">
             <ion-icon name="share-social"></ion-icon>
@@ -214,7 +217,7 @@ interface Review {
             [disabled]="product.stock === 0 || isAddingToCart"
           >
             <ion-icon name="bag-add" slot="start"></ion-icon>
-            Add to Cart
+            {{ product && cartService.isInCart(product.id) ? 'Remove from Cart' : 'Add to Cart' }}
           </ion-button>
 
           <ion-button
@@ -1047,6 +1050,9 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
+    public cartService: CartService,
+    private authService: AuthService,
+    private wishlistService: WishlistService,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -1075,6 +1081,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
           }
           this.selectedSize = this.product?.size?.[0] || '';
           this.selectedColor = this.product?.colors?.[0]?.name || '';
+          this.isWishlisted = !!this.product?.id && this.wishlistService.isInWishlist(this.product.id);
           this.isLoading = false;
         },
         error: (error) => {
@@ -1089,8 +1096,19 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   toggleWishlist() {
-    this.isWishlisted = !this.isWishlisted;
-    this.showToast(this.isWishlisted ? 'Added to Wishlist' : 'Removed from Wishlist');
+    if (!this.product?.id) {
+      return;
+    }
+
+    this.wishlistService.toggleWishlist(this.product.id).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        this.isWishlisted = this.wishlistService.isInWishlist(this.product!.id);
+        this.showToast(response?.message || (this.isWishlisted ? 'Added to wishlist' : 'Removed from wishlist'));
+      },
+      error: (error) => {
+        this.showToast(error?.status === 401 ? 'Please login to save items' : 'Failed to update wishlist', 'danger');
+      }
+    });
   }
 
   shareProduct() {
@@ -1105,27 +1123,28 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
 
   addToCart() {
     if (!this.product) return;
+    if (!this.authService.isAuthenticated) {
+      this.showToast('Please login to add items to cart', 'warning');
+      this.router.navigate(['/auth/login']);
+      return;
+    }
 
     this.isAddingToCart = true;
-
-    this.http.post('/api/cart/add', {
-      productId: this.product.id,
+    this.cartService.toggleCart(this.product.id, {
       quantity: 1,
       size: this.selectedSize,
       color: this.selectedColor
-    })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.isAddingToCart = false;
-          this.showToast('Added to cart!', 'success');
-        },
-        error: (error) => {
-          console.error('Failed to add to cart:', error);
-          this.isAddingToCart = false;
-          this.showToast('Failed to add to cart', 'danger');
-        }
-      });
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: () => {
+        this.isAddingToCart = false;
+        this.showToast(this.cartService.isInCart(this.product!.id) ? 'Added to cart!' : 'Removed from cart!', 'success');
+      },
+      error: (error) => {
+        console.error('Failed to update cart:', error);
+        this.isAddingToCart = false;
+        this.showToast('Failed to update cart', 'danger');
+      }
+    });
   }
 
   buyNow() {

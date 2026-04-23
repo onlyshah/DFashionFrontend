@@ -40,14 +40,14 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   isPaused = false;
   imageUrl = environment.apiUrl
 
-  backendProductPlaceholder = environment.apiUrl + '/uploads/products/placeholder-product.png';
+  backendProductPlaceholder = environment.apiUrl + '/uploads/default-product.svg';
 
   getProductImageUrl(product: Product): string {
     if (!product || !product.images || product.images.length === 0) {
       return this.backendProductPlaceholder;
     }
 
-    const url = product.images[0].url || product.images[0];
+    const url = (product.images[0] as any)?.url || product.images[0];
     
     // If already absolute URL, return as-is
     if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
@@ -95,7 +95,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   onLikesChange(likedProducts: Product[] | any[]): void {
-    this.likedProducts = new Set(likedProducts.map((product: Product) => product._id));
+    this.likedProducts = new Set(likedProducts.map((product: Product) => product.id || product._id));
   }
 
   loadTrendingProducts(): void {
@@ -303,7 +303,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
    */
   isProductInWishlist(product: Product): boolean {
     const productId = product.id || product._id;
-    return this.productStateService.getProductsInWishlist().includes(productId);
+    return !!productId && this.wishlistService.isInWishlist(productId);
   }
 
   getDiscountPercentage(product: Product): number {

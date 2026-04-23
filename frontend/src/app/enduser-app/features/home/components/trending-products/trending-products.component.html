@@ -132,9 +132,10 @@
           </button>
           <button 
             class="wishlist-btn" 
+            [class.active]="isProductInWishlist(product)"
             (click)="onWishlistToggle($event, product, !isProductInWishlist(product))"
           >
-            <ion-icon name="heart-outline"></ion-icon>
+            <ion-icon [name]="isProductInWishlist(product) ? 'heart' : 'heart-outline'"></ion-icon>
           </button>
         </div>
         </div>

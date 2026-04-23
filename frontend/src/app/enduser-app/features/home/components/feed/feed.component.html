@@ -98,8 +98,8 @@
                 <button class="ecommerce-icon-btn cart-btn" (click)="addToCart(post)" title="Add to Cart">
                   <i class="fas fa-shopping-cart"></i>
                 </button>
-                <button class="ecommerce-icon-btn wishlist-btn" (click)="addToWishlist(post)" title="Add to Wishlist">
-                  <i class="fas fa-heart"></i>
+                <button class="ecommerce-icon-btn wishlist-btn" [class.active]="isProductInWishlist(post)" (click)="toggleWishlist(post)" title="Add to Wishlist">
+                  <i class="fas" [ngClass]="isProductInWishlist(post) ? 'fa-heart' : 'fa-heart-o'"></i>
                 </button>
                 <button class="ecommerce-icon-btn notification-btn" disabled title="Notifications feature coming soon">
                   <i class="fas fa-bell"></i>
@@ -160,7 +160,9 @@
                   </div>
                   <div class="product-actions">
                     <button class="cart-btn" (click)="addToCart(product); $event.stopPropagation()">🛒</button>
-                    <button class="wishlist-btn" (click)="addToWishlist(product); $event.stopPropagation()">💖</button>
+                    <button class="wishlist-btn" [class.active]="isProductInWishlist(product)" (click)="toggleWishlist(product); $event.stopPropagation()">
+                      <i class="fas" [ngClass]="isProductInWishlist(product) ? 'fa-heart' : 'fa-heart-o'"></i>
+                    </button>
                   </div>
                 </div>
               </div>

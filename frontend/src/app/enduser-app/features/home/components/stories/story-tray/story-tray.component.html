@@ -18,7 +18,7 @@
          (pointercancel)="endDrag()"
          (mouseleave)="endDrag()">
       <div class="status" *ngFor="let story of stories; let i = index"
-           [ngClass]="{ 'unviewed': story?.unseen, 'viewed': !story?.unseen }"
+           [ngClass]="{ 'unviewed': !isStorySeen(story), 'viewed': isStorySeen(story) }"
            (click)="onStoryClick(story, i)">
         <div class="status-ring" >
           <div class="image">
@@ -27,6 +27,7 @@
           </div>
         </div>
         <span class="story-label">{{ story.user?.username || 'Story' }}</span>
+        <span class="story-product-badge" *ngIf="story.productId">Shop</span>
       </div>
     </div>
   </div>

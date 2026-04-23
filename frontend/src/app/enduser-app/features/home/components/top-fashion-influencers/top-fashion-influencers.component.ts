@@ -10,7 +10,8 @@ import { ImageFallbackDirective } from '../../../../../shared/directives/image-f
 import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
 
 interface Influencer {
-  _id: string;
+  _id?: string;
+  id?: string;
   username: string;
   fullName: string;
   avatar: string;
@@ -106,7 +107,24 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   }
 
   onInfluencerClick(influencer: Influencer) {
-    this.router.navigate(['/profile', influencer._id]);
+    if (!influencer) {
+      console.error('Influencer is null or undefined');
+      return;
+    }
+    
+    // Support both _id (MongoDB) and id (PostgreSQL)
+    const influencerId = influencer._id || influencer.id || influencer.username;
+    
+    if (!influencerId) {
+      console.error('Influencer ID not found');
+      return;
+    }
+    
+    this.router.navigate(['/profile', influencerId]);
+  }
+
+  onViewAll() {
+    this.router.navigate(['/explore'], { queryParams: { section: 'influencers' } });
   }
 
   formatFollowerCount(count: number): string {
@@ -124,7 +142,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   }
 
   trackByInfluencerId(_index: number, influencer: Influencer): string {
-    return influencer._id;
+    return (influencer._id || influencer.id || influencer.username || '');
   }
 
   // Auto-sliding methods

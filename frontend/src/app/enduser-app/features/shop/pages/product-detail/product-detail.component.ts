@@ -173,6 +173,10 @@ export class ProductDetailComponent implements OnInit {
         return product?.images?.[0]?.url || '/uploadsdefault-product.svg';
     }
 
+    private getResolvedProductId(): string {
+        return this.product?.id || this.product?._id || '';
+    }
+
     goBack() {
         this.router.navigate(['/']);
     }
@@ -185,10 +189,13 @@ export class ProductDetailComponent implements OnInit {
             return;
         }
 
-        this.cartService.addToCart(this.product._id, this.quantity).subscribe({
+        const productId = this.getResolvedProductId();
+        if (!productId) return;
+
+        this.cartService.addToCart(productId, this.quantity).subscribe({
             next: (response) => {
                 if (response?.success) {
-                    this.productStateService.setCartState(this.product._id, true);
+                    this.productStateService.setCartState(productId, true);
                     alert(`Added ${this.quantity}x ${this.product.name} to cart`);
                     console.log('✅ Product added to cart:', this.product.name);
                 } else {
@@ -211,10 +218,13 @@ export class ProductDetailComponent implements OnInit {
             return;
         }
 
-        this.wishlistService.addToWishlist(this.product._id).subscribe({
+        const productId = this.getResolvedProductId();
+        if (!productId) return;
+
+        this.wishlistService.addToWishlist(productId).subscribe({
             next: (response) => {
                 if (response?.success) {
-                    this.productStateService.setWishlistState(this.product._id, true);
+                    this.productStateService.setWishlistState(productId, true);
                     alert(`Added ${this.product.name} to wishlist`);
                     console.log('✅ Product added to wishlist:', this.product.name);
                 } else {
@@ -233,7 +243,7 @@ export class ProductDetailComponent implements OnInit {
         if (!this.product) return;
         // Navigate to checkout with product info
         this.router.navigate(['/checkout'], {
-            queryParams: { productId: this.product._id || this.product.id, quantity: this.quantity }
+            queryParams: { productId: this.getResolvedProductId(), quantity: this.quantity }
         });
     }
 }

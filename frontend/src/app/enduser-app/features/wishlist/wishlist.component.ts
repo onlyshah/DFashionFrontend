@@ -740,7 +740,7 @@ export class WishlistComponent implements OnInit {
   subscribeToWishlistUpdates() {
     this.wishlistService.wishlistItems$.subscribe((items: WishlistItem[]) => {
       this.wishlistItems = items || [];
-      this.selectedItems = this.selectedItems.filter(id => this.wishlistItems.some(item => item._id === id));
+      this.selectedItems = this.selectedItems.filter(id => this.wishlistItems.some(item => (item.id || item._id) === id));
       this.sortWishlist();
     });
   }
@@ -762,7 +762,7 @@ export class WishlistComponent implements OnInit {
     if (this.allItemsSelected()) {
       this.selectedItems = [];
     } else {
-      this.selectedItems = this.wishlistItems.map(item => item._id);
+      this.selectedItems = this.wishlistItems.map(item => item.id || item._id).filter((id): id is string => !!id);
     }
   }
 
@@ -781,7 +781,7 @@ export class WishlistComponent implements OnInit {
     this.selectedItems = [];
 
     itemsToRemove.forEach(itemId => {
-      const item = this.wishlistItems.find(i => i._id === itemId);
+      const item = this.wishlistItems.find(i => (i.id || i._id) === itemId);
       if (item) {
         this.removeFromWishlist(item);
       }
@@ -799,7 +799,7 @@ export class WishlistComponent implements OnInit {
     this.selectedItems = [];
 
     itemsToMove.forEach(itemId => {
-      const item = this.wishlistItems.find(i => i._id === itemId);
+      const item = this.wishlistItems.find(i => (i.id || i._id) === itemId);
       if (item) {
         this.moveToCart(item);
       }
@@ -808,7 +808,13 @@ export class WishlistComponent implements OnInit {
 
   moveToCart(item: WishlistItem) {
     this.loading = true;
-    this.wishlistService.moveToCart(item.product._id, 1, item.size, item.color).subscribe({
+    const productId = item.product.id || item.product._id;
+    if (!productId) {
+      this.loading = false;
+      return;
+    }
+
+    this.wishlistService.moveToCart(productId, 1, item.size, item.color).subscribe({
       next: (response: any) => {
         if (response.success || !response.success) {
           this.removeFromWishlist(item);
@@ -832,7 +838,7 @@ export class WishlistComponent implements OnInit {
   }
 
   trackByItemId(index: number, item: any): string {
-    return item._id;
+    return item.id || item._id;
   }
 
   getImageUrl(image: any): string {
@@ -897,11 +903,16 @@ export class WishlistComponent implements OnInit {
   }
 
   viewProduct(product: any) {
-    this.router.navigate(['/product', product._id]);
+    this.router.navigate(['/product', product.id || product._id]);
   }
 
   addToCart(item: WishlistItem) {
-    this.cartService.addToCart(item.product._id, 1).subscribe({
+    const productId = item.product.id || item.product._id;
+    if (!productId) {
+      return;
+    }
+
+    this.cartService.addToCart(productId, 1).subscribe({
       next: (response: any) => {
         if (response?.success) {
           this.showNotification('Added to cart successfully!');
@@ -921,7 +932,7 @@ export class WishlistComponent implements OnInit {
   }
 
   removeFromWishlist(item: WishlistItem | string) {
-    const productId = typeof item === 'string' ? item : item.product._id;
+    const productId = typeof item === 'string' ? item : (item.product.id || item.product._id || item.productId);
     this.wishlistService.removeFromWishlist(productId).subscribe({
       next: (response: any) => {
         if (response.success) {
@@ -947,7 +958,12 @@ export class WishlistComponent implements OnInit {
     if (confirm(`Move ${activeItems.length} items to cart?`)) {
       // Move items one by one
       activeItems.forEach(item => {
-        this.wishlistService.moveToCart(item._id, 1).subscribe({
+        const productId = item.product.id || item.product._id || item.productId;
+        if (!productId) {
+          return;
+        }
+
+        this.wishlistService.moveToCart(productId, 1).subscribe({
           next: (response: any) => {
             if (response.success) {
               this.loadWishlist(); // Refresh wishlist

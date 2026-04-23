@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProductService } from '../../../../../core/services/product.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
 
 @Component({
     selector: 'app-shop-category',
@@ -216,7 +218,9 @@ export class CategoryComponent implements OnInit {
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private productService: ProductService
+        private productService: ProductService,
+        private unifiedApi: UnifiedApiService,
+        public wishlistService: WishlistService
     ) { }
 
     ngOnInit() {
@@ -234,13 +238,31 @@ export class CategoryComponent implements OnInit {
             this.isLoading = false;
             return;
         }
+
+        if (this.categoryName === 'trending') {
+            this.unifiedApi.getTrendingProducts(1, 24).subscribe({
+                next: (response) => {
+                    this.products = response?.data || response?.products || [];
+                    this.productCount = this.products.length;
+                    this.isLoading = false;
+                },
+                error: (error) => {
+                    console.error('Error loading trending products:', error);
+                    this.products = [];
+                    this.productCount = 0;
+                    this.isLoading = false;
+                }
+            });
+            return;
+        }
         
         // Call ProductService to get products for this category
         this.productService.getCategoryProducts(this.categoryName).subscribe({
-            next: (response) => {
+            next: (response: any) => {
                 console.log('Category products loaded:', response);
-                this.products = response?.products || [];
-                this.productCount = response?.total || this.products.length;
+                const payload = response as any;
+                this.products = payload?.data || payload?.products || [];
+                this.productCount = payload?.total || payload?.pagination?.total || this.products.length;
                 this.isLoading = false;
             },
             error: (error) => {
@@ -253,12 +275,19 @@ export class CategoryComponent implements OnInit {
     }
 
     viewProduct(productId: string) {
-        this.router.navigate(['/product', productId]);
+        if (!productId) {
+            return;
+        }
+        this.router.navigate(['/products', productId]);
     }
 
     toggleWishlist(productId: string, event: Event) {
         event.stopPropagation();
-        console.log('Toggle wishlist for:', productId);
+        this.wishlistService.toggleWishlist(productId).subscribe({
+            error: (error) => {
+                console.error('Toggle wishlist failed:', error);
+            }
+        });
     }
 
     removeFilter(filter: any) {
@@ -267,16 +296,29 @@ export class CategoryComponent implements OnInit {
     }
 
     getStars(rating: number): string[] {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            if (i <= rating) {
-                stars.push('fas fa-star');
+      const stars = [];
+      for (let i = 1; i <= 5; i++) {
+          if (i <= rating) {
+              stars.push('fas fa-star');
             } else if (i - 0.5 <= rating) {
                 stars.push('fas fa-star-half-alt');
             } else {
                 stars.push('far fa-star');
             }
-        }
-        return stars;
+      }
+      return stars;
+    }
+
+    getProductId(product: any): string {
+        return product?.id || product?._id || '';
+    }
+
+    getProductImage(product: any): string {
+        return product?.images?.[0]?.url || '/uploads/placeholder.jpg';
+    }
+
+    isInWishlist(product: any): boolean {
+        const productId = this.getProductId(product);
+        return !!productId && this.wishlistService.isInWishlist(productId);
     }
 }

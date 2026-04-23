@@ -85,13 +85,20 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   }
 
   onProductClick(product: Product) {
-    this.router.navigate(['/product', product._id]);
+    const productId = product.id || product._id;
+    if (!productId) {
+      console.warn('Product ID not found');
+      return;
+    }
+    this.router.navigate(['/product', productId]);
   }
 
   async onLikeProduct(product: Product, event: Event) {
     event.stopPropagation();
+    const productId = product.id || product._id;
+    if (!productId) return;
     try {
-      const result = await this.socialService.likeProduct(product._id);
+      const result = await this.socialService.likeProduct(productId);
       if (result.success) {
         console.log(result.message);
       } else {
@@ -104,7 +111,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
 
   async onShareProduct(product: Product, event: Event) {
     event.stopPropagation();
-    const productId = product._id || product.id;
+    const productId = product.id || product._id;
     if (!productId) {
       console.warn('Product ID not found');
       return;
@@ -127,7 +134,11 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   onAddToCart(product: Product, event: Event) {
     event.stopPropagation();
     try {
-      this.cartService.addToCart(product._id, 1);
+      const productId = product.id || product._id;
+      if (!productId) {
+        return;
+      }
+      this.cartService.addToCart(productId, 1);
       console.log('Product added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -137,7 +148,11 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   onAddToWishlist(product: Product, event: Event) {
     event.stopPropagation();
     try {
-      this.wishlistService.addToWishlist(product._id);
+      const productId = product.id || product._id;
+      if (!productId) {
+        return;
+      }
+      this.wishlistService.addToWishlist(productId);
       console.log('Product added to wishlist!');
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -149,7 +164,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
    */
   isProductInCart(product: Product): boolean {
     const productId = product.id || product._id;
-    return this.productStateService.getProductsInCart().includes(productId);
+    return !!productId && this.productStateService.getProductsInCart().includes(productId);
   }
 
   /**
@@ -157,7 +172,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
    */
   isProductInWishlist(product: Product): boolean {
     const productId = product.id || product._id;
-    return this.productStateService.getProductsInWishlist().includes(productId);
+    return !!productId && this.wishlistService.isInWishlist(productId);
   }
 
   getDiscountPercentage(product: Product): number {
@@ -303,8 +318,8 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   }
 
   onViewAll() {
-    this.router.navigate(['/products'], { 
-      queryParams: { filter: 'new-arrivals' } 
+    this.router.navigate(['/products'], {
+      queryParams: { filter: 'new-arrivals' }
     });
   }
 
@@ -313,7 +328,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   }
 
   trackByProductId(_index: number, product: Product): string {
-    return product._id;
+    return product.id || product._id;
   }
 
   // Auto-sliding methods

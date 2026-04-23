@@ -59,7 +59,7 @@
       <!-- Product Image -->
       <div class="product-image-container">
         <img 
-          [src]="product.images && product.images.length > 0 ? imageUrl + product.images[0].url : imageUrl + '/uploads/products/placeholder-product.png'"
+          [src]="product.images && product.images.length > 0 ? imageUrl + product.images[0].url : imageUrl + '/uploads/default-product.svg'"
           [alt]="product.name"
           class="product-image"
           loading="lazy"
@@ -136,9 +136,10 @@
           </button>
           <button 
             class="wishlist-btn" 
+            [class.active]="isProductInWishlist(product)"
             (click)="onWishlistToggle($event, product, !isProductInWishlist(product))"
           >
-            <ion-icon name="heart-outline"></ion-icon>
+            <ion-icon [name]="isProductInWishlist(product) ? 'heart' : 'heart-outline'" [color]="isProductInWishlist(product) ? 'danger' : 'medium'"></ion-icon>
           </button>
         </div>
         </div>

@@ -8,6 +8,10 @@
       </h2>
       <p class="section-subtitle">Top brands with amazing collections</p>
     </div>
+    <button class="view-all-btn" (click)="onViewAll()">
+      View All
+      <ion-icon name="chevron-forward"></ion-icon>
+    </button>
   </div>
 
   <!-- Loading State -->
@@ -56,7 +60,7 @@
       <!-- Brand Header -->
       <div class="brand-header">
         <div class="brand-logo-container">
-          <img [src]="brand.logo ? imageUrl + brand.logo : imageUrl + '/uploads/default/brand-placeholder.png'" [alt]="brand.brand + ' logo'" class="brand-logo" loading="lazy" />
+          <img [src]="brand.logo ? imageUrl + brand.logo : imageUrl + '/uploads/brands/default-brand.png'" [alt]="brand.brand + ' logo'" class="brand-logo" loading="lazy" />
         </div>
         <div class="brand-info">
           <h3 class="brand-name">{{ brand.brand }}</h3>

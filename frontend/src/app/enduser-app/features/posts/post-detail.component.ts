@@ -749,8 +749,7 @@ export class PostDetailComponent implements OnInit {
   async buyNow() {
     if (this.post && this.post.products.length > 0) {
       const product = this.post.products[0].product;
-      // Use unified navigation to route to correc platform checkout
-      await this.navigationService.goToCheckout(product._id, { 
+      await this.navigationService.viewProduct(product._id, { 
         source: 'post', 
         postId: this.post._id 
       });
@@ -808,7 +807,7 @@ export class PostDetailComponent implements OnInit {
       this.postProductLinkingService.trackPostProductInteraction(
         this.post._id,
         product._id,
-        'add_to_wishlist'
+        'product_view'
       ).subscribe();
     }
   }
@@ -825,8 +824,7 @@ export class PostDetailComponent implements OnInit {
 
   async buyProductNow() {
     if (this.selectedProduct && this.post) {
-      // Use unified navigation service for consistent routing
-      await this.navigationService.goToCheckout(this.selectedProduct._id, { 
+      await this.navigationService.viewProduct(this.selectedProduct._id, { 
         source: 'post', 
         postId: this.post._id 
       });
@@ -835,7 +833,7 @@ export class PostDetailComponent implements OnInit {
       this.postProductLinkingService.trackPostProductInteraction(
         this.post._id,
         this.selectedProduct._id,
-        'buy_now'
+        'buy_click'
       ).subscribe();
     }
   }
@@ -879,7 +877,7 @@ export class PostDetailComponent implements OnInit {
       this.postProductLinkingService.trackPostProductInteraction(
         this.post._id,
         this.selectedProduct._id,
-        'add_to_wishlist'
+        'product_view'
       ).subscribe();
     }
   }

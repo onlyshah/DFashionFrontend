@@ -1,28 +1,40 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
-import { StorageService } from './storage.service';
+import { BehaviorSubject, Observable, from, of, throwError } from 'rxjs';
+import { catchError, finalize, map, switchMap, tap } from 'rxjs/operators';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ToastController } from '@ionic/angular';
 import { environment } from '../../../environments/environment';
+import { StorageService } from './storage.service';
 import { ProductStateService } from './product-state.service';
 import { AuthService } from './auth.service';
 
+export interface CartProductImage {
+  url: string;
+  isPrimary: boolean;
+}
+
+export interface CartProduct {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  images: CartProductImage[];
+  brand: string;
+  discount?: number;
+}
+
 export interface CartItem {
   _id: string;
-  product: {
-    _id: string;
-    name: string;
-    price: number;
-    originalPrice?: number;
-    images: { url: string; isPrimary: boolean }[];
-    brand: string;
-    discount?: number;
-  };
+  id: string;
+  product: CartProduct;
+  productId: string;
   quantity: number;
   size?: string;
   color?: string;
   addedAt: Date;
+  price?: number;
+  subtotal?: number;
 }
 
 export interface CartSummary {
@@ -31,6 +43,26 @@ export interface CartSummary {
   subtotal: number;
   discount: number;
   total: number;
+  taxAmount?: number;
+  shippingCost?: number;
+}
+
+interface ApiResponse<T> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+interface CartPayload {
+  cartId?: string | null;
+  items: any[];
+  summary?: any;
+}
+
+interface ToggleCartOptions {
+  quantity?: number;
+  size?: string;
+  color?: string;
 }
 
 @Injectable({
@@ -38,14 +70,16 @@ export interface CartSummary {
 })
 export class CartService {
   private readonly API_URL = environment.apiUrl;
+
   private cartItems = new BehaviorSubject<CartItem[]>([]);
   private cartSummary = new BehaviorSubject<CartSummary | null>(null);
   private cartItemCount = new BehaviorSubject<number>(0);
   private cartTotalAmount = new BehaviorSubject<number>(0);
   private showCartTotalPrice = new BehaviorSubject<boolean>(false);
-  private totalItemCount = new BehaviorSubject<number>(0); // Combined cart + wishlist count
+  private totalItemCount = new BehaviorSubject<number>(0);
+
+  private cartProductIds = new Set<string>();
   private isLoadingCart = false;
-  private useLocalStorageOnly = false; // Use real database integration only
 
   public cartItems$ = this.cartItems.asObservable();
   public cartSummary$ = this.cartSummary.asObservable();
@@ -61,430 +95,207 @@ export class CartService {
     private productStateService: ProductStateService,
     private authService: AuthService
   ) {
-    // Initialize cart on service creation - but only load from storage for guest users
     this.initializeCart();
   }
 
-  /**
-   * Get authentication token from AuthService (handles all storage scenarios)
-   */
   private getAuthToken(): string | null {
     return this.authService.getToken();
   }
 
-  private initializeCart() {
+  private getAuthHeaders(): HttpHeaders | undefined {
     const token = this.getAuthToken();
-    if (token) {
-      // User is authenticated, load from API
+    return token ? new HttpHeaders({ Authorization: `Bearer ${token}` }) : undefined;
+  }
+
+  private initializeCart(): void {
+    if (this.getAuthToken()) {
       this.loadCart();
+      this.refreshTotalCount();
     } else {
-      // Guest user, load from local storage only
-      console.log('🔄 Guest user detected, loading cart from local storage only...');
       this.loadCartFromStorage();
     }
   }
 
-  // Get cart from API
-  getCart(): Observable<{ success: boolean; cart: any; summary: any }> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.get<{ success: boolean; cart: any; summary: any }>(`${this.API_URL}/api/cart`, options);
+  getCart(): Observable<ApiResponse<CartPayload>> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<ApiResponse<CartPayload>>(`${this.API_URL}/api/cart`, headers ? { headers } : {});
   }
 
-  // Get cart count only (lightweight endpoint) - returns total quantities
-  getCartCount(): Observable<{ success: boolean; count: number; totalItems: number; itemCount: number; totalAmount: number; showTotalPrice: boolean }> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.get<{ success: boolean; count: number; totalItems: number; itemCount: number; totalAmount: number; showTotalPrice: boolean }>(`${this.API_URL}/cart/count`, options);
+  getCartCount(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>(`${this.API_URL}/api/cart/count`, headers ? { headers } : {});
   }
 
-  // Get total count for logged-in user (cart + wishlist)
   getTotalCount(): Observable<any> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.get<any>(`${this.API_URL}/api/cart/total-count`, options);
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>(`${this.API_URL}/api/cart/total-count`, headers ? { headers } : {});
   }
 
-  // Debug cart data
   debugCart(): Observable<any> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.get<any>(`${this.API_URL}/cart/debug`, options).pipe(
-      catchError(error => {
-        console.log('🔍 Debug endpoint not available, skipping debug');
-        return of({ success: false, message: 'Debug endpoint not available' });
-      })
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>(`${this.API_URL}/api/cart/debug`, headers ? { headers } : {}).pipe(
+      catchError(() => of({ success: false, message: 'Debug endpoint not available' }))
     );
   }
 
-  // Recalculate cart totals
   recalculateCart(): Observable<any> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.post<any>(`${this.API_URL}/cart/recalculate`, {}, options).pipe(
-      catchError(error => {
-        console.log('🔧 Recalculate endpoint not available, skipping recalculation');
-        return of({ success: false, message: 'Recalculate endpoint not available' });
-      })
+    const headers = this.getAuthHeaders();
+    return this.http.post<any>(`${this.API_URL}/api/cart/recalculate`, {}, headers ? { headers } : {}).pipe(
+      catchError(() => of({ success: false, message: 'Recalculate endpoint not available' }))
     );
   }
 
-  // Load cart and update local state
-  loadCart() {
-    // Always use real database integration
-    const token = this.getAuthToken();
-
-    if (token) {
-      // User is logged in - load from API
-      console.log('🔄 User authenticated, loading cart from API...');
-      this.loadCartFromAPI();
-    } else {
-      // Guest user - require authentication for cart functionality
-      console.log('🔄 Guest user detected, cart requires authentication');
-      this.cartItems.next([]);
-      this.cartSummary.next(null);
-      this.updateCartCount();
-    }
-  }
-
-  // Load cart from API for logged-in users
-  private loadCartFromAPI() {
-    // Check if user is authenticated
-    const token = this.getAuthToken();
-    if (!token) {
-      console.log('❌ No authentication token, using local storage fallback');
+  loadCart(): void {
+    if (!this.getAuthToken()) {
       this.loadCartFromStorage();
       return;
     }
 
-    // Prevent multiple simultaneous API calls
-    if (this.isLoadingCart) {
-      console.log('🔄 Cart already loading, skipping duplicate request');
-      return;
-    }
-
-    this.isLoadingCart = true;
-
-    this.getCart().subscribe({
-      next: (response) => {
-        this.isLoadingCart = false;
-        if (response.success && response.cart) {
-          const items = response.cart.items || [];
-          this.cartItems.next(items);
-          this.cartSummary.next(response.summary);
-          this.updateCartCount();
-          
-          // Update product state service with current cart items
-          const cartProductIds = items.map((item: any) => item.product?._id || item.productId);
-          cartProductIds.forEach((productId: string) => {
-            this.productStateService.setCartState(productId, true);
-          });
-          
-          console.log('✅ Cart loaded from API:', items.length, 'items');
-          console.log('🛒 Cart items details:', items.map((item: any) => ({
-            id: item._id,
-            name: item.product?.name,
-            quantity: item.quantity,
-            price: item.product?.price
-          })));
-        } else {
-          // No cart data from API, initialize empty cart
-          this.cartItems.next([]);
-          this.cartSummary.next(null);
-          this.updateCartCount();
-          console.log('❌ No cart data from API');
-        }
-      },
-      error: (error) => {
-        this.isLoadingCart = false;
-        console.error('❌ API cart error:', error);
-
-        if (error.status === 401) {
-          console.log('❌ Authentication failed, clearing token');
-          localStorage.removeItem('token');
-          this.cartItems.next([]);
-          this.cartSummary.next(null);
-          this.updateCartCount();
-        } else if (error.status === 500) {
-          console.log('❌ Server error, using local storage fallback');
-          this.loadCartFromStorage();
-        } else {
-          console.log('❌ API error, using local storage fallback');
-          this.loadCartFromStorage();
-        }
-      }
-    });
-  }
-
-  private async loadCartFromStorage() {
-    try {
-      // Check if storage service is available
-      if (!this.storageService) {
-        console.log('Storage service not available, using empty cart');
-        this.cartItems.next([]);
-        this.updateCartCount();
-        return;
-      }
-
-      // Wait a bit for storage to initialize
-      await new Promise(resolve => setTimeout(resolve, 100));
-      const cart = await this.storageService.getCart();
-      this.cartItems.next(cart || []);
-      this.updateCartCount();
-    } catch (error) {
-      console.error('Error loading cart from storage:', error);
-      this.cartItems.next([]);
-      this.updateCartCount();
-    }
-  }
-
-  private async saveCartToStorage() {
-    try {
-      if (!this.storageService) {
-        console.log('Storage service not available, skipping cart save');
-        return;
-      }
-      await this.storageService.setCart(this.cartItems.value);
-    } catch (error) {
-      console.error('Error saving cart to storage:', error);
-    }
-  }
-
-  private updateCartCount() {
-    const items = this.cartItems.value || [];
-    const count = items.reduce((total, item) => total + item.quantity, 0);
-    this.cartItemCount.next(count);
-    console.log('🛒 Cart count updated:', count);
-  }
-
-  // Method to refresh cart on user login
-  refreshCartOnLogin() {
-    console.log('🔄 Refreshing cart on login...');
     this.loadCartFromAPI();
   }
 
-  // Method to refresh total count (cart + wishlist) for logged-in user
-  refreshTotalCount() {
-    const token = this.getAuthToken();
-    if (token) {
-      // Skip debug for now and go directly to getting total count
-      console.log('🔄 Refreshing total count for logged-in user...');
-      this.getTotalCountAfterRecalculation();
-    } else {
-      // No token, set all counts to 0
-      this.resetAllCounts();
-    }
+  refreshCartOnLogin(): void {
+    this.loadCartFromAPI();
+    this.refreshTotalCount();
   }
 
-  private getTotalCountAfterRecalculation() {
-    // Only refresh if user is authenticated
-    const token = this.getAuthToken();
-    if (!token) {
-      console.log('🔒 No authentication token, skipping cart count refresh');
+  clearCartOnLogout(): void {
+    this.clearCartData();
+  }
+
+  refreshTotalCount(): void {
+    if (!this.getAuthToken()) {
       this.resetAllCounts();
       return;
     }
 
     this.getTotalCount().subscribe({
       next: (response) => {
-        if (response.success && response.data) {
-          const data = response.data;
-
-          // Update cart count with TOTAL QUANTITY (not just item count)
-          this.cartItemCount.next(data?.cart?.quantityTotal || 0);
-          this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
-          this.showCartTotalPrice.next(data?.showCartTotalPrice || false);
-
-          // Update TOTAL COUNT (cart + wishlist)
-          this.totalItemCount.next(data?.totalCount || 0);
-
-          console.log('🔢 Total count refreshed for user:', response.username, {
-            cartQuantityTotal: data?.cart?.quantityTotal,
-            cartItemCount: data?.cart?.itemCount,
-            wishlistItems: data?.wishlist?.itemCount,
-            totalCount: data?.totalCount,
-            cartTotal: data?.cart?.totalAmount,
-            showPrice: data?.showCartTotalPrice
-          });
+        if (!response?.success || !response?.data) {
+          this.resetAllCounts();
+          return;
         }
+
+        const data = response.data;
+        this.cartItemCount.next(data?.cart?.quantityTotal || 0);
+        this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
+        this.showCartTotalPrice.next(!!data?.showCartTotalPrice);
+        this.totalItemCount.next(data?.totalCount || 0);
       },
       error: (error) => {
-        console.error('❌ Error refreshing total count:', error);
-        if (error.status === 401) {
-          console.log('❌ Authentication failed, clearing token');
-          localStorage.removeItem('token');
-          this.resetAllCounts();
-        } else if (error.status === 404) {
-          console.log('❌ Total count endpoint not found, using fallback');
-          // Fallback: Load cart directly to get counts
-          this.loadCartFromAPI();
-        } else {
-          // For other errors, reset counts to avoid showing stale data
+        console.error('Error refreshing total count:', error);
+        if (error?.status === 401) {
           this.resetAllCounts();
         }
       }
     });
   }
 
-  // Method to refresh only cart count (lightweight) - kept for backward compatibility
-  refreshCartCount() {
-    this.refreshTotalCount(); // Use the new total count method
+  refreshCartCount(): void {
+    this.refreshTotalCount();
   }
 
-  // Reset all counts to 0
-  private resetAllCounts() {
-    this.cartItemCount.next(0);
-    this.cartTotalAmount.next(0);
-    this.showCartTotalPrice.next(false);
-    this.totalItemCount.next(0);
-    console.log('🔄 All counts reset to 0');
+  setUseLocalStorageOnly(_useLocalOnly: boolean): void {
+    // Legacy no-op. Cart is API-first and falls back to storage only for guests.
   }
 
-  // Method to clear cart on logout
-  clearCartOnLogout() {
-    console.log('🔄 Clearing cart on logout...');
-    this.cartItems.next([]);
-    this.cartSummary.next(null);
-    this.resetAllCounts();
-  }
-
-  // Temporary method to enable/disable API calls
-  setUseLocalStorageOnly(useLocalOnly: boolean) {
-    this.useLocalStorageOnly = useLocalOnly;
-    console.log('🔧 Cart API calls', useLocalOnly ? 'DISABLED' : 'ENABLED');
-    if (useLocalOnly) {
-      console.log('🔧 Cart will use local storage only');
-    }
-  }
-
-  // Check if product already exists in cart
   isProductInCart(productId: string): boolean {
-    const items = this.cartItems.getValue();
-    return items.some(item => item.product._id === productId || item.product._id === productId);
+    return this.isInCart(productId);
   }
 
-  // Get all cart items (synchronous)
   getCartItems(): CartItem[] {
     return this.cartItems.getValue();
   }
 
-  // Get existing cart item by product ID
   getCartItemByProductId(productId: string): CartItem | undefined {
-    const items = this.cartItems.getValue();
-    return items.find(item => item.product._id === productId);
+    return this.cartItems.getValue().find(item => item.productId === productId);
   }
 
-  // Add item to cart via API
   addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; itemExists?: boolean; currentQuantity?: number }> {
-    // Check if product already in cart - if so, increase quantity
     const existingItem = this.getCartItemByProductId(productId);
+
     if (existingItem) {
-      // Product already in cart - update quantity instead
-      const newQuantity = existingItem.quantity + quantity;
-      console.log(`📦 Product already in cart. Updating quantity from ${existingItem.quantity} to ${newQuantity}`);
-      return this.updateCartItemQuantity(productId, newQuantity);
+      return this.updateCartItem(existingItem._id, existingItem.quantity + quantity).pipe(
+        map((response: any) => ({
+          success: !!response?.success,
+          message: response?.message || 'Cart updated'
+        }))
+      );
     }
 
-    const payload = { productId, quantity, size, color };
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.post<{ success: boolean; message: string }>(`${this.API_URL}/api/cart/add`, payload, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Update product state to reflect it's in cart
-          this.productStateService.setCartState(productId, true);
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
-      })
-    );
-  }
-
-  // Update cart item quantity
-  updateCartItemQuantity(productId: string, newQuantity: number): Observable<any> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-
-    return this.http.put<any>(`${this.API_URL}/api/cart/update`, {
+    const currentUser: any = this.authService.currentUserValue;
+    const userId = currentUser?.id || currentUser?._id;
+    const headers = this.getAuthHeaders();
+    const payload = {
+      user_id: userId,
+      product_id: productId,
       productId,
-      quantity: newQuantity
-    }, options).pipe(
-      tap(response => {
-        if (response?.success) {
-          this.loadCartFromAPI();
+      quantity,
+      size,
+      color
+    };
+
+    this.cartProductIds.add(productId);
+    this.productStateService.setCartState(productId, true);
+
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.API_URL}/api/cart/add`,
+      payload,
+      headers ? { headers } : {}
+    ).pipe(
+      tap((response) => {
+        if (!response?.success) {
+          throw new Error(response?.message || 'Failed to add item to cart');
         }
+      }),
+      switchMap((response) => this.reloadCartState().pipe(map(() => response))),
+      catchError((error) => {
+        this.cartProductIds.delete(productId);
+        this.productStateService.setCartState(productId, false);
+        return throwError(() => error);
       })
     );
   }
 
-  // Legacy method for backward compatibility - works for guest users
+  removeProductFromCart(productId: string): Observable<{ success: boolean; message: string }> {
+    const existingItem = this.getCartItemByProductId(productId);
+
+    if (existingItem) {
+      return this.removeCartItem(existingItem, productId);
+    }
+
+    return this.removeCartItem(undefined, productId);
+  }
+
+  toggleCart(productId: string, options: ToggleCartOptions = {}): Observable<{ success: boolean; message: string }> {
+    if (this.isInCart(productId, options.size, options.color)) {
+      return this.removeProductFromCart(productId);
+    }
+
+    return this.addToCart(productId, options.quantity || 1, options.size, options.color).pipe(
+      map((response) => ({ success: response.success, message: response.message }))
+    );
+  }
+
+  updateCartItemQuantity(productId: string, newQuantity: number): Observable<any> {
+    const item = this.getCartItemByProductId(productId);
+    if (!item) {
+      return throwError(() => new Error('Cart item not found'));
+    }
+
+    return this.updateCartItem(item._id, newQuantity);
+  }
+
   async addToCartLegacy(product: any, quantity: number = 1, size?: string, color?: string): Promise<boolean> {
+    const productId = product?._id || product?.id;
+    if (!productId) {
+      return false;
+    }
+
     try {
-      const productId = product._id || product.id;
-
-      // Try API first, but fallback to local storage for guest users
-      try {
-        const response = await this.addToCart(productId, quantity, size, color).toPromise();
-        if (response?.success) {
-          await this.showToast('Item added to cart', 'success');
-          this.loadCart(); // Refresh cart
-          return true;
-        }
-      } catch (apiError) {
-        console.log('API not available, using local storage');
-      }
-
-      // Fallback to local storage (for guest users)
-      const cartItem: CartItem = {
-        _id: `${productId}_${size || 'default'}_${color || 'default'}`,
-        product: {
-          _id: productId,
-          name: product.name,
-          price: product.price,
-          originalPrice: product.originalPrice,
-          images: product.images || [],
-          brand: product.brand || '',
-          discount: product.discount
-        },
-        quantity,
-        size,
-        color,
-        addedAt: new Date()
-      };
-
-      const currentCart = this.cartItems.value;
-      const existingItemIndex = currentCart.findIndex(item =>
-        item.product._id === productId &&
-        (item.size || 'default') === (size || 'default') &&
-        (item.color || 'default') === (color || 'default')
-      );
-
-      if (existingItemIndex >= 0) {
-        currentCart[existingItemIndex].quantity += quantity;
-      } else {
-        currentCart.push(cartItem);
-      }
-
-      this.cartItems.next(currentCart);
-      this.updateCartCount();
-      await this.saveCartToStorage();
+      await this.addToCart(productId, quantity, size, color).toPromise();
       await this.showToast('Item added to cart', 'success');
       return true;
-
     } catch (error) {
       console.error('Error adding to cart:', error);
       await this.showToast('Failed to add item to cart', 'danger');
@@ -492,135 +303,104 @@ export class CartService {
     }
   }
 
-  // Remove item from cart via API
   removeFromCart(itemId: string): Observable<{ success: boolean; message: string }> {
-    // Find the product ID for this cart item before removal
-    const items = this.cartItems.getValue();
-    const cartItem = items.find(item => item._id === itemId);
-    
-    // If item not found in local state, still try API (idempotent)
-    if (!cartItem) {
-      console.log(`🗑️ Cart item not found locally: ${itemId} - still attempting removal from API (idempotent)`);
+    const item = this.cartItems.getValue().find(cartItem => cartItem._id === itemId || cartItem.id === itemId);
+    if (!item) {
+      return of({ success: true, message: 'Item already removed from cart' });
     }
-    
-    const productId = cartItem?.product?._id;
 
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart/remove/${itemId}`, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Update product state if we know the product ID
-          if (productId) {
-            this.productStateService.setCartState(productId, false);
-          }
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
-      }),
-      catchError(error => {
-        // If 404 (item not found), treat as success (idempotent)
-        if (error?.status === 404) {
-          console.log(`🗑️ Cart item already removed: ${itemId}`);
-          if (productId) {
-            this.productStateService.setCartState(productId, false);
-          }
-          this.loadCartFromAPI();
-          return of({ success: true, message: 'Item already removed from cart' });
-        }
-        // Re-throw other errors
-        throw error;
-      })
-    );
+    return this.removeCartItem(item, item.productId);
   }
 
-  // Bulk remove items from cart
   bulkRemoveFromCart(itemIds: string[]): Observable<{ success: boolean; message: string; removedCount: number }> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      body: { itemIds },
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {
-      body: { itemIds }
-    };
-    return this.http.delete<{ success: boolean; message: string; removedCount: number }>(`${this.API_URL}/cart/bulk-remove`, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
+    const headers = this.getAuthHeaders();
+    const previousItems = this.cartItems.getValue();
+    const previousSummary = this.cartSummary.getValue();
+    const idSet = new Set(itemIds);
+    const nextItems = previousItems.filter(item => !idSet.has(item._id) && !idSet.has(item.id));
+
+    this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
+    this.syncProductState(nextItems);
+
+    return this.http.delete<{ success: boolean; message: string; removedCount: number }>(
+      `${this.API_URL}/api/cart/bulk-remove`,
+      {
+        body: { itemIds, item_ids: itemIds },
+        ...(headers ? { headers } : {})
+      }
+    ).pipe(
+      switchMap((response) => this.reloadCartState().pipe(map(() => ({
+        ...response,
+        removedCount: response?.removedCount ?? itemIds.length
+      })))),
+      catchError((error) => {
+        this.applyLocalCartState(previousItems, previousSummary);
+        this.syncProductState(previousItems);
+        return throwError(() => error);
       })
     );
   }
 
-  // Legacy method
   async removeFromCartLegacy(itemId: string): Promise<void> {
     try {
-      const response = await this.removeFromCart(itemId).toPromise();
-      if (response?.success) {
-        await this.showToast('Item removed from cart', 'success');
-        this.loadCart(); // Refresh cart
-      }
+      await this.removeFromCart(itemId).toPromise();
+      await this.showToast('Item removed from cart', 'success');
     } catch (error) {
       console.error('Error removing from cart:', error);
       await this.showToast('Failed to remove item from cart', 'danger');
     }
   }
 
-  // Update cart item quantity via API
   updateCartItem(itemId: string, quantity: number): Observable<{ success: boolean; message: string }> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.put<{ success: boolean; message: string }>(`${this.API_URL}/cart/update/${itemId}`, { quantity }, options).pipe(
-      tap(response => {
-        if (response.success) {
-          // Immediately refresh cart to get updated count
-          this.loadCartFromAPI();
-        }
+    const headers = this.getAuthHeaders();
+    const currentItems = this.cartItems.getValue();
+    const previousSummary = this.cartSummary.getValue();
+    const existingItem = currentItems.find(item => item._id === itemId || item.id === itemId);
+
+    if (!existingItem) {
+      return throwError(() => new Error('Cart item not found'));
+    }
+
+    const nextItems = quantity <= 0
+      ? currentItems.filter(item => item._id !== itemId && item.id !== itemId)
+      : currentItems.map(item => item._id === itemId || item.id === itemId ? { ...item, quantity } : item);
+
+    this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
+    this.syncProductState(nextItems);
+
+    return this.http.put<{ success: boolean; message: string }>(
+      `${this.API_URL}/api/cart/update/${itemId}`,
+      { quantity },
+      headers ? { headers } : {}
+    ).pipe(
+      switchMap((response) => this.reloadCartState().pipe(map(() => response))),
+      catchError((error) => {
+        this.applyLocalCartState(currentItems, previousSummary);
+        this.syncProductState(currentItems);
+        return throwError(() => error);
       })
     );
   }
 
-  // Legacy method
   async updateQuantity(itemId: string, quantity: number): Promise<void> {
     try {
-      if (quantity <= 0) {
-        await this.removeFromCartLegacy(itemId);
-        return;
-      }
-
-      const response = await this.updateCartItem(itemId, quantity).toPromise();
-      if (response?.success) {
-        this.loadCart(); // Refresh cart
-      }
+      await this.updateCartItem(itemId, quantity).toPromise();
     } catch (error) {
       console.error('Error updating quantity:', error);
       await this.showToast('Failed to update quantity', 'danger');
     }
   }
 
-  // Clear cart via API
   clearCartAPI(): Observable<{ success: boolean; message: string }> {
-    const token = this.getAuthToken();
-    const options = token ? {
-      headers: { 'Authorization': `Bearer ${token}` }
-    } : {};
-    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/cart/clear`, options);
+    const headers = this.getAuthHeaders();
+    return this.http.delete<{ success: boolean; message: string }>(`${this.API_URL}/api/cart/clear`, headers ? { headers } : {});
   }
 
   async clearCart(): Promise<void> {
     try {
-      const response = await this.clearCartAPI().toPromise();
-      if (response?.success) {
-        this.cartItems.next([]);
-        this.cartSummary.next(null);
-        this.updateCartCount();
-        await this.showToast('Cart cleared', 'success');
-      }
+      await this.clearCartAPI().toPromise();
+      this.clearCartData();
+      await this.showToast('Cart cleared', 'success');
     } catch (error) {
       console.error('Error clearing cart:', error);
       await this.showToast('Failed to clear cart', 'danger');
@@ -628,117 +408,299 @@ export class CartService {
   }
 
   getCartTotal(): number {
-    const summary = this.cartSummary.value;
-    if (summary) {
-      return summary.total;
-    }
-
-    // Fallback calculation
-    return this.cartItems.value.reduce((total, item) => {
-      const price = item.product.price;
-      return total + (price * item.quantity);
-    }, 0);
+    return this.cartSummary.getValue()?.total || 0;
   }
 
-  // Get total count (cart + wishlist items) for the logged-in user
   getTotalItemCount(): number {
-    return this.totalItemCount.value;
+    return this.totalItemCount.getValue();
   }
 
-  // Get cart item count only
   getCartItemCount(): number {
-    return this.cartItemCount.value;
+    return this.cartItemCount.getValue();
   }
 
-  // Get cart total amount
   getCartTotalAmount(): number {
-    return this.cartTotalAmount.value;
+    return this.cartTotalAmount.getValue();
   }
 
-  // Check if cart total price should be displayed (when cart has 4+ products)
   shouldShowCartTotalPrice(): boolean {
-    return this.showCartTotalPrice.value;
+    return this.showCartTotalPrice.getValue();
   }
 
   isInCart(productId: string, size?: string, color?: string): boolean {
-    return this.cartItems.value.some(item =>
-      item.product._id === productId &&
+    if (!this.cartProductIds.has(productId)) {
+      return false;
+    }
+
+    if (!size && !color) {
+      return true;
+    }
+
+    return this.cartItems.getValue().some(item =>
+      item.productId === productId &&
       (item.size || 'default') === (size || 'default') &&
       (item.color || 'default') === (color || 'default')
     );
   }
 
   getCartItem(productId: string, size?: string, color?: string): CartItem | undefined {
-    return this.cartItems.value.find(item =>
-      item.product._id === productId &&
+    return this.cartItems.getValue().find(item =>
+      item.productId === productId &&
       (item.size || 'default') === (size || 'default') &&
       (item.color || 'default') === (color || 'default')
     );
   }
 
-  // Load cart count on user login
   async loadCartCountOnLogin(): Promise<void> {
     try {
-      // Get token with fallback to this.getAuthToken()
-      let token: string | null = null;
-
-      if (!this.storageService) {
-        console.warn('Storage service not available, using auth service');
-        token = this.getAuthToken();
-      } else {
-        token = await this.storageService.get('token');
-      }
-
-      if (!token) {
-        this.cartItemCount.next(0);
-        this.cartTotalAmount.next(0);
-        return;
-      }
-
-      const response = await this.http.get<any>(`${this.API_URL}/api/cart`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }).toPromise();
-
-      if (response?.success && response?.cart) {
-        const itemCount = response.cart.items?.length || 0;
-        const totalAmount = response.cart.total || 0;
-
-        this.cartItemCount.next(itemCount);
-        this.cartTotalAmount.next(totalAmount);
-
-        // Update total item count (cart + wishlist)
-        this.updateTotalItemCount();
-      }
+      this.refreshTotalCount();
+      this.loadCart();
     } catch (error) {
       console.error('Error loading cart count:', error);
-      this.cartItemCount.next(0);
-      this.cartTotalAmount.next(0);
+      this.resetAllCounts();
     }
   }
 
-  // Update total item count (cart + wishlist combined)
-  private updateTotalItemCount(): void {
-    const cartCount = this.cartItemCount.value;
-    // We'll get wishlist count from wishlist service
-    this.totalItemCount.next(cartCount);
-  }
-
-  // Clear cart data on logout
   clearCartData(): void {
+    this.cartProductIds.clear();
     this.cartItems.next([]);
     this.cartSummary.next(null);
+    this.productStateService.clear();
+    this.resetAllCounts();
+  }
+
+  private loadCartFromAPI(): void {
+    if (this.isLoadingCart) {
+      return;
+    }
+
+    this.isLoadingCart = true;
+    this.getCart().pipe(finalize(() => {
+      this.isLoadingCart = false;
+    })).subscribe({
+      next: (response) => {
+        const normalizedItems = this.normalizeCartItems(response?.data?.items || []);
+        const normalizedSummary = this.normalizeSummary(response?.data?.summary, normalizedItems);
+        this.applyLocalCartState(normalizedItems, normalizedSummary);
+        this.syncProductState(normalizedItems);
+      },
+      error: (error) => {
+        console.error('API cart error:', error);
+        if (error?.status === 401) {
+          this.clearCartData();
+          return;
+        }
+
+        this.loadCartFromStorage();
+      }
+    });
+  }
+
+  private async loadCartFromStorage(): Promise<void> {
+    try {
+      const cart = await this.storageService?.getCart?.();
+      const normalizedItems = this.normalizeCartItems(cart || []);
+      this.applyLocalCartState(normalizedItems, this.buildSummaryFromItems(normalizedItems));
+      this.syncProductState(normalizedItems);
+    } catch (error) {
+      console.error('Error loading cart from storage:', error);
+      this.applyLocalCartState([], null);
+    }
+  }
+
+  private async saveCartToStorage(): Promise<void> {
+    try {
+      if (!this.storageService?.setCart) {
+        return;
+      }
+
+      await this.storageService.setCart(this.cartItems.getValue());
+    } catch (error) {
+      console.error('Error saving cart to storage:', error);
+    }
+  }
+
+  private reloadCartState(): Observable<void> {
+    return this.getCart().pipe(
+      tap((response) => {
+        const normalizedItems = this.normalizeCartItems(response?.data?.items || []);
+        const normalizedSummary = this.normalizeSummary(response?.data?.summary, normalizedItems);
+        this.applyLocalCartState(normalizedItems, normalizedSummary);
+        this.syncProductState(normalizedItems);
+        this.refreshTotalCount();
+        this.saveCartToStorage();
+      }),
+      map(() => void 0)
+    );
+  }
+
+  private applyLocalCartState(items: CartItem[], summary: CartSummary | null): void {
+    this.cartItems.next(items);
+    this.cartSummary.next(summary);
+    this.cartProductIds = new Set(items.map(item => item.productId));
+
+    const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
+    const totalAmount = summary?.total ?? items.reduce((total, item) => {
+      const unitPrice = item.price ?? item.product.price ?? 0;
+      return total + (unitPrice * item.quantity);
+    }, 0);
+
+    this.cartItemCount.next(totalQuantity);
+    this.cartTotalAmount.next(totalAmount);
+  }
+
+  private syncProductState(items: CartItem[]): void {
+    const productIds = items.map(item => item.productId);
+    this.productStateService.initializeStates(productIds, this.productStateService.getProductsInWishlist());
+    productIds.forEach(productId => this.productStateService.setCartState(productId, true));
+
+    const currentSet = new Set(productIds);
+    this.productStateService.getProductsInCart()
+      .filter(productId => !currentSet.has(productId))
+      .forEach(productId => this.productStateService.setCartState(productId, false));
+  }
+
+  private normalizeCartItems(items: any[]): CartItem[] {
+    return (items || []).map((item) => {
+      const rawProduct = item?.product || {};
+      const productId = rawProduct._id || rawProduct.id || item.productId || item.product_id;
+      const itemId = item._id || item.id;
+      const rawImages = Array.isArray(rawProduct.images) ? rawProduct.images : [];
+
+      const normalizedImages: CartProductImage[] = rawImages.map((image: any, index: number) => {
+        if (typeof image === 'string') {
+          return { url: image, isPrimary: index === 0 };
+        }
+
+        return {
+          url: image?.url || '',
+          isPrimary: !!image?.isPrimary || !!image?.is_primary || index === 0
+        };
+      }).filter((image: CartProductImage) => !!image.url);
+
+      return {
+        _id: itemId,
+        id: itemId,
+        productId,
+        product: {
+          _id: productId,
+          id: productId,
+          name: rawProduct.name || item.name || '',
+          price: Number(rawProduct.price ?? item.price ?? 0),
+          originalPrice: rawProduct.originalPrice,
+          images: normalizedImages,
+          brand: rawProduct.brand || '',
+          discount: rawProduct.discount
+        },
+        quantity: Number(item.quantity || 0),
+        size: item.size || item.selectedSize || item.selected_size,
+        color: item.color || item.selectedColor || item.selected_color,
+        addedAt: new Date(item.addedAt || item.added_at || Date.now()),
+        price: Number(item.price ?? rawProduct.price ?? 0),
+        subtotal: Number(item.subtotal || ((item.price ?? rawProduct.price ?? 0) * (item.quantity || 0)))
+      };
+    }).filter((item) => !!item.productId);
+  }
+
+  private normalizeSummary(summary: any, items: CartItem[]): CartSummary {
+    if (!summary) {
+      return this.buildSummaryFromItems(items);
+    }
+
+    const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
+    return {
+      itemCount: Number(summary.itemCount ?? summary.itemsCount ?? items.length),
+      totalQuantity: Number(summary.totalQuantity ?? totalQuantity),
+      subtotal: Number(summary.subtotal ?? 0),
+      discount: Number(summary.discount ?? 0),
+      total: Number(summary.total ?? summary.totalAmount ?? 0),
+      taxAmount: Number(summary.taxAmount ?? summary.tax ?? 0),
+      shippingCost: Number(summary.shippingCost ?? summary.shipping ?? 0)
+    };
+  }
+
+  private buildSummaryFromItems(items: CartItem[], fallback?: CartSummary | null): CartSummary {
+    const subtotal = items.reduce((total, item) => total + ((item.price ?? item.product.price ?? 0) * item.quantity), 0);
+    const totalQuantity = items.reduce((total, item) => total + item.quantity, 0);
+
+    return {
+      itemCount: items.length,
+      totalQuantity,
+      subtotal,
+      discount: fallback?.discount || 0,
+      total: subtotal,
+      taxAmount: fallback?.taxAmount || 0,
+      shippingCost: fallback?.shippingCost || 0
+    };
+  }
+
+  private removeCartItem(item?: CartItem, productId?: string): Observable<{ success: boolean; message: string }> {
+    const currentUser: any = this.authService.currentUserValue;
+    const userId = currentUser?.id || currentUser?._id;
+    const headers = this.getAuthHeaders();
+    const previousItems = this.cartItems.getValue();
+    const previousSummary = this.cartSummary.getValue();
+    const resolvedItemId = item?._id || item?.id;
+    const resolvedProductId = productId || item?.productId;
+
+    const nextItems = resolvedItemId
+      ? previousItems.filter(cartItem => cartItem._id !== resolvedItemId && cartItem.id !== resolvedItemId)
+      : previousItems.filter(cartItem => cartItem.productId !== resolvedProductId);
+
+    this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
+
+    if (resolvedProductId) {
+      const stillExists = nextItems.some(cartItem => cartItem.productId === resolvedProductId);
+      if (!stillExists) {
+        this.cartProductIds.delete(resolvedProductId);
+        this.productStateService.setCartState(resolvedProductId, false);
+      }
+    }
+
+    const request$ = resolvedItemId
+      ? this.http.delete<{ success: boolean; message: string }>(
+          `${this.API_URL}/api/cart/remove/${encodeURIComponent(resolvedItemId)}`,
+          headers ? { headers } : {}
+        )
+      : this.http.delete<{ success: boolean; message: string }>(
+          `${this.API_URL}/api/cart/remove`,
+          {
+            body: {
+              user_id: userId,
+              product_id: resolvedProductId,
+              productId: resolvedProductId
+            },
+            ...(headers ? { headers } : {})
+          }
+        );
+
+    return request$.pipe(
+      switchMap((response) => this.reloadCartState().pipe(map(() => response))),
+      catchError((error) => {
+        this.applyLocalCartState(previousItems, previousSummary);
+        this.syncProductState(previousItems);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  private resetAllCounts(): void {
     this.cartItemCount.next(0);
     this.cartTotalAmount.next(0);
+    this.showCartTotalPrice.next(false);
     this.totalItemCount.next(0);
   }
 
-  private async showToast(message: string, color: string) {
-    const toast = await this.toastController.create({
-      message: message,
+  private showToast(message: string, color: string) {
+    if (!this.toastController?.create) {
+      return Promise.resolve();
+    }
+
+    return this.toastController.create({
+      message,
       duration: 2000,
-      color: color,
+      color,
       position: 'bottom'
-    });
-    toast.present();
+    }).then((toast) => toast.present());
   }
 }

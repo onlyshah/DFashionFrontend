@@ -1,6 +1,21 @@
-<div class="shop-container">
+<div class="shop-container" [class.trending-only]="viewMode === 'trending'">
+  <div class="section-header section-banner" *ngIf="viewMode !== 'all'">
+    <div>
+      <h2>
+        {{ viewMode === 'trending' ? 'Trending Products' : viewMode === 'new-arrivals' ? 'New Arrivals' : viewMode === 'brands' ? 'Featured Brands' : 'Shop by Category' }}
+      </h2>
+      <p>
+        {{ viewMode === 'trending' ? 'Only the products trending right now' : viewMode === 'new-arrivals' ? 'Fresh styles just dropped' : viewMode === 'brands' ? 'Shop from your favorite brands' : 'Find exactly what you are looking for' }}
+      </p>
+    </div>
+    <button class="view-all-btn" (click)="backToShop()">
+      <i class="fas fa-arrow-left"></i>
+      Back to Shop
+    </button>
+  </div>
+
   <!-- Hero Banner -->
-  <div class="hero-banner">
+  <div class="hero-banner" *ngIf="viewMode === 'all'">
     <div class="hero-content">
       <h1>Discover Fashion That Defines You</h1>
       <p>Explore thousands of products from top brands</p>
@@ -28,10 +43,14 @@
   </div>
 
   <!-- Categories Section -->
-  <section class="categories-section">
+  <section class="categories-section" *ngIf="viewMode === 'all' || viewMode === 'categories'">
     <div class="section-header">
       <h2>Shop by Category</h2>
       <p>Find exactly what you're looking for</p>
+      <button class="view-all-btn" (click)="viewAllCategories()" *ngIf="viewMode === 'all'">
+        View All
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
     <div class="categories-grid">
       <div class="category-card" *ngFor="let category of categories" (click)="navigateToCategory(category.id)">
@@ -53,10 +72,14 @@
   </section>
 
   <!-- Featured Brands -->
-  <section class="brands-section">
+  <section class="brands-section" *ngIf="viewMode === 'all' || viewMode === 'brands'">
     <div class="section-header">
       <h2>Featured Brands</h2>
       <p>Shop from your favorite brands</p>
+      <button class="view-all-btn" (click)="viewAllBrands()" *ngIf="viewMode === 'all'">
+        View All
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
     <div class="brands-grid">
       <div class="brand-card" *ngFor="let brand of featuredBrands" (click)="navigateToBrand(brand.id)">
@@ -70,7 +93,7 @@
   </section>
 
   <!-- Trending Products -->
-  <section class="trending-section">
+  <section class="trending-section" *ngIf="viewMode === 'all' || viewMode === 'trending'">
     <div class="section-header">
       <h2>Trending Now</h2>
       <p>What everyone's buying</p>
@@ -88,11 +111,12 @@
             </span>
           </div>
           <div class="product-actions">
-            <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
-              <i class="far fa-heart"></i>
+            <button class="btn-wishlist" (click)="addToWishlist(product, $event)" [class.active]="isInWishlist(product)">
+              <i [class]="getWishlistIcon(product)"></i>
             </button>
             <button class="btn-quick-add" (click)="quickAddToCart(product, $event)">
-              <i class="fas fa-shopping-cart"></i>
+              <i class="fas" [ngClass]="isInCart(product) ? 'fa-trash' : 'fa-shopping-cart'"></i>
+              {{ isInCart(product) ? 'Remove from Cart' : 'Add to Cart' }}
             </button>
           </div>
         </div>
@@ -118,7 +142,7 @@
   </section>
 
   <!-- New Arrivals -->
-  <section class="new-arrivals-section">
+  <section class="new-arrivals-section" *ngIf="viewMode === 'all' || viewMode === 'new-arrivals'">
     <div class="section-header">
       <h2>New Arrivals</h2>
       <p>Fresh styles just dropped</p>
@@ -135,11 +159,12 @@
             </span>
           </div>
           <div class="product-actions">
-            <button class="btn-wishlist" (click)="addToWishlist(product, $event)">
-              <i class="far fa-heart"></i>
+            <button class="btn-wishlist" (click)="addToWishlist(product, $event)" [class.active]="isInWishlist(product)">
+              <i [class]="getWishlistIcon(product)"></i>
             </button>
             <button class="btn-quick-add" (click)="quickAddToCart(product, $event)">
-              <i class="fas fa-shopping-cart"></i>
+              <i class="fas" [ngClass]="isInCart(product) ? 'fa-trash' : 'fa-shopping-cart'"></i>
+              {{ isInCart(product) ? 'Remove from Cart' : 'Add to Cart' }}
             </button>
           </div>
         </div>
@@ -165,7 +190,7 @@
   </section>
 
   <!-- Quick Links -->
-  <section class="quick-links-section">
+  <section class="quick-links-section" *ngIf="viewMode === 'all'">
     <div class="section-header">
       <h2>Quick Links</h2>
     </div>

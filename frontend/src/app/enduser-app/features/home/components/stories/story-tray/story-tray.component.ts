@@ -44,6 +44,7 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
   apiUrl = environment.apiUrl;
 
   refreshSub?: Subscription;
+  private seenStoryIds = new Set<string>();
 
   constructor(
     private storyService: StoryService,
@@ -70,10 +71,17 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onStoryClick(story: any, index: number, isOwn = false): void {
-    console.log('Story clicked:', story);
+    const storyId = story?._id || story?.id;
+    if (storyId) {
+      this.markStoryViewed(storyId);
+      this.seenStoryIds.add(storyId);
+      this.stories = this.stories.map(item => {
+        const itemId = item?._id || item?.id;
+        return itemId === storyId ? { ...item, is_seen: true, unseen: false } : item;
+      });
+    }
     this.viewerIndex = index;
     this.viewerVisible = true;
-    // Story viewer modal is now visible - no additional action needed
   }
 
   scrollLeft(): void {
@@ -139,7 +147,9 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storyLoading = true;
     this.storyService.getStories(1, 20).subscribe({
       next: (res: any) => {
-        this.stories = res.stories || [];
+        const stories = res?.stories || res?.data || [];
+        this.stories = stories.map((story: any) => this.normalizeStory(story));
+        this.seenStoryIds = new Set(this.stories.filter((story: any) => this.isStorySeen(story)).map((story: any) => story._id || story.id));
         this.storyLoading = false;
         setTimeout(() => this.updateScrollButtons(), 0);
       },
@@ -164,7 +174,7 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
           ...post,
           user: post.user || { username: 'Unknown', avatar: `${environment.apiUrl}/uploads/avatars/default-avatar.svg` },
           mediaType: post.media?.[0]?.type || 'image',
-          mediaUrl: post.media?.[0]?.url ? `${environment.apiUrl}${post.media[0].url}` : '/assets/default-post.jpg',
+          mediaUrl: post.media?.[0]?.url ? `${environment.apiUrl}${post.media[0].url}` : '/uploads/default-post.jpg',
           likes: Array.isArray(post.likes) ? post.likes.length : (typeof post.likes === 'number' ? post.likes : 0),
           commentsCount: Array.isArray(post.comments) ? post.comments.length : (post.commentsCount || 0)
         }));
@@ -191,6 +201,12 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
 
   changeViewerIndex(index: number): void {
     this.viewerIndex = index;
+    const story = this.stories?.[index];
+    const storyId = story?._id || story?.id;
+    if (storyId) {
+      this.markStoryViewed(storyId);
+      this.seenStoryIds.add(storyId);
+    }
   }
 
   toggleLike(post: any): void {
@@ -211,7 +227,47 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Mark story as viewed (API call)
-    this.storyService.viewStory(story._id).subscribe();
+    this.markStoryViewed(story._id);
+  }
+
+  isStorySeen(story: any): boolean {
+    const storyId = story?._id || story?.id;
+    return !!storyId && (story?.is_seen === true || story?.unseen === false || this.seenStoryIds.has(storyId));
+  }
+
+  private normalizeStory(story: any): any {
+    const storyId = story?._id || story?.id;
+    const media = story?.media || {};
+    const mediaUrl = media?.url || story?.mediaUrl || story?.media_url || '/uploads/default-story.svg';
+    const mediaType = media?.type || story?.mediaType || story?.media_type || (String(mediaUrl).match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image');
+    return {
+      ...story,
+      _id: storyId,
+      id: storyId,
+      media: {
+        type: mediaType,
+        url: mediaUrl,
+        thumbnail: media?.thumbnail || story?.thumbnailUrl || story?.thumbnail_url || null,
+        duration: media?.duration || story?.duration || null
+      },
+      mediaUrl,
+      mediaType,
+      productId: story?.productId || story?.product_id || story?.products?.[0]?.product?._id || null,
+      product_id: story?.productId || story?.product_id || story?.products?.[0]?.product?._id || null,
+      user: {
+        ...(story?.user || {}),
+        avatar: story?.user?.avatar || `${environment.apiUrl}/uploads/avatars/default-avatar.svg`
+      },
+      is_seen: story?.is_seen === true || story?.unseen === false,
+      unseen: story?.unseen !== undefined ? story.unseen : !(story?.is_seen === true)
+    };
+  }
+
+  private markStoryViewed(storyId: string) {
+    this.storyService.viewStory(storyId).subscribe({
+      next: () => {},
+      error: () => {}
+    });
   }
 
   getTimeAgo(dateStr: string | Date): string {

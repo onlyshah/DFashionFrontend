@@ -231,23 +231,24 @@ export class FeedComponent implements OnInit {
   }
 
   // Add product to wishlist
-  addToWishlist(product: any) {
+  toggleWishlist(product: any) {
     const productId = product.id || product._id || product.product?._id;
     if (!productId) {
       console.warn('Cannot add to wishlist: no product ID');
       return;
     }
     
-    this.wishlistService.addToWishlist(productId).subscribe({
+    this.wishlistService.toggleWishlist(productId).subscribe({
       next: (response) => {
-        if (response.itemExists) {
-          alert('✓ This product is already in your wishlist');
-        } else {
-          alert(`✓ ${product.name || 'Product'} added to wishlist!`);
-        }
+        alert(response?.message || (this.wishlistService.isInWishlist(productId) ? 'Added to wishlist' : 'Removed from wishlist'));
       },
       error: (err) => console.error('Error adding to wishlist:', err)
     });
+  }
+
+  isProductInWishlist(product: any): boolean {
+    const productId = product.id || product._id || product.product?._id;
+    return !!productId && this.wishlistService.isInWishlist(productId);
   }
 
   // Buy now (navigate to product page)
@@ -367,9 +368,9 @@ fetchPosts(page: number = 1, append = false) {
 
         const mappedProducts = (p.products || []).map((pr: any) => {
           const prodData = pr.product || null;
-          const prodImage = prodData?.image
-            ? `${base}${prodData.image}`
-            : `${base}/uploads/default-product.png`;
+          const prodImage = prodData?.image || prodData?.imageUrl
+            ? `${base}${prodData.image || prodData.imageUrl}`
+            : `${base}/uploads/default-product.svg`;
           return {
             ...pr,
             image: prodImage,

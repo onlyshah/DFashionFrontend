@@ -34,7 +34,7 @@
           <label [for]="'item-' + item._id"></label>
         </div>
         <div class="item-image">
-          <img [src]="item.product.images[0].url" [alt]="item.product.name">
+          <img [src]="getPrimaryImageUrl(item)" [alt]="item.product.name">
         </div>
         <div class="item-details">
           <h3>{{ item.product.name }}</h3>

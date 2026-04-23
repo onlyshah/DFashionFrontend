@@ -145,6 +145,10 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
     this.router.navigate(['/shop/category', navigationPath]);
   }
 
+  onViewAll() {
+    this.router.navigate(['/products'], { queryParams: { filter: 'categories' } });
+  }
+
   formatProductCount(count?: number): string {
     if (!count) return '0';
     if (count >= 1000) {

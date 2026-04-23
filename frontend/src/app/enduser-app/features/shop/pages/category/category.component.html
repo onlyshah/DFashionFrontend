@@ -12,11 +12,11 @@
     </div>
   </div>
   <div class="products-grid" *ngIf="!isLoading">
-    <div *ngFor="let product of products" class="product-card" (click)="viewProduct(product._id)">
+    <div *ngFor="let product of products" class="product-card" (click)="viewProduct(getProductId(product))">
       <div class="product-image">
-        <img [src]="product.images[0]?.url" [alt]="product.name">
-        <button class="wishlist-btn" (click)="toggleWishlist(product._id, $event)">
-          <i class="far fa-heart"></i>
+        <img [src]="getProductImage(product)" [alt]="product.name">
+        <button class="wishlist-btn" (click)="toggleWishlist(getProductId(product), $event)" [class.active]="isInWishlist(product)">
+          <i [class]="isInWishlist(product) ? 'fas fa-heart' : 'far fa-heart'"></i>
         </button>
       </div>
       <div class="product-info">

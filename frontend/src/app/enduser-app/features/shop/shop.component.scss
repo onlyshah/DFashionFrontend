@@ -117,10 +117,36 @@
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
 }
 
 .view-all-btn:hover {
   background: #1f2937;
+}
+
+.section-banner {
+  padding: 18px 22px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #0f172a 0%, #111827 60%, #1f2937 100%);
+  color: white;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+
+.section-banner h2,
+.section-banner p {
+  color: white;
+}
+
+.section-banner .view-all-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.section-banner .view-all-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .brands-grid {
@@ -179,6 +205,36 @@
   position: absolute;
   top: 12px;
   right: 12px;
+}
+
+.btn-wishlist,
+.btn-quick-add {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-wishlist {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.92);
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.btn-wishlist.active {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.btn-wishlist i,
+.btn-quick-add i,
+.quick-link i,
+.view-all-btn i {
+  font-size: 0.95rem;
 }
 
 .quick-links-grid {
@@ -520,6 +576,11 @@
           background: #e9ecef;
           color: #333;
         }
+
+        &.active {
+          color: #e91e63;
+          background: rgba(233, 30, 99, 0.08);
+        }
       }
       
       .btn-cart {
@@ -549,4 +610,8 @@
   .brands-slider {
     grid-template-columns: 1fr;
   }
+}
+
+.shop-container.trending-only {
+  padding-top: 40px;
 }

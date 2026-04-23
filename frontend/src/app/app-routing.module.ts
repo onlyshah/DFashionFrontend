@@ -30,8 +30,16 @@ const routes: Routes = [
     loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
   },
   {
+    path: 'products',
+    loadComponent: () => import('./enduser-app/features/shop/shop.component').then(m => m.ShopComponent)
+  },
+  {
     path: 'category/:category',
     loadComponent: () => import('./enduser-app/features/category/category.component').then(m => m.CategoryComponent)
+  },
+  {
+    path: 'subcategory/:id',
+    loadComponent: () => import('./enduser-app/features/shop/pages/category/category.component').then(m => m.CategoryComponent)
   },
   {
     path: 'brand/:id',
@@ -39,8 +47,16 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'product/:id',
+    loadComponent: () => import('./enduser-app/features/shop/pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+  },
+  {
     path: 'products/:id',
     loadComponent: () => import('./enduser-app/features/shop/pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./enduser-app/features/shop/pages/checkout/checkout.component').then(m => m.CheckoutComponent)
   },
   {
     path: 'search',
@@ -51,6 +67,16 @@ const routes: Routes = [
     path: 'posts',
     loadChildren: () => import('./enduser-app/features/posts/posts.routes').then(m => m.postsRoutes),
     data: { title: 'Posts' }
+  },
+  {
+    path: 'post/:id',
+    loadComponent: () => import('./enduser-app/features/posts/post-detail.component').then(m => m.PostDetailComponent),
+    data: { title: 'Post Detail' }
+  },
+  {
+    path: 'post/:id/comments',
+    redirectTo: '/post/:id',
+    pathMatch: 'full'
   },
   // 🔄 STANDARDIZED: Redirect duplicate product route to primary route
   {

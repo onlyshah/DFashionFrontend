@@ -100,6 +100,10 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.router.navigate(['/profile', user.username]);
   }
 
+  onViewAll() {
+    this.router.navigate(['/explore'], { queryParams: { section: 'suggested' } });
+  }
+
   onFollowClick(user: SuggestedUser, event: Event) {
     event.stopPropagation();
     user.isFollowing = !user.isFollowing;

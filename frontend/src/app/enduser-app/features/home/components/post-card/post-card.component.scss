@@ -599,6 +599,10 @@
   color: white;
 }
 
+.quick-btn.active {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.75) inset;
+}
+
 .quick-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -654,9 +658,18 @@
   border: none;
   cursor: pointer;
   padding: 8px;
-  font-size: 20px;
   color: #262626;
   transition: color 0.2s;
+}
+
+.action-btn i,
+.save-btn i,
+.quick-btn i,
+.btn-wishlist i,
+.btn-cart i,
+.btn-buy-now i {
+  font-size: 16px;
+  line-height: 1;
 }
 
 .action-btn:hover,

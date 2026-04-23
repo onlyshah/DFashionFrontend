@@ -45,6 +45,10 @@ export class StoryService {
     return this.http.post<{ message: string }>(`${this.API_URL}/stories/${storyId}/share`, {});
   }
 
+  commentOnStory(storyId: string, text: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/stories/${storyId}/comment`, { text });
+  }
+
   deleteStory(storyId: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.API_URL}/stories/${storyId}`);
   }

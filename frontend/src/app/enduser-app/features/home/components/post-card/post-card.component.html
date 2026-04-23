@@ -114,7 +114,7 @@
         class="product-tag"
         [style.top.%]="productTag.position.y || 50"
         [style.left.%]="productTag.position.x || 50"
-        (click)="viewProduct(productTag.product._id); $event.stopPropagation()"
+        (click)="viewProduct(getProductId(productTag.product)); $event.stopPropagation()"
       >
         <div class="tag-dot">
           <div class="tag-pulse"></div>
@@ -129,15 +129,15 @@
             <h5>{{ productTag.product.name }}</h5>
             <p>₹{{ productTag.product.price | number }}</p>
             <div class="product-quick-actions">
-              <button class="quick-btn buy-btn" (click)="onBuyNow(productTag.product._id)" title="Buy Now">
-                <i class="fas fa-bolt"></i>
-              </button>
-              <button class="quick-btn cart-btn" (click)="addToCart(productTag.product._id)" title="Add to Cart">
-                <i class="fas fa-cart-plus"></i>
-              </button>
-              <button class="quick-btn wishlist-btn" (click)="addToWishlist(productTag.product._id)" title="Add to Wishlist">
-                <i class="fas fa-heart"></i>
-              </button>
+            <button class="quick-btn buy-btn" (click)="onBuyNow(getProductId(productTag.product))" title="Buy Now">
+              <i class="fas fa-bolt"></i>
+            </button>
+            <button class="quick-btn cart-btn" (click)="addToCart(getProductId(productTag.product))" title="Add to Cart">
+              <i class="fas fa-shopping-cart"></i>
+            </button>
+            <button class="quick-btn wishlist-btn" (click)="addToWishlist(getProductId(productTag.product))" [class.active]="isInWishlist(getProductId(productTag.product))" title="Add to Wishlist">
+              <i [class]="isInWishlist(getProductId(productTag.product)) ? 'fas fa-heart' : 'far fa-heart'"></i>
+            </button>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@
 
     <!-- Middle Point Navigation Button -->
     <div class="middle-navigation" *ngIf="post.products && post.products.length > 0">
-      <button class="middle-nav-btn" (click)="viewProduct(post.products[0].product._id); $event.stopPropagation()">
+      <button class="middle-nav-btn" (click)="viewProduct(getProductId(post.products[0].product)); $event.stopPropagation()">
         <i class="fas fa-shopping-bag"></i>
         <span>Shop Now</span>
       </button>
@@ -173,7 +173,7 @@
         <i class="far fa-comment"></i>
       </button>
       <button class="action-btn" (click)="sharePost()">
-        <i class="far fa-share"></i>
+        <i class="fas fa-paper-plane"></i>
       </button>
     </div>
     <button class="save-btn" [class.saved]="isSaved" (click)="toggleSave()">
@@ -185,19 +185,19 @@
   <div class="ecommerce-actions" *ngIf="post.products.length > 0">
     <div class="products-showcase">
       <div *ngFor="let productTag of post.products" class="product-showcase">
-        <img [src]="productTag.product.images[0].url" [alt]="productTag.product.name" class="product-thumb">
+        <img [src]="getProductImageUrl(productTag.product.images?.[0]?.url || '')" [alt]="productTag.product.name" class="product-thumb">
         <div class="product-info-inline">
           <h5>{{ productTag.product.name }}</h5>
           <p class="price">₹{{ productTag.product.price | number }}</p>
           <div class="product-actions">
-            <button class="btn-wishlist" (click)="addToWishlist(productTag.product._id)" [class.active]="isInWishlist(productTag.product._id)">
-              <i [class]="isInWishlist(productTag.product._id) ? 'fas fa-heart' : 'far fa-heart'"></i>
+            <button class="btn-wishlist" (click)="addToWishlist(getProductId(productTag.product))" [class.active]="isInWishlist(getProductId(productTag.product))">
+              <i [class]="isInWishlist(getProductId(productTag.product)) ? 'fas fa-heart' : 'far fa-heart'"></i>
             </button>
-            <button class="btn-cart" (click)="addToCart(productTag.product._id)">
+            <button class="btn-cart" (click)="addToCart(getProductId(productTag.product))">
               <i class="fas fa-shopping-cart"></i>
               Add to Cart
             </button>
-            <button class="btn-buy-now" (click)="buyNow(productTag.product._id)">
+            <button class="btn-buy-now" (click)="buyNow(getProductId(productTag.product))">
               Buy Now
             </button>
           </div>

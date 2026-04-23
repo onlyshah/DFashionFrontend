@@ -28,7 +28,6 @@ export class PostCardComponent implements OnInit {
   newComment = '';
   showComments = false;
   showProductTags = false;
-  wishlistItems: string[] = [];
   cartItems: string[] = [];
 
   // Media handling
@@ -54,7 +53,6 @@ export class PostCardComponent implements OnInit {
   ngOnInit() {
   this.likesCount = this.post.analytics.likes;
   console.log('PostCard API data:', this.post);
-  this.loadWishlistItems();
   this.loadCartItems();
   this.initializeMedia();
   }
@@ -82,11 +80,6 @@ export class PostCardComponent implements OnInit {
         console.warn('Failed to preload media:', error);
       });
     }
-  }
-
-  loadWishlistItems() {
-    // Load from real API via service
-    this.wishlistItems = [];
   }
 
   loadCartItems() {
@@ -148,18 +141,13 @@ export class PostCardComponent implements OnInit {
 
   addToWishlist(productId: string) {
     this.wishlistService.toggleWishlist(productId).subscribe({
-      next: (response: any) => {
-        if (this.isInWishlist(productId)) {
-          this.showNotification('Removed from wishlist', 'info');
-        } else {
-          this.showNotification('Added to wishlist ❤️', 'success');
-        }
+      next: () => {
+        const active = this.isInWishlist(productId);
+        this.showNotification(active ? 'Added to wishlist' : 'Removed from wishlist', active ? 'success' : 'info');
       },
       error: (error: any) => {
         console.error('Wishlist error:', error);
-        // Fallback to toggling wishlist again
-        this.wishlistService.toggleWishlist(productId).subscribe();
-        this.showNotification(this.isInWishlist(productId) ? 'Removed from wishlist' : 'Added to wishlist ❤️', 'success');
+        this.showNotification('Failed to update wishlist', 'error');
       }
     });
   }
@@ -179,28 +167,23 @@ export class PostCardComponent implements OnInit {
   }
 
   buyNow(productId: string) {
-    this.cartService.addToCart(productId, 1).subscribe({
-      next: (response: any) => {
-        if (response.success) {
-          this.showNotification('Redirecting to checkout...', 'info');
-          this.router.navigate(['/shop/checkout']);
-        }
-      },
-      error: (error: any) => {
-        console.error('Buy now error:', error);
-        this.showNotification('Failed to process purchase', 'error');
-      }
+    this.router.navigate(['/product', productId], {
+      queryParams: { source: 'post' }
     });
   }
 
   private getProductById(productId: string): any {
     // Find product in post's products array
-    const productTag = this.post.products.find((p: any) => p.product._id === productId);
+    const productTag = this.post.products.find((p: any) => this.getProductId(p.product) === productId);
     return productTag ? productTag.product : null;
   }
 
   onBuyNow(productId: string) {
     this.buyNow(productId);
+  }
+
+  getProductId(product: any): string {
+    return product?.id || product?._id || '';
   }
 
   // Media handling methods
@@ -405,3 +388,4 @@ export class PostCardComponent implements OnInit {
     }, 3000);
   }
 }
+

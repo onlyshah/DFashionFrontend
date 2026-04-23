@@ -22,9 +22,9 @@
     [attr.aria-label]="isInCart ? 'Remove from cart' : 'Add to cart'"
   >
     <i class="fas fa-shopping-cart" *ngIf="!cartLoading && !isInCart"></i>
-    <i class="fas fa-check" *ngIf="!cartLoading && isInCart"></i>
+    <i class="fas fa-trash" *ngIf="!cartLoading && isInCart"></i>
     <i class="fas fa-spinner fa-spin" *ngIf="cartLoading"></i>
-    <span *ngIf="!compact">{{ isInCart ? 'In Cart' : 'Add to Cart' }}</span>
+    <span *ngIf="!compact">{{ isInCart ? 'Remove from Cart' : 'Add to Cart' }}</span>
   </button>
 
   <!-- Wishlist Button -->

@@ -71,9 +71,10 @@
           <span class="cart-badge zero" *ngIf="currentUser && cartItemCount === 0">0</span>
 
           <!-- Cart total amount display -->
-          <div class="cart-total-display" *ngIf="currentUser && cartTotalAmount > 0">
-            <span class="cart-total-text">{{ getFormattedCartTotal() }}</span>
-          </div>
+          <!-- <div class="cart-total-display" >
+            <span  class="cart-total-text" *ngIf="currentUser && cartTotalAmount > 0"
+            >{{ getFormattedCartTotal() }}</span>
+          </div> -->
         </a>
 
         <!-- Total Count Display (Cart + Wishlist Combined) -->
@@ -82,6 +83,8 @@
           <span>Total</span>
           <span class="total-count-badge" *ngIf="getTotalItemCount() > 0">{{ getTotalItemCount() }}</span>
           <span class="total-count-badge zero" *ngIf="getTotalItemCount() === 0">0</span>
+         <span  class="cart-total-text" *ngIf="currentUser && cartTotalAmount > 0"
+            >{{ getFormattedCartTotal() }}</span>
         </div>
 
         <!-- User Menu for logged in users -->

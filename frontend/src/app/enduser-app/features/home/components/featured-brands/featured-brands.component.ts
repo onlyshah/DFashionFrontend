@@ -99,6 +99,12 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     });
   }
 
+  onViewAll() {
+    this.router.navigate(['/products'], {
+      queryParams: { filter: 'brands' }
+    });
+  }
+
   onProductClick(product: Product, event: Event) {
     event.stopPropagation();
     this.router.navigate(['/product', product._id]);

@@ -3,27 +3,32 @@
   <div class="viewer-shell" role="dialog" aria-modal="true">
     <header class="viewer-header">
       <div class="viewer-brand">
-        <span class="brand-text">DFashion</span>
+        <span class="brand-text">DFashion Stories</span>
       </div>
       <button class="close-btn" (click)="onClose()" aria-label="Close story viewer">
         <ion-icon name="close"></ion-icon>
       </button>
     </header>
 
-    <div class="viewer-card">
+    <div class="viewer-card"
+         (mousedown)="onPointerDown($event)"
+         (mouseup)="onPointerUp($event)"
+         (touchstart)="onPointerDown($event)"
+         (touchend)="onPointerUp($event)">
       <div class="viewer-top">
         <div class="story-progress">
           <span
             *ngFor="let item of stories; let idx = index"
-            class="progress-segment"
-            [class.active]="idx === currentIndex">
+            class="progress-segment">
+            <span class="progress-fill"
+                  [style.width.%]="idx < currentIndex ? 100 : (idx === currentIndex ? storyProgress : 0)"></span>
           </span>
         </div>
 
         <div class="story-meta">
           <div class="story-user">
             <div class="meta-avatar">
-              <img [src]="currentStory?.user?.avatar || '/assets/default-avatar.svg'" alt="{{ currentStory?.user?.username }}">
+              <img [src]="getViewerUserAvatar()" [alt]="currentStory?.user?.username || 'Story creator'">
             </div>
             <div>
               <div class="username">{{ currentStory?.user?.username || 'Unknown' }}</div>
@@ -31,7 +36,9 @@
             </div>
           </div>
           <div class="meta-actions">
-            <button class="icon-btn"><ion-icon name="ellipsis-horizontal"></ion-icon></button>
+            <button class="icon-btn" (click)="togglePause()" [attr.aria-label]="isPaused ? 'Resume story' : 'Pause story'">
+              <ion-icon [name]="isPaused ? 'play' : 'pause'"></ion-icon>
+            </button>
           </div>
         </div>
       </div>
@@ -41,12 +48,30 @@
           <ion-icon name="chevron-back"></ion-icon>
         </button>
 
-        <div class="story-content">
+        <div class="story-content" (click)="togglePause()">
           <div class="story-media">
-            <img [src]="currentStory?.mediaUrl || '/assets/default-post.jpg'" alt="Story media">
+            <img *ngIf="currentMediaType === 'image'"
+                 [src]="currentMediaUrl"
+                 (error)="onMediaError($event)"
+                 (load)="onMediaLoad()"
+                 alt="Story media">
+            <video *ngIf="currentMediaType === 'video'"
+                   #storyVideo
+                   [src]="currentMediaUrl"
+                   [poster]="currentStory?.media?.thumbnail || currentStory?.thumbnailUrl || '/uploads/default-story.svg'"
+                   autoplay
+                   muted
+                   playsinline
+                   loop
+                   (loadedmetadata)="onMediaLoad()"
+                   (error)="onMediaError($event)"></video>
           </div>
           <div class="story-text">
-            <div class="story-caption">{{ currentStory?.caption || 'Tap to reply or swipe to browse more stories.' }}</div>
+            <div class="story-caption">{{ currentStory?.caption || 'Tap to reply, swipe to move, or use the actions below.' }}</div>
+            <button *ngIf="currentProductId" class="product-cta" (click)="openProduct(); $event.stopPropagation()">
+              View Product
+              <ion-icon name="bag"></ion-icon>
+            </button>
           </div>
         </div>
 
@@ -55,10 +80,30 @@
         </button>
       </div>
 
+      <div class="viewer-sides">
+        <button class="tap-zone left" (click)="onTapZone('left')" aria-label="Previous story"></button>
+        <button class="tap-zone right" (click)="onTapZone('right')" aria-label="Next story"></button>
+      </div>
+
       <footer class="viewer-actions">
-        <button class="action-btn"><ion-icon name="heart"></ion-icon></button>
-        <button class="action-btn"><ion-icon name="chatbubble-outline"></ion-icon></button>
-        <button class="action-btn"><ion-icon name="paper-plane"></ion-icon></button>
+        <button class="action-btn" (click)="likeStory()" [class.active]="currentStory?.isLiked">
+          <ion-icon [name]="currentStory?.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+        </button>
+        <button class="action-btn" (click)="commentStory()">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+        </button>
+        <button class="action-btn" (click)="shareStory()">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </button>
+        <button class="action-btn" (click)="addToCart()" [disabled]="!currentProductId">
+          <ion-icon name="cart-outline"></ion-icon>
+        </button>
+        <button class="action-btn" (click)="toggleWishlist()" [disabled]="!currentProductId">
+          <ion-icon name="heart-half-outline"></ion-icon>
+        </button>
+        <button class="buy-now-btn" (click)="buyNow()" [disabled]="!currentProductId">
+          Buy Now
+        </button>
       </footer>
     </div>
   </div>

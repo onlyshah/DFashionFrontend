@@ -55,7 +55,7 @@
     <div class="brands-grid">
       <div class="brand-card" *ngFor="let brand of featuredBrands">
         <!-- <img [src]="brand.logo" [alt]="brand.name"> -->
-  <img [src]="brand.logo ? apiUrl + brand.logo : apiUrl + '/uploads/default/brand-placeholder.png'" [alt]="brand.name">
+  <img [src]="brand.logo ? apiUrl + brand.logo : apiUrl + '/uploads/brands/default-brand.png'" [alt]="brand.name">
 
         <h4>{{ brand.name }}</h4>
         <p>{{ brand.description }}</p>

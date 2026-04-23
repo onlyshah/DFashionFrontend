@@ -8,6 +8,7 @@ import { Subject } from 'rxjs';
 
 import { ProductService } from '../../../../../core/services/product.service';
 import { SearchService, SearchFilters, SearchSuggestion, CategorizedSearchResult } from '../../../../../core/services/search.service';
+import { WishlistService } from '../../../../../core/services/wishlist.service';
 import { AdvancedSearchComponent } from '../../../../shared/components/advanced-search/advanced-search.component';
 
 @Component({
@@ -530,7 +531,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     { name: 'Electronics', icon: 'fas fa-mobile-alt', count: 450 }
   ];
   
-  wishlistItems: string[] = [];
   private searchSubject = new Subject<string>();
 
   constructor(
@@ -538,6 +538,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     private router: Router,
     private productService: ProductService,
     private searchService: SearchService,
+    private wishlistService: WishlistService,
     @Optional() private toastController?: ToastController
   ) {
     // Auto-detect platform from router URL
@@ -550,7 +551,6 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadRecentSearches();
-    this.loadWishlistItems();
     
     // Check for query parameter
     this.route.queryParams.subscribe(params => {
@@ -698,16 +698,18 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   toggleWishlist(productId: string) {
-    if (this.isInWishlist(productId)) {
-      this.wishlistItems = this.wishlistItems.filter(id => id !== productId);
-    } else {
-      this.wishlistItems.push(productId);
-    }
-    localStorage.setItem('wishlist', JSON.stringify(this.wishlistItems));
+    this.wishlistService.toggleWishlist(productId).subscribe({
+      next: (response) => {
+        this.showNotification(response?.message || (this.isInWishlist(productId) ? 'Added to wishlist' : 'Removed from wishlist'), 'success');
+      },
+      error: (error) => {
+        this.showNotification(error?.status === 401 ? 'Please login to save items' : 'Failed to update wishlist', 'error');
+      }
+    });
   }
 
   isInWishlist(productId: string): boolean {
-    return this.wishlistItems.includes(productId);
+    return this.wishlistService.isInWishlist(productId);
   }
 
   addToCart(productId: string) {
@@ -737,11 +739,6 @@ export class SearchComponent implements OnInit, OnDestroy {
   private loadRecentSearches() {
     const saved = localStorage.getItem('recentSearches');
     this.recentSearches = saved ? JSON.parse(saved) : [];
-  }
-
-  private loadWishlistItems() {
-    const saved = localStorage.getItem('wishlist');
-    this.wishlistItems = saved ? JSON.parse(saved) : [];
   }
 
   private saveRecentSearch(term: string) {

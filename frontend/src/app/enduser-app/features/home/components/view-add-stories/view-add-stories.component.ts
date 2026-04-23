@@ -511,8 +511,7 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
     if (products.length > 0) {
       const product = products[0]; // Get first product for now
       console.log('Buying product:', product);
-      // Navigate to checkout with product
-      this.router.navigate(['/checkout'], {
+      this.router.navigate(['/product', product._id], {
         queryParams: {
           productId: product._id,
           source: 'story'

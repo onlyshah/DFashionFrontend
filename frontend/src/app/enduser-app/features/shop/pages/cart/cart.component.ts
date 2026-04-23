@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Optional } from '@angular/core';
+import { Component, OnInit, Input, Optional, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -24,6 +24,7 @@ export class CartComponent implements OnInit {
   constructor(
     private cartService: CartService,
     private router: Router,
+    private cdr: ChangeDetectorRef,
     @Optional() private alertController?: AlertController,
     @Optional() private toastController?: ToastController
   ) {}
@@ -47,8 +48,14 @@ export class CartComponent implements OnInit {
     this.isLoading = true;
     this.cartService.getCart().subscribe({
       next: (response) => {
-        this.cartItems = response.cart?.items || [];
-        this.cartSummary = response.summary;
+        this.cartItems = (response.data?.items || []).map((item: any) => ({
+          ...item,
+          product: {
+            ...item.product,
+            images: Array.isArray(item.product?.images) ? item.product.images : []
+          }
+        }));
+        this.cartSummary = response.data?.summary || null;
         this.isLoading = false;
 
         // Select all items by default
@@ -81,7 +88,13 @@ export class CartComponent implements OnInit {
 
   subscribeToCartUpdates() {
     this.cartService.cartItems$.subscribe(items => {
-      this.cartItems = items;
+      this.cartItems = (items || []).map((item: any) => ({
+        ...item,
+        product: {
+          ...item.product,
+          images: Array.isArray(item.product?.images) ? item.product.images : []
+        }
+      }));
       this.isLoading = false;
       console.log('🔄 Cart items updated via subscription:', items.length, 'items');
       // Clear selections when cart updates
@@ -100,6 +113,11 @@ export class CartComponent implements OnInit {
     this.cartService.cartItemCount$.subscribe(count => {
       this.cartCount = count;
     });
+  }
+
+  getPrimaryImageUrl(item: CartItem): string {
+    const image = item.product?.images?.find((img: any) => img?.isPrimary) || item.product?.images?.[0];
+    return image?.url || '/uploads/placeholder.jpg';
   }
 
   // Selection methods
@@ -188,34 +206,92 @@ export class CartComponent implements OnInit {
   }
 
   async increaseQuantity(item: CartItem) {
-    this.cartService.updateCartItem(item._id, item.quantity + 1).subscribe({
+    if (!item) {
+      console.error('❌ Invalid item for increment: item is null/undefined');
+      return;
+    }
+
+    const itemId = item._id || item.id;
+    if (!itemId) {
+      console.error('❌ Invalid item for increment: no _id or id property', item);
+      return;
+    }
+
+    const newQuantity = item.quantity + 1;
+    const previousQuantity = item.quantity;
+
+    // Optimistic UI update
+    item.quantity = newQuantity;
+    this.cdr.markForCheck();
+
+    console.log(`📈 Incrementing item ${itemId} from ${previousQuantity} to ${newQuantity}`);
+
+    this.cartService.updateCartItem(itemId, newQuantity).subscribe({
       next: () => {
-        this.loadCart(); // Refresh cart
+        console.log(`✅ Quantity incremented successfully for item ${itemId}`);
+        this.loadCart();
       },
       error: (error) => {
-        console.error('Failed to update quantity:', error);
+        console.error('❌ Failed to increment quantity:', error);
+        item.quantity = previousQuantity;
+        this.cdr.markForCheck();
+        this.presentToast('Failed to update quantity', 'danger');
       }
     });
   }
 
   async decreaseQuantity(item: CartItem) {
-    if (item.quantity > 1) {
-      this.cartService.updateCartItem(item._id, item.quantity - 1).subscribe({
-        next: () => {
-          this.loadCart(); // Refresh cart
-        },
-        error: (error) => {
-          console.error('Failed to update quantity:', error);
-        }
-      });
+    if (!item) {
+      console.error('❌ Invalid item for decrement: item is null/undefined');
+      return;
     }
+
+    const itemId = item._id || item.id;
+    if (!itemId) {
+      console.error('❌ Invalid item for decrement: no _id or id property', item);
+      return;
+    }
+
+    if (item.quantity <= 1) {
+      this.presentToast('Minimum quantity is 1', 'warning');
+      return;
+    }
+
+    const newQuantity = item.quantity - 1;
+    const previousQuantity = item.quantity;
+
+    // Optimistic UI update
+    item.quantity = newQuantity;
+    this.cdr.markForCheck();
+
+    console.log(`📉 Decrementing item ${itemId} from ${previousQuantity} to ${newQuantity}`);
+
+    this.cartService.updateCartItem(itemId, newQuantity).subscribe({
+      next: () => {
+        console.log(`✅ Quantity decremented successfully for item ${itemId}`);
+        this.loadCart();
+      },
+      error: (error) => {
+        console.error('❌ Failed to decrement quantity:', error);
+        item.quantity = previousQuantity;
+        this.cdr.markForCheck();
+        this.presentToast('Failed to update quantity', 'danger');
+      }
+    });
   }
 
   async removeItem(item: CartItem) {
+    if (!item || !item._id) {
+      console.error('❌ Invalid item for removal:', item);
+      return;
+    }
+
+    console.log(`🗑️ Attempting to remove item ${item._id}: ${item.product?.name}`);
+
     if (this.platform === 'mobile' && this.alertController) {
       const alert = await this.alertController.create({
         header: 'Remove Item',
-        message: `Remove ${item.product.name} from cart?`,
+        message: `Remove ${item.product?.name} from cart?`,
         buttons: [
           {
             text: 'Cancel',
@@ -224,16 +300,7 @@ export class CartComponent implements OnInit {
           {
             text: 'Remove',
             handler: () => {
-              this.cartService.removeFromCart(item._id).subscribe({
-                next: () => {
-                  this.presentToast('Item removed from cart', 'success');
-                  this.loadCart();
-                },
-                error: (error) => {
-                  console.error('Error removing item:', error);
-                  this.presentToast('Failed to remove item', 'danger');
-                }
-              });
+              this.performRemoveItem(item);
             }
           }
         ]
@@ -241,30 +308,69 @@ export class CartComponent implements OnInit {
       await alert.present();
     } else {
       // Web version
-      this.cartService.removeFromCart(item._id).subscribe({
-        next: () => {
-          this.loadCart();
-        },
-        error: (error) => {
-          console.error('Failed to remove item:', error);
-        }
-      });
+      if (confirm(`Remove ${item.product?.name} from cart?`)) {
+        this.performRemoveItem(item);
+      }
     }
+  }
+
+  private performRemoveItem(item: CartItem) {
+    const itemIndex = this.cartItems.findIndex(i => i._id === item._id);
+    const removedItem = this.cartItems.splice(itemIndex, 1)[0];
+    this.cdr.markForCheck();
+
+    console.log(`🗑️ Removing item from UI: ${item._id}`);
+
+    this.cartService.removeFromCart(item._id).subscribe({
+      next: () => {
+        console.log(`✅ Item removed successfully: ${item._id}`);
+        this.presentToast('Item removed from cart', 'success');
+        this.loadCart();
+      },
+      error: (error) => {
+        console.error('❌ Error removing item:', error);
+        if (itemIndex >= 0) {
+          this.cartItems.splice(itemIndex, 0, removedItem);
+        }
+        this.cdr.markForCheck();
+        this.presentToast('Failed to remove item', 'danger');
+      }
+    });
   }
 
   // Unified quantity update method
   async updateQuantity(itemId: string, newQuantity: number) {
-    if (newQuantity < 1) return;
+    if (!itemId || newQuantity < 1) {
+      console.error('❌ Invalid parameters for updateQuantity:', { itemId, newQuantity });
+      return;
+    }
+
+    const item = this.cartItems.find(i => i._id === itemId);
+    if (!item) {
+      console.error('❌ Item not found for update:', itemId);
+      return;
+    }
+
+    const previousQuantity = item.quantity;
+
+    // Optimistic UI update
+    item.quantity = newQuantity;
+    this.cdr.markForCheck();
+
+    console.log(`🔄 Updating quantity for item ${itemId}: ${previousQuantity} -> ${newQuantity}`);
 
     this.cartService.updateCartItem(itemId, newQuantity).subscribe({
       next: () => {
+        console.log(`✅ Quantity updated successfully for item ${itemId}`);
         if (this.platform === 'mobile') {
           this.presentToast('Quantity updated', 'success');
         }
         this.loadCart();
       },
       error: (error) => {
-        console.error('Error updating quantity:', error);
+        console.error('❌ Error updating quantity:', error);
+        item.quantity = previousQuantity;
+        this.cdr.markForCheck();
         if (this.platform === 'mobile') {
           this.presentToast('Failed to update quantity', 'danger');
         }
@@ -344,6 +450,16 @@ export class CartComponent implements OnInit {
   // Performance optimization for mobile rendering
   trackByItemId(index: number, item: any): string {
     return item._id;
+  }
+
+  private normalizeCartItems(items: any[]): CartItem[] {
+    return (items || []).map((item) => ({
+      ...item,
+      product: {
+        ...item.product,
+        images: Array.isArray(item.product?.images) ? item.product.images : []
+      }
+    }));
   }
 
   // Toast notification for mobile, console log for web

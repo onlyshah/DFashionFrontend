@@ -297,9 +297,9 @@ export class ShoppingActionsComponent implements OnInit, OnDestroy {
 
   private checkWishlistStatus() {
     if (this.authService.isAuthenticated) {
-      // Subscribe to wishlist changes to check if product is in wishlist
       this.wishlistService.wishlistItems$.subscribe(items => {
-        this.isInWishlist = items.some(item => item.product._id === this.product._id);
+        const productId = this.getProductId();
+        this.isInWishlist = !!productId && items.some(item => item.productId === productId);
       });
     } else {
       this.isInWishlist = false;
@@ -332,27 +332,18 @@ export class ShoppingActionsComponent implements OnInit, OnDestroy {
 
     this.cartLoading = true;
 
-    if (this.isInCart) {
-      // If already in cart, navigate to cart page
-      this.router.navigate(['/cart']);
-      this.cartLoading = false;
-    } else {
-      // Add to cart
-      this.cartService.addToCart(this.product._id, 1).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.isInCart = true;
-            alert('Added to cart successfully!');
-          }
-          this.cartLoading = false;
-        },
-        error: (error) => {
-          console.error('Error adding to cart:', error);
-          alert('Failed to add to cart. Please try again.');
-          this.cartLoading = false;
-        }
-      });
-    }
+    this.cartService.toggleCart(this.product._id, { quantity: 1 }).subscribe({
+      next: () => {
+        this.isInCart = this.cartService.isInCart(this.product._id);
+        alert(this.isInCart ? 'Added to cart successfully!' : 'Removed from cart successfully!');
+        this.cartLoading = false;
+      },
+      error: (error) => {
+        console.error('Error toggling cart:', error);
+        alert('Failed to update cart. Please try again.');
+        this.cartLoading = false;
+      }
+    });
   }
 
   onToggleWishlist() {
@@ -362,40 +353,30 @@ export class ShoppingActionsComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const productId = this.getProductId();
+    if (!productId) {
+      this.wishlistLoading = false;
+      return;
+    }
+
     this.wishlistLoading = true;
 
-    if (this.isInWishlist) {
-      // Remove from wishlist
-      this.wishlistService.removeFromWishlist(this.product._id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.isInWishlist = false;
-            alert('Removed from wishlist');
-          }
-          this.wishlistLoading = false;
-        },
-        error: (error) => {
-          console.error('Error removing from wishlist:', error);
-          alert('Failed to remove from wishlist. Please try again.');
-          this.wishlistLoading = false;
-        }
-      });
-    } else {
-      // Add to wishlist
-      this.wishlistService.addToWishlist(this.product._id).subscribe({
-        next: (response) => {
-          if (response.success) {
-            this.isInWishlist = true;
-            alert('Added to wishlist');
-          }
-          this.wishlistLoading = false;
-        },
-        error: (error) => {
-          console.error('Error adding to wishlist:', error);
-          alert('Failed to add to wishlist. Please try again.');
-          this.wishlistLoading = false;
-        }
-      });
-    }
+    const wasInWishlist = this.wishlistService.isInWishlist(productId);
+    this.wishlistService.toggleWishlist(productId).subscribe({
+      next: (response) => {
+        this.isInWishlist = this.wishlistService.isInWishlist(productId);
+        alert(response?.message || (wasInWishlist ? 'Removed from wishlist' : 'Added to wishlist'));
+        this.wishlistLoading = false;
+      },
+      error: (error) => {
+        console.error('Error updating wishlist:', error);
+        alert(error?.status === 401 ? 'Please login to save items' : 'Failed to update wishlist. Please try again.');
+        this.wishlistLoading = false;
+      }
+    });
+  }
+
+  private getProductId(): string {
+    return this.product?.id || this.product?._id || '';
   }
 }

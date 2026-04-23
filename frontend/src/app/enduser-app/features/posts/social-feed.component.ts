@@ -1128,7 +1128,7 @@ export class SocialFeedComponent implements OnInit, OnDestroy {
   buyNow(post: Post) {
     if (post.products.length > 0) {
       const product = post.products[0].product;
-      this.router.navigate(['/checkout'], {
+      this.router.navigate(['/product', product._id], {
         queryParams: { productId: product._id, source: 'post' }
       });
     }

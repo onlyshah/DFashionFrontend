@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { ToastController } from '@ionic/angular';
 import { UnifiedApiService } from '../../../core/services/unified-api.service';
 import { Product } from '../../../core/models/product.interface';
 import { environment } from 'src/environments/environment';
+import { CartService } from '../../../core/services/cart.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { WishlistService } from '../../../core/services/wishlist.service';
 
 interface Category {
   id: string;
@@ -40,24 +44,54 @@ export class ShopComponent implements OnInit {
   newArrivals: ShopProduct[] = [];
   imageUrl = environment.apiUrl;
   loading = true;
+  viewMode: 'all' | 'trending' | 'new-arrivals' | 'brands' | 'categories' = 'all';
 
   constructor(
     private router: Router,
-    private unifiedApi: UnifiedApiService
+    private route: ActivatedRoute,
+    private unifiedApi: UnifiedApiService,
+    private cartService: CartService,
+    private authService: AuthService,
+    private wishlistService: WishlistService,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
-    this.loadShopData();
+    this.route.queryParamMap.subscribe(params => {
+      const mode = params.get('section') || params.get('filter') || 'all';
+      this.viewMode = this.normalizeViewMode(mode);
+      this.loadShopData();
+    });
   }
 
   loadShopData() {
     this.loading = true;
-    Promise.all([
-      this.loadFeaturedBrands(),
-      this.loadTrendingProducts(),
-      this.loadNewArrivals(),
-      this.loadCategories()
-    ]).finally(() => {
+    const tasks: Promise<any>[] = [];
+
+    switch (this.viewMode) {
+      case 'trending':
+        tasks.push(this.loadTrendingProducts());
+        break;
+      case 'new-arrivals':
+        tasks.push(this.loadNewArrivals());
+        break;
+      case 'brands':
+        tasks.push(this.loadFeaturedBrands());
+        break;
+      case 'categories':
+        tasks.push(this.loadCategories());
+        break;
+      default:
+        tasks.push(
+          this.loadFeaturedBrands(),
+          this.loadTrendingProducts(),
+          this.loadNewArrivals(),
+          this.loadCategories()
+        );
+        break;
+    }
+
+    Promise.all(tasks).finally(() => {
       this.loading = false;
     });
   }
@@ -130,12 +164,21 @@ export class ShopComponent implements OnInit {
     this.router.navigate(['/brand', brandId]);
   }
 
+  viewAllCategories() {
+    this.router.navigate(['/products'], { queryParams: { filter: 'categories' } });
+  }
+
+  viewAllBrands() {
+    this.router.navigate(['/products'], { queryParams: { filter: 'brands' } });
+  }
+
   viewProduct(product: any) {
-    if (!product._id) {
+    const productId = this.getProductId(product);
+    if (!productId) {
       console.warn('Cannot navigate: no product ID');
       return;
     }
-    this.router.navigate(['/products', product._id]);
+    this.router.navigate(['/products', productId]);
   }
 
   likeProduct(product: any, event: Event) {
@@ -152,52 +195,97 @@ export class ShopComponent implements OnInit {
   shareProduct(product: any, event: Event) {
     event.stopPropagation();
     // Implement share functionality
+    const productId = this.getProductId(product);
     if (navigator.share) {
       navigator.share({
         title: product.name,
         text: product.description,
-        url: window.location.origin + '/product/' + product._id
+        url: window.location.origin + '/product/' + productId
       });
     }
   }
 
   commentOnProduct(product: any, event: Event) {
     event.stopPropagation();
-    this.router.navigate(['/product', product._id], {
+    const productId = this.getProductId(product);
+    if (!productId) {
+      return;
+    }
+    this.router.navigate(['/product', productId], {
       queryParams: { action: 'comment' }
     });
   }
 
   viewAllTrending() {
-    this.router.navigate(['/category/trending']);
+    this.router.navigate(['/products'], { queryParams: { filter: 'trending' } });
+  }
+
+  backToShop() {
+    this.router.navigate(['/products']);
   }
 
   viewAllNew() {
-    this.router.navigate(['/category/new-arrivals']);
+    this.router.navigate(['/products'], { queryParams: { filter: 'new-arrivals' } });
   }
 
   addToWishlist(product: Product, event: Event) {
     event.stopPropagation();
-    // TODO: Check authentication first
     if (!this.isAuthenticated()) {
       this.showLoginPrompt('add to wishlist');
       return;
     }
-    // TODO: Implement wishlist API call
-    console.log('Add to wishlist:', product);
-  this.showSuccessMessage(product.name + ' added to wishlist!');
+
+    const productId = this.getProductId(product);
+    if (!productId) {
+      return;
+    }
+
+    this.wishlistService.toggleWishlist(productId).subscribe({
+      next: () => {
+        const isNowInWishlist = this.isInWishlist(product);
+        this.showSuccessMessage(`${product.name} ${isNowInWishlist ? 'added to wishlist' : 'removed from wishlist'}!`);
+      },
+      error: (error) => {
+        this.showSuccessMessage(error?.status === 401 ? 'Please login to save items' : 'Failed to update wishlist');
+      }
+    });
   }
 
   quickAddToCart(product: Product, event: Event) {
     event.stopPropagation();
-    // TODO: Check authentication first
     if (!this.isAuthenticated()) {
       this.showLoginPrompt('add to cart');
       return;
     }
-    // TODO: Implement add to cart API call
-    console.log('Add to cart:', product);
-    this.showSuccessMessage(product.name + ' added to cart!');
+
+    const productId = product._id || (product as any).id;
+    if (!productId) {
+      return;
+    }
+
+    this.cartService.toggleCart(productId, { quantity: 1 }).subscribe({
+      next: () => {
+        const inCart = this.cartService.isInCart(productId);
+        this.showSuccessMessage(`${product.name} ${inCart ? 'added to cart' : 'removed from cart'}!`);
+      },
+      error: () => {
+        this.showSuccessMessage('Something went wrong');
+      }
+    });
+  }
+
+  isInCart(product: Product): boolean {
+    const productId = this.getProductId(product);
+    return !!productId && this.cartService.isInCart(productId);
+  }
+
+  isInWishlist(product: Product): boolean {
+    const productId = this.getProductId(product);
+    return !!productId && this.wishlistService.isInWishlist(productId);
+  }
+
+  getWishlistIcon(product: Product): string {
+    return this.isInWishlist(product) ? 'fas fa-heart' : 'far fa-heart';
   }
 
   getProductImage(product: Product): string {
@@ -224,8 +312,18 @@ export class ShopComponent implements OnInit {
   }
 
   private isAuthenticated(): boolean {
-    // TODO: Implement actual authentication check
-    return localStorage.getItem('authToken') !== null;
+    return this.authService.isAuthenticated;
+  }
+
+  private getProductId(product: Product): string {
+    return (product as any)?.id || (product as any)?._id || '';
+  }
+
+  private normalizeViewMode(mode: string): 'all' | 'trending' | 'new-arrivals' | 'brands' | 'categories' {
+    if (mode === 'trending' || mode === 'new-arrivals' || mode === 'brands' || mode === 'categories') {
+      return mode;
+    }
+    return 'all';
   }
 
   private showLoginPrompt(action: string) {
@@ -236,7 +334,10 @@ export class ShopComponent implements OnInit {
   }
 
   private showSuccessMessage(message: string) {
-    // TODO: Implement proper toast/notification system
-    alert(message);
+    this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom'
+    }).then(toast => toast.present());
   }
 }

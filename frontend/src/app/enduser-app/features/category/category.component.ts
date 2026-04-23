@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { UnifiedApiService } from '../../../core/services/unified-api.service';
 import { ProductService } from '../../../core/services/product.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CartService } from '../../../core/services/cart.service';
@@ -349,10 +350,11 @@ export class CategoryComponent implements OnInit {
     selectedSize = '';
 
     constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private productService: ProductService,
-        private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private unifiedApi: UnifiedApiService,
+    private productService: ProductService,
+    private authService: AuthService,
         private cartService: CartService,
         private wishlistService: WishlistService
     ) { }
@@ -367,10 +369,27 @@ export class CategoryComponent implements OnInit {
     loadProducts() {
         this.loading = true;
 
+        if (this.category === 'trending') {
+            this.unifiedApi.getTrendingProducts(1, 24).subscribe({
+                next: (response: any) => {
+                    this.products = response?.data || response?.products || [];
+                    this.applyFilters();
+                    this.loading = false;
+                },
+                error: (error) => {
+                    console.error('Error loading trending products:', error);
+                    this.products = [];
+                    this.filteredProducts = [];
+                    this.loading = false;
+                }
+            });
+            return;
+        }
+
         // Load products from API using category slug
         this.productService.getCategoryProducts(this.category).subscribe({
-            next: (response) => {
-                this.products = response.products || [];
+            next: (response: any) => {
+                this.products = response.data || response.products || [];
                 this.applyFilters();
                 this.loading = false;
             },
@@ -391,6 +410,7 @@ export class CategoryComponent implements OnInit {
             'men': 'Men\'s Fashion',
             'kids': 'Kids\' Fashion',
             'ethnic': 'Ethnic Wear',
+            'trending': 'Trending Products',
             'all': 'All Products'
         };
         return categoryNames[this.category] || this.category.charAt(0).toUpperCase() + this.category.slice(1);
@@ -402,6 +422,7 @@ export class CategoryComponent implements OnInit {
             'men': 'Explore stylish and comfortable men\'s clothing',
             'kids': 'Fun and comfortable clothing for children',
             'ethnic': 'Traditional and ethnic wear for special occasions',
+            'trending': 'The most popular products right now',
             'all': 'Browse our complete collection of fashion items'
         };
         return descriptions[this.category] || 'Explore our collection';
@@ -469,7 +490,7 @@ export class CategoryComponent implements OnInit {
     }
 
     getProductImage(product: Product): string {
-        return product.images[0]?.url || '/uploadsplaceholder.jpg';
+        return product?.images?.[0]?.url || '/uploads/placeholder.jpg';
     }
 
     getDiscountPercentage(product: Product): number {
@@ -486,11 +507,12 @@ export class CategoryComponent implements OnInit {
     }
 
     viewProduct(product: Product) {
-        if (!product._id) {
+        const productId = product?.id || product?._id;
+        if (!productId) {
             console.warn('Cannot navigate: no product ID');
             return;
         }
-        this.router.navigate(['/products', product._id]);
+        this.router.navigate(['/products', productId]);
     }
 
     addToWishlist(product: Product, event: Event) {
@@ -500,10 +522,16 @@ export class CategoryComponent implements OnInit {
             return;
         }
 
-        this.wishlistService.addToWishlist(product._id).subscribe({
-            next: (response) => {
-                console.log('Product added to wishlist:', response);
-                // You could show a toast notification here
+        const productId = product?.id || product?._id;
+        if (!productId) {
+            return;
+        }
+
+        const wasInWishlist = this.wishlistService.isInWishlist(productId);
+        this.wishlistService.toggleWishlist(productId).subscribe({
+            next: () => {
+                console.log('Product wishlist toggled:', product.name);
+                alert(`${product.name} ${wasInWishlist ? 'removed from wishlist' : 'added to wishlist'}`);
             },
             error: (error) => {
                 console.error('Error adding to wishlist:', error);
@@ -514,7 +542,11 @@ export class CategoryComponent implements OnInit {
     quickView(product: Product, event: Event) {
         event.stopPropagation();
         // Navigate to product detail page
-        this.router.navigate(['/product', product._id]);
+        const productId = product?.id || product?._id;
+        if (!productId) {
+            return;
+        }
+        this.router.navigate(['/product', productId]);
     }
 
     addToCart(product: Product, event: Event) {
@@ -524,7 +556,12 @@ export class CategoryComponent implements OnInit {
             return;
         }
 
-        this.cartService.addToCart(product._id, 1).subscribe({
+        const productId = product?.id || product?._id;
+        if (!productId) {
+            return;
+        }
+
+        this.cartService.addToCart(productId, 1).subscribe({
             next: (response) => {
                 console.log('Product added to cart:', response);
                 alert('Product added to cart successfully!');
@@ -533,6 +570,11 @@ export class CategoryComponent implements OnInit {
                 console.error('Error adding to cart:', error);
             }
         });
+    }
+
+    isInWishlist(product: Product): boolean {
+        const productId = product?.id || product?._id;
+        return !!productId && this.wishlistService.isInWishlist(productId);
     }
 
     goHome() {

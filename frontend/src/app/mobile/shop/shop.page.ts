@@ -123,7 +123,7 @@ import { WishlistService } from '../../core/services/wishlist.service';
               class="add-to-cart-btn"
             >
               <ion-icon name="cart" slot="start"></ion-icon>
-              Add to Cart
+              {{ isInCart(product) ? 'Remove from Cart' : 'Add to Cart' }}
             </ion-button>
           </ion-card>
         </div>
@@ -360,10 +360,15 @@ export class ShopPageComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
+          const nextProducts = (response.data || []).map((product: any) => ({
+            ...product,
+            isWishlisted: !!product?.id && this.wishlistService.isInWishlist(product.id)
+          }));
+
           if (this.currentPage === 1) {
-            this.products = response.data || [];
+            this.products = nextProducts;
           } else {
-            this.products = [...this.products, ...(response.data || [])];
+            this.products = [...this.products, ...nextProducts];
           }
           this.hasMore = response.pagination?.hasMore || false;
           this.isLoading = false;
@@ -393,14 +398,38 @@ export class ShopPageComponent implements OnInit, OnDestroy {
 
   toggleWishlist(product: any, event: Event) {
     event.stopPropagation();
-    product.isWishlisted ? this.wishlistService.removeFromWishlist(product.id) : this.wishlistService.addToWishlist(product.id);
-    product.isWishlisted = !product.isWishlisted;
+    const productId = product?.id;
+    if (!productId) {
+      return;
+    }
+
+    this.wishlistService.toggleWishlist(productId).subscribe({
+      next: () => {
+        product.isWishlisted = this.wishlistService.isInWishlist(productId);
+        this.showToast(product.isWishlisted ? 'Added to wishlist' : 'Removed from wishlist', 'success');
+      },
+      error: (error) => {
+        this.showToast(error?.status === 401 ? 'Please login to save items' : 'Something went wrong', 'danger');
+      }
+    });
   }
 
   quickAddToCart(product: any, event: Event) {
     event.stopPropagation();
-    this.cartService.addToCart(product.id, 1);
-    this.showToast('Added to cart', 'success');
+    const productId = product.id || product._id;
+    this.cartService.toggleCart(productId, { quantity: 1 }).subscribe({
+      next: () => {
+        this.showToast(this.cartService.isInCart(productId) ? 'Added to cart' : 'Removed from cart', 'success');
+      },
+      error: () => {
+        this.showToast('Something went wrong', 'danger');
+      }
+    });
+  }
+
+  isInCart(product: any): boolean {
+    const productId = product.id || product._id;
+    return !!productId && this.cartService.isInCart(productId);
   }
 
   openProductDetail(productId: string) {
