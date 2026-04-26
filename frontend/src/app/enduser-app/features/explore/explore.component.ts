@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { faHome, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { UnifiedApiService } from 'src/app/core/services/unified-api.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { environment } from 'src/environments/environment';
 
@@ -37,7 +37,8 @@ export class ExploreComponent implements OnInit {
   apiUrl = environment.apiUrl;
   faHome = faHome;
   faSearch = faSearch;
-  constructor(private unifiedApi: UnifiedApiService) {}
+  
+  constructor(private unifiedApi: UnifiedApiService, private router: Router) {}
 
   ngOnInit() {
     this.loadCategories();
@@ -103,6 +104,15 @@ export class ExploreComponent implements OnInit {
   viewInspiration(inspirationId: number) {
     console.log('View inspiration:', inspirationId);
     // TODO: Implement inspiration view
+  }
+
+  shopThisStyle(styleId?: string) {
+    // Navigate to shop page
+    this.router.navigate(['/shop']);
+  }
+
+  goToShop() {
+    this.router.navigate(['/shop']);
   }
 
   getPrimaryImage(data: any): string {

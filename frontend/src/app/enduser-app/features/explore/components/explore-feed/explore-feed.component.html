@@ -1,0 +1,80 @@
+<div class="explore-feed" [attr.data-type]="feedType">
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!feedItems || feedItems.length === 0">
+    <div class="empty-icon">
+      <i class="fas fa-search"></i>
+    </div>
+    <h3>No Content Available</h3>
+    <p>{{ emptyMessage }}</p>
+  </div>
+
+  <!-- Feed Header (Optional) -->
+  <div class="feed-header" *ngIf="title">
+    <h3>{{ title }}</h3>
+  </div>
+
+  <!-- Feed Grid (Masonry for Inspiration, Regular Grid for Others) -->
+  <div [ngSwitch]="feedType">
+    <!-- Trending Feed (Horizontal Cards) -->
+    <div class="trending-feed" *ngSwitchCase="'trending'" [hidden]="!feedItems || feedItems.length === 0">
+      <div class="trend-item" *ngFor="let item of feedItems" (click)="onItemClick(item)">
+        <div class="trend-image-wrapper">
+          <img [src]="getPrimaryImage(item)" [alt]="getItemTitle(item)" loading="lazy">
+          <div class="trend-overlay">
+            <button class="btn-view" (click)="onViewClick(item, $event)">
+              <i class="fas fa-eye"></i> View Look
+            </button>
+          </div>
+        </div>
+        <div class="trend-content">
+          <h4>{{ getItemTitle(item) }}</h4>
+          <p>{{ getItemDescription(item) }}</p>
+          <span class="trend-tag" *ngIf="item.tag">{{ item.tag }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inspiration Masonry Feed -->
+    <div class="inspiration-feed" *ngSwitchCase="'inspiration'" [hidden]="!feedItems || feedItems.length === 0">
+      <div class="inspiration-item" *ngFor="let item of feedItems" (click)="onItemClick(item)">
+        <img [src]="getPrimaryImage(item)" [alt]="getItemTitle(item)" loading="lazy">
+        <div class="inspiration-overlay">
+          <div class="inspiration-content">
+            <h4>{{ getItemTitle(item) }}</h4>
+            <p>{{ getItemDescription(item) }}</p>
+            <div class="inspiration-tags">
+              <span *ngFor="let tag of getTags(item)" class="tag">{{ tag }}</span>
+            </div>
+          </div>
+          <button class="btn-shop-look" (click)="onShopClick(item, $event)">
+            <i class="fas fa-shopping-bag"></i> Shop This Look
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Feed (Large Cards) -->
+    <div class="featured-feed" *ngSwitchCase="'featured'" [hidden]="!feedItems || feedItems.length === 0">
+      <div class="featured-card" *ngFor="let item of feedItems">
+        <div class="featured-image">
+          <img [src]="getPrimaryImage(item)" [alt]="getItemTitle(item)" loading="lazy">
+          <div class="featured-badge">
+            <i class="fas fa-play-circle"></i> Reel
+          </div>
+        </div>
+        <div class="featured-content">
+          <h4>{{ getItemTitle(item) }}</h4>
+          <p>{{ getItemDescription(item) }}</p>
+          <div class="featured-actions">
+            <button class="btn-action" (click)="onViewClick(item, $event)">
+              <i class="fas fa-play-circle"></i> Watch Reel
+            </button>
+            <button class="btn-action secondary" (click)="onShopClick(item, $event)">
+              <i class="fas fa-shopping-bag"></i> Shop This Style
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

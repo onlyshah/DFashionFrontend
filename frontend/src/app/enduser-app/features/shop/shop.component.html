@@ -1,4 +1,27 @@
 <div class="shop-container" [class.trending-only]="viewMode === 'trending'">
+  <!-- Page Header for Shop -->
+  <div class="page-header shop-header" *ngIf="viewMode === 'all'">
+    <div class="header-top">
+      <div class="header-title-section">
+        <div class="header-icon">🛒</div>
+        <div class="header-text">
+          <h1 class="page-title">Shop Products</h1>
+          <p class="page-subtitle">Find and buy products easily with filters and categories</p>
+        </div>
+      </div>
+      <div class="header-hint">
+        <p>💡 <strong>Tip:</strong> Browse, filter by category, and add to cart</p>
+      </div>
+    </div>
+    <div class="header-nav-hint">
+      <span>Want inspiration? → </span>
+      <button class="link-btn" (click)="goToExplore()">
+        Discover Trends in Explore
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
   <div class="section-header section-banner" *ngIf="viewMode !== 'all'">
     <div>
       <h2>
@@ -192,7 +215,7 @@
   <!-- Quick Links -->
   <section class="quick-links-section" *ngIf="viewMode === 'all'">
     <div class="section-header">
-      <h2>Quick Links</h2>
+      <h2><i class="fas fa-filter"></i> Categories</h2>
     </div>
     <div class="quick-links-grid">
       <div class="quick-link" (click)="navigateToCategory('women')">
@@ -219,6 +242,20 @@
         <i class="fas fa-shoe-prints"></i>
         <span>Footwear</span>
       </div>
+    </div>
+  </section>
+
+  <!-- Navigation hint to Explore -->
+  <section class="explore-navigation" *ngIf="viewMode === 'all'">
+    <div class="explore-hint-card">
+      <div class="hint-content">
+        <h3>✨ Explore Trends & Inspiration</h3>
+        <p>Discover new styles, reels, and fashion inspiration from creators</p>
+      </div>
+      <button class="btn-explore-nav" (click)="goToExplore()">
+        Go to Explore
+        <i class="fas fa-arrow-right"></i>
+      </button>
     </div>
   </section>
 </div>

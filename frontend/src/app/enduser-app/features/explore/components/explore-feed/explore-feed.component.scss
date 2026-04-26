@@ -1,0 +1,469 @@
+// Explore Feed Component
+.explore-feed {
+  width: 100%;
+
+  &[data-type="trending"] {
+    .trending-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+
+  &[data-type="inspiration"] {
+    .inspiration-feed {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      grid-auto-rows: 320px;
+    }
+  }
+
+  &[data-type="featured"] {
+    .featured-feed {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+  }
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #efe4ff 100%);
+  border-radius: 16px;
+  border: 2px dashed #e5d9ff;
+
+  .empty-icon {
+    font-size: 3rem;
+    color: #ddd6fe;
+    margin-bottom: 16px;
+
+    i {
+      opacity: 0.5;
+    }
+  }
+
+  h3 {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: #999;
+    font-size: 0.95rem;
+  }
+}
+
+.feed-header {
+  margin-bottom: 24px;
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+  }
+}
+
+// Trending Feed Styles
+.trending-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+}
+
+.trend-item {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  gap: 0;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.15);
+
+    .trend-image-wrapper {
+      .trend-overlay {
+        opacity: 1;
+      }
+
+      img {
+        transform: scale(1.08);
+      }
+    }
+  }
+}
+
+.trend-image-wrapper {
+  position: relative;
+  width: 40%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: 250px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .trend-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    .btn-view {
+      background: white;
+      color: #667eea;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #f0f4ff;
+        transform: scale(1.05);
+      }
+
+      i {
+        font-size: 0.9rem;
+      }
+    }
+  }
+}
+
+.trend-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+
+  h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0 0 12px 0;
+    line-height: 1.5;
+  }
+
+  .trend-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+    width: fit-content;
+  }
+}
+
+// Inspiration Feed Styles (Masonry)
+.inspiration-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  grid-auto-rows: 320px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 280px;
+    gap: 16px;
+  }
+}
+
+.inspiration-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.15);
+
+    img {
+      transform: scale(1.08);
+    }
+
+    .inspiration-overlay {
+      opacity: 1;
+
+      .btn-shop-look {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+}
+
+.inspiration-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+
+  .inspiration-content {
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    p {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .inspiration-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .tag {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
+    padding: 6px 12px;
+    border-radius: 14px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  .btn-shop-look {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: fit-content;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease;
+
+    i {
+      font-size: 0.8rem;
+    }
+
+    &:hover {
+      background: #f0f4ff;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Featured Feed Styles
+.featured-feed {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.featured-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .featured-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      i {
+        font-size: 0.8rem;
+      }
+    }
+  }
+
+  .featured-content {
+    padding: 16px;
+
+    h4 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #111;
+      margin: 0 0 8px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    p {
+      color: #666;
+      font-size: 0.9rem;
+      margin: 0 0 12px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  }
+
+  .featured-actions {
+    display: flex;
+    gap: 12px;
+    padding: 0 16px 16px;
+
+    .btn-action {
+      flex: 1;
+      padding: 10px 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: #5a67d8;
+        transform: translateY(-2px);
+      }
+
+      i {
+        font-size: 0.8rem;
+      }
+
+      &.secondary {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+
+        &:hover {
+          background: #f0f4ff;
+        }
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 1024px) {
+  .explore-feed {
+    &[data-type="inspiration"] {
+      .inspiration-feed {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .explore-feed {
+    &[data-type="inspiration"] {
+      .inspiration-feed {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    &[data-type="featured"] {
+      .featured-feed {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

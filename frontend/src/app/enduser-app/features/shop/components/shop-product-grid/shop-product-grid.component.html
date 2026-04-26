@@ -1,0 +1,76 @@
+<div class="shop-product-grid">
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!products || products.length === 0">
+    <div class="empty-icon">
+      <i class="fas fa-inbox"></i>
+    </div>
+    <h3>No Products Available</h3>
+    <p>{{ emptyMessage }}</p>
+  </div>
+
+  <!-- Grid Header (Optional) -->
+  <div class="grid-header" *ngIf="title">
+    <h3>{{ title }}</h3>
+    <button class="view-all-btn" *ngIf="showViewAllButton" (click)="onViewAll()">
+      View All
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Products Grid -->
+  <div class="products-grid" *ngIf="products && products.length > 0">
+    <div class="product-card" *ngFor="let product of products" (click)="onProductClick(product)">
+      <div class="product-image">
+        <img [src]="getProductImage(product)" [alt]="product.name" loading="lazy">
+        
+        <!-- Badges -->
+        <div class="product-badges">
+          <span class="badge trending" *ngIf="(product as any).isTrending">
+            <i class="fas fa-fire"></i> Trending
+          </span>
+          <span class="badge new" *ngIf="(product as any).isNew">
+            <i class="fas fa-star"></i> New
+          </span>
+          <span class="badge discount" *ngIf="(product as any).originalPrice && (product as any).originalPrice > product.price">
+            <i class="fas fa-tag"></i> {{ getDiscountPercentage(product) }}% OFF
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="product-actions">
+          <button class="btn-wishlist" (click)="onAddToWishlist(product, $event)" 
+                  title="Add to Wishlist">
+            <i class="far fa-heart"></i>
+          </button>
+          <button class="btn-quick-add" (click)="onAddToCart(product, $event)">
+            <i class="fas fa-shopping-cart"></i>
+            Add to Cart
+          </button>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info">
+        <h4 class="product-name">{{ product.name }}</h4>
+        <p class="product-brand">{{ product.brand }}</p>
+        
+        <!-- Rating -->
+        <div class="product-rating" *ngIf="(product as any).rating">
+          <div class="stars">
+            <i class="fas fa-star" *ngFor="let star of getStars((product as any).rating.average)"></i>
+            <i class="far fa-star" *ngFor="let star of getEmptyStars((product as any).rating.average)"></i>
+          </div>
+          <span class="rating-text">{{ (product as any).rating.average }} ({{ (product as any).rating.count }})</span>
+        </div>
+
+        <!-- Price -->
+        <div class="product-price">
+          <span class="current-price">₹{{ product.price | number:'1.0-0' }}</span>
+          <span class="original-price" *ngIf="(product as any).originalPrice && (product as any).originalPrice > product.price">
+            ₹{{ (product as any).originalPrice | number:'1.0-0' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

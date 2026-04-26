@@ -1,9 +1,32 @@
 <div class="explore-container">
 
+  <!-- Page Header for Explore -->
+  <div class="page-header explore-header">
+    <div class="header-top">
+      <div class="header-title-section">
+        <div class="header-icon">🔭</div>
+        <div class="header-text">
+          <h1 class="page-title">Explore Trends</h1>
+          <p class="page-subtitle">Discover reels, styles, and trending fashion</p>
+        </div>
+      </div>
+      <div class="header-hint">
+        <p>💡 <strong>Tip:</strong> Scroll, discover, and shop styles from creators</p>
+      </div>
+    </div>
+    <div class="header-nav-hint">
+      <span>Ready to buy? → </span>
+      <button class="link-btn" (click)="goToShop()">
+        Start Shopping
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
   <div class="hero-section">
     <div class="hero-content">
-      <h1>Discover Fashion</h1>
-      <p>Explore trending styles, discover new brands, and find your perfect look</p>
+      <h2>Discover Fashion Trends</h2>
+      <p>Explore reels, get style inspiration, and shop from your favorite creators</p>
       <div class="search-bar">
         <input type="text" 
                placeholder="Search for styles, brands, or trends..." 
@@ -16,34 +39,78 @@
     </div>
   </div>
 
-  <!-- Categories Grid -->
-  <div class="categories-section">
-    <h2>Shop by Category</h2>
-    <div class="categories-grid">
-    <div class="category-card"
-     *ngFor="let category of categories"
-     (click)="navigateToCategory(category.slug)"
-  [ngStyle]="{'background-image': 'url(' + (category.image ? apiUrl + category.image : apiUrl + '/uploads/default/category-placeholder.png') + ')'}">
-
-        <div class="category-overlay">
-          <h3>{{ category.name }}</h3>
-          <p>{{ category.itemCount }} items</p>
+  <!-- For You Section (Featured Content) -->
+  <div class="featured-section">
+    <div class="section-header">
+      <h2><i class="fas fa-fire"></i> For You</h2>
+      <p>Personalized picks based on your style</p>
+    </div>
+    <div class="featured-grid">
+      <div class="featured-card" *ngFor="let trend of (trendingItems | slice:0:3)">
+        <div class="featured-image">
+          <img [src]="getPrimaryImage(trend)" [alt]="trend.name" loading="lazy">
+          <div class="featured-badge">
+            <i class="fas fa-play-circle"></i> Reel
+          </div>
+        </div>
+        <div class="featured-content">
+          <h4>{{ trend.title || trend.name }}</h4>
+          <p>{{ trend.description }}</p>
+          <div class="featured-actions">
+            <button class="btn-action" (click)="viewInspiration(trend.id)">
+              <i class="fas fa-play-circle"></i> Watch Reel
+            </button>
+            <button class="btn-action secondary" (click)="shopThisStyle(trend.id)">
+              <i class="fas fa-shopping-bag"></i> Shop This Style
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Trending Section -->
+  <!-- Trending Now Section -->
   <div class="trending-section">
-    <h2>Trending Now</h2>
+    <div class="section-header">
+      <h2><i class="fas fa-star"></i> Trending Now</h2>
+      <p>What everyone's loving right now</p>
+    </div>
     <div class="trending-grid">
       <div class="trend-item" *ngFor="let trend of trendingItems">
-   >
-        <img [src]="getPrimaryImage(trend)" [alt]="trend.name">
+        <div class="trend-image-wrapper">
+          <img [src]="getPrimaryImage(trend)" [alt]="trend.name" loading="lazy">
+          <div class="trend-overlay">
+            <button class="btn-view" (click)="viewInspiration(trend.id)">
+              <i class="fas fa-eye"></i> View Look
+            </button>
+          </div>
+        </div>
         <div class="trend-content">
-          <h4>{{ trend.title }}</h4>
+          <h4>{{ trend.title || trend.name }}</h4>
           <p>{{ trend.description }}</p>
-          <span class="trend-tag">{{ trend.tag }}</span>
+          <span class="trend-tag" *ngIf="trend.tag">{{ trend.tag }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Grid -->
+  <div class="categories-section">
+    <div class="section-header">
+      <h2><i class="fas fa-folder-open"></i> Shop by Style</h2>
+      <p>Browse by category and find your vibe</p>
+    </div>
+    <div class="categories-grid">
+      <div class="category-card"
+           *ngFor="let category of categories"
+           (click)="navigateToCategory(category.slug)"
+           [ngStyle]="{'background-image': 'url(' + (category.image ? apiUrl + category.image : apiUrl + '/uploads/default/category-placeholder.png') + ')'}">
+        <div class="category-overlay">
+          <h3>{{ category.name }}</h3>
+          <p>{{ category.itemCount }} items</p>
+          <button class="btn-discover">
+            <i class="fas fa-arrow-right"></i> Discover
+          </button>
         </div>
       </div>
     </div>
@@ -51,37 +118,68 @@
 
   <!-- Featured Brands -->
   <div class="brands-section">
-    <h2>Featured Brands</h2>
+    <div class="section-header">
+      <h2><i class="fas fa-crown"></i> Creator Spotlight</h2>
+      <p>Curated collections from top creators</p>
+    </div>
     <div class="brands-grid">
       <div class="brand-card" *ngFor="let brand of featuredBrands">
-        <!-- <img [src]="brand.logo" [alt]="brand.name"> -->
-  <img [src]="brand.logo ? apiUrl + brand.logo : apiUrl + '/uploads/brands/default-brand.png'" [alt]="brand.name">
-
+        <div class="brand-header">
+          <img [src]="brand.logo ? apiUrl + brand.logo : apiUrl + '/uploads/brands/default-brand.png'" 
+               [alt]="brand.name" 
+               class="brand-logo">
+        </div>
         <h4>{{ brand.name }}</h4>
         <p>{{ brand.description }}</p>
-        <button class="btn-explore" (click)="exploreBrand(brand.slug)">
-          Explore
-        </button>
+        <div class="brand-actions">
+          <button class="btn-shop-brand" (click)="exploreBrand(brand.slug)">
+            <i class="fas fa-shopping-bag"></i> Shop Collection
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Style Inspiration -->
   <div class="inspiration-section" *ngIf="styleInspiration && styleInspiration.length > 0">
-    <h2>Style Inspiration</h2>
+    <div class="section-header">
+      <h2><i class="fas fa-lightbulb"></i> Style Inspiration</h2>
+      <p>Get inspired by amazing looks</p>
+    </div>
     <div class="inspiration-grid">
       <div class="inspiration-item" 
            *ngFor="let inspiration of styleInspiration"
            (click)="viewInspiration(inspiration.id)">
-  <img [src]="inspiration.image ? apiUrl + inspiration.image : apiUrl + '/uploads/default/inspiration-placeholder.png'" [alt]="inspiration.title">
+        <img [src]="inspiration.image ? apiUrl + inspiration.image : apiUrl + '/uploads/default/inspiration-placeholder.png'" 
+             [alt]="inspiration.title"
+             loading="lazy">
         <div class="inspiration-overlay">
-          <h4>{{ inspiration.title }}</h4>
-          <p>{{ inspiration.subtitle }}</p>
-          <div class="inspiration-tags">
-            <span *ngFor="let tag of inspiration.tags" class="tag">{{ tag }}</span>
+          <div class="inspiration-content">
+            <h4>{{ inspiration.title }}</h4>
+            <p>{{ inspiration.subtitle }}</p>
+            <div class="inspiration-tags">
+              <span *ngFor="let tag of inspiration.tags" class="tag">{{ tag }}</span>
+            </div>
           </div>
+          <button class="btn-shop-look">
+            <i class="fas fa-shopping-bag"></i> Shop This Look
+          </button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Navigation hint to Shop -->
+  <section class="shop-navigation">
+    <div class="shop-hint-card">
+      <div class="hint-content">
+        <h3>🛒 Ready to Shop?</h3>
+        <p>Find all products with filters, categories, and exclusive deals</p>
+      </div>
+      <button class="btn-shop-nav" (click)="goToShop()">
+        Go to Shop
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </section>
 </div>

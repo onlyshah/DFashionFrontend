@@ -281,12 +281,18 @@ export class CartComponent implements OnInit {
   }
 
   async removeItem(item: CartItem) {
-    if (!item || !item._id) {
-      console.error('❌ Invalid item for removal:', item);
+    if (!item) {
+      console.error('❌ Invalid item for removal: item is null/undefined');
       return;
     }
 
-    console.log(`🗑️ Attempting to remove item ${item._id}: ${item.product?.name}`);
+    const itemId = item._id || item.id;
+    if (!itemId) {
+      console.error('❌ Invalid item for removal: no _id or id property', item);
+      return;
+    }
+
+    console.log(`🗑️ Attempting to remove item ${itemId}: ${item.product?.name}`);
 
     if (this.platform === 'mobile' && this.alertController) {
       const alert = await this.alertController.create({
@@ -315,15 +321,16 @@ export class CartComponent implements OnInit {
   }
 
   private performRemoveItem(item: CartItem) {
-    const itemIndex = this.cartItems.findIndex(i => i._id === item._id);
+    const itemId = item._id || item.id;
+    const itemIndex = this.cartItems.findIndex(i => (i._id || i.id) === itemId);
     const removedItem = this.cartItems.splice(itemIndex, 1)[0];
     this.cdr.markForCheck();
 
-    console.log(`🗑️ Removing item from UI: ${item._id}`);
+    console.log(`🗑️ Removing item from UI: ${itemId}`);
 
-    this.cartService.removeFromCart(item._id).subscribe({
+    this.cartService.removeFromCart(itemId).subscribe({
       next: () => {
-        console.log(`✅ Item removed successfully: ${item._id}`);
+        console.log(`✅ Item removed successfully: ${itemId}`);
         this.presentToast('Item removed from cart', 'success');
         this.loadCart();
       },

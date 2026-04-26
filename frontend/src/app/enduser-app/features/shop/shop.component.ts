@@ -228,6 +228,10 @@ export class ShopComponent implements OnInit {
     this.router.navigate(['/products'], { queryParams: { filter: 'new-arrivals' } });
   }
 
+  goToExplore() {
+    this.router.navigate(['/explore']);
+  }
+
   addToWishlist(product: Product, event: Event) {
     event.stopPropagation();
     if (!this.isAuthenticated()) {
