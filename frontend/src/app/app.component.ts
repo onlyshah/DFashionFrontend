@@ -72,6 +72,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.authService.restoreSession();
+
     // Check authentication state - user is logged in if currentUser$ is not null
     this.subscription.add(
       this.authService.currentUser$.subscribe(user => {

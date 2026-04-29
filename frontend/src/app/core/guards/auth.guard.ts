@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   canActivate(): Observable<boolean | UrlTree> | boolean | UrlTree {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken') || localStorage.getItem('auth_token') || localStorage.getItem('token');
     if (token) {
       return true;
     }

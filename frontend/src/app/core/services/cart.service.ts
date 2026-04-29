@@ -180,7 +180,8 @@ export class CartService {
         this.cartItemCount.next(data?.cart?.quantityTotal || 0);
         this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
         this.showCartTotalPrice.next(!!data?.showCartTotalPrice);
-        this.totalItemCount.next(data?.totalCount || 0);
+        // ✅ FIX: Show only cart items, NOT cart + wishlist combined
+        this.totalItemCount.next(data?.cart?.quantityTotal || 0);
       },
       error: (error) => {
         console.error('Error refreshing total count:', error);

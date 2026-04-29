@@ -1,10 +1,9 @@
 import { Injectable, Inject, forwardRef, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, throwError, of, map, timer, interval, timeout } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError, map } from 'rxjs';
 import { Router } from '@angular/router';
-import { switchMap, takeUntil } from 'rxjs/operators';
 
-import { User, LoginRequest, RegisterRequest, AuthResponse } from '../models/user.model';
+import { User, LoginRequest, RegisterRequest } from '../models/user.model';
 import { environment } from '../../../environments/environment';
 import { ValidationService } from './validation.service';
 import { ProductStateService } from './product-state.service';
@@ -24,6 +23,10 @@ export class AuthService {
   private readonly LOCKOUT_DURATION = 15 * 60 * 1000; // 15 minutes
   private readonly SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   private readonly TOKEN_REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+  private readonly ACCESS_TOKEN_KEY = 'accessToken';
+  private readonly REFRESH_TOKEN_KEY = 'refreshToken';
+  private readonly USER_STORAGE_KEY = 'currentUser';
+  private sessionRestored = false;
   
   // ✅ Cache token in memory to survive navigation
   private cachedToken: string | null = null;
@@ -46,34 +49,46 @@ export class AuthService {
     private productStateService: ProductStateService,
     private injector: Injector
   ) {
-    this.initializeAuth();
+    this.restoreSession();
     this.setupSessionTimeout();
   }
 
-  initializeAuth(): void {
-    const token = this.getToken();
-    if (token) {
-      // Only try to get current user if we have a token
-      this.getCurrentUser().pipe(
-        timeout(5000), // 5 second timeout to prevent hanging
-        catchError(error => {
-          console.warn('⚠️ Failed to get current user on init:', error.message);
-          // Clear invalid token
-          this.logout();
-          return [];
-        })
-      ).subscribe({
-        next: (response) => {
-          const user = response && (response.user || response) ? (response.user || response) : null;
-          this.currentUserSubject.next(user as any);
-          this.isAuthenticatedSubject.next(!!user);
+  restoreSession(): void {
+    if (this.sessionRestored) {
+      return;
+    }
+    this.sessionRestored = true;
+
+    const accessToken = this.getToken();
+    const refreshToken = this.getRefreshToken();
+
+    if (accessToken && !this.isTokenExpired(accessToken)) {
+      this.setUserFromToken(accessToken);
+      this.isAuthenticatedSubject.next(true);
+      this.setupTokenRefresh(accessToken);
+      return;
+    }
+
+    if (refreshToken) {
+      this.refreshAccessToken().subscribe({
+        next: (newAccessToken) => {
+          this.setUserFromToken(newAccessToken);
+          this.isAuthenticatedSubject.next(true);
+          this.setupTokenRefresh(newAccessToken);
         },
         error: () => {
-          // Clear invalid token without redirecting
           this.clearAuth();
         }
       });
+      return;
     }
+
+    if (accessToken) {
+      this.clearAuth();
+      return;
+    }
+
+    this.isAuthenticatedSubject.next(false);
   }
 
   login(credentials: LoginRequest, rememberMe: boolean = false): Observable<any> {
@@ -102,7 +117,6 @@ export class AuthService {
       tap(response => {
         if (response.success) {
           this.clearLoginAttempts(credentials.email);
-          this.handleSuccessfulLogin(response);
         }
       }),
       catchError(error => {
@@ -115,30 +129,29 @@ export class AuthService {
   private loginWithRetry(credentials: LoginRequest, apiUrl: string): Observable<any> {
     return this.http.post<any>(`${apiUrl}/api/auth/login`, credentials)
       .pipe(
-        tap(response => {
-          console.log('✅ Login response received:', response);
-          console.log('📦 Response structure check:', {
-            hasData: !!response.data,
-            hasToken: !!response.data?.token,
-            tokenValue: response.data?.token ? response.data.token.substring(0, 30) + '...' : 'MISSING',
-            hasUser: !!response.data?.user,
-            rememberMe: this.rememberMe
-          });
-          
-          // Handle backend response format: { success: true, data: { token, user } }
+      tap(response => {
+        console.log('✅ Login response received:', response);
+        console.log('📦 Response structure check:', {
+          hasData: !!response.data,
+          hasToken: !!(response.data?.accessToken || response.data?.token || response.accessToken || response.token),
+          tokenValue: response.data?.accessToken || response.data?.token
+            ? (response.data?.accessToken || response.data?.token).substring(0, 30) + '...'
+            : 'MISSING',
+          hasRefreshToken: !!(response.data?.refreshToken || response.refreshToken),
+          hasUser: !!response.data?.user,
+          rememberMe: this.rememberMe
+        });
+
+          // Handle backend response format: { success: true, data: { accessToken, refreshToken, user } }
           const authData = response.data || response;
           console.log('🔍 authData extraction:', {
             source: response.data ? 'response.data' : 'response root',
-            tokenInAuthData: authData.token ? 'PRESENT' : 'MISSING',
+            tokenInAuthData: (authData.accessToken || authData.token) ? 'PRESENT' : 'MISSING',
+            refreshTokenInAuthData: authData.refreshToken ? 'PRESENT' : 'MISSING',
             willCall: 'setToken()'
           });
           
-          this.setToken(authData.token);
-          this.currentUserSubject.next(authData.user);
-          this.isAuthenticatedSubject.next(true);
-
-          // Trigger cart and wishlist refresh after successful login
-          this.refreshUserDataOnLogin();
+          this.handleSuccessfulLogin(response);
         }),
         catchError(error => {
           console.error('❌ Login error:', error);
@@ -167,13 +180,9 @@ export class AuthService {
 
     return this.http.post<any>(`${firstUrl}/api/auth/login`, credentials)
       .pipe(
-        tap(response => {
-          console.log('✅ Login successful with fallback URL:', firstUrl);
-          const authData = response.data || response;
-          this.setToken(authData.token);
-          this.currentUserSubject.next(authData.user);
-          this.isAuthenticatedSubject.next(true);
-          this.refreshUserDataOnLogin();
+      tap(response => {
+        console.log('✅ Login successful with fallback URL:', firstUrl);
+          this.handleSuccessfulLogin(response);
         }),
         catchError(error => {
           console.error('❌ Fallback URL failed:', firstUrl, error);
@@ -200,11 +209,7 @@ export class AuthService {
     return this.http.post<any>(`${this.API_URL}/api/auth/register`, userData)
       .pipe(
         tap(response => {
-          // Handle backend response format: { success: true, data: { token, user } }
-          const authData = response.data || response;
-          this.setToken(authData.token);
-          this.currentUserSubject.next(authData.user);
-          this.isAuthenticatedSubject.next(true);
+          this.handleSuccessfulLogin(response);
         })
       );
   }
@@ -221,10 +226,20 @@ export class AuthService {
     this.cachedToken = null;
     
     // Clear all token keys from storage
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem(this.USER_STORAGE_KEY);
+    localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(this.USER_STORAGE_KEY);
+    sessionStorage.removeItem('currentUser');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('refresh_token');
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
 
@@ -298,24 +313,32 @@ export class AuthService {
     }
 
     // PRIORITY 2: Check all storage locations
-    const sessionToken = sessionStorage.getItem('auth_token');
-    const localToken = localStorage.getItem('auth_token');
+    const sessionToken = sessionStorage.getItem(this.ACCESS_TOKEN_KEY);
+    const localToken = localStorage.getItem(this.ACCESS_TOKEN_KEY);
+    const legacySessionAccessToken = sessionStorage.getItem('auth_token');
+    const legacyLocalAccessToken = localStorage.getItem('auth_token');
     const legacySessionToken = sessionStorage.getItem('token');
     const legacyLocalToken = localStorage.getItem('token');
+    const refreshAccessToken = localStorage.getItem('access_token');
     const adminSessionToken = sessionStorage.getItem('admin_token');
     const adminLocalToken = localStorage.getItem('admin_token');
 
     console.log('🔍 getToken: Storage check:', {
       sessionToken: sessionToken ? sessionToken.substring(0, 20) + '...' : null,
       localToken: localToken ? localToken.substring(0, 20) + '...' : null,
+      legacySessionAccessToken: legacySessionAccessToken ? 'found' : null,
+      legacyLocalAccessToken: legacyLocalAccessToken ? 'found' : null,
       legacySessionToken: legacySessionToken ? 'found' : null,
       legacyLocalToken: legacyLocalToken ? 'found' : null,
+      refreshAccessToken: refreshAccessToken ? 'found' : null,
       adminSessionToken: adminSessionToken ? 'found' : null,
       adminLocalToken: adminLocalToken ? 'found' : null
     });
 
     const token = sessionToken || 
                   localToken ||
+                  legacySessionAccessToken ||
+                  legacyLocalAccessToken ||
                   legacySessionToken ||
                   legacyLocalToken ||
                   adminSessionToken ||
@@ -332,7 +355,71 @@ export class AuthService {
     return null;
   }
 
-  private setToken(token: string): void {
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.REFRESH_TOKEN_KEY) ||
+      sessionStorage.getItem(this.REFRESH_TOKEN_KEY) ||
+      localStorage.getItem('refresh_token') ||
+      sessionStorage.getItem('refresh_token');
+  }
+
+  setUserFromToken(token: string): User | null {
+    const decoded = this.decodeJWT<any>(token);
+
+    if (!decoded) {
+      return null;
+    }
+
+    const user: any = {
+      id: decoded.userId,
+      _id: decoded.userId,
+      email: decoded.email,
+      username: decoded.username || decoded.email?.split('@')?.[0] || 'user',
+      fullName: decoded.fullName || decoded.username || decoded.email || 'User',
+      avatar: decoded.avatar || null,
+      role: decoded.role,
+      isActive: decoded.isActive ?? true,
+      token,
+      accessToken: token,
+      refreshToken: this.getRefreshToken()
+    };
+
+    this.persistCurrentUser(user);
+    this.currentUserSubject.next(user);
+    this.isAuthenticatedSubject.next(true);
+    return user;
+  }
+
+  private persistCurrentUser(user: any): void {
+    try {
+      localStorage.setItem(this.USER_STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      sessionStorage.removeItem(this.USER_STORAGE_KEY);
+      sessionStorage.removeItem('currentUser');
+    } catch (error) {
+      console.warn('Could not persist current user', error);
+    }
+  }
+
+  private decodeJWT<T>(token: string): T | null {
+    try {
+      const payload = token.split('.')[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const json = atob(base64);
+      return JSON.parse(json) as T;
+    } catch {
+      return null;
+    }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    const payload = this.decodeJWT<any>(token);
+    if (!payload?.exp) {
+      return false;
+    }
+    return payload.exp * 1000 <= Date.now();
+  }
+
+  private setToken(token: string, refreshToken?: string | null): void {
     console.log('📝 setToken() called with:', {
       isNull: token === null,
       isUndefined: token === undefined,
@@ -348,24 +435,25 @@ export class AuthService {
     // ✅ CRITICAL: Cache token in memory IMMEDIATELY
     this.cachedToken = token;
     console.log('✅ Token cached in memory (length: ' + token.length + ')');
-    
-    const key = 'auth_token'; // Consistent key
-    
+
     console.log('💾 About to store token...');
-    
-    if (this.rememberMe) {
-      localStorage.setItem(key, token);
-      sessionStorage.removeItem(key);
-      localStorage.removeItem('token'); // Cleanup old key
-      console.log('✅ Token stored in localStorage (key: auth_token, length: ' + token.length + ')');
-      console.log('🔍 Verification - localStorage.getItem(auth_token) length:', localStorage.getItem(key)?.length || 'NULL');
-    } else {
-      sessionStorage.setItem(key, token);
-      localStorage.removeItem(key);
-      localStorage.removeItem('token'); // Cleanup old key
-      console.log('✅ Token stored in sessionStorage (key: auth_token, length: ' + token.length + ')');
-      console.log('🔍 Verification - sessionStorage.getItem(auth_token) length:', sessionStorage.getItem(key)?.length || 'NULL');
+    localStorage.setItem(this.ACCESS_TOKEN_KEY, token);
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('token', token);
+    sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('token');
+
+    if (refreshToken) {
+      localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+      localStorage.setItem('refresh_token', refreshToken);
+      sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+      sessionStorage.removeItem('refresh_token');
+      console.log('✅ Refresh token stored in localStorage');
     }
+
+    console.log('✅ Token stored in localStorage (key: accessToken, length: ' + token.length + ')');
+    console.log('🔍 Verification - localStorage.getItem(accessToken) length:', localStorage.getItem(this.ACCESS_TOKEN_KEY)?.length || 'NULL');
   }
 
   get currentUserValue(): User | null {
@@ -573,28 +661,33 @@ export class AuthService {
   }
 
   private handleSuccessfulLogin(response: any): void {
-    // Handle both response formats: { data: { token, user } } and { token, user }
+    // Handle both response formats: { data: { accessToken, refreshToken, user } } and top-level tokens
     const authData = response.data || response;
-    
-    if (authData.token) {
-      this.setToken(authData.token);
-      this.setupTokenRefresh(authData.token);
-      console.log('✅ Token stored successfully in handleSuccessfulLogin');
+    const accessToken = authData.accessToken || authData.token || response.accessToken || response.token;
+    const refreshToken = authData.refreshToken || response.refreshToken;
+    const user = authData.user || response.user || null;
+
+    if (accessToken) {
+      this.setToken(accessToken, refreshToken);
+      this.setupTokenRefresh(accessToken);
+      console.log('✅ Access token stored successfully in handleSuccessfulLogin');
     }
 
-    if (authData.user) {
-      this.currentUserSubject.next(authData.user);
+    if (user) {
+      const enrichedUser = { ...user, token: accessToken, accessToken, refreshToken };
+      this.currentUserSubject.next(enrichedUser);
       this.isAuthenticatedSubject.next(true);
+      this.persistCurrentUser(enrichedUser);
       console.log('✅ User subject updated:', {
-        email: authData.user.email,
-        role: authData.user.role,
-        storage: this.rememberMe ? 'localStorage' : 'sessionStorage'
+        email: enrichedUser.email,
+        role: enrichedUser.role,
+        storage: 'localStorage'
       });
-
-      // Note: Redirect is now handled by the login component to ensure 
-      // consistency with role-based routing. Do not redirect here.
+    } else if (accessToken) {
+      this.setUserFromToken(accessToken);
     }
 
+    this.refreshUserDataOnLogin();
     this.resetSessionTimeout();
   }
 
@@ -642,9 +735,8 @@ export class AuthService {
       const refreshTime = Math.max(timeUntilExpiration - this.TOKEN_REFRESH_INTERVAL, 60000);
 
       this.refreshTokenTimer = setTimeout(() => {
-        this.refreshToken().subscribe({
+        this.refreshAccessToken().subscribe({
           next: (newToken) => {
-            this.setToken(newToken);
             this.setupTokenRefresh(newToken);
           },
           error: () => {
@@ -656,18 +748,41 @@ export class AuthService {
   }
 
   private decodeToken(token: string): any {
-    try {
-      const payload = token.split('.')[1];
-      return JSON.parse(atob(payload));
-    } catch {
-      return null;
-    }
+    return this.decodeJWT<any>(token);
   }
 
-  private refreshToken(): Observable<string> {
-    return this.http.post<{ token: string }>(`${this.API_URL}/api/auth/refresh`, {})
+  refreshAccessToken(): Observable<string> {
+    const refreshToken = this.getRefreshToken();
+
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.http.post<any>(`${this.API_URL}/api/auth/refresh-token`, { refreshToken })
       .pipe(
-        map(response => response.token),
+        map(response => {
+          const authData = response.data || response;
+          const accessToken = authData.accessToken || authData.token || response.accessToken || response.token;
+          const newRefreshToken = authData.refreshToken || response.refreshToken || refreshToken;
+          const user = authData.user || response.user || null;
+
+          if (!accessToken) {
+            throw new Error('Refresh response did not include an access token');
+          }
+
+          this.setToken(accessToken, newRefreshToken);
+
+          if (user) {
+            const enrichedUser = { ...user, token: accessToken, accessToken, refreshToken: newRefreshToken };
+            this.currentUserSubject.next(enrichedUser);
+            this.persistCurrentUser(enrichedUser);
+          } else {
+            this.setUserFromToken(accessToken);
+          }
+
+          this.isAuthenticatedSubject.next(true);
+          return accessToken;
+        }),
         catchError(error => {
           console.error('Token refresh failed:', error);
           return throwError(() => error);

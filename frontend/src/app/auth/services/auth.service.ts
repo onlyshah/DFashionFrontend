@@ -13,9 +13,12 @@ export class AuthService {
   public isAuthenticated$: Observable<boolean>;
   private isAuthenticatedSubject: BehaviorSubject<boolean>;
   private rememberMe: boolean = false;
+  private readonly ACCESS_TOKEN_KEY = 'accessToken';
+  private readonly REFRESH_TOKEN_KEY = 'refreshToken';
+  private readonly USER_STORAGE_KEY = 'currentUser';
 
   constructor(private http: HttpClient) {
-    this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem('currentUser') || 'null'));
+    this.currentUserSubject = new BehaviorSubject<any>(JSON.parse(localStorage.getItem(this.USER_STORAGE_KEY) || localStorage.getItem('currentUser') || 'null'));
     this.currentUser = this.currentUserSubject.asObservable();
     
     this.isAuthenticatedSubject = new BehaviorSubject<boolean>(!!this.currentUserValue);
@@ -31,39 +34,43 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}/api/auth/login`, { email, password })
       .pipe(
         tap(response => {
-          if (response.data && response.data.token) {
+          const authData = response.data || response;
+          const accessToken = authData.accessToken || authData.token || response.accessToken || response.token;
+          const refreshToken = authData.refreshToken || response.refreshToken;
+
+          if (accessToken) {
             const userData = {
-              token: response.data.token,
-              user: response.data.user,
-              data: response.data
+              token: accessToken,
+              accessToken,
+              refreshToken,
+              user: authData.user,
+              data: authData
             };
 
-            // Store in appropriate storage based on rememberMe
-            if (rememberMe) {
-              localStorage.setItem('currentUser', JSON.stringify(userData));
-              localStorage.setItem('token', response.data.token);
-              sessionStorage.removeItem('currentUser');
-              sessionStorage.removeItem('token');
-            } else {
-              sessionStorage.setItem('currentUser', JSON.stringify(userData));
-              sessionStorage.setItem('token', response.data.token);
-              localStorage.removeItem('currentUser');
-              localStorage.removeItem('token');
+            localStorage.setItem(this.USER_STORAGE_KEY, JSON.stringify(userData));
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+            localStorage.setItem('auth_token', accessToken);
+            localStorage.setItem('token', accessToken);
+            sessionStorage.removeItem(this.USER_STORAGE_KEY);
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
+            sessionStorage.removeItem('auth_token');
+            sessionStorage.removeItem('token');
+
+            if (refreshToken) {
+              localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+              localStorage.setItem('refresh_token', refreshToken);
+              sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+              sessionStorage.removeItem('refresh_token');
             }
 
             // Also store admin_token if user is admin or super_admin
-            if (response.data.user.role === 'admin' || response.data.user.role === 'super_admin') {
-              if (rememberMe) {
-                localStorage.setItem('admin_token', response.data.token);
-                localStorage.setItem('admin_user', JSON.stringify(response.data.user));
-                sessionStorage.removeItem('admin_token');
-                sessionStorage.removeItem('admin_user');
-              } else {
-                sessionStorage.setItem('admin_token', response.data.token);
-                sessionStorage.setItem('admin_user', JSON.stringify(response.data.user));
-                localStorage.removeItem('admin_token');
-                localStorage.removeItem('admin_user');
-              }
+            if (authData.user?.role === 'admin' || authData.user?.role === 'super_admin') {
+              localStorage.setItem('admin_token', accessToken);
+              localStorage.setItem('admin_user', JSON.stringify(authData.user));
+              sessionStorage.removeItem('admin_token');
+              sessionStorage.removeItem('admin_user');
             }
 
             this.currentUserSubject.next(userData);
@@ -86,7 +93,19 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('currentUser');
+    localStorage.removeItem(this.USER_STORAGE_KEY);
+    localStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    localStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('token');
     sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem(this.USER_STORAGE_KEY);
+    sessionStorage.removeItem(this.ACCESS_TOKEN_KEY);
+    sessionStorage.removeItem(this.REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('refresh_token');
+    sessionStorage.removeItem('token');
     this.currentUserSubject.next(null);
     this.isAuthenticatedSubject.next(false);
   }
@@ -115,13 +134,25 @@ export class AuthService {
   }
 
   refreshToken(): Promise<any> {
-    return this.http.post<any>(`${environment.apiUrl}/auth/refresh-token`, {
-      refreshToken: this.currentUserValue?.refreshToken
+    return this.http.post<any>(`${environment.apiUrl}/api/auth/refresh-token`, {
+      refreshToken: this.getRefreshToken()
     }).pipe(
       tap(response => {
-        if (response.data && response.data.token) {
-          const user = { ...this.currentUserValue, ...response.data };
+        const authData = response.data || response;
+        const accessToken = authData.accessToken || authData.token || response.accessToken || response.token;
+        const refreshToken = authData.refreshToken || response.refreshToken;
+
+        if (accessToken) {
+          const user = { ...this.currentUserValue, ...authData, accessToken, token: accessToken, refreshToken };
+          localStorage.setItem(this.USER_STORAGE_KEY, JSON.stringify(user));
           localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem(this.ACCESS_TOKEN_KEY, accessToken);
+          localStorage.setItem('auth_token', accessToken);
+          localStorage.setItem('token', accessToken);
+          if (refreshToken) {
+            localStorage.setItem(this.REFRESH_TOKEN_KEY, refreshToken);
+            localStorage.setItem('refresh_token', refreshToken);
+          }
           this.currentUserSubject.next(user);
         }
       })
@@ -137,7 +168,19 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return this.currentUserValue?.token || localStorage.getItem('token') || sessionStorage.getItem('token');
+    return this.currentUserValue?.accessToken ||
+      this.currentUserValue?.token ||
+      localStorage.getItem(this.ACCESS_TOKEN_KEY) ||
+      localStorage.getItem('auth_token') ||
+      localStorage.getItem('token') ||
+      sessionStorage.getItem('token');
+  }
+
+  getRefreshToken(): string | null {
+    return this.currentUserValue?.refreshToken ||
+      localStorage.getItem(this.REFRESH_TOKEN_KEY) ||
+      localStorage.getItem('refresh_token') ||
+      sessionStorage.getItem('refresh_token');
   }
 
   getPermissions(): string[] {
