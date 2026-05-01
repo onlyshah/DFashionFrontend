@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ContentCreationApi } from 'src/app/core/api/content-creation.api';
 
 @Component({
   selector: 'app-create-reel',
@@ -566,7 +566,7 @@ export class CreateReelComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private contentCreationApi: ContentCreationApi,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -642,7 +642,7 @@ export class CreateReelComponent implements OnInit, OnDestroy {
     formData.append('audioVolume', this.audioVolume.toString());
     formData.append('musicVolume', this.musicVolume.toString());
 
-    this.http.post('/api/reels', formData)
+    this.contentCreationApi.createReel(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

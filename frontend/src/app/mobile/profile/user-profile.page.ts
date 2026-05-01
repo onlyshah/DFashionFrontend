@@ -9,9 +9,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ProfileApi } from 'src/app/core/api/profile.api';
 
 @Component({
   selector: 'app-user-profile-page',
@@ -332,7 +332,7 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
+    private profileApi: ProfileApi,
     private toastController: ToastController
   ) {}
 
@@ -354,7 +354,7 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
   }
 
   loadUserProfile() {
-    this.http.get(`/api/users/${this.userId}`)
+    this.profileApi.getUser(this.userId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -371,7 +371,7 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
   }
 
   loadUserPosts() {
-    this.http.get(`/api/users/${this.userId}/posts`)
+    this.profileApi.getUserPosts(this.userId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -380,7 +380,7 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
         error: (error) => console.error('Failed to load posts:', error)
       });
 
-    this.http.get(`/api/users/${this.userId}/orders`)
+    this.profileApi.getUserOrders(this.userId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -389,7 +389,7 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
         error: (error) => console.error('Failed to load orders:', error)
       });
 
-    this.http.get(`/api/users/${this.userId}/tagged`)
+    this.profileApi.getUserTagged(this.userId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

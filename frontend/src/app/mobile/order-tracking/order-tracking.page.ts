@@ -7,9 +7,9 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { OrdersApi } from 'src/app/core/api/orders.api';
 
 interface TrackingStep {
   status: string;
@@ -632,7 +632,7 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private ordersApi: OrdersApi
   ) {}
 
   ngOnInit() {
@@ -650,7 +650,7 @@ export class OrderTrackingComponent implements OnInit, OnDestroy {
   }
 
   loadOrder() {
-    this.http.get(`/api/orders/${this.orderId}/tracking`)
+    this.ordersApi.getOrderTracking(this.orderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

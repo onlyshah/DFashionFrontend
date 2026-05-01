@@ -7,10 +7,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import { ShopApi } from 'src/app/core/api/shop.api';
 
 @Component({
   selector: 'app-payment-methods-page',
@@ -592,7 +591,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private shopApi: ShopApi,
     private fb: FormBuilder,
     private router: Router
   ) {
@@ -621,7 +620,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   }
 
   loadPaymentMethods() {
-    this.http.get(`${environment.apiUrl}/api/payment-methods`)
+    this.shopApi.getPaymentMethods()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -658,7 +657,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
     this.isSubmitting = true;
     const payload = this.addPaymentForm.value;
 
-    this.http.post(`${environment.apiUrl}/api/payment-methods`, payload)
+    this.shopApi.addPaymentMethod(payload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -681,7 +680,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   deleteMethod(methodId: string) {
     if (!confirm('Are you sure you want to delete this payment method?')) return;
 
-    this.http.delete(`${environment.apiUrl}/api/payment-methods/${methodId}`)
+    this.shopApi.deletePaymentMethod(methodId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -692,7 +691,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   }
 
   setAsDefault(methodId: string) {
-    this.http.patch(`${environment.apiUrl}/api/payment-methods/${methodId}/default`, {})
+    this.shopApi.setDefaultPaymentMethod(methodId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

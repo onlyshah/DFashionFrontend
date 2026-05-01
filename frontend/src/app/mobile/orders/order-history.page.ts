@@ -8,9 +8,10 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, AlertController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { OrdersApi } from 'src/app/core/api/orders.api';
+import { CartApi } from 'src/app/core/api/cart.api';
 
 interface OrderItem {
   id: string;
@@ -513,7 +514,8 @@ export class OrderHistoryPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private ordersApi: OrdersApi,
+    private cartApi: CartApi,
     private toastController: ToastController,
     private alertController: AlertController
   ) {}
@@ -528,7 +530,7 @@ export class OrderHistoryPageComponent implements OnInit, OnDestroy {
   }
 
   loadOrders() {
-    this.http.get('/api/orders')
+    this.ordersApi.listOrders()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -567,7 +569,7 @@ export class OrderHistoryPageComponent implements OnInit, OnDestroy {
         {
           text: 'Yes, Cancel',
           handler: () => {
-            this.http.post(`/api/orders/${order.id}/cancel`, {})
+            this.ordersApi.cancelOrder(order.id)
               .pipe(takeUntil(this.destroy$))
               .subscribe({
                 next: () => {
@@ -602,7 +604,7 @@ export class OrderHistoryPageComponent implements OnInit, OnDestroy {
       color: item.color
     }));
 
-    this.http.post('/api/cart/bulk-add', { items: cartItems })
+    this.cartApi.bulkAdd(cartItems)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

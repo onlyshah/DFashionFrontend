@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ContentCreationApi } from 'src/app/core/api/content-creation.api';
 
 @Component({
   selector: 'app-create-post',
@@ -572,7 +572,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private contentCreationApi: ContentCreationApi,
     private toastController: ToastController,
     private modalController: ModalController,
     private fb: FormBuilder
@@ -623,7 +623,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.get(`/api/products?search=${query}&limit=10`)
+    this.contentCreationApi.searchProducts(query, 10)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -676,7 +676,7 @@ export class CreatePostComponent implements OnInit, OnDestroy {
       formData.append('taggedProducts', product.id);
     });
 
-    this.http.post('/api/posts', formData)
+    this.contentCreationApi.createPost(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

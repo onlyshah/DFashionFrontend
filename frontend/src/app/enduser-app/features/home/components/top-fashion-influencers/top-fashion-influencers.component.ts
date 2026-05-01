@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
 import { ImageFallbackDirective } from '../../../../../shared/directives/image-fallback.directive';
 import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
@@ -67,7 +66,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   sectionComments = 89;
   isMobile = false;
   imageUrl = environment.apiUrl
-  constructor(private router: Router, private http: HttpClient, private unifiedApiService: UnifiedApiService) {}
+  constructor(private router: Router, private unifiedApiService: UnifiedApiService) {}
 
   ngOnInit() {
     this.loadInfluencers();

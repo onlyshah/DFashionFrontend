@@ -81,6 +81,31 @@
               "vendorChunk": false,
               "buildOptimizer": true
             },
+            "production-nospawn": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "8mb",
+                  "maximumError": "10mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "30kb",
+                  "maximumError": "60kb"
+                }
+              ],
+              "outputHashing": "all",
+              "optimization": {
+                "scripts": false,
+                "styles": false,
+                "fonts": false
+              },
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false
+            },
             "development": {
               "buildOptimizer": false,
               "optimization": false,

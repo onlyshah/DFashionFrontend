@@ -6,10 +6,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil, interval } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { ShopApi } from 'src/app/core/api/shop.api';
 
 @Component({
   selector: 'app-order-tracking-page',
@@ -421,7 +421,7 @@ export class OrderTrackingPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient
+    private shopApi: ShopApi
   ) {}
 
   ngOnInit() {
@@ -442,7 +442,7 @@ export class OrderTrackingPageComponent implements OnInit, OnDestroy {
     
     if (!orderId) return;
 
-    this.http.get(`${environment.apiUrl}/api/orders/${orderId}/tracking`)
+    this.shopApi.getOrderTracking(orderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

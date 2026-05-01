@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { IonicModule, ActionSheetController, LoadingController, ToastController, Camera, CameraResultType, CameraSource } from '@ionic/angular';
 import { Camera as CapacitorCamera, CameraResultType as CapCameraResultType, CameraSource as CapCameraSource } from '@capacitor/camera';
 
@@ -24,7 +23,6 @@ export class CreateStoryComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private http: HttpClient,
     @Optional() private actionSheetController?: ActionSheetController,
     @Optional() private loadingController?: LoadingController,
     @Optional() private toastController?: ToastController

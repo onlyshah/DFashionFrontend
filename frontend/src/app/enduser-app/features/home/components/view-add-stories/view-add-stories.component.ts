@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
-import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { CarouselModule, OwlOptions } from 'ngx-owl-carousel-o';
 import { environment } from '../../../../../../environments/environment';
@@ -173,7 +172,6 @@ export class ViewAddStoriesComponent implements OnInit, OnDestroy {
   imageUrl = environment.apiUrl
   constructor(
     private router: Router,
-    private http: HttpClient,
     private cartService: CartService,
     private wishlistService: WishlistService,
     private storyService: StoryService

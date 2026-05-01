@@ -7,8 +7,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { ShopApi } from 'src/app/core/api/shop.api';
 
 @Component({
   selector: 'app-write-review-page',
@@ -521,7 +521,7 @@ export class WriteReviewPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
+    private shopApi: ShopApi,
     private fb: FormBuilder
   ) {
     this.reviewForm = this.fb.group({
@@ -540,7 +540,7 @@ export class WriteReviewPageComponent implements OnInit {
   }
 
   loadProduct(id: string) {
-    this.http.get(`${environment.apiUrl}/api/products/${id}`)
+    this.shopApi.getProduct(id)
       .subscribe({
         next: (response: any) => {
           this.product = response.data;
@@ -631,7 +631,7 @@ export class WriteReviewPageComponent implements OnInit {
       formData.append(`photos`, photo.file);
     });
 
-    this.http.post(`${environment.apiUrl}/api/reviews`, formData)
+    this.shopApi.createReview(formData)
       .subscribe({
         next: () => {
           this.isSubmitting = false;

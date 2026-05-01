@@ -6,9 +6,9 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FollowsApi } from 'src/app/core/api/follows.api';
 
 @Component({
   selector: 'app-follow-button',
@@ -49,7 +49,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private followsApi: FollowsApi,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -68,7 +68,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy {
   checkFollowStatus() {
     if (!this.userId) return;
 
-    this.http.get(`/api/follows/${this.userId}/status`)
+    this.followsApi.getStatus(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -100,7 +100,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy {
    * Follow user
    */
   private followUser() {
-    this.http.post(`/api/follows/${this.userId}`, {})
+    this.followsApi.follow(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -121,7 +121,7 @@ export class FollowButtonComponent implements OnInit, OnDestroy {
    * Unfollow user
    */
   private unfollowUser() {
-    this.http.delete(`/api/follows/${this.userId}`)
+    this.followsApi.unfollow(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

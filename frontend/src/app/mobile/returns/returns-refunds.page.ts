@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ReturnsApi } from 'src/app/core/api/returns.api';
 
 interface Return {
   id: string;
@@ -482,7 +482,7 @@ export class ReturnsRefundsPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private returnsApi: ReturnsApi,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -497,7 +497,7 @@ export class ReturnsRefundsPageComponent implements OnInit, OnDestroy {
   }
 
   loadReturns() {
-    this.http.get('/api/returns')
+    this.returnsApi.listReturns()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -526,7 +526,7 @@ export class ReturnsRefundsPageComponent implements OnInit, OnDestroy {
     const confirm = window.confirm('Are you sure you want to cancel this return?');
     if (!confirm) return;
 
-    this.http.post(`/api/returns/${returnItem.id}/cancel`, {})
+    this.returnsApi.cancelReturn(returnItem.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

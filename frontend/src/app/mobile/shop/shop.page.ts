@@ -7,12 +7,12 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, CUSTOM_ELEMENTS_
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CartService } from '../../core/services/cart.service';
 import { WishlistService } from '../../core/services/wishlist.service';
+import { CatalogApi } from 'src/app/core/api/catalog.api';
 
 @Component({
   selector: 'app-shop-page',
@@ -317,7 +317,7 @@ export class ShopPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private catalogApi: CatalogApi,
     private cartService: CartService,
     private wishlistService: WishlistService,
     private router: Router,
@@ -335,7 +335,7 @@ export class ShopPageComponent implements OnInit, OnDestroy {
   }
 
   loadCategories() {
-    this.http.get('/api/categories')
+    this.catalogApi.getCategories()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -356,7 +356,7 @@ export class ShopPageComponent implements OnInit, OnDestroy {
       url += `&search=${this.searchQuery}`;
     }
 
-    this.http.get(url)
+    this.catalogApi.getProducts(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

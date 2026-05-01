@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, HostListener, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../../../../environments/environment';
 import { AuthService } from '../../../../../core/services/auth.service';
@@ -68,7 +67,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   userSlideOpts = { initialSlide: 0, speed: 400, spaceBetween: 16, slidesPerView: 2.5, freeMode: true, autoplay: { delay: 5000 } };
 
   constructor(
-    private http: HttpClient,
     private router: Router,
     private authService: AuthService,
     private storyService: StoryService,

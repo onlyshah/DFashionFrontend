@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ContentCreationApi } from 'src/app/core/api/content-creation.api';
 
 @Component({
   selector: 'app-go-live',
@@ -562,7 +562,7 @@ export class GoLiveComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private contentCreationApi: ContentCreationApi,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -631,7 +631,7 @@ export class GoLiveComponent implements OnInit, OnDestroy {
       formData.append('products', product.id);
     });
 
-    this.http.post('/api/live/start', formData)
+    this.contentCreationApi.startLive(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -664,9 +664,7 @@ export class GoLiveComponent implements OnInit, OnDestroy {
     if (!this.chatInput.trim()) return;
 
     // Send chat message
-    this.http.post('/api/live/chat', {
-      content: this.chatInput
-    })
+    this.contentCreationApi.sendLiveChat({ content: this.chatInput })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -677,7 +675,7 @@ export class GoLiveComponent implements OnInit, OnDestroy {
   }
 
   endLive() {
-    this.http.post('/api/live/end', {})
+    this.contentCreationApi.endLive()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { UploadService, UploadProgress } from '../../../../../core/services/upload.service';
 
 @Component({
@@ -323,7 +322,6 @@ export class CreatePostComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private router: Router,
-        private http: HttpClient,
         private uploadService: UploadService
     ) {
         // Auto-detect platform

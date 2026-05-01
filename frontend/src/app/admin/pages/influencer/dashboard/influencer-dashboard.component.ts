@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { environment } from '../../../../../environments/environment';
+import { InfluencerDashboardApi } from 'src/app/core/api/influencer-dashboard.api';
 
 interface InfluencerMetric {
   title: string;
@@ -94,7 +93,7 @@ export class InfluencerDashboardComponent implements OnInit, OnDestroy {
     { value: '1y', label: 'Last Year' }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private influencerDashboardApi: InfluencerDashboardApi) {}
 
   ngOnInit(): void {
     this.loadInfluencerData();
@@ -113,11 +112,8 @@ export class InfluencerDashboardComponent implements OnInit, OnDestroy {
     this.error = null;
 
     const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
 
-    this.http.get<any>(`${environment.apiUrl}/influencer/dashboard`, { headers })
+    this.influencerDashboardApi.getDashboard(token)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

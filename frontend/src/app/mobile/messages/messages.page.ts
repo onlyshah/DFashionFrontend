@@ -7,10 +7,10 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ViewChild, Eleme
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, IonContent } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { MessagesApi } from 'src/app/core/api/messages.api';
 
 interface Message {
   id: string;
@@ -496,7 +496,7 @@ export class MessagesPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private messagesApi: MessagesApi,
     private router: Router
   ) {}
 
@@ -510,7 +510,7 @@ export class MessagesPageComponent implements OnInit, OnDestroy {
   }
 
   loadConversations() {
-    this.http.get('/api/messages/conversations')
+    this.messagesApi.listConversations()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -531,7 +531,7 @@ export class MessagesPageComponent implements OnInit, OnDestroy {
   }
 
   loadMessages(conversationId: string) {
-    this.http.get(`/api/messages/conversations/${conversationId}`)
+    this.messagesApi.getConversation(conversationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -551,7 +551,7 @@ export class MessagesPageComponent implements OnInit, OnDestroy {
       type: 'text'
     };
 
-    this.http.post('/api/messages/send', message)
+    this.messagesApi.sendMessage(message)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { PaymentMethodsApi } from 'src/app/core/api/payment-methods.api';
 
 interface PaymentMethod {
   id: string;
@@ -317,7 +317,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private paymentMethodsApi: PaymentMethodsApi,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -332,7 +332,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   }
 
   loadPaymentMethods() {
-    this.http.get('/api/payment-methods')
+    this.paymentMethodsApi.list()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -357,7 +357,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
   }
 
   setDefault(method: PaymentMethod) {
-    this.http.patch(`/api/payment-methods/${method.id}/set-default`, {})
+    this.paymentMethodsApi.setDefault(method.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -377,7 +377,7 @@ export class PaymentMethodsPageComponent implements OnInit, OnDestroy {
     const confirm = window.confirm('Are you sure you want to delete this payment method?');
     if (!confirm) return;
 
-    this.http.delete(`/api/payment-methods/${method.id}`)
+    this.paymentMethodsApi.delete(method.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

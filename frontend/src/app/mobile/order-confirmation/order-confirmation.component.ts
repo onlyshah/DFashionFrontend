@@ -8,9 +8,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule, DatePipe, DecimalPipe, UpperCasePipe } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { OrdersApi } from 'src/app/core/api/orders.api';
 
 @Component({
   selector: 'app-order-confirmation',
@@ -296,7 +296,7 @@ export class OrderConfirmationComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private ordersApi: OrdersApi
   ) {}
 
   ngOnInit() {
@@ -317,7 +317,7 @@ export class OrderConfirmationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.get(`/api/orders/${orderId}`)
+    this.ordersApi.getOrder(orderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

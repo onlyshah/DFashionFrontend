@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
-import { HttpClient } from '@angular/common/http';
+import { AdminInvoicesApi } from 'src/app/core/api/admin-invoices.api';
 
 @Component({
   selector: 'app-invoices',
@@ -92,7 +92,7 @@ export class InvoicesComponent implements OnInit {
   isLoading = true;
   displayedColumns = ['invoiceNumber', 'customerName', 'amount', 'status', 'createdAt', 'actions'];
 
-  constructor(private http: HttpClient) {}
+  constructor(private adminInvoicesApi: AdminInvoicesApi) {}
 
   ngOnInit() {
     this.loadInvoices();
@@ -101,7 +101,7 @@ export class InvoicesComponent implements OnInit {
   loadInvoices() {
     console.log('🔄 [Invoices] Fetching invoices from API - /api/admin/invoices');
     this.isLoading = true;
-    this.http.get<any>('/api/admin/invoices').subscribe({
+    this.adminInvoicesApi.listInvoices().subscribe({
       next: (response) => {
         console.log('✅ [Invoices] Full API Response:', response);
         console.log('✅ [Invoices] Response success:', response?.success);

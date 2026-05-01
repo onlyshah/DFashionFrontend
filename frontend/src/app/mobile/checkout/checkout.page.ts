@@ -7,7 +7,8 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { CartService } from 'src/app/core/services/cart.service';
-import { HttpClient } from '@angular/common/http';
+import { AddressesApi } from 'src/app/core/api/addresses.api';
+import { OrdersApi } from 'src/app/core/api/orders.api';
 
 /**
  * Mobile Checkout Component
@@ -407,7 +408,8 @@ export class MobileCheckoutComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private router: Router,
     private cartService: CartService,
-    private http: HttpClient,
+    private addressesApi: AddressesApi,
+    private ordersApi: OrdersApi,
     private toastController: ToastController
   ) {
     this.addressForm = this.formBuilder.group({
@@ -450,7 +452,7 @@ export class MobileCheckoutComponent implements OnInit, OnDestroy {
   }
 
   loadAddresses() {
-    this.http.get('/api/addresses')
+    this.addressesApi.listAddresses()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -504,7 +506,7 @@ export class MobileCheckoutComponent implements OnInit, OnDestroy {
     if (this.addressForm.valid) {
       const addressData = this.addressForm.value;
 
-      this.http.post('/api/addresses', addressData)
+      this.addressesApi.createAddress(addressData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response: any) => {
@@ -544,7 +546,7 @@ export class MobileCheckoutComponent implements OnInit, OnDestroy {
       discount: this.orderSummary.discount
     };
 
-    this.http.post('/api/orders', orderPayload)
+    this.ordersApi.createOrder(orderPayload)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

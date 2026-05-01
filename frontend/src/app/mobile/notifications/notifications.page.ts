@@ -6,10 +6,10 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { NotificationsApi } from 'src/app/core/api/notifications.api';
 
 interface Notification {
   id: string;
@@ -261,7 +261,7 @@ export class NotificationsPageComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private notificationsApi: NotificationsApi,
     private router: Router
   ) {}
 
@@ -275,7 +275,7 @@ export class NotificationsPageComponent implements OnInit, OnDestroy {
   }
 
   loadNotifications() {
-    this.http.get(`/api/notifications?page=${this.pageNum}&limit=20`)
+    this.notificationsApi.list(this.pageNum, 20)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -292,7 +292,7 @@ export class NotificationsPageComponent implements OnInit, OnDestroy {
 
   loadMore(event: any) {
     this.pageNum++;
-    this.http.get(`/api/notifications?page=${this.pageNum}&limit=20`)
+    this.notificationsApi.list(this.pageNum, 20)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -335,7 +335,7 @@ export class NotificationsPageComponent implements OnInit, OnDestroy {
     if (!notification.read) {
       notification.read = true;
 
-      this.http.patch(`/api/notifications/${notification.id}`, { read: true })
+      this.notificationsApi.markRead(notification.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           error: (error) => console.error('Failed to mark notification as read:', error)
@@ -354,7 +354,7 @@ export class NotificationsPageComponent implements OnInit, OnDestroy {
   }
 
   markAllAsRead() {
-    this.http.patch('/api/notifications/mark-all-read', {})
+    this.notificationsApi.markAllRead()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

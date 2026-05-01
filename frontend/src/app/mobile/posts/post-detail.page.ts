@@ -8,11 +8,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PostProductLinkingService } from '../../core/services/post-product-linking.service';
 import { UnifiedNavigationService } from '../../core/services/unified-navigation.service';
+import { PostsApi } from 'src/app/core/api/posts.api';
 
 @Component({
   selector: 'app-post-detail',
@@ -433,7 +433,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
+    private postsApi: PostsApi,
     private toastController: ToastController,
     private postProductLinkingService: PostProductLinkingService,
     private navigationService: UnifiedNavigationService
@@ -457,7 +457,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
   }
 
   loadPost() {
-    this.http.get(`/api/posts/${this.postId}`)
+    this.postsApi.getPost(this.postId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -473,7 +473,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
   }
 
   loadComments() {
-    this.http.get(`/api/posts/${this.postId}/comments`)
+    this.postsApi.getComments(this.postId as string)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -486,7 +486,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
   toggleLike() {
     if (!this.post) return;
 
-    this.http.post(`/api/post-likes/${this.post.id}`, {})
+    this.postsApi.likePost(this.post.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -506,7 +506,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.post(`/api/posts/${postId}/save`, {})
+    this.postsApi.savePost(postId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
@@ -521,9 +521,7 @@ export class PostDetailPageComponent implements OnInit, OnDestroy {
 
     this.isPostingComment = true;
 
-    this.http.post(`/api/posts/${this.postId}/comments`, {
-      text: this.newCommentText
-    })
+    this.postsApi.addComment(this.postId, { text: this.newCommentText })
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

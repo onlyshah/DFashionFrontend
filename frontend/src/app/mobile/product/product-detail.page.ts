@@ -8,12 +8,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { WishlistService } from '../../core/services/wishlist.service';
+import { ProductsApi } from 'src/app/core/api/products.api';
 
 interface Product {
   id: string;
@@ -1049,7 +1049,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient,
+    private productsApi: ProductsApi,
     public cartService: CartService,
     private authService: AuthService,
     private wishlistService: WishlistService,
@@ -1071,7 +1071,7 @@ export class ProductDetailPageComponent implements OnInit, OnDestroy {
   }
 
   loadProduct(productId: string) {
-    this.http.get(`/api/products/${productId}`)
+    this.productsApi.getProduct(productId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

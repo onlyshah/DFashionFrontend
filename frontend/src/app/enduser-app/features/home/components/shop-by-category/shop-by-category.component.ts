@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { IonicModule } from '@ionic/angular';
 import { CarouselModule } from 'ngx-owl-carousel-o';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
 import { CategoryService, Category, Subcategory } from '../../../../../core/services/category.service';
 
@@ -35,7 +34,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   imageUrl = environment.apiUrl
   // No static fallback. All category images and data must come from backend.
 
-  constructor(private router: Router, private http: HttpClient, private categoryService: CategoryService) {}
+  constructor(private router: Router, private categoryService: CategoryService) {}
 
   ngOnInit() {
   this.loadCategories();

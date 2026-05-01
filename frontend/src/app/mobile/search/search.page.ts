@@ -7,10 +7,10 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, CUSTOM_ELEMENTS_
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { SearchApi } from 'src/app/core/api/search.api';
 
 @Component({
   selector: 'app-search-page',
@@ -333,7 +333,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   private searchControl = new FormControl('');
 
   constructor(
-    private http: HttpClient,
+    private searchApi: SearchApi,
     private router: Router,
     private modalController: ModalController
   ) {}
@@ -369,7 +369,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   }
 
   loadSuggestions() {
-    this.http.get('/api/users/suggested?limit=5')
+    this.searchApi.getSuggestedUsers(5)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -378,7 +378,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
         error: (error) => console.error('Failed to load suggestions:', error)
       });
 
-    this.http.get('/api/products/trending?limit=10')
+    this.searchApi.getTrendingProducts(10)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -391,7 +391,7 @@ export class SearchPageComponent implements OnInit, OnDestroy {
   performSearch(query: string) {
     this.isLoading = true;
 
-    this.http.get(`/api/search?q=${query}`)
+    this.searchApi.search(query)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

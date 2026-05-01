@@ -8,9 +8,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IonicModule, ToastController, ActionSheetController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ReviewsApi } from 'src/app/core/api/reviews.api';
 
 interface ReviewImage {
   id: string;
@@ -657,7 +657,7 @@ export class WriteReviewPageComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpClient,
+    private reviewsApi: ReviewsApi,
     private toastController: ToastController,
     private formBuilder: FormBuilder
   ) {
@@ -682,7 +682,7 @@ export class WriteReviewPageComponent implements OnInit, OnDestroy {
   }
 
   loadProduct(productId: string) {
-    this.http.get(`/api/products/${productId}`)
+    this.reviewsApi.getProduct(productId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -765,7 +765,7 @@ export class WriteReviewPageComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.http.post('/api/reviews', formData)
+    this.reviewsApi.createReview(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ContentCreationApi } from 'src/app/core/api/content-creation.api';
 
 @Component({
   selector: 'app-create-story',
@@ -423,7 +423,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private http: HttpClient,
+    private contentCreationApi: ContentCreationApi,
     private toastController: ToastController,
     private modalController: ModalController
   ) {}
@@ -476,7 +476,7 @@ export class CreateStoryComponent implements OnInit, OnDestroy {
     formData.append('location', this.storyLocation);
     formData.append('shareToFeed', this.shareToFeed.toString());
 
-    this.http.post('/api/stories', formData)
+    this.contentCreationApi.createStory(formData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

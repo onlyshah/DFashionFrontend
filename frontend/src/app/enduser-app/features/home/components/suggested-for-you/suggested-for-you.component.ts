@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../../environments/environment';
 import { ImageFallbackDirective } from '../../../../../shared/directives/image-fallback.directive';
+import { HomeApi } from 'src/app/core/api/home.api';
 
 interface SuggestedUser {
   id: string;
@@ -56,7 +56,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   imageUrl = environment.apiUrl
   constructor(
     private router: Router,
-    private http: HttpClient
+    private homeApi: HomeApi
   ) {}
 
   ngOnInit() {
@@ -75,7 +75,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
     this.error = null;
 
     // Load from API
-    this.http.get<any>(`${this.apiUrl}/api/users/suggested`).subscribe({
+    this.homeApi.getSuggestedUsers().subscribe({
       next: (response) => {
         if (response?.success && response?.data) {
           this.suggestedUsers = response.data;

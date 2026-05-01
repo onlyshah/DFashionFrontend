@@ -6,9 +6,9 @@
 import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { FollowsApi } from 'src/app/core/api/follows.api';
 
 @Component({
   selector: 'app-follower-stats',
@@ -88,7 +88,7 @@ export class FollowerStatsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private http: HttpClient,
+    private followsApi: FollowsApi,
     private modalController: ModalController
   ) {}
 
@@ -107,7 +107,7 @@ export class FollowerStatsComponent implements OnInit, OnDestroy {
   loadStats() {
     if (!this.userId) return;
 
-    this.http.get(`/api/follows/${this.userId}/stats`)
+    this.followsApi.getStats(this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {

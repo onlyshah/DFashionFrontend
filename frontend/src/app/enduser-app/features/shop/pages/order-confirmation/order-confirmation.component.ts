@@ -6,10 +6,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { ShopApi } from 'src/app/core/api/shop.api';
 
 @Component({
   selector: 'app-order-confirmation-page',
@@ -562,7 +562,7 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private shopApi: ShopApi
   ) {}
 
   ngOnInit() {
@@ -583,7 +583,7 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.http.get(`${environment.apiUrl}/api/orders/${orderId}`)
+    this.shopApi.getOrder(orderId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -613,9 +613,7 @@ export class OrderConfirmationPageComponent implements OnInit, OnDestroy {
 
   downloadInvoice() {
     if (this.order) {
-      this.http.get(`${environment.apiUrl}/api/orders/${this.order._id}/invoice`, {
-        responseType: 'blob'
-      }).subscribe({
+      this.shopApi.downloadOrderInvoice(this.order._id).subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');

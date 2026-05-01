@@ -7,10 +7,10 @@ import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ToastController, ActionSheetController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { VendorApi } from 'src/app/core/api/vendor.api';
 
 interface Vendor {
   id: string;
@@ -656,7 +656,7 @@ export class VendorProfilePageComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private http: HttpClient,
+    private vendorApi: VendorApi,
     private toastController: ToastController,
     private actionSheet: ActionSheetController
   ) {}
@@ -675,7 +675,7 @@ export class VendorProfilePageComponent implements OnInit, OnDestroy {
   }
 
   loadVendorProfile(vendorId: string) {
-    this.http.get(`/api/vendors/${vendorId}`)
+    this.vendorApi.getVendor(vendorId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -693,7 +693,7 @@ export class VendorProfilePageComponent implements OnInit, OnDestroy {
   }
 
   loadVendorProducts(vendorId: string) {
-    this.http.get(`/api/vendors/${vendorId}/products?limit=6`)
+    this.vendorApi.getVendorProducts(vendorId, 6)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -704,7 +704,7 @@ export class VendorProfilePageComponent implements OnInit, OnDestroy {
   }
 
   loadVendorReviews(vendorId: string) {
-    this.http.get(`/api/vendors/${vendorId}/reviews?limit=5`)
+    this.vendorApi.getVendorReviews(vendorId, 5)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: any) => {
@@ -747,7 +747,7 @@ export class VendorProfilePageComponent implements OnInit, OnDestroy {
     if (!this.vendor) return;
 
     const endpoint = this.vendor.isFollowing ? 'unfollow' : 'follow';
-    this.http.post(`/api/vendors/${this.vendor.id}/${endpoint}`, {})
+    this.vendorApi.vendorAction(this.vendor.id, endpoint)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {

@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { IonicModule } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
-import { environment } from '../../../environments/environment';
+import { ReelsApi } from 'src/app/core/api/reels.api';
 
 @Component({
   selector: 'app-reels',
@@ -17,7 +16,7 @@ import { environment } from '../../../environments/environment';
 export class ReelsPage implements OnInit, OnDestroy {
   constructor(
     private router: Router,
-    private http: HttpClient
+    private reelsApi: ReelsApi
   ) {
     register();
   }
@@ -66,7 +65,7 @@ export class ReelsPage implements OnInit, OnDestroy {
       console.log('📱 Reels: Loading reels...');
       this.isLoading = true;
 
-      const response = await this.http.get(`${environment.apiUrl}/api/reels`).toPromise() as any;
+      const response = await this.reelsApi.listReels().toPromise() as any;
       
       if (response.success) {
         this.reels = response.data.reels;

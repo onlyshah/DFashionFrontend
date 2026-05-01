@@ -5,9 +5,9 @@ import { Router } from '@angular/router';
 import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
 import { PostService } from '../../../../../core/services/post.service';
 import { StoryService } from '../../../../../core/services/story.service';
+import { HomeApi } from 'src/app/core/api/home.api';
 
 @Component({
   selector: 'app-feed',
@@ -103,12 +103,11 @@ export class FeedComponent implements OnInit {
       console.warn('Cannot share post: no ID found', post);
       return;
     }
-    const url = `${environment.apiUrl}/api/posts/${postId}/share`;
-    this.http.post(url, {}).subscribe({
+    this.postService.sharePost(postId).subscribe({
       next: () => {
         post.shares = (post.shares || 0) + 1;
       },
-      error: (err) => console.error('Share failed:', err)
+      error: (err: any) => console.error('Share failed:', err)
     });
   }
 
@@ -168,13 +167,12 @@ export class FeedComponent implements OnInit {
       console.warn('Cannot save post: no ID found', post);
       return;
     }
-    const url = `${environment.apiUrl}/api/posts/${postId}/save`;
-    this.http.post(url, {}).subscribe({
+    this.postService.savePost(postId).subscribe({
       next: () => {
         post.isSaved = !post.isSaved;
         post.saves = post.isSaved ? post.saves + 1 : post.saves - 1;
       },
-      error: (err) => console.error('Save failed:', err)
+      error: (err: any) => console.error('Save failed:', err)
     });
   }
 
@@ -281,12 +279,11 @@ export class FeedComponent implements OnInit {
       console.warn('Cannot toggle notification: no post ID found', post);
       return;
     }
-    const url = `${environment.apiUrl}/api/posts/${postId}/notification`;
-    this.http.post(url, {}).subscribe({
+    this.homeApi.togglePostNotification(postId).subscribe({
       next: () => {
         post.isNotified = !post.isNotified;
       },
-      error: (err) => console.error('Notification toggle failed:', err)
+      error: (err: any) => console.error('Notification toggle failed:', err)
     });
   }
 
@@ -299,9 +296,9 @@ export class FeedComponent implements OnInit {
     private router: Router,
     private cartService: CartService,
     private wishlistService: WishlistService,
-    private http: HttpClient,
     private postService: PostService,
-    private storyService: StoryService
+    private storyService: StoryService,
+    private homeApi: HomeApi
   ) {}
 
 
@@ -315,7 +312,7 @@ export class FeedComponent implements OnInit {
 
   loadStories() {
     this.storiesLoading = true;
-    this.http.get<any>(`${environment.apiUrl}/api/stories/preview`).subscribe({
+    this.homeApi.getStoryPreview().subscribe({
       next: (res: any) => {
         this.stories = Array.isArray(res?.stories) ? res.stories : [];
         this.storiesLoading = false;
