@@ -14,32 +14,10 @@
         </a>
       </div>
 
-      <!-- Global Search Bar -->
-      <div class="search-bar">
+      <!-- Search Icon Button -->
+      <button class="search-icon-btn" type="button" aria-label="Toggle search" (click)="toggleExpandedSearch()">
         <i class="fas fa-search"></i>
-        <input
-          id="globalSearch"
-          name="globalSearch"
-          type="text"
-          placeholder="Search products, brands, categories..."
-          [(ngModel)]="searchQuery"
-          (keyup.enter)="onSearch()"
-          (input)="onSearchInput()"
-          (focus)="onSearchFocus()"
-          (blur)="onSearchBlur()"
-        >
-        <!-- Search Suggestions Dropdown -->
-        <div class="search-suggestions" *ngIf="showSuggestions && searchSuggestions.length > 0">
-          <div
-            *ngFor="let suggestion of searchSuggestions"
-            class="suggestion-item"
-            (click)="selectSuggestion(suggestion)">
-            <i class="fas" [ngClass]="getSuggestionIcon(suggestion.type)"></i>
-            <span class="suggestion-text">{{ suggestion.text }}</span>
-            <span class="suggestion-type">{{ suggestion.type }}</span>
-          </div>
-        </div>
-      </div>
+      </button>
 
       <!-- Navigation -->
       <nav class="nav-menu">
@@ -77,7 +55,7 @@
           </div> -->
         </a>
 
-        <!-- Total Count Display (Cart + Wishlist Combined) -->
+        <!-- Total Items Purchased Display -->
         <div class="total-count-item" *ngIf="currentUser">
           <i class="fas fa-shopping-bag"></i>
           <span>Total</span>
@@ -137,6 +115,43 @@
           <i class="fas fa-sign-out-alt"></i>
           Logout
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expanded Full-Width Search Section -->
+  <div class="expanded-search-section" *ngIf="showExpandedSearch">
+    <div class="expanded-search-container">
+      <button class="close-btn" type="button" aria-label="Close search" (click)="closeExpandedSearch()">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="search-bar-expanded">
+        <i class="fas fa-search"></i>
+        <input
+          id="expandedSearchInput"
+          name="expandedSearch"
+          type="text"
+          placeholder="Search products, brands, categories, creators..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          (input)="onSearchInput()"
+          (focus)="onSearchFocus()"
+          (blur)="onSearchBlur()"
+        >
+        <button class="search-submit-btn" type="button" (click)="onSearch()" *ngIf="searchQuery.trim()">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+      <!-- Search Suggestions Dropdown in Expanded View -->
+      <div class="search-suggestions-expanded" *ngIf="showSuggestions && searchSuggestions.length > 0">
+        <div
+          *ngFor="let suggestion of searchSuggestions"
+          class="suggestion-item"
+          (click)="selectSuggestion(suggestion)">
+          <i class="fas" [ngClass]="getSuggestionIcon(suggestion.type)"></i>
+          <span class="suggestion-text">{{ suggestion.text }}</span>
+          <span class="suggestion-type">{{ suggestion.type }}</span>
+        </div>
       </div>
     </div>
   </div>

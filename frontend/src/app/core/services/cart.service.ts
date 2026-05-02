@@ -131,6 +131,11 @@ export class CartService {
     return this.http.get<any>(`${this.API_URL}/api/cart/total-count`, headers ? { headers } : {});
   }
 
+  getTotalItemsPurchased(): Observable<any> {
+    const headers = this.getAuthHeaders();
+    return this.http.get<any>(`${this.API_URL}/api/orders/stats/total-items-purchased`, headers ? { headers } : {});
+  }
+
   debugCart(): Observable<any> {
     const headers = this.getAuthHeaders();
     return this.http.get<any>(`${this.API_URL}/api/cart/debug`, headers ? { headers } : {}).pipe(
@@ -152,6 +157,8 @@ export class CartService {
     }
 
     this.loadCartFromAPI();
+    // Ensure count is refreshed when cart is loaded
+    this.refreshTotalCount();
   }
 
   refreshCartOnLogin(): void {
@@ -180,8 +187,21 @@ export class CartService {
         this.cartItemCount.next(data?.cart?.quantityTotal || 0);
         this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
         this.showCartTotalPrice.next(!!data?.showCartTotalPrice);
-        // ✅ FIX: Show only cart items, NOT cart + wishlist combined
-        this.totalItemCount.next(data?.cart?.quantityTotal || 0);
+        
+        // Fetch total items purchased by user
+        this.getTotalItemsPurchased().subscribe({
+          next: (purchaseResponse) => {
+            if (purchaseResponse?.success && purchaseResponse?.data) {
+              // ✅ FIX: totalItemCount now shows total items purchased (all orders), not cart + wishlist
+              this.totalItemCount.next(purchaseResponse.data?.totalItemsPurchased || 0);
+            }
+          },
+          error: (error) => {
+            console.warn('⚠️ Could not fetch total items purchased, using default:', error);
+            // Fallback to 0 if purchase stats endpoint fails
+            this.totalItemCount.next(0);
+          }
+        });
       },
       error: (error) => {
         console.error('Error refreshing total count:', error);
@@ -210,6 +230,20 @@ export class CartService {
 
   getCartItemByProductId(productId: string): CartItem | undefined {
     return this.cartItems.getValue().find(item => item.productId === productId);
+  }
+
+  /**
+   * Public method to update cart state - used when cart is loaded directly
+   * Ensures header and other components stay in sync
+   */
+  updateCartState(items: CartItem[], summary: CartSummary | null, totalQuantity?: number): void {
+    this.applyLocalCartState(items, summary);
+    this.syncProductState(items);
+    // If totalQuantity is provided, use it; otherwise calculate from items
+    const calculatedQuantity = totalQuantity ?? items.reduce((sum, item) => sum + (item.quantity || 0), 0);
+    if (calculatedQuantity !== this.cartItemCount.getValue()) {
+      this.cartItemCount.next(calculatedQuantity);
+    }
   }
 
   addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; itemExists?: boolean; currentQuantity?: number }> {

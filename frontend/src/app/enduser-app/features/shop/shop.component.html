@@ -1,46 +1,22 @@
 <div class="shop-container" [class.trending-only]="viewMode === 'trending'">
-  <!-- Page Header for Shop -->
-  <div class="page-header shop-header" *ngIf="viewMode === 'all'">
-    <div class="header-top">
-      <div class="header-title-section">
-        <div class="header-icon">🛒</div>
-        <div class="header-text">
-          <h1 class="page-title">Shop Products</h1>
-          <p class="page-subtitle">Find and buy products easily with filters and categories</p>
+  <!-- Consolidated Hero Banner with Title and Navigation -->
+  <div class="hero-banner" *ngIf="viewMode === 'all'">
+    <div class="hero-header">
+      <div class="hero-title-section">
+        <div class="hero-icon">🛒</div>
+        <div class="hero-text">
+          <h1>Shop Products</h1>
+          <p>Find and buy products easily with filters and categories</p>
         </div>
       </div>
-      <div class="header-hint">
-        <p>💡 <strong>Tip:</strong> Browse, filter by category, and add to cart</p>
-      </div>
-    </div>
-    <div class="header-nav-hint">
-      <span>Want inspiration? → </span>
-      <button class="link-btn" (click)="goToExplore()">
-        Discover Trends in Explore
+      <button class="hero-action-btn" (click)="goToExplore()" title="Discover Trends">
+        Discover Trends
         <i class="fas fa-arrow-right"></i>
       </button>
     </div>
-  </div>
 
-  <div class="section-header section-banner" *ngIf="viewMode !== 'all'">
-    <div>
-      <h2>
-        {{ viewMode === 'trending' ? 'Trending Products' : viewMode === 'new-arrivals' ? 'New Arrivals' : viewMode === 'brands' ? 'Featured Brands' : 'Shop by Category' }}
-      </h2>
-      <p>
-        {{ viewMode === 'trending' ? 'Only the products trending right now' : viewMode === 'new-arrivals' ? 'Fresh styles just dropped' : viewMode === 'brands' ? 'Shop from your favorite brands' : 'Find exactly what you are looking for' }}
-      </p>
-    </div>
-    <button class="view-all-btn" (click)="backToShop()">
-      <i class="fas fa-arrow-left"></i>
-      Back to Shop
-    </button>
-  </div>
-
-  <!-- Hero Banner -->
-  <div class="hero-banner" *ngIf="viewMode === 'all'">
     <div class="hero-content">
-      <h1>Discover Fashion That Defines You</h1>
+      <h2>Discover Fashion That Defines You</h2>
       <p>Explore thousands of products from top brands</p>
       <div class="hero-search">
         <input type="text" placeholder="Search for products, brands, categories..." [(ngModel)]="searchQuery">

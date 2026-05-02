@@ -58,6 +58,10 @@ export class CartComponent implements OnInit {
         this.cartSummary = response.data?.summary || null;
         this.isLoading = false;
 
+        // Sync the service state to ensure header gets updated
+        const totalQuantity = this.cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        this.cartService.updateCartState(this.cartItems, this.cartSummary, totalQuantity);
+
         // Select all items by default
         this.selectedItems = this.cartItems.map(item => item._id);
 

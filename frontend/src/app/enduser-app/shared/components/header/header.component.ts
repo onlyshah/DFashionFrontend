@@ -23,6 +23,7 @@ export class HeaderComponent implements OnInit {
   currentUser: User | null = null;
   searchQuery = '';
   showUserMenu = false;
+  showExpandedSearch = false;
   cartItemCount = 0;
   wishlistItemCount = 0;
   totalItemCount = 0;
@@ -59,10 +60,11 @@ export class HeaderComponent implements OnInit {
         // User logged out, reset total count
         console.log('🔄 User logged out, resetting total count...');
         this.totalItemCount = 0;
+        this.cartItemCount = 0;
       }
     });
 
-    // Subscribe to individual cart count
+    // Subscribe to individual cart count (SINGLE SOURCE OF TRUTH for cart badge)
     this.cartService.cartItemCount$.subscribe((count: number) => {
       this.cartItemCount = count;
       console.log('🛒 Header cart count updated:', count);
@@ -101,7 +103,7 @@ export class HeaderComponent implements OnInit {
 
     // Load cart and wishlist on init
     this.cartService.loadCart();
-this.wishlistService.getWishlist(1, 50).subscribe();
+    this.wishlistService.getWishlist(1, 50).subscribe();
 
   }
 
@@ -111,9 +113,16 @@ this.wishlistService.getWishlist(1, 50).subscribe();
     const target = event.target as HTMLElement;
     const isClickOnButton = target.closest('.user-menu-wrapper');
     const isClickOnMenu = target.closest('.dropdown-menu');
+    const isClickOnSearchIcon = target.closest('.search-icon-btn');
+    const isClickOnSearchSection = target.closest('.expanded-search-section');
     
     if (!isClickOnButton && !isClickOnMenu) {
       this.showUserMenu = false;
+    }
+
+    // Close expanded search if clicking outside of it
+    if (this.showExpandedSearch && !isClickOnSearchIcon && !isClickOnSearchSection) {
+      this.closeExpandedSearch();
     }
   }
 
@@ -125,11 +134,43 @@ this.wishlistService.getWishlist(1, 50).subscribe();
     this.showUserMenu = !this.showUserMenu;
   }
 
+  @HostListener('document:keydown.escape')
+  onEscapeKey() {
+    if (this.showExpandedSearch) {
+      this.closeExpandedSearch();
+    }
+    if (this.showUserMenu) {
+      this.showUserMenu = false;
+    }
+  }
+
   openSearch() {
     this.router.navigate(['/search']);
   }
 
-  // Get total count for display (cart + wishlist items for logged-in user)
+  toggleExpandedSearch() {
+    this.showExpandedSearch = !this.showExpandedSearch;
+    if (this.showExpandedSearch) {
+      // Focus on input when expanded
+      setTimeout(() => {
+        const input = document.getElementById('expandedSearchInput') as HTMLInputElement;
+        if (input) {
+          input.focus();
+        }
+      }, 100);
+    } else {
+      this.hideSuggestions();
+      this.searchQuery = '';
+    }
+  }
+
+  closeExpandedSearch() {
+    this.showExpandedSearch = false;
+    this.hideSuggestions();
+    this.searchQuery = '';
+  }
+
+  // Get total items purchased by user (from all orders)
   getTotalItemCount(): number {
     if (!this.currentUser) {
       return 0; // Return 0 if user is not logged in
@@ -156,8 +197,10 @@ this.wishlistService.getWishlist(1, 50).subscribe();
         queryParams: { q: this.searchQuery }
       });
       this.hideSuggestions();
+      this.closeExpandedSearch();
     } else {
       this.router.navigate(['/search']);
+      this.closeExpandedSearch();
     }
   }
 
