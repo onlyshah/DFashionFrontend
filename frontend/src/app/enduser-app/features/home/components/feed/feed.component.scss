@@ -293,14 +293,18 @@
 .imgBx {
   position: relative;
   width: 100%;
-  min-height: 600px;
+  aspect-ratio: 4/5;
   margin: 10px 0 15px;
+  overflow: hidden;
+  background: #f8f9fa;
 }
 
-.actionBtns {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.imgBx img,
+.imgBx .cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .actionBtns svg {
@@ -540,8 +544,9 @@ a {
   .imgBx {
     position: relative;
     width: 100%;
-    min-height: 400px;
+    aspect-ratio: 4/5;
     margin: 10px 0 15px;
+    overflow: hidden;
   }
 
   .searchbar {
@@ -889,4 +894,57 @@ a {
   margin: 4px 0;
   border: none;
   border-top: 1px solid #f0f0f0;
+}
+.product-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: all 0.25s ease;
+
+  .action-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+
+    i {
+      font-size: 14px;
+      color: #333;
+      transition: all 0.25s ease;
+    }
+
+    &:hover {
+      transform: scale(1.1);
+      background: #fff;
+    }
+  }
+
+  .cart-btn:hover i {
+    color: #27ae60;
+  }
+
+  .wishlist-btn:hover i {
+    color: #e63946;
+  }
+
+  .wishlist-btn.active {
+    background: rgba(230, 57, 70, 0.12);
+
+    i {
+      color: #e63946;
+    }
+  }
 }

@@ -5,6 +5,7 @@ import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ProductStateService } from './product-state.service';
 import { AuthService } from './auth.service';
+import { NotificationService } from './notification.service';
 
 export interface WishlistProduct {
   _id?: string;
@@ -85,7 +86,8 @@ export class WishlistService {
   constructor(
     private http: HttpClient,
     private productStateService: ProductStateService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) {
     this.initializeWishlist();
   }
@@ -111,14 +113,17 @@ export class WishlistService {
 
   addToWishlist(productId: string): Observable<WishlistMutationResponse> {
     if (!productId) {
+      console.error('[WishlistService] addToWishlist: Product ID is required');
       return throwError(() => new Error('Product ID is required'));
     }
 
     if (!this.getAuthToken()) {
+      console.error('[WishlistService] addToWishlist: No auth token');
       return throwError(() => ({ status: 401, message: 'Please login to save items' }));
     }
 
     if (this.isInWishlist(productId)) {
+      console.log('[WishlistService] addToWishlist: Product already in wishlist', productId);
       return of({
         success: true,
         message: 'Already in wishlist',
@@ -129,18 +134,25 @@ export class WishlistService {
     const previousItems = this.wishlistItemsSubject.getValue();
     this.optimisticallyAdd(productId);
 
+    const payload = { productId };
+    console.log('[WishlistService] addToWishlist: Sending payload', payload, 'to', `${this.API_URL}/api/wishlist/add`);
+
     return this.http.post<WishlistMutationResponse>(
       `${this.API_URL}/api/wishlist/add`,
-      {
-        user_id: (this.authService.currentUserValue as any)?.id || (this.authService.currentUserValue as any)?._id,
-        product_id: productId,
-        productId
-      },
+      payload,
       this.getRequestOptions()
     ).pipe(
+      tap((response) => {
+        console.log('[WishlistService] addToWishlist: Success response', response);
+        this.notificationService.success('Added to Wishlist', 'Item saved to your wishlist');
+      }),
       switchMap((response) => this.reloadWishlistState().pipe(map(() => response))),
       catchError((error) => {
+        console.error('[WishlistService] addToWishlist: Error', error?.status, error?.error?.message || error?.message);
+        
         if (error?.status === 409) {
+          console.log('[WishlistService] addToWishlist: Item already exists (409)');
+          this.notificationService.info('Already Saved', 'This item is already in your wishlist');
           return this.reloadWishlistState().pipe(map(() => ({
             success: true,
             message: error?.error?.message || 'Already in wishlist',
@@ -149,7 +161,10 @@ export class WishlistService {
           })));
         }
 
+        // Rollback optimistic update on error
         this.applyWishlistState(previousItems);
+        console.error('[WishlistService] addToWishlist: Rolled back optimistic update');
+        this.notificationService.error('Error', 'Failed to add item to wishlist');
         return throwError(() => error);
       })
     );
@@ -157,14 +172,17 @@ export class WishlistService {
 
   removeFromWishlist(productId: string): Observable<WishlistMutationResponse> {
     if (!productId) {
+      console.error('[WishlistService] removeFromWishlist: Product ID is required');
       return throwError(() => new Error('Product ID is required'));
     }
 
     if (!this.getAuthToken()) {
-      return throwError(() => ({ status: 401, message: 'Please login to save items' }));
+      console.error('[WishlistService] removeFromWishlist: No auth token');
+      return throwError(() => ({ status: 401, message: 'Please login to manage wishlist' }));
     }
 
     if (!this.isInWishlist(productId)) {
+      console.log('[WishlistService] removeFromWishlist: Product not in wishlist', productId);
       return of({
         success: true,
         message: 'Removed from wishlist'
@@ -174,20 +192,28 @@ export class WishlistService {
     const previousItems = this.wishlistItemsSubject.getValue();
     this.optimisticallyRemove(productId);
 
+    const payload = { productId };
+    console.log('[WishlistService] removeFromWishlist: Sending payload', payload, 'to', `${this.API_URL}/api/wishlist/remove`);
+
     return this.http.delete<WishlistMutationResponse>(
       `${this.API_URL}/api/wishlist/remove`,
       {
         ...this.getRequestOptions(),
-        body: {
-          user_id: (this.authService.currentUserValue as any)?.id || (this.authService.currentUserValue as any)?._id,
-          product_id: productId,
-          productId
-        }
+        body: payload
       }
     ).pipe(
+      tap((response) => {
+        console.log('[WishlistService] removeFromWishlist: Success response', response);
+        this.notificationService.success('Removed from Wishlist', 'Item removed from your wishlist');
+      }),
       switchMap((response) => this.reloadWishlistState().pipe(map(() => response))),
       catchError((error) => {
+        console.error('[WishlistService] removeFromWishlist: Error', error?.status, error?.error?.message || error?.message);
+        
+        // Rollback optimistic update on error
         this.applyWishlistState(previousItems);
+        console.error('[WishlistService] removeFromWishlist: Rolled back optimistic update');
+        this.notificationService.error('Error', 'Failed to remove item from wishlist');
         return throwError(() => error);
       })
     );

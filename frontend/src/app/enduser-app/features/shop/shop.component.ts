@@ -148,16 +148,22 @@ export class ShopComponent implements OnInit {
     });
   }
 
-  search() {
+ 
+    onSearch() {
     if (this.searchQuery.trim()) {
+      // Navigate to search results
+      console.log('Searching for:', this.searchQuery);
       this.router.navigate(['/search'], { queryParams: { q: this.searchQuery } });
+
+      // TODO: Implement search navigation
     }
   }
+
 
   // Add any additional product/cart/wishlist logic from both components here as needed
 
   navigateToCategory(categoryId: string) {
-    this.router.navigate(['/category', categoryId]);
+    this.router.navigate(['/shop/category', categoryId]);
   }
 
   navigateToBrand(brandId: string) {

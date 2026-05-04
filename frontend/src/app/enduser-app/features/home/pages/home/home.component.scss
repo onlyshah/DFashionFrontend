@@ -50,7 +50,11 @@
   .stories-section-container {
     background: var(--bg-white);
     border-bottom: 1px solid var(--border-color);
-    padding: 8px 0;
+    padding: 10px 0;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 10px;
+    margin-top: 10px;
     width: 100%;
     max-width: 100%;
     overflow-x: hidden;
@@ -213,7 +217,8 @@
   transition: background 0.2s ease;
 
   &:hover {
-}
+    filter: brightness(0.9);
+  }
 }
 // Empty states
 .empty-state {

@@ -58,9 +58,9 @@ export class CartComponent implements OnInit {
         this.cartSummary = response.data?.summary || null;
         this.isLoading = false;
 
-        // Sync the service state to ensure header gets updated
-        const totalQuantity = this.cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
-        this.cartService.updateCartState(this.cartItems, this.cartSummary, totalQuantity);
+        // Sync the service state to ensure header gets updated with correct item count
+        // ✅ IMPORTANT: updateCartState now uses items.length for badge, not total quantity
+        this.cartService.updateCartState(this.cartItems, this.cartSummary);
 
         // Select all items by default
         this.selectedItems = this.cartItems.map(item => item._id);

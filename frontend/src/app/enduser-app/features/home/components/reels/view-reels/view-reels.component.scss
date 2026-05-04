@@ -1,0 +1,529 @@
+.reel-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .viewer-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    cursor: pointer;
+  }
+
+  .viewer-shell {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    z-index: 10001;
+  }
+
+  .viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+    .viewer-brand {
+      .brand-text {
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+
+    .close-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+    }
+  }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+
+    ion-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  .viewer-card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .viewer-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .nav-ghost {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 100;
+
+      ion-icon {
+        font-size: 24px;
+      }
+
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-50%) scale(1.05);
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      &.prev {
+        left: 16px;
+      }
+
+      &.next {
+        right: 16px;
+      }
+    }
+
+    .reel-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      cursor: pointer;
+
+      .reel-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.2);
+        z-index: 10;
+
+        .progress-fill {
+          display: block;
+          height: 100%;
+          background: #fff;
+          transition: width 0.1s linear;
+        }
+      }
+
+      .reel-media {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        video,
+        img {
+          max-width: 100%;
+          max-height: 100%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+        }
+      }
+
+      .reel-info-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 16px;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        z-index: 5;
+
+        .creator-info {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 12px;
+          align-items: flex-start;
+
+          .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+
+          .username {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+          }
+
+          .timestamp {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+          }
+        }
+
+        .reel-description {
+          font-size: 14px;
+          color: #fff;
+          line-height: 1.4;
+        }
+      }
+
+      .play-pause-overlay {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        background: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        z-index: 8;
+
+        ion-icon {
+          font-size: 32px;
+          margin-left: 4px;
+        }
+      }
+    }
+
+    .viewer-sides {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      z-index: 1;
+
+      .tap-zone {
+        flex: 1;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+  }
+
+  .reel-actions {
+    position: absolute;
+    right: 16px;
+    bottom: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 100;
+
+    .action-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 11px;
+
+      ion-icon {
+        font-size: 24px;
+        margin-bottom: 2px;
+      }
+
+      .count {
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        transform: scale(1.1);
+      }
+
+      &.active {
+        background: rgba(255, 0, 0, 0.3);
+        
+        ion-icon {
+          color: #ff0000;
+        }
+      }
+    }
+  }
+
+  .viewer-controls {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    z-index: 100;
+
+    .control-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+
+      ion-icon {
+        font-size: 20px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .reel-viewer {
+    .viewer-header {
+      padding: 8px 12px;
+
+      .close-btn {
+        width: 28px;
+        height: 28px;
+
+        ion-icon {
+          font-size: 18px;
+        }
+      }
+    }
+
+    .viewer-body {
+      .nav-ghost {
+        width: 40px;
+        height: 40px;
+
+        ion-icon {
+          font-size: 20px;
+        }
+
+        &.prev {
+          left: 8px;
+        }
+
+        &.next {
+          right: 8px;
+        }
+      }
+
+      .viewer-sides {
+        .tap-zone {
+          &:active {
+            background: rgba(255, 255, 255, 0.1);
+          }
+        }
+      }
+    }
+
+    .reel-actions {
+      right: 12px;
+      bottom: 80px;
+      gap: 12px;
+
+      .action-btn {
+        width: 44px;
+        height: 44px;
+
+        ion-icon {
+          font-size: 20px;
+          margin-bottom: 1px;
+        }
+
+        .count {
+          font-size: 10px;
+        }
+      }
+    }
+
+    .viewer-controls {
+      bottom: 12px;
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+
+        ion-icon {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .reel-viewer {
+    .viewer-header {
+      padding: 6px 10px;
+    }
+
+    .viewer-body {
+      .nav-ghost {
+        width: 36px;
+        height: 36px;
+
+        ion-icon {
+          font-size: 18px;
+        }
+
+        &.prev {
+          left: 4px;
+        }
+
+        &.next {
+          right: 4px;
+        }
+      }
+
+      .reel-info-overlay {
+        padding: 12px;
+
+        .creator-info {
+          gap: 8px;
+          margin-bottom: 8px;
+
+          .avatar {
+            width: 32px;
+            height: 32px;
+          }
+
+          .username {
+            font-size: 12px;
+          }
+
+          .timestamp {
+            font-size: 11px;
+          }
+        }
+
+        .reel-description {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .reel-actions {
+      right: 8px;
+      bottom: 70px;
+      gap: 10px;
+
+      .action-btn {
+        width: 40px;
+        height: 40px;
+
+        ion-icon {
+          font-size: 18px;
+        }
+
+        .count {
+          font-size: 9px;
+        }
+      }
+    }
+
+    .viewer-controls {
+      bottom: 10px;
+
+      .control-btn {
+        width: 36px;
+        height: 36px;
+
+        ion-icon {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}

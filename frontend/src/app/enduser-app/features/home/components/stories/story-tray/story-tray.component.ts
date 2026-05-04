@@ -71,6 +71,7 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onStoryClick(story: any, index: number, isOwn = false): void {
+    console.log('🔵 Story clicked:', story?.user?.username, 'Index:', index);
     const storyId = story?._id || story?.id;
     if (storyId) {
       this.markStoryViewed(storyId);
@@ -81,7 +82,9 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
       });
     }
     this.viewerIndex = index;
+    console.log('✅ Setting viewerVisible to true');
     this.viewerVisible = true;
+    console.log('✅ viewerVisible is now:', this.viewerVisible);
   }
 
   scrollLeft(): void {
@@ -109,21 +112,20 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isDragging = true;
     this.dragStartX = event.clientX;
     this.scrollStartX = this.storiesContainer.nativeElement.scrollLeft;
-    this.storiesContainer.nativeElement.setPointerCapture(event.pointerId);
+    // Don't capture pointer - let clicks through to child elements
   }
 
   onDrag(event: PointerEvent): void {
     if (!this.isDragging || !this.storiesContainer) return;
     const delta = this.dragStartX - event.clientX;
-    // Only scroll if moved more than 5px (to distinguish from clicks)
-    if (Math.abs(delta) > 5) {
+    // Only scroll if moved more than 8px (to distinguish from clicks)
+    if (Math.abs(delta) > 8) {
       this.storiesContainer.nativeElement.scrollLeft = this.scrollStartX + delta;
       this.updateScrollButtons();
     }
   }
 
   endDrag(): void {
-    console.log('Drag ended');
     this.isDragging = false;
   }
 

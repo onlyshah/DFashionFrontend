@@ -38,10 +38,10 @@
         <span class="icon fas fa-compass"></span>
         <span class="label" *ngIf="sidebarExpanded">Explore</span>
       </a>
-      <a routerLink="/reels" class="nav-item" (click)="closeSidebar()" title="Reels">
+      <button class="nav-item" (click)="openReelsViewer()" title="Reels">
         <span class="icon fas fa-video"></span>
         <span class="label" *ngIf="sidebarExpanded">Reels</span>
-      </a>
+      </button>
       <a routerLink="/messages" class="nav-item" (click)="closeSidebar()" title="Messages">
         <span class="icon fas fa-envelope"></span>
         <span class="label" *ngIf="sidebarExpanded">Messages</span>
@@ -100,3 +100,12 @@
 
 <!-- Notifications -->
 <app-notification></app-notification>
+
+<!-- Reels Viewer Modal -->
+<app-view-reels
+  [visible]="reelsViewerVisible"
+  [reels]="reelsViewerData"
+  [currentIndex]="reelsViewerIndex"
+  (close)="closeReelsViewer()"
+  (changeIndex)="changeReelsViewerIndex($event)">
+</app-view-reels>

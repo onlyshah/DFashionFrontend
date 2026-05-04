@@ -5,13 +5,15 @@ import { SharedModule } from './shared/shared.module';
 import { AuthService } from './core/services/auth.service';
 import { MobileOptimizationService } from './core/services/mobile-optimization.service';
 import { LayoutService } from './core/services/layout.service';
+import { ReelsApi } from './core/api/reels.api';
 import { Subscription, filter } from 'rxjs';
 import { MobileLayoutComponent } from './enduser-app/shared/components/mobile-layout/mobile-layout.component';
+import { ViewReelsComponent } from './enduser-app/features/home/components/reels/view-reels/view-reels.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, SharedModule, MobileLayoutComponent],
+  imports: [CommonModule, RouterModule, SharedModule, MobileLayoutComponent, ViewReelsComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
@@ -24,6 +26,10 @@ export class AppComponent implements OnInit, OnDestroy {
   notificationCount = 7;
   moreMenuOpen = false;
   createMenuOpen = false;
+  reelsViewerVisible = false;
+  reelsViewerIndex = 0;
+  reelsViewerData: any[] = [];
+  isLoadingReels = false;
   isLoggedIn = false;
   isAuthRoute = false;
   private subscription = new Subscription();
@@ -32,7 +38,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private mobileOptimizationService: MobileOptimizationService,
-    private layoutService: LayoutService
+    private layoutService: LayoutService,
+    private reelsApi: ReelsApi
   ) {}
 
   toggleSidebar(): void {
@@ -54,6 +61,35 @@ export class AppComponent implements OnInit, OnDestroy {
   openCreateModal(): void {
     this.createMenuOpen = !this.createMenuOpen;
     this.moreMenuOpen = false;
+  }
+
+  openReelsViewer(): void {
+    this.isLoadingReels = true;
+    this.reelsApi.getAllReels()
+      .subscribe({
+        next: (response: any) => {
+          this.reelsViewerData = response.data?.reels || response.data || [];
+          this.reelsViewerVisible = true;
+          this.reelsViewerIndex = 0;
+          this.isLoadingReels = false;
+          this.closeSidebar();
+        },
+        error: (error) => {
+          console.error('❌ Error loading reels:', error);
+          this.reelsViewerData = [];
+          this.reelsViewerVisible = true;
+          this.isLoadingReels = false;
+          this.closeSidebar();
+        }
+      });
+  }
+
+  closeReelsViewer(): void {
+    this.reelsViewerVisible = false;
+  }
+
+  changeReelsViewerIndex(index: number): void {
+    this.reelsViewerIndex = index;
   }
 
   switchAppearance(): void {

@@ -448,11 +448,13 @@
 
 .main-content.with-header {
   margin-top: 60px;
+  margin-left: 0;
 }
 
 @media (max-width: 768px) {
   .main-content.with-header {
     margin-top: 56px;
+    margin-left: 0;
   }
 
   .app-sidebar {

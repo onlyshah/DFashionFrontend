@@ -1,324 +1,297 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-import { ProductService } from '../../../../../core/services/product.service';
+import { AuthService } from '../../../../../core/services/auth.service';
+import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
-import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
-    selector: 'app-shop-category',
-    imports: [CommonModule],
-    styles: [`
-    .category-page {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .category-header {
-      margin-bottom: 2rem;
-      text-align: center;
-    }
-
-    .category-header h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      color: #333;
-    }
-
-    .category-header p {
-      color: #666;
-      font-size: 1.1rem;
-    }
-
-    .filters-section {
-      margin-bottom: 2rem;
-    }
-
-    .filter-chips {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    .filter-chip {
-      background: #f0f0f0;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .filter-chip:hover {
-      background: #e0e0e0;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 2rem;
-    }
-
-    .product-card {
-      border: 1px solid #eee;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .product-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    }
-
-    .product-image {
-      position: relative;
-      aspect-ratio: 1;
-      overflow: hidden;
-    }
-
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .wishlist-btn {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .wishlist-btn:hover {
-      background: white;
-      transform: scale(1.1);
-    }
-
-    .product-info {
-      padding: 1rem;
-    }
-
-    .product-info h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #333;
-    }
-
-    .brand {
-      color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .price {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .current-price {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: #e91e63;
-    }
-
-    .original-price {
-      font-size: 1rem;
-      color: #999;
-      text-decoration: line-through;
-    }
-
-    .rating {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .stars {
-      display: flex;
-      gap: 2px;
-    }
-
-    .stars i {
-      color: #ffc107;
-      font-size: 0.9rem;
-    }
-
-    .loading-container {
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #007bff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 1rem;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 4rem 2rem;
-      color: #666;
-    }
-
-    .empty-state i {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      color: #ddd;
-    }
-
-    @media (max-width: 768px) {
-      .category-page {
-        padding: 1rem;
-      }
-
-      .products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1rem;
-      }
-    }
-  `],
-    templateUrl: './category.component.html'
+  selector: 'app-shop-category',
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule],
+  templateUrl: './category.component.html',
+  styleUrls: ['./category.component.scss']
 })
-export class CategoryComponent implements OnInit {
-    categoryName = '';
-    products: any[] = [];
-    productCount = 0;
-    isLoading = true;
-    activeFilters: any[] = [];
+export class CategoryComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
-    constructor(
-        private route: ActivatedRoute,
-        private router: Router,
-        private productService: ProductService,
-        private unifiedApi: UnifiedApiService,
-        public wishlistService: WishlistService
-    ) { }
+  // Route & Category
+  categoryId: string = '';
+  category: any = null;
 
-    ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.categoryName = params['category'];
-            this.loadProducts();
-        });
-    }
+  // Products
+  products: any[] = [];
+  totalCount: number = 0;
+  isLoading: boolean = false;
 
-    loadProducts() {
-        this.isLoading = true;
+  // Filters
+  maxPrice: number = 5000;
+  selectedSizes: string[] = [];
+  selectedRating: number = 0;
+  sortBy: string = 'popularity';
+
+  // Pagination
+  currentPage: number = 1;
+  pageSize: number = 12;
+
+  // Options
+  sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  ratings = [4, 3, 2, 1];
+
+  // Cart loading
+  addingToCartProductId: string | null = null;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService,
+    private cartService: CartService,
+    public wishlistService: WishlistService
+  ) {}
+
+  ngOnInit() {
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.categoryId = params.get('id') || '';
+        this.currentPage = 1;
         
-        if (!this.categoryName) {
-            console.error('Category name is required');
-            this.isLoading = false;
-            return;
+        if (this.categoryId) {
+          this.loadCategory();
+          this.loadProducts();
         }
+      });
+  }
 
-        if (this.categoryName === 'trending') {
-            this.unifiedApi.getTrendingProducts(1, 24).subscribe({
-                next: (response) => {
-                    this.products = response?.data || response?.products || [];
-                    this.productCount = this.products.length;
-                    this.isLoading = false;
-                },
-                error: (error) => {
-                    console.error('Error loading trending products:', error);
-                    this.products = [];
-                    this.productCount = 0;
-                    this.isLoading = false;
-                }
-            });
-            return;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Load category details from API
+   */
+  loadCategory() {
+    if (!this.categoryId) return;
+
+    this.http.get<any>(`${environment.apiUrl}/api/categories/${this.categoryId}`)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Category loaded:', response);
+          // Handle: { success: true, data: {...} } format
+          this.category = response?.data || response;
+          console.log('✅ Category details:', this.category);
+        },
+        error: (err) => {
+          console.error('❌ Category load failed:', err);
+          console.log('⚠️ Continuing without category details...');
+          // Fallback - show generic header
+          this.category = { id: this.categoryId, name: 'Products' };
         }
-        
-        // Call ProductService to get products for this category
-        this.productService.getCategoryProducts(this.categoryName).subscribe({
-            next: (response: any) => {
-                console.log('Category products loaded:', response);
-                const payload = response as any;
-                this.products = payload?.data || payload?.products || [];
-                this.productCount = payload?.total || payload?.pagination?.total || this.products.length;
-                this.isLoading = false;
-            },
-            error: (error) => {
-                console.error('Error loading category products:', error);
-                this.products = [];
-                this.productCount = 0;
-                this.isLoading = false;
-            }
-        });
-    }
+      });
+  }
 
-    viewProduct(productId: string) {
-        if (!productId) {
-            return;
+  /**
+   * Load products for this category
+   */
+  loadProducts() {
+    if (!this.categoryId) return;
+    this.isLoading = true;
+
+    const params = new HttpParams()
+      .set('category_id', this.categoryId)
+      .set('sort_by', this.sortBy)
+      .set('max_price', this.maxPrice.toString())
+      .set('page', this.currentPage.toString())
+      .set('limit', this.pageSize.toString());
+
+    // Backend supports: category_id, brand_id, min_price, max_price, sort_by, sort_order, search, is_featured
+    this.http.get<any>(`${environment.apiUrl}/api/products`, { params })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          console.log('✅ Products loaded:', response);
+          
+          // Backend returns: { success: true, data: [...], pagination: { total, totalPages, page, limit } }
+          const data = response?.data || response?.rows || response;
+          const pagination = response?.pagination || {};
+          
+          if (Array.isArray(data)) {
+            this.products = data;
+            this.totalCount = pagination?.total || data.length;
+          } else {
+            this.products = [];
+            this.totalCount = 0;
+          }
+          
+          console.log(`✅ Loaded ${this.products.length} products, total: ${this.totalCount}`);
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('❌ Products load failed:', err);
+          this.products = [];
+          this.totalCount = 0;
+          this.isLoading = false;
         }
-        this.router.navigate(['/products', productId]);
+      });
+  }
+
+  /**
+   * Handle filter changes
+   */
+  onFilterChange() {
+    this.currentPage = 1;
+    this.loadProducts();
+  }
+
+  toggleSize(size: string) {
+    const idx = this.selectedSizes.indexOf(size);
+    if (idx > -1) {
+      this.selectedSizes.splice(idx, 1);
+    } else {
+      this.selectedSizes.push(size);
+    }
+    this.onFilterChange();
+  }
+
+  /**
+   * Pagination
+   */
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.loadProducts();
+      window.scrollTo(0, 0);
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalCount / this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    const pages = [];
+    for (let i = 1; i <= this.totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  /**
+   * Add product to cart
+   */
+  addToCart(product: any, event: Event) {
+    event.stopPropagation();
+
+    if (!this.authService.isAuthenticated) {
+      alert('Please login to add items to cart');
+      this.router.navigate(['/auth/login']);
+      return;
     }
 
-    toggleWishlist(productId: string, event: Event) {
-        event.stopPropagation();
-        this.wishlistService.toggleWishlist(productId).subscribe({
-            error: (error) => {
-                console.error('Toggle wishlist failed:', error);
-            }
-        });
+    const productId = product?.id || product?._id;
+    if (!productId) {
+      alert('Unable to add product to cart');
+      return;
     }
 
-    removeFilter(filter: any) {
-        this.activeFilters = this.activeFilters.filter(f => f !== filter);
-        this.loadProducts();
+    this.addingToCartProductId = productId;
+
+    this.cartService.addToCart(productId, 1)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response?.success) {
+            alert(`${product.name || 'Product'} added to cart!`);
+          } else {
+            alert('Failed to add product to cart');
+          }
+          this.addingToCartProductId = null;
+        },
+        error: (err) => {
+          console.error('❌ Error adding to cart:', err);
+          alert('Failed to add product to cart. Please try again.');
+          this.addingToCartProductId = null;
+        }
+      });
+  }
+
+  /**
+   * Toggle wishlist
+   */
+  toggleWishlist(product: any, event: Event) {
+    event.stopPropagation();
+
+    if (!this.authService.isAuthenticated) {
+      alert('Please login to use wishlist');
+      this.router.navigate(['/auth/login']);
+      return;
     }
 
-    getStars(rating: number): string[] {
-      const stars = [];
-      for (let i = 1; i <= 5; i++) {
-          if (i <= rating) {
-              stars.push('fas fa-star');
-            } else if (i - 0.5 <= rating) {
-                stars.push('fas fa-star-half-alt');
-            } else {
-                stars.push('far fa-star');
-            }
-      }
-      return stars;
-    }
+    const productId = product?.id || product?._id;
+    if (!productId) return;
 
-    getProductId(product: any): string {
-        return product?.id || product?._id || '';
-    }
+    this.wishlistService.toggleWishlist(productId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        error: (err) => {
+          console.error('Toggle wishlist failed:', err);
+        }
+      });
+  }
 
-    getProductImage(product: any): string {
-        return product?.images?.[0]?.url || '/uploads/placeholder.jpg';
-    }
+  /**
+   * Navigate to product detail
+   */
+  viewProduct(product: any) {
+    const productId = product?.id || product?._id;
+    if (!productId) return;
+    this.router.navigate(['/products', productId]);
+  }
 
-    isInWishlist(product: any): boolean {
-        const productId = this.getProductId(product);
-        return !!productId && this.wishlistService.isInWishlist(productId);
+  /**
+   * Get product image URL
+   */
+  getProductImage(product: any): string {
+    if (Array.isArray(product?.images) && product.images.length > 0) {
+      const img = product.images[0];
+      return typeof img === 'string' ? img : img?.url || '/assets/placeholder.jpg';
     }
+    return product?.image || product?.thumbnail || '/assets/placeholder.jpg';
+  }
+
+  /**
+   * Check if product is in wishlist
+   */
+  isInWishlist(product: any): boolean {
+    const productId = product?.id || product?._id;
+    return !!productId && this.wishlistService.isInWishlist(productId);
+  }
+
+  /**
+   * Check if product is being added to cart
+   */
+  isAddingToCart(product: any): boolean {
+    const productId = product?.id || product?._id;
+    return this.addingToCartProductId === productId;
+  }
+
+  /**
+   * Format currency
+   */
+  formatPrice(price: number): string {
+    return (price || 0).toLocaleString('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0
+    });
+  }
 }

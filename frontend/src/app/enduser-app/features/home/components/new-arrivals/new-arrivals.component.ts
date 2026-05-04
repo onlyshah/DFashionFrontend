@@ -75,11 +75,13 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
       (response) => {
         this.newArrivals = response?.data || response?.products || [];
         this.isLoading = false;
+        console.log('New arrivals loaded:', this.newArrivals);    
         this.updateSliderOnProductsLoad();
       },
       (error) => {
         this.error = 'Failed to load new arrivals';
         this.isLoading = false;
+        console.error('Error loading new arrivals:', error);
       }
     );
   }

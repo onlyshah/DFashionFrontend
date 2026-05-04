@@ -1,19 +1,6 @@
 <div class="shop-container" [class.trending-only]="viewMode === 'trending'">
   <!-- Consolidated Hero Banner with Title and Navigation -->
-  <div class="hero-banner" *ngIf="viewMode === 'all'">
-    <div class="hero-header">
-      <div class="hero-title-section">
-        <div class="hero-icon">🛒</div>
-        <div class="hero-text">
-          <h1>Shop Products</h1>
-          <p>Find and buy products easily with filters and categories</p>
-        </div>
-      </div>
-      <button class="hero-action-btn" (click)="goToExplore()" title="Discover Trends">
-        Discover Trends
-        <i class="fas fa-arrow-right"></i>
-      </button>
-    </div>
+  <!-- <div class="hero-banner" *ngIf="viewMode === 'all'">
 
     <div class="hero-content">
       <h2>Discover Fashion That Defines You</h2>
@@ -39,8 +26,24 @@
         <span class="stat-label">Happy Customers</span>
       </div>
     </div>
-  </div>
+  </div> -->
+  <div class="hero-section">
+   
 
+    <div class="hero-content">
+      <h2>Discover Fashion Trends</h2>
+      <p>Explore reels, get style inspiration, and shop from your favorite creators</p>
+      <div class="search-bar">
+        <input type="text" 
+               placeholder="Search for styles, brands, or trends..." 
+               [(ngModel)]="searchQuery"
+               (keyup.enter)="onSearch()">
+        <button (click)="onSearch()">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- Categories Section -->
   <section class="categories-section" *ngIf="viewMode === 'all' || viewMode === 'categories'">
     <div class="section-header">

@@ -10,7 +10,7 @@ export const shopRoutes: Routes = [
     loadComponent: () => import('./pages/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
   },
   {
-    path: 'category/:category',
+    path: 'category/:id',
     loadComponent: () => import('./pages/category/category.component').then(m => m.CategoryComponent)
   },
   {

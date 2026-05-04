@@ -33,13 +33,16 @@ const routes: Routes = [
     path: 'products',
     loadComponent: () => import('./enduser-app/features/shop/shop.component').then(m => m.ShopComponent)
   },
+  // ✅ CANONICAL: Redirect old category routes to new shop/category routes
   {
-    path: 'category/:category',
-    loadComponent: () => import('./enduser-app/features/category/category.component').then(m => m.CategoryComponent)
+    path: 'category/:id',
+    redirectTo: '/shop/category/:id',
+    pathMatch: 'full'
   },
   {
     path: 'subcategory/:id',
-    loadComponent: () => import('./enduser-app/features/shop/pages/category/category.component').then(m => m.CategoryComponent)
+    redirectTo: '/shop/category/:id',
+    pathMatch: 'full'
   },
   {
     path: 'brand/:id',
@@ -102,6 +105,26 @@ const routes: Routes = [
     path: 'settings',
     redirectTo: '/profile/settings',
     pathMatch: 'full'
+  },
+  {
+    path: 'activity',
+    loadComponent: () => import('./enduser-app/features/activity/activity.component').then(m => m.ActivityComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'saved',
+    loadComponent: () => import('./enduser-app/features/saved/saved.component').then(m => m.SavedComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'report',
+    loadComponent: () => import('./enduser-app/features/report/report.component').then(m => m.ReportComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'threads',
+    loadComponent: () => import('./enduser-app/features/threads/threads.component').then(m => m.ThreadsComponent),
+    canActivate: [AuthGuard]
   },
   {
     path: 'story',

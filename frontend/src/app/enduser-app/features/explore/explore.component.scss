@@ -233,7 +233,7 @@
 
   .featured-image {
     position: relative;
-    height: 220px;
+    aspect-ratio: 16/9;
     overflow: hidden;
 
     img {
@@ -427,7 +427,7 @@
     }
 
     .category-card {
-      height: 220px;
+      aspect-ratio: 16/9;
       border-radius: 16px;
       background-size: cover;
       background-position: center;
@@ -532,7 +532,7 @@
 
     .trend-image-wrapper {
       position: relative;
-      height: 250px;
+      aspect-ratio: 4/5;
       overflow: hidden;
 
       img {
@@ -582,8 +582,9 @@
 
     .trend-item img {
       width: 100%;
-      height: 250px;
+      aspect-ratio: 4/5;
       object-fit: cover;
+      display: block;
     }
 
     .trend-content {

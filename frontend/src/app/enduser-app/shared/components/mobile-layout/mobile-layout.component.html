@@ -222,16 +222,37 @@
       </div>
       <span>Trending</span>
     </a>
-    <!-- Trending Modal (Mobile) -->
+    <!-- Trending Menu (Mobile) -->
     <div class="trending-modal" [class.active]="isTrendingOpen" (click)="closeTrending()">
       <div class="trending-modal-content" (click)="$event.stopPropagation()">
         <div class="trending-modal-header">
-          <h3>Trending</h3>
+          <h3>Explore</h3>
           <button class="close-btn" (click)="closeTrending()">
             <i class="fas fa-times"></i>
           </button>
         </div>
-        <app-trending-products></app-trending-products>
+        <nav class="trending-menu-list">
+          <a routerLink="/shop" (click)="closeTrending()" class="trending-menu-item">
+            <i class="fas fa-th-large"></i>
+            <span>Categories</span>
+          </a>
+          <a routerLink="/trending-now" (click)="closeTrending()" class="trending-menu-item">
+            <i class="fas fa-fire"></i>
+            <span>Trending Now</span>
+          </a>
+          <a routerLink="/featured-brands" (click)="closeTrending()" class="trending-menu-item">
+            <i class="fas fa-crown"></i>
+            <span>Featured Brands</span>
+          </a>
+          <a routerLink="/new-arrivals" (click)="closeTrending()" class="trending-menu-item">
+            <i class="fas fa-star"></i>
+            <span>New Arrivals</span>
+          </a>
+          <a routerLink="/offers" (click)="closeTrending()" class="trending-menu-item">
+            <i class="fas fa-tag"></i>
+            <span>Offers</span>
+          </a>
+        </nav>
       </div>
     </div>
     <button class="nav-item create-nav" (click)="toggleCreateMenu()" [class.active]="isCreateMenuOpen">

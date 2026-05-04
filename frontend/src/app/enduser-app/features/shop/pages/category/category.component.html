@@ -1,47 +1,147 @@
 <div class="category-page">
-  <div class="category-header">
-    <h1>{{ categoryName | titlecase }}</h1>
-    <p>{{ productCount }} products found</p>
+  <!-- Breadcrumb -->
+  <div class="breadcrumb">
+    <a routerLink="/">Home</a>
+    <span>›</span>
+    <a routerLink="/shop">Shop</a>
+    <span>›</span>
+    <span>{{ category?.name || 'Products' }}</span>
   </div>
-  <div class="filters-section">
-    <div class="filter-chips">
-      <button *ngFor="let filter of activeFilters" class="filter-chip" (click)="removeFilter(filter)">
-        {{ filter.label }}
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1>{{ category?.name || 'Products' }}</h1>
+    <span class="result-count">{{ totalCount }} products</span>
   </div>
-  <div class="products-grid" *ngIf="!isLoading">
-    <div *ngFor="let product of products" class="product-card" (click)="viewProduct(getProductId(product))">
-      <div class="product-image">
-        <img [src]="getProductImage(product)" [alt]="product.name">
-        <button class="wishlist-btn" (click)="toggleWishlist(getProductId(product), $event)" [class.active]="isInWishlist(product)">
-          <i [class]="isInWishlist(product) ? 'fas fa-heart' : 'far fa-heart'"></i>
-        </button>
-      </div>
-      <div class="product-info">
-        <h3>{{ product.name }}</h3>
-        <p class="brand">{{ product.brand }}</p>
-        <div class="price">
-          <span class="current-price">₹{{ product.price | number }}</span>
-          <span class="original-price" *ngIf="product.originalPrice">₹{{ product.originalPrice | number }}</span>
+
+  <div class="layout">
+    <!-- ══════════ SIDEBAR FILTERS ══════════ -->
+    <aside class="sidebar">
+
+      <!-- Price Range -->
+      <div class="filter-section">
+        <div class="filter-title">Price range</div>
+        <input type="range" min="0" max="5000" step="100"
+               [(ngModel)]="maxPrice"
+               (change)="onFilterChange()" />
+        <div class="price-labels">
+          <span>₹0</span><span>₹{{ maxPrice }}</span>
         </div>
-        <div class="rating" *ngIf="product.rating">
-          <div class="stars">
-            <i *ngFor="let star of getStars(product.rating.average)" [class]="star"></i>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Sizes -->
+      <div class="filter-section">
+        <div class="filter-title">Size</div>
+        <div class="size-chips">
+          <span *ngFor="let size of sizes"
+                class="size-chip"
+                [class.active]="selectedSizes.includes(size)"
+                (click)="toggleSize(size)">
+            {{ size }}
+          </span>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- Rating -->
+      <div class="filter-section">
+        <div class="filter-title">Min rating</div>
+        <div class="filter-option" *ngFor="let r of ratings">
+          <input type="radio" [id]="'r'+r" name="rating"
+                 [value]="r" [(ngModel)]="selectedRating"
+                 (change)="onFilterChange()" />
+          <label [for]="'r'+r">{{ r }}★ &amp; above</label>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ══════════ MAIN CONTENT ══════════ -->
+    <main>
+
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <select [(ngModel)]="sortBy" (ngModelChange)="onFilterChange()">
+          <option value="popularity">Popularity</option>
+          <option value="price_asc">Price: low to high</option>
+          <option value="price_desc">Price: high to low</option>
+          <option value="newest">Newest first</option>
+          <option value="rating">Rating</option>
+        </select>
+      </div>
+
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoading">
+        <div class="skeleton-grid">
+          <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5,6]"></div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div class="empty-state" *ngIf="!isLoading && products.length === 0">
+        <p>No products found</p>
+        <small>Try adjusting your filters</small>
+      </div>
+
+      <!-- Product Grid -->
+      <div class="product-grid" *ngIf="!isLoading && products.length > 0">
+        <div class="product-card" *ngFor="let product of products"
+             (click)="viewProduct(product)">
+
+          <div class="product-img">
+            <img [src]="getProductImage(product)"
+                 [alt]="product.name"
+                 loading="lazy" />
+            <span class="badge sale" *ngIf="product.discount && product.discount > 0">
+              {{ product.discount }}% off
+            </span>
+            <button class="wishlist-btn"
+                    [class.active]="isInWishlist(product)"
+                    (click)="toggleWishlist(product, $event)"
+                    title="Add to wishlist">
+              {{ isInWishlist(product) ? '❤️' : '🤍' }}
+            </button>
           </div>
-          <span>({{ product.rating.count }})</span>
+
+          <div class="product-info">
+            <div class="product-brand">{{ product.brand?.name || product.brand || '' }}</div>
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-pricing">
+              <span class="price-current">₹{{ product.price | number }}</span>
+              <span class="price-original" *ngIf="product.original_price && product.original_price > product.price">
+                ₹{{ product.original_price | number }}
+              </span>
+            </div>
+            <div class="product-rating" *ngIf="product.rating">
+              <span class="rating-val">{{ product.rating }}</span>★
+              <span class="review-count">({{ product.review_count || 0 }})</span>
+            </div>
+            <button class="add-btn"
+                    [class.loading]="isAddingToCart(product)"
+                    [disabled]="isAddingToCart(product)"
+                    (click)="addToCart(product, $event)">
+              {{ isAddingToCart(product) ? 'Adding...' : 'Add to cart' }}
+            </button>
+          </div>
+
         </div>
       </div>
-    </div>
-  </div>
-  <div class="loading-container" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>Loading products...</p>
-  </div>
-  <div class="empty-state" *ngIf="!isLoading && products.length === 0">
-    <i class="fas fa-search"></i>
-    <h3>No products found</h3>
-    <p>Try adjusting your filters or search terms</p>
+
+      <!-- Pagination -->
+      <div class="pagination" *ngIf="totalPages > 1 && !isLoading">
+        <button class="page-btn" [disabled]="currentPage === 1"
+                (click)="goToPage(currentPage - 1)">‹</button>
+        <button class="page-btn"
+                *ngFor="let p of pageNumbers"
+                [class.active]="p === currentPage"
+                (click)="goToPage(p)">{{ p }}</button>
+        <button class="page-btn" [disabled]="currentPage === totalPages"
+                (click)="goToPage(currentPage + 1)">›</button>
+      </div>
+
+    </main>
   </div>
 </div>

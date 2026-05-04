@@ -773,11 +773,8 @@ export class WishlistComponent implements OnInit {
   async bulkRemoveItems() {
     if (this.selectedItems.length === 0) return;
 
-    if (!confirm(`Remove ${this.selectedItems.length} selected item(s) from your wishlist?`)) {
-      return;
-    }
-
     const itemsToRemove = [...this.selectedItems];
+    const count = itemsToRemove.length;
     this.selectedItems = [];
 
     itemsToRemove.forEach(itemId => {
@@ -786,16 +783,15 @@ export class WishlistComponent implements OnInit {
         this.removeFromWishlist(item);
       }
     });
+
+    this.showNotification(`Removed ${count} item(s) from wishlist`);
   }
 
   async bulkMoveToCart() {
     if (this.selectedItems.length === 0) return;
 
-    if (!confirm(`Move ${this.selectedItems.length} selected item(s) to cart?`)) {
-      return;
-    }
-
     const itemsToMove = [...this.selectedItems];
+    const count = itemsToMove.length;
     this.selectedItems = [];
 
     itemsToMove.forEach(itemId => {
@@ -804,6 +800,8 @@ export class WishlistComponent implements OnInit {
         this.moveToCart(item);
       }
     });
+
+    this.showNotification(`Moving ${count} item(s) to cart...`);
   }
 
   moveToCart(item: WishlistItem) {
@@ -955,7 +953,7 @@ export class WishlistComponent implements OnInit {
       return;
     }
 
-    if (confirm(`Move ${activeItems.length} items to cart?`)) {
+    if (activeItems.length > 0) {
       // Move items one by one
       activeItems.forEach(item => {
         const productId = item.product.id || item.product._id || item.productId;
@@ -974,16 +972,19 @@ export class WishlistComponent implements OnInit {
           }
         });
       });
+      this.showNotification(`Moving ${activeItems.length} item(s) to cart...`);
     }
   }
 
   clearWishlist() {
-    if (confirm('Are you sure you want to clear your entire wishlist?')) {
-      // Remove all items one by one
-      this.wishlistItems.forEach(item => {
-        this.removeFromWishlist(item);
-      });
-    }
+    if (this.wishlistItems.length === 0) return;
+
+    const count = this.wishlistItems.length;
+    // Remove all items one by one
+    this.wishlistItems.forEach(item => {
+      this.removeFromWishlist(item);
+    });
+    this.showNotification(`Clearing ${count} item(s) from wishlist...`);
   }
 
   goHome() {

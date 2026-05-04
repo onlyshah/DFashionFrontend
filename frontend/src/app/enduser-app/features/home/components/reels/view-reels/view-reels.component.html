@@ -1,0 +1,115 @@
+<section class="reel-viewer" *ngIf="visible">
+  <div class="viewer-backdrop" (click)="onClose()"></div>
+  <div class="viewer-shell" role="dialog" aria-modal="true">
+    <!-- Header -->
+    <header class="viewer-header">
+      <div class="viewer-brand">
+        <span class="brand-text">Reels</span>
+      </div>
+      <button class="close-btn" (click)="onClose()" aria-label="Close reels viewer">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </header>
+
+    <!-- Reel Viewer -->
+    <div *ngIf="reels.length > 0" class="viewer-card"
+         (mousedown)="onPointerDown($event)"
+         (mouseup)="onPointerUp($event)"
+         (touchstart)="onPointerDown($event)"
+         (touchend)="onPointerUp($event)">
+      
+      <div class="viewer-body">
+        <button class="nav-ghost prev" [disabled]="!hasPrevious" (click)="goPrevious()" aria-label="Previous reel">
+          <ion-icon name="chevron-back"></ion-icon>
+        </button>
+
+        <div class="reel-content" (click)="togglePause()">
+          <!-- Progress Bar -->
+          <div class="reel-progress">
+            <span class="progress-fill" [style.width.%]="reelProgress"></span>
+          </div>
+
+          <!-- Reel Media -->
+          <div class="reel-media">
+            <video 
+              #reelVideo
+              *ngIf="currentMediaType === 'video'"
+              [src]="currentMediaUrl"
+              [poster]="currentReel?.media?.thumbnail || '/uploads/default-reel.svg'"
+              muted
+              playsinline
+              (loadedmetadata)="onMediaLoad()"
+              (error)="onMediaError($event)"></video>
+            <img *ngIf="currentMediaType === 'image'"
+                 [src]="currentMediaUrl"
+                 (error)="onMediaError($event)"
+                 (load)="onMediaLoad()"
+                 alt="Reel media">
+          </div>
+
+          <!-- Reel Info Overlay -->
+          <div class="reel-info-overlay">
+            <div class="creator-info">
+              <div class="avatar">
+                <img [src]="getCreatorAvatar()" [alt]="getCreatorName()">
+              </div>
+              <div>
+                <div class="username">{{ getCreatorName() }}</div>
+                <div class="timestamp">{{ currentReel?.createdAt ? (currentReel.createdAt | date:'short') : 'just now' }}</div>
+              </div>
+            </div>
+
+            <div class="reel-description" *ngIf="currentReel?.description">
+              {{ currentReel.description }}
+            </div>
+          </div>
+
+          <!-- Play/Pause Overlay -->
+          <div class="play-pause-overlay" *ngIf="isPaused">
+            <ion-icon name="play" size="large"></ion-icon>
+          </div>
+        </div>
+
+        <button class="nav-ghost next" [disabled]="!hasNext" (click)="goNext()" aria-label="Next reel">
+          <ion-icon name="chevron-forward"></ion-icon>
+        </button>
+      </div>
+
+      <div class="viewer-sides">
+        <button class="tap-zone left" (click)="onTapZone('left')" aria-label="Previous reel"></button>
+        <button class="tap-zone right" (click)="onTapZone('right')" aria-label="Next reel"></button>
+      </div>
+
+      <!-- Right Side Actions -->
+      <div class="reel-actions">
+        <button class="action-btn" (click)="likeReel()" [class.active]="currentReel?.isLiked" title="Like">
+          <ion-icon [name]="currentReel?.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
+          <span class="count" *ngIf="currentReel?.analytics?.likes">{{ formatCount(currentReel.analytics.likes) }}</span>
+        </button>
+        <button class="action-btn" (click)="commentReel()" title="Comment">
+          <ion-icon name="chatbubble-outline"></ion-icon>
+          <span class="count" *ngIf="currentReel?.analytics?.comments">{{ formatCount(currentReel.analytics.comments) }}</span>
+        </button>
+        <button class="action-btn" (click)="shareReel()" title="Share">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </button>
+        <button class="action-btn" (click)="saveReel()" [class.active]="currentReel?.isSaved" title="Save">
+          <ion-icon [name]="currentReel?.isSaved ? 'bookmark' : 'bookmark-outline'"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="viewer-controls">
+        <button class="control-btn" (click)="togglePause()" [attr.aria-label]="isPaused ? 'Resume reel' : 'Pause reel'">
+          <ion-icon [name]="isPaused ? 'play' : 'pause'"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="reels.length === 0" class="empty-state">
+      <ion-icon name="videocam-outline" size="large"></ion-icon>
+      <p>No reels available</p>
+    </div>
+  </div>
+</section>

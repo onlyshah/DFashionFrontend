@@ -184,7 +184,9 @@ export class CartService {
         }
 
         const data = response.data;
-        this.cartItemCount.next(data?.cart?.quantityTotal || 0);
+        // ✅ Use itemCount (number of distinct items) NOT quantityTotal (sum of quantities)
+        // itemCount = 4, quantityTotal = 29 (4 items with mixed quantities)
+        this.cartItemCount.next(data?.cart?.itemCount || 0);
         this.cartTotalAmount.next(data?.cart?.totalAmount || 0);
         this.showCartTotalPrice.next(!!data?.showCartTotalPrice);
         
@@ -239,10 +241,11 @@ export class CartService {
   updateCartState(items: CartItem[], summary: CartSummary | null, totalQuantity?: number): void {
     this.applyLocalCartState(items, summary);
     this.syncProductState(items);
-    // If totalQuantity is provided, use it; otherwise calculate from items
-    const calculatedQuantity = totalQuantity ?? items.reduce((sum, item) => sum + (item.quantity || 0), 0);
-    if (calculatedQuantity !== this.cartItemCount.getValue()) {
-      this.cartItemCount.next(calculatedQuantity);
+    // ✅ IMPORTANT: cartItemCount should be the NUMBER OF ITEMS, not total quantity
+    // Example: 4 items with 29 total quantity should show 4 in header badge, not 29
+    const itemCount = items.length;
+    if (itemCount !== this.cartItemCount.getValue()) {
+      this.cartItemCount.next(itemCount);
     }
   }
 
@@ -386,45 +389,61 @@ export class CartService {
     }
   }
 
-  updateCartItem(itemId: string, quantity: number): Observable<{ success: boolean; message: string }> {
-    const headers = this.getAuthHeaders();
-    const currentItems = this.cartItems.getValue();
-    const previousSummary = this.cartSummary.getValue();
-    const existingItem = currentItems.find(item => item._id === itemId || item.id === itemId);
+updateCartItem(
+  cartItemId: string,  // this must be the DB cart_items.id
+  quantity: number
+): Observable<{ success: boolean; message: string }> {
+  const headers = this.getAuthHeaders();
 
-    if (!existingItem) {
-      return throwError(() => new Error('Cart item not found'));
-    }
+  // Current local cart state
+  const currentItems = this.cartItems.getValue();
+  const previousSummary = this.cartSummary.getValue();
 
-    const nextItems = quantity <= 0
-      ? currentItems.filter(item => item._id !== itemId && item.id !== itemId)
-      : currentItems.map(item => item._id === itemId || item.id === itemId ? { ...item, quantity } : item);
-
-    this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
-    this.syncProductState(nextItems);
-
-    return this.http.put<{ success: boolean; message: string }>(
-      `${this.API_URL}/api/cart/update/${itemId}`,
-      { quantity },
-      headers ? { headers } : {}
-    ).pipe(
-      switchMap((response) => this.reloadCartState().pipe(map(() => response))),
-      catchError((error) => {
-        this.applyLocalCartState(currentItems, previousSummary);
-        this.syncProductState(currentItems);
-        return throwError(() => error);
-      })
-    );
+  // Find the item by cart_items.id
+  const existingItem = currentItems.find(item => item.id === cartItemId);
+  if (!existingItem) {
+    console.error('❌ Cart item not found locally:', cartItemId);
+    return throwError(() => new Error('Cart item not found'));
   }
 
-  async updateQuantity(itemId: string, quantity: number): Promise<void> {
-    try {
-      await this.updateCartItem(itemId, quantity).toPromise();
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-      await this.showToast('Failed to update quantity', 'danger');
-    }
+  // Optimistic update: remove if quantity <= 0, else update quantity
+  const nextItems = quantity <= 0
+    ? currentItems.filter(item => item.id !== cartItemId)
+    : currentItems.map(item =>
+        item.id === cartItemId ? { ...item, quantity } : item
+      );
+
+  // Apply local state
+  this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
+  this.syncProductState(nextItems);
+
+  // Send API request
+  return this.http.put<{ success: boolean; message: string }>(
+    `${this.API_URL}/api/cart/update/${cartItemId}`,
+    { quantity },
+    headers ? { headers } : {}
+  ).pipe(
+    switchMap(response =>
+      this.reloadCartState().pipe(map(() => response))  // reload backend state
+    ),
+    catchError(error => {
+      // Revert local state on failure
+      this.applyLocalCartState(currentItems, previousSummary);
+      this.syncProductState(currentItems);
+      console.error('API failed, reverted local cart state:', error);
+      return throwError(() => error);
+    })
+  );
+}
+
+async updateQuantity(cartItemId: string, quantity: number): Promise<void> {
+  try {
+    await this.updateCartItem(cartItemId, quantity).toPromise();
+  } catch (error) {
+    console.error('Error updating quantity:', error);
+    await this.showToast('Failed to update quantity', 'danger');
   }
+}
 
   clearCartAPI(): Observable<{ success: boolean; message: string }> {
     const headers = this.getAuthHeaders();

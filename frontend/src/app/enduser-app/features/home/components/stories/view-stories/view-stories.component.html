@@ -1,110 +1,129 @@
 <section class="story-viewer" *ngIf="visible">
-  <div class="viewer-backdrop" (click)="onClose()"></div>
-  <div class="viewer-shell" role="dialog" aria-modal="true">
-    <header class="viewer-header">
-      <div class="viewer-brand">
-        <span class="brand-text">DFashion Stories</span>
-      </div>
-      <button class="close-btn" (click)="onClose()" aria-label="Close story viewer">
-        <ion-icon name="close"></ion-icon>
-      </button>
-    </header>
 
-    <div class="viewer-card"
+  <div class="viewer-backdrop" (click)="onClose()"></div>
+
+  <div class="viewer-shell" role="dialog" aria-modal="true">
+
+    <!-- Side story previews -->
+    <div class="side-preview prev-preview"
+         *ngIf="hasPrevious"
+         (click)="goPrevious()">
+      <div class="side-card">
+        <img [src]="stories[currentIndex - 1]?.user?.avatar || '/uploads/avatars/default-avatar.svg'" />
+      </div>
+    </div>
+
+    <!-- Main story card -->
+    <div class="story-card"
          (mousedown)="onPointerDown($event)"
          (mouseup)="onPointerUp($event)"
          (touchstart)="onPointerDown($event)"
          (touchend)="onPointerUp($event)">
-      <div class="viewer-top">
-        <div class="story-progress">
-          <span
-            *ngFor="let item of stories; let idx = index"
-            class="progress-segment">
-            <span class="progress-fill"
-                  [style.width.%]="idx < currentIndex ? 100 : (idx === currentIndex ? storyProgress : 0)"></span>
-          </span>
-        </div>
 
-        <div class="story-meta">
-          <div class="story-user">
-            <div class="meta-avatar">
-              <img [src]="getViewerUserAvatar()" [alt]="currentStory?.user?.username || 'Story creator'">
-            </div>
-            <div>
-              <div class="username">{{ currentStory?.user?.username || 'Unknown' }}</div>
-              <div class="timestamp">{{ currentStory?.createdAt ? (currentStory.createdAt | date:'short') : 'just now' }}</div>
-            </div>
-          </div>
-          <div class="meta-actions">
-            <button class="icon-btn" (click)="togglePause()" [attr.aria-label]="isPaused ? 'Resume story' : 'Pause story'">
-              <ion-icon [name]="isPaused ? 'play' : 'pause'"></ion-icon>
-            </button>
+      <!-- Progress bars -->
+      <div class="progress-bar-row">
+        <div class="progress-seg" *ngFor="let item of stories; let idx = index">
+          <div class="progress-fill"
+               [style.width.%]="idx < currentIndex ? 100 : (idx === currentIndex ? storyProgress : 0)">
           </div>
         </div>
       </div>
 
-      <div class="viewer-body">
-        <button class="nav-ghost prev" [disabled]="!hasPrevious" (click)="goPrevious()" aria-label="Previous story">
-          <ion-icon name="chevron-back"></ion-icon>
-        </button>
-
-        <div class="story-content" (click)="togglePause()">
-          <div class="story-media">
-            <img *ngIf="currentMediaType === 'image'"
-                 [src]="currentMediaUrl"
-                 (error)="onMediaError($event)"
-                 (load)="onMediaLoad()"
-                 alt="Story media">
-            <video *ngIf="currentMediaType === 'video'"
-                   #storyVideo
-                   [src]="currentMediaUrl"
-                   [poster]="currentStory?.media?.thumbnail || currentStory?.thumbnailUrl || '/uploads/default-story.svg'"
-                   autoplay
-                   muted
-                   playsinline
-                   loop
-                   (loadedmetadata)="onMediaLoad()"
-                   (error)="onMediaError($event)"></video>
+      <!-- Header -->
+      <div class="story-header">
+        <div class="user-info">
+          <div class="user-avatar">
+            <img [src]="getViewerUserAvatar()" [alt]="currentStory?.user?.username" />
           </div>
-          <div class="story-text">
-            <div class="story-caption">{{ currentStory?.caption || 'Tap to reply, swipe to move, or use the actions below.' }}</div>
-            <button *ngIf="currentProductId" class="product-cta" (click)="openProduct(); $event.stopPropagation()">
-              View Product
-              <ion-icon name="bag"></ion-icon>
-            </button>
+          <div class="user-meta">
+            <span class="username">{{ currentStory?.user?.username || 'Unknown' }}</span>
+            <span class="timestamp">
+              {{ currentStory?.createdAt ? (currentStory.createdAt | date:'shortTime') : 'just now' }}
+            </span>
           </div>
         </div>
-
-        <button class="nav-ghost next" [disabled]="!hasNext" (click)="goNext()" aria-label="Next story">
-          <ion-icon name="chevron-forward"></ion-icon>
-        </button>
+        <div class="header-actions">
+          <button class="icon-btn" (click)="togglePause()"
+                  [attr.aria-label]="isPaused ? 'Resume' : 'Pause'">
+            <i class="fas" [ngClass]="isPaused ? 'fa-play' : 'fa-pause'"></i>
+          </button>
+          <button class="icon-btn close-btn" (click)="onClose()" aria-label="Close">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
       </div>
 
-      <div class="viewer-sides">
-        <button class="tap-zone left" (click)="onTapZone('left')" aria-label="Previous story"></button>
-        <button class="tap-zone right" (click)="onTapZone('right')" aria-label="Next story"></button>
+      <!-- Media area -->
+      <div class="story-media" (click)="togglePause()">
+
+        <!-- Tap zones -->
+        <div class="tap-zone left" (click)="onTapZone('left'); $event.stopPropagation()"></div>
+        <div class="tap-zone right" (click)="onTapZone('right'); $event.stopPropagation()"></div>
+
+        <img *ngIf="currentMediaType === 'image'"
+             [src]="currentMediaUrl"
+             (error)="onMediaError($event)"
+             (load)="onMediaLoad()"
+             alt="Story" />
+
+        <video *ngIf="currentMediaType === 'video'"
+               #storyVideo
+               [src]="currentMediaUrl"
+               autoplay muted playsinline loop
+               (loadedmetadata)="onMediaLoad()"
+               (error)="onMediaError($event)">
+        </video>
+
+        <!-- Caption overlay -->
+        <div class="caption-overlay" *ngIf="currentStory?.caption">
+          <p class="caption">{{ currentStory.caption }}</p>
+        </div>
+
+        <!-- Product CTA -->
+        <button class="product-cta" *ngIf="currentProductId"
+                (click)="openProduct(); $event.stopPropagation()">
+          <i class="fas fa-bag-shopping"></i>
+          View Product
+        </button>
+
       </div>
 
-      <footer class="viewer-actions">
-        <button class="action-btn" (click)="likeStory()" [class.active]="currentStory?.isLiked">
-          <ion-icon [name]="currentStory?.isLiked ? 'heart' : 'heart-outline'"></ion-icon>
-        </button>
-        <button class="action-btn" (click)="commentStory()">
-          <ion-icon name="chatbubble-outline"></ion-icon>
-        </button>
-        <button class="action-btn" (click)="shareStory()">
-          <ion-icon name="share-social-outline"></ion-icon>
-        </button>
-        <button class="action-btn" (click)="addToCart()" [disabled]="!currentProductId">
-          <ion-icon name="cart-outline"></ion-icon>
-        </button>
-        <button class="action-btn" (click)="toggleWishlist()" [disabled]="!currentProductId">
-          <ion-icon name="heart-half-outline"></ion-icon>
-        </button>
-        <button class="buy-now-btn" (click)="buyNow()" [disabled]="!currentProductId">
+      <!-- Footer actions -->
+      <div class="story-footer">
+        <div class="action-row">
+          <button class="action-btn" [class.liked]="currentStory?.isLiked" (click)="likeStory()">
+            <i class="fas" [ngClass]="currentStory?.isLiked ? 'fa-heart' : 'fa-heart'"></i>
+          </button>
+          <button class="action-btn" (click)="commentStory()">
+            <i class="far fa-comment"></i>
+          </button>
+          <button class="action-btn" (click)="shareStory()">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+          <div class="spacer"></div>
+          <button class="action-btn" (click)="addToCart()" [disabled]="!currentProductId">
+            <i class="fas fa-cart-plus"></i>
+          </button>
+          <button class="action-btn" (click)="toggleWishlist()" [disabled]="!currentProductId">
+            <i class="far fa-bookmark"></i>
+          </button>
+        </div>
+        <button class="buy-btn" *ngIf="currentProductId" (click)="buyNow()">
           Buy Now
         </button>
-      </footer>
+      </div>
+
     </div>
+
+    <!-- Next preview -->
+    <div class="side-preview next-preview"
+         *ngIf="hasNext"
+         (click)="goNext()">
+      <div class="side-card">
+        <img [src]="stories[currentIndex + 1]?.user?.avatar || '/uploads/avatars/default-avatar.svg'" />
+      </div>
+    </div>
+
   </div>
+
 </section>
