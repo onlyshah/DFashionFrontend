@@ -249,16 +249,28 @@ export class CartService {
     }
   }
 
-  addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; itemExists?: boolean; currentQuantity?: number }> {
+  addToCart(productId: string, quantity: number = 1, size?: string, color?: string): Observable<{ success: boolean; message: string; code?: string; itemExists?: boolean; currentQuantity?: number }> {
+    if (!productId) {
+      return throwError(() => ({
+        success: false,
+        message: 'Product ID is required',
+        code: 'MISSING_PRODUCT_ID',
+        status: 400
+      }));
+    }
+
     const existingItem = this.getCartItemByProductId(productId);
 
+    // Check for duplicate
     if (existingItem) {
-      return this.updateCartItem(existingItem._id, existingItem.quantity + quantity).pipe(
-        map((response: any) => ({
-          success: !!response?.success,
-          message: response?.message || 'Cart updated'
-        }))
-      );
+      console.log('[CartService] Product already in cart:', productId, 'Current quantity:', existingItem.quantity);
+      return of({
+        success: true,
+        message: 'Product already in cart',
+        code: 'ALREADY_IN_CART',
+        itemExists: true,
+        currentQuantity: existingItem.quantity
+      });
     }
 
     const currentUser: any = this.authService.currentUserValue;
@@ -276,42 +288,89 @@ export class CartService {
     this.cartProductIds.add(productId);
     this.productStateService.setCartState(productId, true);
 
-    return this.http.post<{ success: boolean; message: string }>(
+    return this.http.post<{ success: boolean; message: string; code?: string }>(
       `${this.API_URL}/api/cart/add`,
       payload,
       headers ? { headers } : {}
     ).pipe(
       tap((response) => {
+        console.log('[CartService] addToCart success response:', response);
         if (!response?.success) {
-          throw new Error(response?.message || 'Failed to add item to cart');
+          throw response;
         }
       }),
-      switchMap((response) => this.reloadCartState().pipe(map(() => response))),
+      switchMap((response) => this.reloadCartState().pipe(map(() => ({
+        success: response.success,
+        message: response.message || 'Added to cart',
+        code: response.code || 'CART_ITEM_ADDED'
+      })))),
       catchError((error) => {
+        console.error('[CartService] addToCart error:', error?.code || error?.message);
         this.cartProductIds.delete(productId);
         this.productStateService.setCartState(productId, false);
-        return throwError(() => error);
+        
+        // Extract error code from backend response
+        const errorCode = error?.code || error?.error?.code || error?.error?.error?.code || 'CART_ADD_FAILED';
+        const errorMessage = error?.message || error?.error?.message || error?.error?.error?.message || 'Failed to add to cart';
+        
+        return throwError(() => ({
+          ...error,
+          code: errorCode,
+          message: errorMessage,
+          status: error?.status || 500
+        }));
       })
     );
   }
 
-  removeProductFromCart(productId: string): Observable<{ success: boolean; message: string }> {
+  removeProductFromCart(productId: string): Observable<{ success: boolean; message: string; code?: string }> {
     const existingItem = this.getCartItemByProductId(productId);
 
-    if (existingItem) {
-      return this.removeCartItem(existingItem, productId);
+    if (!existingItem) {
+      return of({
+        success: true,
+        message: 'Item not in cart',
+        code: 'CART_ITEM_NOT_FOUND'
+      });
     }
 
-    return this.removeCartItem(undefined, productId);
+    return this.removeCartItem(existingItem, productId).pipe(
+      map((response: any) => ({
+        success: response.success,
+        message: response.message || 'Removed from cart',
+        code: response.code || 'CART_ITEM_REMOVED'
+      })),
+      catchError((error) => {
+        const errorCode = error?.code || error?.error?.code || 'CART_REMOVE_FAILED';
+        const errorMessage = error?.message || error?.error?.message || 'Failed to remove from cart';
+        return throwError(() => ({
+          ...error,
+          code: errorCode,
+          message: errorMessage
+        }));
+      })
+    );
   }
 
-  toggleCart(productId: string, options: ToggleCartOptions = {}): Observable<{ success: boolean; message: string }> {
+  toggleCart(productId: string, options: ToggleCartOptions = {}): Observable<{ success: boolean; message: string; code?: string }> {
+    if (!productId) {
+      return throwError(() => ({
+        success: false,
+        message: 'Product ID is required',
+        code: 'MISSING_PRODUCT_ID'
+      }));
+    }
+
     if (this.isInCart(productId, options.size, options.color)) {
       return this.removeProductFromCart(productId);
     }
 
     return this.addToCart(productId, options.quantity || 1, options.size, options.color).pipe(
-      map((response) => ({ success: response.success, message: response.message }))
+      map((response) => ({ 
+        success: response.success,
+        message: response.message,
+        code: response.code || 'CART_ITEM_ADDED'
+      }))
     );
   }
 
@@ -389,10 +448,10 @@ export class CartService {
     }
   }
 
-updateCartItem(
-  cartItemId: string,  // this must be the DB cart_items.id
-  quantity: number
-): Observable<{ success: boolean; message: string }> {
+  public updateCartItem(
+    cartItemId: string,  // this must be the DB cart_items.id
+    quantity: number
+  ): Observable<{ success: boolean; message: string }> {
   const headers = this.getAuthHeaders();
 
   // Current local cart state
@@ -698,13 +757,13 @@ async updateQuantity(cartItemId: string, quantity: number): Promise<void> {
     const resolvedProductId = productId || item?.productId;
 
     const nextItems = resolvedItemId
-      ? previousItems.filter(cartItem => cartItem._id !== resolvedItemId && cartItem.id !== resolvedItemId)
-      : previousItems.filter(cartItem => cartItem.productId !== resolvedProductId);
+      ? previousItems.filter((cartItem: CartItem) => cartItem._id !== resolvedItemId && cartItem.id !== resolvedItemId)
+      : previousItems.filter((cartItem: CartItem) => cartItem.productId !== resolvedProductId);
 
     this.applyLocalCartState(nextItems, this.buildSummaryFromItems(nextItems, previousSummary));
 
     if (resolvedProductId) {
-      const stillExists = nextItems.some(cartItem => cartItem.productId === resolvedProductId);
+      const stillExists = nextItems.some((cartItem: CartItem) => cartItem.productId === resolvedProductId);
       if (!stillExists) {
         this.cartProductIds.delete(resolvedProductId);
         this.productStateService.setCartState(resolvedProductId, false);
@@ -745,7 +804,7 @@ async updateQuantity(cartItemId: string, quantity: number): Promise<void> {
     this.totalItemCount.next(0);
   }
 
-  private showToast(message: string, color: string) {
+  private showToast(message: string, color: string): Promise<void> {
     if (!this.toastController?.create) {
       return Promise.resolve();
     }

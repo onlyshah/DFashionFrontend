@@ -1,101 +1,18 @@
-<!-- Create full sidebar UI with toggle and floating buttons -->
 <!-- Mobile Layout for Mobile Devices -->
 <app-mobile-layout
   *ngIf="isMobile"
   [showHeader]="showHeader"
   [showFooter]="false"
-  [showBottomNav]="showMobileBottomNav"
-  (sidebarToggle)="toggleSidebar()">
+  [showBottomNav]="showMobileBottomNav">
   <router-outlet></router-outlet>
 </app-mobile-layout>
 
-<!-- Desktop Layout for Desktop/Tablet (also fallback if isMobile not yet determined) -->
+<!-- Desktop Layout for Desktop/Tablet -->
 <div *ngIf="!isMobile" class="app-container">
-  <app-header *ngIf="showHeader && isLoggedIn" [isMobile]="isMobile" (toggleSidebar)="toggleSidebar()"></app-header>
-  <main class="main-content" [class.with-header]="showHeader && isLoggedIn" [class.no-sidebar]="!isLoggedIn">
+  <app-header *ngIf="showHeader && isLoggedIn" [isMobile]="isMobile"></app-header>
+  <main class="main-content" [class.with-header]="showHeader && isLoggedIn">
     <router-outlet></router-outlet>
   </main>
-</div>
-
-<!-- Independent floating sidebar overlay and buttons -->
-<div *ngIf="isLoggedIn">
-  <div class="sidebar-backdrop" *ngIf="sidebarExpanded"></div>
-
-  <aside class="app-sidebar" [class.open]="sidebarExpanded">
-    <button class="sidebar-close-btn" type="button" aria-label="Close sidebar" (click)="closeSidebar()">
-      ✕
-    </button>
-    <nav class="sidebar-nav">
-      <a routerLink="/" class="nav-item" (click)="closeSidebar()" title="Home">
-        <span class="icon fas fa-home"></span>
-        <span class="label" *ngIf="sidebarExpanded">Home</span>
-      </a>
-      <a routerLink="/search" class="nav-item" (click)="closeSidebar()" title="Search">
-        <span class="icon fas fa-search"></span>
-        <span class="label" *ngIf="sidebarExpanded">Search</span>
-      </a>
-      <a routerLink="/explore" class="nav-item" (click)="closeSidebar()" title="Explore">
-        <span class="icon fas fa-compass"></span>
-        <span class="label" *ngIf="sidebarExpanded">Explore</span>
-      </a>
-      <button class="nav-item" (click)="openReelsViewer()" title="Reels">
-        <span class="icon fas fa-video"></span>
-        <span class="label" *ngIf="sidebarExpanded">Reels</span>
-      </button>
-      <a routerLink="/messages" class="nav-item" (click)="closeSidebar()" title="Messages">
-        <span class="icon fas fa-envelope"></span>
-        <span class="label" *ngIf="sidebarExpanded">Messages</span>
-        <span class="count" *ngIf="messageCount > 0">{{messageCount}}</span>
-      </a>
-      <a routerLink="/notifications" class="nav-item" (click)="closeSidebar()" title="Notifications">
-        <span class="icon fas fa-bell"></span>
-        <span class="label" *ngIf="sidebarExpanded">Notifications</span>
-        <span class="count" *ngIf="notificationCount > 0">{{notificationCount}}</span>
-      </a>
-      <button class="nav-item create-btn" (click)="openCreateModal()" title="Create">
-        <span class="icon fas fa-plus-circle"></span>
-        <span class="label" *ngIf="sidebarExpanded">Create</span>
-      </button>
-      <div class="create-dropdown" *ngIf="createMenuOpen" (mouseleave)="createMenuOpen = false">
-        <a class="drop-item" routerLink="/create-post">Post</a>
-        <a class="drop-item" routerLink="/create-story">Story</a>
-        <a class="drop-item" routerLink="/create-reel">Reel</a>
-      </div>
-      <a routerLink="/profile" class="nav-item" (click)="closeSidebar()" title="Profile">
-        <span class="icon">👤</span>
-        <span class="label" *ngIf="sidebarExpanded">Profile</span>
-      </a>
-      <button class="nav-item more-btn" (click)="toggleMoreMenu()" title="More">
-        <span class="icon">⋯</span>
-        <span class="label" *ngIf="sidebarExpanded">More</span>
-      </button>
-    </nav>
-</aside>
-
-  <!-- More panel (right side panel) -->
-  <div class="more-panel-backdrop" *ngIf="moreMenuOpen" (click)="closeMoreMenu()"></div>
-  <aside class="more-panel" [class.open]="moreMenuOpen" role="dialog" aria-modal="true" aria-label="More options">
-    <button class="more-panel-close" type="button" aria-label="Close" (click)="closeMoreMenu()">✕</button>
-
-    <nav class="more-panel-nav">
-      <a class="panel-item" routerLink="/settings" (click)="closeMoreMenu()">⚙️ Settings</a>
-      <a class="panel-item" routerLink="/activity" (click)="closeMoreMenu()">📊 Your activity</a>
-      <a class="panel-item" routerLink="/saved" (click)="closeMoreMenu()">💾 Saved</a>
-      <button class="panel-item" (click)="switchAppearance(); closeMoreMenu()">🌙 Switch appearance</button>
-      <a class="panel-item" routerLink="/report" (click)="closeMoreMenu()">🚨 Report a problem</a>
-      <a class="panel-item" routerLink="/threads" (click)="closeMoreMenu()">🧵 Threads</a>
-      <button class="panel-item" (click)="switchAccounts(); closeMoreMenu()">🔄 Switch accounts</button>
-      <button class="panel-item" (click)="logout(); closeMoreMenu()">🚪 Log out</button>
-    </nav>
-  </aside>
-
-  <button *ngIf="!isMobile" class="message-float-btn" type="button" aria-label="Messages" routerLink="/messages">
-    <span class="msg-icon">✉️</span>
-    <span class="msg-text">Messages</span>
-    <span class="msg-badge" *ngIf="messageCount > 0">{{messageCount}}</span>
-    <img class="msg-avatar" src="https://via.placeholder.com/24" alt="User 1">
-    <img class="msg-avatar" src="https://via.placeholder.com/24" alt="User 2">
-  </button>
 </div>
 
 <!-- Notifications -->

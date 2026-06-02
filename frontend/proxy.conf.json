@@ -1,18 +1,21 @@
 {
   "/api": {
-    "target": "http://localhost:3000",
+    "target": "http://localhost:5001",
     "secure": false,
     "changeOrigin": true,
-    "logLevel": "debug"
+    "logLevel": "debug",
+    "pathRewrite": {
+      "^/api": "/api"
+    }
   },
   "/uploads": {
-    "target": "http://localhost:3000",
+    "target": "http://localhost:5001",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"
   },
   "/assets": {
-    "target": "http://localhost:3000",
+    "target": "http://localhost:5001",
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug"

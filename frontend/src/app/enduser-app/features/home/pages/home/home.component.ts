@@ -235,52 +235,47 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Load stories from API
   private loadStories() {
-    // Load sample stories immediately as fallback
-    this.loadSampleStories();
-    console.log('📖 Sample stories loaded:', this.socialStories.length);
-
-    // Try to load from API (this will override sample stories if successful)
+    // Try to load from API immediately
     this.storyService.getStories().subscribe({
       next: (response) => {
-        if (response?.success && response?.storyGroups) {
-          this.socialStories = response.storyGroups.map((storyGroup: any) => ({
-            _id: storyGroup.user?._id || `story_${Date.now()}_${Math.random()}`,
+        const apiResponse: any = response;
+        let storyGroups = [];
+        
+        // Handle multiple response formats
+        if (Array.isArray(apiResponse)) {
+          storyGroups = apiResponse;
+        } else if (apiResponse?.storyGroups && Array.isArray(apiResponse.storyGroups)) {
+          storyGroups = apiResponse.storyGroups;
+        } else if (apiResponse?.stories && Array.isArray(apiResponse.stories)) {
+          storyGroups = apiResponse.stories;
+        } else if (apiResponse?.data?.storyGroups && Array.isArray(apiResponse.data.storyGroups)) {
+          storyGroups = apiResponse.data.storyGroups;
+        } else if (apiResponse?.data && Array.isArray(apiResponse.data)) {
+          storyGroups = apiResponse.data;
+        }
+
+        if (Array.isArray(storyGroups) && storyGroups.length > 0) {
+          this.socialStories = storyGroups.map((storyGroup: any) => ({
+            _id: storyGroup.user?._id || storyGroup._id || `story_${Date.now()}_${Math.random()}`,
             user: {
               _id: storyGroup.user?._id || `user_${Date.now()}_${Math.random()}`,
               username: storyGroup.user?.username || 'unknown',
               fullName: storyGroup.user?.fullName || storyGroup.user?.username || 'Unknown User',
               avatar: storyGroup.user?.avatar || environment.apiUrl + '/uploads/avatars/default-avatar.svg'
             },
-            media: storyGroup.media || [],
-            viewed: false,
+            media: storyGroup.media || storyGroup.mediaUrl || [],
+            viewed: storyGroup.viewed || false,
             createdAt: storyGroup.createdAt || new Date()
           }));
-        } else if (response?.success && response?.stories) {
-          // Fallback to individual stories if storyGroups not available
-          const uniqueUsers = new Map();
-          response.stories.forEach((story: any) => {
-            if (story.user && !uniqueUsers.has(story.user._id)) {
-              uniqueUsers.set(story.user._id, {
-                _id: story._id || `story_${Date.now()}_${Math.random()}`,
-                user: {
-                  _id: story.user._id,
-                  username: story.user.username || 'unknown',
-                  fullName: story.user.fullName || story.user.username || 'Unknown User',
-                  avatar: story.user.avatar || environment.apiUrl + '/uploads/avatars/default-avatar.svg'
-                },
-                media: story.media || [],
-                viewed: false,
-                createdAt: story.createdAt || new Date()
-              });
-            }
-          });
-          this.socialStories = Array.from(uniqueUsers.values());
+          console.log('✅ API stories loaded:', this.socialStories.length);
+        } else {
+          console.log('⚠️ No stories from API, using empty array');
+          this.socialStories = [];
         }
-        // If no stories from API, sample stories are already loaded
       },
       error: (error) => {
-        // API error - sample stories already loaded as fallback
-        console.error('Error loading stories from API:', error);
+        console.error('❌ Error loading stories from API:', error);
+        this.socialStories = [];
       }
     });
   }

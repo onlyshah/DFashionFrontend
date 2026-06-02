@@ -92,7 +92,7 @@
           <!-- User Avatar -->
           <div class="user-avatar-container">
             <img
-              [src]="imageUrl+user.avatar || '/api/images/placeholder-avatar.png'"
+              [src]="getUserAvatar(user)"
             
               class="user-avatar"
               loading="lazy"

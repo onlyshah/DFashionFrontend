@@ -28,8 +28,8 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 256; // Width of each product card including margin (240px + 16px gap)
-  visibleCards = 2; // Number of cards visible at once in sidebar
+  cardWidth = 172; // 160px card + 12px gap
+  visibleCards = 2; // default, adjusted responsively
   maxSlide = 0;
 
   // Auto-sliding properties
@@ -38,6 +38,23 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   isAutoSliding = true;
   isPaused = false;
   imageUrl = environment.apiUrl;
+
+  backendProductPlaceholder = environment.apiUrl + '/uploads/default-product.svg';
+
+  getProductImageUrl(product: Product): string {
+    if (!product || !product.images || product.images.length === 0) {
+      return this.backendProductPlaceholder;
+    }
+
+    const url = (product.images[0] as any)?.url || product.images[0];
+    if (typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://'))) {
+      return url;
+    }
+    if (typeof url === 'string' && url.startsWith('/')) {
+      return environment.apiUrl + url;
+    }
+    return this.backendProductPlaceholder;
+  }
 
   constructor(
     private unifiedApi: UnifiedApiService,
@@ -49,6 +66,7 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('%c🔴 NEW-ARRIVALS Component Initialized', 'color: red; font-size: 14px; font-weight: bold');
     this.loadNewArrivals();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
@@ -73,7 +91,28 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     this.error = null;
     this.unifiedApi.getNewArrivals(1, 6).subscribe(
       (response) => {
-        this.newArrivals = response?.data || response?.products || [];
+        // Log raw API response for debugging
+        console.log('API /new-arrivals response:', response);
+        // API returns { data: { products: [...] } } — prefer that array
+        const rawItems = response?.data?.products || response?.products || [];
+        const itemsArray = Array.isArray(rawItems) ? rawItems : [];
+
+        // Ensure we only take real products (filter out posts which include a user field)
+        this.newArrivals = itemsArray.filter((item: any) => {
+          if (!item) return false;
+          const looksLikePost = !!item.user;
+          const hasProductFields = !!(item.name || item.price || item.images);
+          return !looksLikePost && hasProductFields;
+        }).map((item: any) => {
+          const imgs = Array.isArray(item.images) ? item.images.map((img: any) => (typeof img === 'string' ? img : img.url)) : [];
+          return {
+            _id: item._id || item.id,
+            id: item.id || item._id,
+            name: item.name || item.title || 'Product',
+            price: item.price ?? null,
+            images: imgs.length ? imgs : [this.backendProductPlaceholder]
+          } as any;
+        });
         this.isLoading = false;
         console.log('New arrivals loaded:', this.newArrivals);    
         this.updateSliderOnProductsLoad();
@@ -376,17 +415,18 @@ export class NewArrivalsComponent implements OnInit, OnDestroy {
     const width = window.innerWidth;
 
     if (width <= 768) {
-      this.cardWidth = 256; // 240px card + 16px gap
+      this.cardWidth = 172; // 160px + 12px gap
       this.visibleCards = 1;
     } else if (width <= 1024) {
-      this.cardWidth = 252; // 240px card + 12px gap
+      this.cardWidth = 172;
       this.visibleCards = 2;
-    } else if (width <= 1200) {
-      this.cardWidth = 254; // 240px card + 14px gap
+    } else if (width <= 1400) {
+      this.cardWidth = 172;
       this.visibleCards = 2;
     } else {
-      this.cardWidth = 256; // 240px card + 16px gap
-      this.visibleCards = 2;
+      // Wide desktop: show 3 cards
+      this.cardWidth = 172;
+      this.visibleCards = 3;
     }
 
     this.updateSliderLimits();

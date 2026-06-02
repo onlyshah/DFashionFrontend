@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UnifiedApiService } from '../../../../../core/services/unified-api.service';
+import { ProductService } from '../../../../../core/services/product.service';
 import { Product } from '../../../../../core/models/product.interface';
 import { SocialInteractionsService } from '../../../../../core/services/social-interactions.service';
 import { CartService } from '../../../../../core/services/cart.service';
@@ -29,8 +30,8 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 256; // Width of each product card (240px) +gap (16px)
-  visibleCards = 2; // Number of cards visible at once
+  cardWidth = 172; // 160px card + 12px gap
+  visibleCards = 2; // Default, updated responsively
   maxSlide = 0;
 
   // Auto-sliding properties
@@ -41,7 +42,6 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   imageUrl = environment.apiUrl
 
   backendProductPlaceholder = environment.apiUrl + '/uploads/default-product.svg';
-
   getProductImageUrl(product: Product): string {
     if (!product || !product.images || product.images.length === 0) {
       return this.backendProductPlaceholder;
@@ -65,6 +65,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
 
   constructor(
     private unifiedApi: UnifiedApiService,
+    private productService: ProductService,
     private socialService: SocialInteractionsService,
     private cartService: CartService,
     private wishlistService: WishlistService,
@@ -75,6 +76,7 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    console.log('%c🟣 TRENDING-PRODUCTS Component Initialized', 'color: purple; font-size: 14px; font-weight: bold');
     this.loadTrendingProducts();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
@@ -103,15 +105,57 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     this.error = null;
     this.unifiedApi.getTrendingProducts(1, 8).subscribe(
       (response: any) => {
-        this.trendingProducts = response?.data || response?.products || [];
+        console.log('[TrendingProducts] API response:', response);
+        this.trendingProducts = this.extractProducts(response);
         this.isLoading = false;
         this.updateSliderOnProductsLoad();
       },
       (error: any) => {
-        this.error = 'Failed to load trending products';
-        this.isLoading = false;
+        console.error('[TrendingProducts] Failed to load unified trending:', error);
+        this.productService.getProducts({ sortBy: 'trending', limit: 8, page: 1 }).subscribe(
+          (resp: any) => {
+            console.log('[TrendingProducts] Fallback products response:', resp);
+            this.trendingProducts = this.extractProducts(resp);
+            this.isLoading = false;
+            this.updateSliderOnProductsLoad();
+          },
+          (err) => {
+            console.error('[TrendingProducts] Fallback also failed:', err);
+            this.error = 'Failed to load trending products';
+            this.isLoading = false;
+          }
+        );
       }
     );
+  }
+
+  private extractProducts(response: any): Product[] {
+    const rawItems =
+      response?.data?.products ||
+      response?.products ||
+      response?.data?.posts ||
+      response?.posts ||
+      response?.data ||
+      [];
+    const itemsArray = Array.isArray(rawItems) ? rawItems : [];
+    return itemsArray
+      .filter((item: any) => item && (item.name || item.title || item.price || item.images?.length))
+      .map((item: any) => {
+        const imgs = Array.isArray(item.images)
+          ? item.images.map((img: any) => (typeof img === 'string' ? img : img.url)).filter(Boolean)
+          : [];
+        return {
+          _id: item._id || item.id,
+          id: item.id || item._id,
+          name: item.name || item.title || 'Product',
+          brand: item.brand || item.vendor?.name || item.vendor || 'DFashion Picks',
+          images: imgs.length ? imgs : [item.image || item.imageUrl || this.backendProductPlaceholder],
+          price: item.price ?? item.discountedPrice ?? 999,
+          originalPrice: item.originalPrice,
+          rating: item.rating || item.ratings || { average: 0, count: 0 },
+          createdAt: item.createdAt
+        } as any;
+      });
   }
 
   onProductClick(product: Product) {
@@ -389,18 +433,21 @@ export class TrendingProductsComponent implements OnInit, OnDestroy {
     const width = window.innerWidth;
 
     if (width <= 768) {
-      this.cardWidth = 256; // 240px card + 16px gap
+      // Small screens: single visible card
+      this.cardWidth = 172; // 160px + 12px gap
       this.visibleCards = 1;
     } else if (width <= 1024) {
-      this.cardWidth = 252; // 240px card + 12px gap
+      // Tablet: two cards
+      this.cardWidth = 172;
       this.visibleCards = 2;
-    } else if (width <= 1200) {
-      this.cardWidth = 254; // 240px card + 14px gap
+    } else if (width <= 1400) {
+      // Desktop narrow: two cards
+      this.cardWidth = 172;
       this.visibleCards = 2;
     } else {
-      // Desktop sidebar - show 2 products per view
-      this.cardWidth = 256; // 240px card + 16px gap
-      this.visibleCards = 2;
+      // Wide desktop / sidebar: show three cards for better right-side scroll
+      this.cardWidth = 172;
+      this.visibleCards = 3;
     }
 
     this.updateSliderLimits();

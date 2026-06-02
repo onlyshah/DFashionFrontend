@@ -21,11 +21,6 @@ export class AppComponent implements OnInit, OnDestroy {
   title = 'DFashion';
   showHeader = false;
   isMobile = false;
-  sidebarExpanded = false;
-  messageCount = 2;
-  notificationCount = 7;
-  moreMenuOpen = false;
-  createMenuOpen = false;
   reelsViewerVisible = false;
   reelsViewerIndex = 0;
   reelsViewerData: any[] = [];
@@ -43,24 +38,23 @@ export class AppComponent implements OnInit, OnDestroy {
   ) {}
 
   toggleSidebar(): void {
-    this.sidebarExpanded = !this.sidebarExpanded;
+    // Removed - sidebar navigation consolidated to top header
   }
 
   closeSidebar(): void {
-    this.sidebarExpanded = false;
+    // Removed - sidebar navigation consolidated to top header
   }
 
   toggleMoreMenu(): void {
-    this.moreMenuOpen = !this.moreMenuOpen;
+    // Removed - all account actions moved to Profile dropdown
   }
 
   closeMoreMenu(): void {
-    this.moreMenuOpen = false;
+    // Removed - all account actions moved to Profile dropdown
   }
 
   openCreateModal(): void {
-    this.createMenuOpen = !this.createMenuOpen;
-    this.moreMenuOpen = false;
+    // Removed - create functionality moved to header CreateModalComponent
   }
 
   openReelsViewer(): void {
@@ -93,18 +87,15 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   switchAppearance(): void {
-    console.log('Switch appearance');
+    // Removed - moved to Profile dropdown component
   }
 
   switchAccounts(): void {
-    // Implement switch accounts logic
-    console.log('Switch accounts');
+    // Removed - moved to Profile dropdown component
   }
 
   logout(): void {
-    // Implement logout logic
-    this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    // Removed - moved to Profile dropdown component
   }
 
   ngOnInit(): void {

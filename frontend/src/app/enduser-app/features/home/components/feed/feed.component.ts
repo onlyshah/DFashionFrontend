@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CartService } from '../../../../../core/services/cart.service';
 import { WishlistService } from '../../../../../core/services/wishlist.service';
+import { NotificationService } from '../../../../../core/services/notification.service';
 import { environment } from 'src/environments/environment';
 import { PostService } from '../../../../../core/services/post.service';
 import { StoryService } from '../../../../../core/services/story.service';
@@ -201,46 +202,86 @@ export class FeedComponent implements OnInit {
     return price ? `$${price.toFixed(2)}` : '';
   }
 
+  /**
+   * Map backend error codes to user-friendly messages
+   */
+  getErrorMessage(errorCode: string, defaultMessage?: string): string {
+    const errorMap: { [key: string]: string } = {
+      'MISSING_PRODUCT_ID': 'Product ID is missing or invalid.',
+      'MISSING_USER_ID': 'User ID is missing. Please login again.',
+      'PRODUCT_NOT_FOUND': 'Product not found. It may have been deleted.',
+      'USER_NOT_FOUND': 'User not found. Please login again.',
+      'PRODUCT_INACTIVE': 'This product is no longer available.',
+      'USER_INACTIVE': 'Your account is inactive. Please contact support.',
+      'OUT_OF_STOCK': 'This product is out of stock.',
+      'INSUFFICIENT_STOCK': 'Not enough items in stock for the requested quantity.',
+      'INVALID_QUANTITY': 'Please enter a valid quantity (at least 1).',
+      'ALREADY_IN_WISHLIST': 'Product is already in your wishlist.',
+      'ALREADY_IN_CART': 'Product is already in your cart. Use cart to change quantity.',
+      'WISHLIST_ITEM_NOT_FOUND': 'Wishlist item not found.',
+      'UNAUTHORIZED_WISHLIST_ACCESS': 'You do not have permission to modify this item.',
+      'UNAUTHORIZED': 'Please log in to continue.',
+      'CART_ITEM_NOT_FOUND': 'Cart item not found.',
+      'SERVER_ERROR': 'Server error. Please try again later.',
+      'UNKNOWN_ERROR': 'An unexpected error occurred. Please try again.'
+    };
+    
+    return errorMap[errorCode] || defaultMessage || 'An error occurred. Please try again.';
+  }
+
   // Add product to cart
   addToCart(product: any) {
     const productId = product.id || product._id || product.product?._id;
     if (!productId) {
-      console.warn('Cannot add to cart: no product ID');
+      this.notificationService.error('Error', 'Cannot add to cart: Product ID is missing');
       return;
     }
     
     this.cartService.addToCart(productId, 1).subscribe({
       next: (response) => {
         if (response.itemExists) {
-          // Show prompt to increase quantity
-          if (confirm(`${product.name || 'Product'} is already in your cart (qty: ${response.currentQuantity || 1}). Would you like to increase the quantity?`)) {
-            const newQty = (response.currentQuantity || 1) + 1;
-            this.cartService.updateCartItemQuantity(productId, newQty).subscribe({
-              next: () => alert(`Quantity updated to ${newQty}`),
-              error: (err) => console.error('Failed to update quantity:', err)
-            });
-          }
+          // Product already in cart
+          this.notificationService.info('Already in Cart', `${product.name || 'Product'} is already in your cart (qty: ${response.currentQuantity || 1})`);
         } else {
-          alert(`✓ ${product.name || 'Product'} added to cart!`);
+          this.notificationService.success('Success', `${product.name || 'Product'} added to cart!`);
         }
       },
-      error: (err) => console.error('Error adding to cart:', err)
+      error: (err: any) => {
+        const errorCode = err?.code || 'UNKNOWN_ERROR';
+        const errorMsg = this.getErrorMessage(errorCode, err?.message);
+        this.notificationService.error('Error', errorMsg);
+        console.error('[FeedComponent] Error adding to cart:', err);
+      }
     });
   }
 
-  // Add product to wishlist
+  // Toggle product in wishlist (add or remove)
   toggleWishlist(product: any) {
     const productId = product.id || product._id || product.product?._id;
     if (!productId) {
-      console.warn('Cannot add to wishlist: no product ID');
+      this.notificationService.error('Error', 'Cannot add to wishlist: Product ID is missing');
       return;
     }
     
     this.wishlistService.toggleWishlist(productId).subscribe({
-      next: (response) => {
-        alert(response?.message || (this.wishlistService.isInWishlist(productId) ? 'Added to wishlist' : 'Removed from wishlist'));
+      next: (response: any) => {
+        // Determine if product was added or removed based on current state
+        const isNowInWishlist = this.wishlistService.isInWishlist(productId);
+        if (response?.code === 'ALREADY_IN_WISHLIST') {
+          // This means it tried to add but was already there
+          this.notificationService.info('Already Saved', 'Item is already in your wishlist');
+        } else if (isNowInWishlist) {
+          this.notificationService.success('Added!', 'Item saved to wishlist');
+        } else {
+          this.notificationService.success('Removed', 'Item removed from wishlist');
+        }
       },
-      error: (err) => console.error('Error adding to wishlist:', err)
+      error: (err: any) => {
+        const errorCode = err?.code || 'UNKNOWN_ERROR';
+        const errorMsg = this.getErrorMessage(errorCode, err?.message);
+        this.notificationService.error('Error', errorMsg);
+        console.error('[FeedComponent] Error toggling wishlist:', err);
+      }
     });
   }
 
@@ -296,6 +337,7 @@ export class FeedComponent implements OnInit {
     private router: Router,
     private cartService: CartService,
     private wishlistService: WishlistService,
+    private notificationService: NotificationService,
     private postService: PostService,
     private storyService: StoryService,
     private homeApi: HomeApi
@@ -314,7 +356,7 @@ export class FeedComponent implements OnInit {
     this.storiesLoading = true;
     this.homeApi.getStoryPreview().subscribe({
       next: (res: any) => {
-        this.stories = Array.isArray(res?.stories) ? res.stories : [];
+        this.stories = Array.isArray(res?.data) ? res.data : [];
         this.storiesLoading = false;
       },
       error: () => {
@@ -347,11 +389,11 @@ fetchPosts(page: number = 1, append = false) {
   this.postService.getPosts(page, this.pageSize).subscribe({
     next: (res: any) => {
       const base = environment.apiUrl.replace(/\/$/, '');
-      const posts = Array.isArray(res?.posts) ? res.posts : [];
+      const posts = Array.isArray(res?.data) ? res.data : [];
 
       const mappedPosts = posts.map((p: any) => {
         const mediaItem = p.media && p.media.length ? p.media[0] : null;
-        const mediaPath = mediaItem?.url || '/uploads/default-post.jpg';
+        const mediaPath = mediaItem?.url || (p.images && p.images.length ? p.images[0] : '/uploads/default-post.jpg');
         const mediaUrl = `${base}${mediaPath}`;
         const mediaType = mediaItem?.type || 'image';
 
@@ -364,12 +406,15 @@ fetchPosts(page: number = 1, append = false) {
           : { username: 'Unknown User', avatar: `${base}/uploads/avatars/default-avatar.svg` };
 
         const mappedProducts = (p.products || []).map((pr: any) => {
-          const prodData = pr.product || null;
+          // p.products may be an array of product IDs, product objects,
+          // or wrapper objects like { product: { ... } } depending on backend.
+          const prodData = pr?.product ? pr.product : (pr?.name ? pr : null);
           const prodImage = prodData?.image || prodData?.imageUrl
             ? `${base}${prodData.image || prodData.imageUrl}`
             : `${base}/uploads/default-product.svg`;
           return {
-            ...pr,
+            // if pr already contains meta (like quantity), preserve it
+            ...(typeof pr === 'object' && !prodData ? pr : {}),
             image: prodImage,
             name: prodData?.name || 'Unnamed Product',
             price: prodData?.price ?? null,
@@ -387,13 +432,9 @@ fetchPosts(page: number = 1, append = false) {
           mentions: p.mentions || [],
           user: mappedUser,
           products: mappedProducts,
-          likes: Array.isArray(p.likes)
-            ? p.likes.length
-            : (typeof p.likes === 'number' ? p.likes : 0),
+          likes: Array.isArray(p.likes) ? p.likes.length : (typeof p.likes === 'number' ? p.likes : 0),
           comments: p.comments || [],
-          commentsCount: Array.isArray(p.comments)
-            ? p.comments.length
-            : (p.commentsCount || 0),
+          commentsCount: Array.isArray(p.comments) ? p.comments.length : (p.commentsCount || 0),
           shares: Array.isArray(p.shares) ? p.shares.length : 0,
           saves: Array.isArray(p.saves) ? p.saves.length : 0,
           isLiked: p.isLiked || false,
@@ -460,10 +501,13 @@ viewTaggedProduct(product: any) {
 }
 
 // Handle image load errors with fallback
-onImageError(event: any) {
-  if (!event.target.dataset.fallback) {
-    event.target.src = `${this.imageUrl}/uploads/default-post.jpg`;
-    event.target.dataset.fallback = 'true';
+onImageError(event: Event) {
+  const target = event?.target as HTMLImageElement | null;
+  if (!target) return;
+  const dataset: any = (target.dataset as DOMStringMap) || {};
+  if (!dataset.fallback) {
+    target.src = `${this.imageUrl}/uploads/default-post.jpg`;
+    dataset.fallback = 'true';
   }
 }
 }

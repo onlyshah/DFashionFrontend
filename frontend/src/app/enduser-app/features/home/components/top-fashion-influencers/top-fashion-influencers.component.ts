@@ -69,6 +69,7 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private unifiedApiService: UnifiedApiService) {}
 
   ngOnInit() {
+    console.log('%c🔵 TOP-FASHION-INFLUENCERS Component Initialized', 'color: blue; font-size: 14px; font-weight: bold');
     this.loadInfluencers();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -134,6 +135,14 @@ export class TopFashionInfluencersComponent implements OnInit, OnDestroy {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count.toString();
+  }
+
+  getInfluencerAvatar(influencer: Influencer): string {
+    const avatar = influencer?.avatar || '/uploads/avatars/default-avatar.svg';
+    if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+      return avatar;
+    }
+    return `${this.imageUrl}${avatar.startsWith('/') ? avatar : `/${avatar}`}`;
   }
 
   onRetry() {

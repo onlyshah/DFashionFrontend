@@ -60,6 +60,7 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('%c🟢 SUGGESTED-FOR-YOU Component Initialized', 'color: green; font-size: 14px; font-weight: bold');
     this.checkMobileDevice();
     this.updateResponsiveSettings();
     this.setupResizeListener();
@@ -121,6 +122,14 @@ export class SuggestedForYouComponent implements OnInit, OnDestroy {
       return (count / 1000).toFixed(1) + 'K';
     }
     return count.toString();
+  }
+
+  getUserAvatar(user: SuggestedUser): string {
+    const avatar = user?.avatar || '/uploads/avatars/default-avatar.svg';
+    if (avatar.startsWith('http://') || avatar.startsWith('https://')) {
+      return avatar;
+    }
+    return `${this.apiUrl}${avatar.startsWith('/') ? avatar : `/${avatar}`}`;
   }
 
   onRetry() {

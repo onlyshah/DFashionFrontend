@@ -37,6 +37,7 @@ export class ShopByCategoryComponent implements OnInit, OnDestroy {
   constructor(private router: Router, private categoryService: CategoryService) {}
 
   ngOnInit() {
+  console.log('%c🟡 SHOP-BY-CATEGORY Component Initialized', 'color: goldenrod; font-size: 14px; font-weight: bold');
   this.loadCategories();
   this.updateResponsiveSettings();
   this.setupResizeListener();

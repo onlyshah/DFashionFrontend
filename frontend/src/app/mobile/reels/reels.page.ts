@@ -68,7 +68,7 @@ export class ReelsPage implements OnInit, OnDestroy {
       const response = await this.reelsApi.listReels().toPromise() as any;
       
       if (response.success) {
-        this.reels = response.data.reels;
+        this.reels = response.data?.reels || response.data || [];
         this.isPlaying = new Array(this.reels.length).fill(false);
         this.progress = new Array(this.reels.length).fill(0);
         

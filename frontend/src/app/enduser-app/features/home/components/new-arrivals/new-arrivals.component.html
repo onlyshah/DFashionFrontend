@@ -59,7 +59,7 @@
       <!-- Product Image -->
       <div class="product-image-container">
         <img 
-          [src]="product.images && product.images.length > 0 ? imageUrl + product.images[0].url : imageUrl + '/uploads/default-product.svg'"
+          [src]="getProductImageUrl(product)"
           [alt]="product.name"
           class="product-image"
           loading="lazy"

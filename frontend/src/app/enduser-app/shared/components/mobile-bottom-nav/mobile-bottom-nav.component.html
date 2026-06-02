@@ -3,17 +3,17 @@
     <ion-icon name="home-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Home" tabindex="0"></ion-icon>
     <span>Home</span>
   </div>
-  <div class="nav-item" [class.active]="currentRoute === '/search'" (click)="navigate('/search')">
-    <ion-icon name="search-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Search" tabindex="0"></ion-icon>
-    <span>Search</span>
+  <div class="nav-item" [class.active]="currentRoute === '/explore'" (click)="navigate('/explore')">
+    <ion-icon name="compass-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Explore" tabindex="0"></ion-icon>
+    <span>Explore</span>
   </div>
-  <div class="nav-item" [class.active]="currentRoute === '/add'" (click)="navigate('/add')">
+  <div class="nav-item" [class.active]="currentRoute === '/create'" (click)="onCreateClick_method()">
     <ion-icon name="add-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Create" tabindex="0"></ion-icon>
-    <span>Add</span>
+    <span>Create</span>
   </div>
-  <div class="nav-item" [class.active]="currentRoute === '/activity'" (click)="navigate('/activity')">
-    <ion-icon name="heart-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Wishlist" tabindex="0"></ion-icon>
-    <span>Activity</span>
+  <div class="nav-item" [class.active]="currentRoute === '/reels'" (click)="navigate('/reels')">
+    <ion-icon name="film-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Reels" tabindex="0"></ion-icon>
+    <span>Reels</span>
   </div>
   <div class="nav-item" [class.active]="currentRoute === '/profile'" (click)="navigate('/profile')">
     <ion-icon name="person-outline" data-bs-toggle="tooltip" data-bs-placement="top" title="Profile" tabindex="0"></ion-icon>

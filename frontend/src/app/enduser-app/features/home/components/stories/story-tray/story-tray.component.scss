@@ -5,13 +5,14 @@
   align-items: center;
   gap: 0;
   background: #fff;
-  border: 0.5px solid #ebebeb;
-  border-radius: 14px;
-  padding: 12px 8px;
-  margin-bottom: 16px;
-  overflow: hidden;          // clips scroll shadow
+  border: 0;
+  border-radius: 0;
+  padding: 10px 16px;
+  margin-bottom: 0;
+  overflow: hidden;
   position: relative;
   user-select: none;
+  width: 100%;
 }
 
 // ── YOUR STORY — pinned left, never scrolls ──
@@ -42,7 +43,7 @@
   height: 56px;
   background: #ebebeb;
   flex-shrink: 0;
-  margin: 0 6px;
+  margin: 0 12px 0 6px;
 }
 
 // ── Scroll wrapper — takes remaining width ──
@@ -56,11 +57,11 @@
 // ── The actual scrollable row ──
 .tray-scroll {
   display: flex;
-  gap: 6px;
+  gap: 18px;
   align-items: flex-start;
   overflow-x: auto;
   scrollbar-width: none;
-  padding: 2px 6px 4px;
+  padding: 2px 6px 4px 0;
   cursor: grab;
 
   &::-webkit-scrollbar { display: none; }
@@ -76,6 +77,7 @@
   cursor: pointer;
   flex-shrink: 0;
   width: 68px;
+  min-width: 62px;
 
   &:hover .avatar-wrap {
     transform: scale(1.05);
@@ -100,16 +102,16 @@
   height: 62px;
   border-radius: 50%;
   padding: 2.5px;
-  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  background: conic-gradient(#e8521a 0%, #f5a623 50%, #e8521a 100%);
 
   &.viewed {
-    background: linear-gradient(45deg, #d4d4d4, #b0b0b0);
+    background: #c8c8c8;
   }
 
   &.own {
     background: transparent;
     padding: 2px;
-    border: 2.5px dashed #ccc;
+    border: 2px dashed #ede8e2;
   }
 }
 
@@ -136,10 +138,10 @@
   position: absolute;
   bottom: 1px;
   right: 1px;
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #e8521a;
   border: 2.5px solid #fff;
   display: flex;
   align-items: center;
@@ -158,7 +160,7 @@
   bottom: -4px;
   left: 50%;
   transform: translateX(-50%);
-  background: #10b981;
+  background: #43a047;
   color: #fff;
   font-size: 9px;
   font-weight: 700;
@@ -170,8 +172,8 @@
 
 // ── Name label ──
 .story-name {
-  font-size: 11px;
-  color: #555;
+  font-size: 10px;
+  color: #4a3f38;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -183,8 +185,8 @@
 }
 
 .time-ago {
-  font-size: 10px;
-  color: #bbb;
+  font-size: 9px;
+  color: #8c7e76;
   text-align: center;
   margin-top: -3px;
 }
@@ -194,22 +196,22 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  background: #fff;
-  border: 0.5px solid #ddd;
+  background: #f7f4f0;
+  border: 1px solid #ede8e2;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   transition: background 0.15s;
 
   i { font-size: 11px; color: #333; }
 
-  &:hover { background: #f5f5f5; }
+  &:hover { background: #fff0eb; color: #e8521a; }
   &.left  { left: 0; }
   &.right { right: 0; }
 }

@@ -1,0 +1,40 @@
+<!-- Debug Sidebar Visibility -->
+<!-- Add this to home.component.html to diagnose which sections are rendering -->
+
+<div style="position: fixed; bottom: 20px; right: 20px; background: white; padding: 20px; border-radius: 8px; border: 2px solid #e8521a; z-index: 9999; max-width: 300px; font-size: 12px; font-family: monospace;">
+  <div style="font-weight: bold; margin-bottom: 10px; color: #e8521a;">📋 Sidebar Debug</div>
+  
+  <div style="margin-bottom: 8px;">
+    <strong>Window Width:</strong> {{ window.innerWidth }}px
+  </div>
+  
+  <div style="margin-bottom: 8px;">
+    <strong>Is Mobile:</strong> {{ isMobile ? 'YES ❌' : 'NO ✅' }}
+  </div>
+  
+  <div style="margin-bottom: 8px;">
+    <strong>Web Layout Visible:</strong> {{ !isMobile ? 'YES ✅' : 'NO ❌' }}
+  </div>
+  
+  <div style="margin-bottom: 8px;">
+    <strong>Sidebar Visible:</strong>
+    <span *ngIf="!isMobile" style="color: green;">YES ✅</span>
+    <span *ngIf="isMobile" style="color: red;">NO ❌ (Mobile)</span>
+  </div>
+  
+  <hr style="margin: 10px 0; border: none; border-top: 1px solid #e8521a;">
+  
+  <div style="margin-bottom: 5px;">Expected sidebar sections:</div>
+  <div style="color: #666;">
+    <div>• Trending Products</div>
+    <div>• New Arrivals</div>
+    <div>• Featured Brands</div>
+    <div>• Shop by Category</div>
+    <div>• Suggested Users</div>
+    <div>• Top Influencers</div>
+  </div>
+  
+  <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e8521a;">
+    <button (click)="forceRefresh()" style="background: #e8521a; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: bold;">🔄 Force Refresh</button>
+  </div>
+</div>

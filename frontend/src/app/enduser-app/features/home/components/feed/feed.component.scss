@@ -1,6 +1,6 @@
 .col-9 {
   width: 100%;
-  margin-top: 30px;
+  margin-top: 0;
 }
 .post-section {
   margin-bottom: 30px;
@@ -14,10 +14,8 @@
   border: none;
 }
 .feed-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  background: #ffffff;
+  min-height: 100%;
 }
 .statuses {
   margin-bottom: 24px;
@@ -197,23 +195,25 @@
 }
 
 .col-9 .card {
-  margin-bottom: 20px;
+  margin-bottom: 0;
   position: relative;
   width: 100%;
   /* min-height: 400px; */
   display: inline-block;
-  border: 1px solid rgba(7, 7, 7, 0.24);
+  border: 0;
+  border-bottom: 1px solid #ede8e2;
+  background: #ffffff;
 }
 
 .col-9 .card .top {
-  padding: 10px 20px;
+  padding: 12px 14px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
 .col-9 .card .bottom {
-  padding: 10px 20px;
+  padding: 8px 14px 12px;
 }
 
 .col-9 .card .top .userDetails {
@@ -233,9 +233,9 @@
   justify-content: center;
   border-radius: 50%;
   overflow: hidden;
-  width: 30px;
-  height: 30px;
-  background: linear-gradient(to right, red, orange);
+  width: 38px;
+  height: 38px;
+  background: conic-gradient(#e8521a 0%, #f5a623 50%, #e8521a 100%);
   padding: 2px;
   margin-right: 8px;
   cursor: pointer;
@@ -271,9 +271,9 @@
 
 .col-9 .card .top .userDetails h3 {
   /* width: 100%; */
-  font-size: 16px;
-  color: #4d4d4f;
-  font-weight: 500;
+  font-size: 13px;
+  color: #1a1410;
+  font-weight: 600;
   line-height: 1em;
 }
 
@@ -293,10 +293,11 @@
 .imgBx {
   position: relative;
   width: 100%;
-  aspect-ratio: 4/5;
-  margin: 10px 0 15px;
+  aspect-ratio: 1;
+  margin: 0;
   overflow: hidden;
-  background: #f8f9fa;
+  background: #f7f4f0;
+  cursor: pointer;
 }
 
 .imgBx img,
@@ -319,37 +320,49 @@
   margin-right: 8px;
 }
 
+.actionBtns,
+.actionBtns .left,
+.actionBtns .right {
+  display: flex;
+  align-items: center;
+}
+
+.actionBtns {
+  justify-content: space-between;
+}
+
 // E-commerce Icon Buttons (inline with action buttons)
 .ecommerce-icon-btn {
-  background: none;
-  border: none;
+  background: #f7f4f0;
+  border: 1px solid #ede8e2;
   cursor: pointer;
-  padding: 8px;
+  padding: 0;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin-right: 8px;
   transition: all 0.2s ease;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 
 .ecommerce-icon-btn:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: #fff0eb;
+  border-color: #ffd6c2;
 }
 
 .ecommerce-icon-btn i {
-  font-size: 20px;
+  font-size: 13px;
   color: #262626;
 }
 
 .cart-btn i {
-  color: #0095f6;
+  color: #e8521a;
 }
 
 .cart-btn:hover {
-  background: rgba(0, 149, 246, 0.1);
+  background: #fff0eb;
 }
 
 .wishlist-btn i {
@@ -369,11 +382,16 @@
 }
 
 .buy-now-btn i {
-  color: #27ae60;
+  color: #fff;
 }
 
 .buy-now-btn:hover {
-  background: rgba(39, 174, 96, 0.1);
+  background: #3d2010;
+}
+
+.buy-now-btn {
+  background: #1a1410;
+  border-color: #1a1410;
 }
 
 // Legacy styles for larger e-commerce buttons (can be removed later)
@@ -427,17 +445,17 @@
 }
 
 .likes {
-  font-weight: 500;
+  font-weight: 700;
   margin-top: 5px;
-  font-size: 14px;
-  color: #4d4d4f;
+  font-size: 12px;
+  color: #1a1410;
 }
 
 .message {
   font-weight: 400;
   margin-top: 5px;
-  font-size: 14px;
-  color: #777;
+  font-size: 12px;
+  color: #4a3f38;
   line-height: 1.5em;
 }
 
@@ -453,15 +471,16 @@
 .comments {
   margin-top: 10px;
   font-weight: 400;
-  color: #999;
+  color: #8c7e76;
+  font-size: 11px;
 }
 
 .addComments {
   display: flex;
   align-items: center;
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding: 10px 0;
+  margin-top: 12px;
+  border-top: 1px solid #ede8e2;
+  padding: 10px 0 0;
 }
 
 .addComments a {
@@ -483,7 +502,10 @@ input.text {
   font-weight: 400;
   font-size: 14px;
   color: #262626;
-  background: none;
+  background: #f7f4f0;
+  border: 1px solid #ede8e2;
+  border-radius: 999px;
+  padding: 7px 13px;
 }
 
 input.text::placeholder {
@@ -595,6 +617,80 @@ a {
 }
 .footer a:hover {
   color: #ff0000;
+}
+
+.ecommerce-section {
+  background: #fff0eb;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+
+.ecommerce-section h4 {
+  color: #e8521a;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.featured-product {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+}
+
+.featured-product + .featured-product {
+  border-top: 1px solid #ffd6c2;
+}
+
+.product-thumbnail {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #fff;
+  border: 1px solid #ffd6c2;
+  flex-shrink: 0;
+}
+
+.product-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.product-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.product-price {
+  color: #e8521a;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.featured-product .product-actions {
+  position: static;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  opacity: 1;
+  transform: none;
+}
+
+.featured-product .cart-btn,
+.featured-product .wishlist-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #ede8e2;
+  background: #fff;
+  color: #e8521a;
 }
 
 /* Messages Floating Panel */

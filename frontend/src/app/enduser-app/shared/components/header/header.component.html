@@ -1,132 +1,130 @@
 <header class="header">
-  <div class="container">
-    <div class="header-content">
-      <button  class="header-toggle-btn"
-       type="button" aria-label="Open sidebar" 
-       (click)="onToggleSidebar()">
-        <i class="fas fa-bars"></i>
+  <!-- Logo -->
+  <div class="navbar-logo">
+    <a routerLink="/home" class="logo-link">
+      D<span>Fashion</span>
+    </a>
+  </div>
+
+  <!-- Navigation Links -->
+  <nav class="nav-links">
+    <a routerLink="/home" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-home"></i>
+      <span>Home</span>
+    </a>
+    <a routerLink="/explore" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-compass"></i>
+      <span>Explore</span>
+    </a>
+    <a routerLink="/shop" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-shopping-bag"></i>
+      <span>Shop</span>
+    </a>
+    <a routerLink="/reels" routerLinkActive="active" class="nav-link">
+      <i class="fas fa-film"></i>
+      <span>Reels</span>
+    </a>
+    <button (click)="toggleCreateModal()" class="nav-link create-btn">
+      <i class="fas fa-plus"></i>
+      <span>Create</span>
+    </button>
+  </nav>
+
+  <!-- Navbar Actions -->
+  <div class="navbar-actions">
+    <!-- Search Icon Button -->
+    <button class="icon-btn search-icon-btn" type="button" title="Search" (click)="toggleExpandedSearch()" aria-label="Open search">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+    </button>
+
+    <!-- Messages Icon Button -->
+    <a routerLink="/messages" class="icon-btn" title="Messages" *ngIf="currentUser">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span class="badge" *ngIf="messagesCount > 0">{{ messagesCount }}</span>
+    </a>
+
+    <!-- Notifications Icon Button -->
+    <a routerLink="/notifications" class="icon-btn" title="Notifications" *ngIf="currentUser">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+      <span class="badge" *ngIf="notificationsCount > 0">{{ notificationsCount }}</span>
+    </a>
+
+    <!-- Wishlist Icon Button -->
+    <a routerLink="/wishlist" class="icon-btn" title="Wishlist" *ngIf="currentUser">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+      <span class="badge" *ngIf="wishlistItemCount > 0">{{ wishlistItemCount }}</span>
+    </a>
+
+    <!-- Cart Pill Button -->
+    <a routerLink="/cart" class="cart-pill" title="Cart" *ngIf="currentUser">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span>Cart</span>
+      <span class="cart-pill-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+      <span class="cart-pill-amount" *ngIf="currentUser && cartTotalAmount > 0">₹{{ getFormattedCartTotal() }}</span>
+    </a>
+
+    <!-- User Menu for logged in users -->
+    <div *ngIf="currentUser" class="user-menu-wrapper">
+      <button type="button" class="user-btn" [class.active]="showProfileDropdown" aria-haspopup="true" [attr.aria-expanded]="showProfileDropdown" (click)="toggleProfileDropdown()">
+        <div class="user-avatar">
+          <img
+            [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar + 'default-avatar.svg')"
+            [alt]="currentUser.fullName"
+            (error)="onAvatarError($event)"
+          >
+        </div>
+        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M7 10l5 5 5-5z"/>
+        </svg>
       </button>
+      
+      <!-- Profile Dropdown Component -->
+      <app-profile-dropdown 
+        *ngIf="showProfileDropdown" 
+        [currentUser]="currentUser"
+        (onLogout)="logout()"
+        (onClose)="closeProfileDropdown()">
+      </app-profile-dropdown>
+    </div>
 
-      <!-- Logo -->
-      <div class="logo">
-        <a routerLink="/home">
-          <h1 class="gradient-text">DFashion</h1>
-        </a>
-      </div>
-
-      <!-- Search Icon Button -->
-      <button class="search-icon-btn" type="button" aria-label="Toggle search" (click)="toggleExpandedSearch()">
-        <i class="fas fa-search"></i>
-      </button>
-
-      <!-- Navigation -->
-      <nav class="nav-menu">
-        <a routerLink="/home" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-home"></i>
-          <span>Home</span>
-        </a>
-        <a routerLink="/explore" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-compass"></i>
-          <span>Explore</span>
-        </a>
-        <a routerLink="/shop" routerLinkActive="active" class="nav-item">
-          <i class="fas fa-shopping-bag"></i>
-          <span>Shop</span>
-        </a>
-        <!-- Wishlist Icon with Count -->
-        <a routerLink="/wishlist" routerLinkActive="active" class="nav-item wishlist-item">
-          <i class="fas fa-heart"></i>
-          <span>Wishlist</span>
-          <span class="wishlist-badge" *ngIf="wishlistItemCount > 0">{{ wishlistItemCount }}</span>
-          <span class="wishlist-badge zero" *ngIf="currentUser && wishlistItemCount === 0">0</span>
-        </a>
-
-        <!-- Cart Icon with Count and Total Amount -->
-        <a routerLink="/cart" routerLinkActive="active" class="nav-item cart-item">
-          <i class="fas fa-shopping-cart"></i>
-          <span>Cart</span>
-          <span class="cart-badge" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
-          <span class="cart-badge zero" *ngIf="currentUser && cartItemCount === 0">0</span>
-
-          <!-- Cart total amount display -->
-          <!-- <div class="cart-total-display" >
-            <span  class="cart-total-text" *ngIf="currentUser && cartTotalAmount > 0"
-            >{{ getFormattedCartTotal() }}</span>
-          </div> -->
-        </a>
-
-        <!-- Total Items Purchased Display -->
-        <div class="total-count-item" *ngIf="currentUser">
-          <i class="fas fa-shopping-bag"></i>
-          <span>Total</span>
-          <span class="total-count-badge" *ngIf="getTotalItemCount() > 0">{{ getTotalItemCount() }}</span>
-          <span class="total-count-badge zero" *ngIf="getTotalItemCount() === 0">0</span>
-         <span  class="cart-total-text" *ngIf="currentUser && cartTotalAmount > 0"
-            >{{ getFormattedCartTotal() }}</span>
-        </div>
-
-        <!-- User Menu for logged in users -->
-        <div *ngIf="currentUser" class="user-menu-wrapper">
-          <button type="button" class="user-menu" [class.active]="showUserMenu" aria-haspopup="true" [attr.aria-expanded]="showUserMenu" (click)="toggleUserMenu($event)">
-            <img
-              [src]="currentUser.image ? backendDefaultAvatar + currentUser.image : (currentUser.avatar ? backendDefaultAvatar + currentUser.avatar : backendDefaultAvatar + 'default-avatar.svg')"
-              [alt]="currentUser.fullName"
-              class="user-avatar"
-              (error)="onAvatarError($event)"
-            >
-            <span class="username">{{ currentUser.username }}</span>
-            <i class="fas fa-chevron-down"></i>
-          </button>
-        </div>
-
-        <!-- Login/Register for guest users -->
-        <div *ngIf="!currentUser" class="auth-buttons">
-          <a routerLink="/auth/login" class="btn btn-outline">Login</a>
-          <a routerLink="/auth/register" class="btn btn-primary">Sign Up</a>
-        </div>
-      </nav>
-
-      <!-- User Dropdown Menu - Positioned outside nav to avoid overflow clipping -->
-      <div *ngIf="currentUser" class="dropdown-menu" [class.show]="showUserMenu" (click)="$event.stopPropagation()">
-        <a routerLink="/profile" class="dropdown-item">
-          <i class="fas fa-user"></i>
-          Profile
-        </a>
-        <a routerLink="/settings" class="dropdown-item">
-          <i class="fas fa-cog"></i>
-          Settings
-        </a>
-        <div class="dropdown-divider"></div>
-        <!-- Customer Dashboard Link -->
-        <a *ngIf="currentUser?.role === 'end_user' || currentUser?.role === 'customer'" routerLink="/customer/dashboard" class="dropdown-item">
-          <i class="fas fa-tachometer-alt"></i>
-          Customer Dashboard
-        </a>
-        <a *ngIf="currentUser?.role === 'vendor'" routerLink="/vendor/dashboard" class="dropdown-item">
-          <i class="fas fa-store"></i>
-          Vendor Dashboard
-        </a>
-        <a *ngIf="currentUser?.role === 'admin'" routerLink="/admin" class="dropdown-item">
-          <i class="fas fa-shield-alt"></i>
-          Admin Panel
-        </a>
-        <div class="dropdown-divider"></div>
-        <button (click)="logout()" class="dropdown-item logout">
-          <i class="fas fa-sign-out-alt"></i>
-          Logout
-        </button>
-      </div>
+    <!-- Login/Register for guest users -->
+    <div *ngIf="!currentUser" class="auth-buttons">
+      <a routerLink="/auth/login" class="btn btn-outline">Login</a>
+      <a routerLink="/auth/register" class="btn btn-primary">Sign Up</a>
     </div>
   </div>
+
+  <!-- Create Modal Component -->
+  <app-create-modal 
+    *ngIf="showCreateModal" 
+    (onClose)="closeCreateModal()">
+  </app-create-modal>
 
   <!-- Expanded Full-Width Search Section -->
   <div class="expanded-search-section" *ngIf="showExpandedSearch">
     <div class="expanded-search-container">
       <button class="close-btn" type="button" aria-label="Close search" (click)="closeExpandedSearch()">
-        <i class="fas fa-times"></i>
+        <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
       </button>
       <div class="search-bar-expanded">
-        <i class="fas fa-search"></i>
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="m21 21-4.35-4.35"/>
+        </svg>
         <input
           id="expandedSearchInput"
           name="expandedSearch"
@@ -139,7 +137,7 @@
           (blur)="onSearchBlur()"
         >
         <button class="search-submit-btn" type="button" (click)="onSearch()" *ngIf="searchQuery.trim()">
-          <i class="fas fa-arrow-right"></i>
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
         </button>
       </div>
       <!-- Search Suggestions Dropdown in Expanded View -->
@@ -148,7 +146,7 @@
           *ngFor="let suggestion of searchSuggestions"
           class="suggestion-item"
           (click)="selectSuggestion(suggestion)">
-          <i class="fas" [ngClass]="getSuggestionIcon(suggestion.type)"></i>
+          <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
           <span class="suggestion-text">{{ suggestion.text }}</span>
           <span class="suggestion-type">{{ suggestion.type }}</span>
         </div>

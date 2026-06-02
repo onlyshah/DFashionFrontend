@@ -26,6 +26,10 @@ const routes: Routes = [
     loadComponent: () => import('./enduser-app/features/explore/explore.component').then(m => m.ExploreComponent)
   },
   {
+    path: 'reels',
+    loadChildren: () => import('./mobile/reels/reels.module').then(m => m.ReelsPageModule)
+  },
+  {
     path: 'shop',
     loadChildren: () => import('./enduser-app/features/shop/shop.routes').then(m => m.shopRoutes)
   },

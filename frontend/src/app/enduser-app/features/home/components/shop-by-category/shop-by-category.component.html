@@ -62,7 +62,7 @@
           <div class="category-image-container">
            
             <img
-              [src]="imageUrl + category.image"
+              [src]="getCategoryImageUrl(category.image)"
               [alt]="category.name"
               class="category-image"
               loading="lazy"

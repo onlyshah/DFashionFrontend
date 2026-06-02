@@ -8,11 +8,13 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { WishlistService } from '../../../../core/services/wishlist.service';
 import { User } from '../../../../core/models/user.model';
+import { ProfileDropdownComponent } from '../profile-dropdown/profile-dropdown.component';
+import { CreateModalComponent } from '../create-modal/create-modal.component';
 
 @Component({
     selector: 'app-header',
      standalone: true,
-    imports: [CommonModule, RouterModule, FormsModule],
+    imports: [CommonModule, RouterModule, FormsModule, ProfileDropdownComponent, CreateModalComponent],
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss']
    })
@@ -24,11 +26,15 @@ export class HeaderComponent implements OnInit {
   searchQuery = '';
   showUserMenu = false;
   showExpandedSearch = false;
+  showCreateModal = false;
+  showProfileDropdown = false;
   cartItemCount = 0;
   wishlistItemCount = 0;
   totalItemCount = 0;
   cartTotalAmount = 0;
   showCartTotalPrice = false;
+  messagesCount = 0;
+  notificationsCount = 0;
 
   backendDefaultAvatar = environment.apiUrl + '/uploads/avatars/';
 
@@ -271,9 +277,26 @@ export class HeaderComponent implements OnInit {
     this.searchSuggestions = [];
   }
 
+  toggleCreateModal() {
+    this.showCreateModal = !this.showCreateModal;
+  }
+
+  closeCreateModal() {
+    this.showCreateModal = false;
+  }
+
+  toggleProfileDropdown() {
+    this.showProfileDropdown = !this.showProfileDropdown;
+  }
+
+  closeProfileDropdown() {
+    this.showProfileDropdown = false;
+  }
+
   logout() {
     this.authService.logout();
     this.showUserMenu = false;
+    this.showProfileDropdown = false;
   }
 
   onToggleSidebar() {

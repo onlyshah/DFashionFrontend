@@ -149,13 +149,42 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
     this.storyLoading = true;
     this.storyService.getStories(1, 20).subscribe({
       next: (res: any) => {
-        const stories = res?.stories || res?.data || [];
-        this.stories = stories.map((story: any) => this.normalizeStory(story));
-        this.seenStoryIds = new Set(this.stories.filter((story: any) => this.isStorySeen(story)).map((story: any) => story._id || story.id));
+        // Handle multiple response formats from API
+        let stories = [];
+        
+        if (Array.isArray(res)) {
+          // Backend returns raw array directly
+          stories = res;
+        } else if (res?.stories && Array.isArray(res.stories)) {
+          // { stories: [...] }
+          stories = res.stories;
+        } else if (res?.data?.stories && Array.isArray(res.data.stories)) {
+          // { data: { stories: [...] } }
+          stories = res.data.stories;
+        } else if (res?.data && Array.isArray(res.data)) {
+          // { data: [...] }
+          stories = res.data;
+        } else if (res?.success && res?.storyGroups && Array.isArray(res.storyGroups)) {
+          // { success: true, storyGroups: [...] }
+          stories = res.storyGroups;
+        }
+        
+        this.stories = stories
+          .filter((story: any) => story != null) // Filter out null/undefined
+          .map((story: any) => this.normalizeStory(story));
+        
+        this.seenStoryIds = new Set(
+          this.stories
+            .filter((story: any) => this.isStorySeen(story))
+            .map((story: any) => story._id || story.id)
+        );
+        
         this.storyLoading = false;
+        console.log('✅ Stories loaded:', this.stories.length, 'stories');
         setTimeout(() => this.updateScrollButtons(), 0);
       },
-      error: () => {
+      error: (err: any) => {
+        console.error('❌ Error loading stories:', err);
         this.stories = [];
         this.storyLoading = false;
       }
@@ -240,29 +269,46 @@ export class StoryTrayComponent implements OnInit, AfterViewInit, OnDestroy {
   private normalizeStory(story: any): any {
     const storyId = story?._id || story?.id;
     const media = story?.media || {};
-    const mediaUrl = media?.url || story?.mediaUrl || story?.media_url || '/uploads/default-story.svg';
+    const mediaUrl = media?.url || story?.mediaUrl || story?.media_url || story?.image || story?.imageUrl || story?.video || '/uploads/default-story.svg';
+    const resolvedMediaUrl = this.resolveAssetUrl(mediaUrl, '/uploads/default-story.svg');
     const mediaType = media?.type || story?.mediaType || story?.media_type || (String(mediaUrl).match(/\.(mp4|webm|mov)$/i) ? 'video' : 'image');
+    const product = Array.isArray(story?.products) ? story.products[0] : null;
+    const user = story?.user || {};
+    const userId = user?._id || user?.id || story?.userId || story?.user_id || storyId;
+    const username = user?.username || user?.fullName || user?.full_name || 'Story';
     return {
       ...story,
       _id: storyId,
       id: storyId,
       media: {
         type: mediaType,
-        url: mediaUrl,
+        url: resolvedMediaUrl,
         thumbnail: media?.thumbnail || story?.thumbnailUrl || story?.thumbnail_url || null,
         duration: media?.duration || story?.duration || null
       },
-      mediaUrl,
+      mediaUrl: resolvedMediaUrl,
       mediaType,
-      productId: story?.productId || story?.product_id || story?.products?.[0]?.product?._id || null,
-      product_id: story?.productId || story?.product_id || story?.products?.[0]?.product?._id || null,
+      productId: story?.productId || story?.product_id || product?._id || product?.id || product?.product?._id || null,
+      product_id: story?.productId || story?.product_id || product?._id || product?.id || product?.product?._id || null,
       user: {
-        ...(story?.user || {}),
-        avatar: story?.user?.avatar || `${environment.apiUrl}/uploads/avatars/default-avatar.svg`
+        ...user,
+        _id: userId,
+        id: userId,
+        username,
+        fullName: user?.fullName || user?.full_name || username,
+        avatar: this.resolveAssetUrl(user?.avatar || user?.avatarUrl || user?.avatar_url, '/uploads/avatars/default-avatar.svg')
       },
       is_seen: story?.is_seen === true || story?.unseen === false,
       unseen: story?.unseen !== undefined ? story.unseen : !(story?.is_seen === true)
     };
+  }
+
+  private resolveAssetUrl(url: string | null | undefined, fallback: string): string {
+    const value = url || fallback;
+    if (value.startsWith('http://') || value.startsWith('https://')) {
+      return value;
+    }
+    return `${environment.apiUrl}${value.startsWith('/') ? value : `/${value}`}`;
   }
 
   private markStoryViewed(storyId: string) {

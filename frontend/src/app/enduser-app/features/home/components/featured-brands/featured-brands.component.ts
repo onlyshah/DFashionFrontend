@@ -36,8 +36,8 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   // Slider properties
   currentSlide = 0;
   slideOffset = 0;
-  cardWidth = 256; // Width of each brand card including margin (240px + 16px gap)
-  visibleCards = 2; // Number of cards visible at once in sidebar
+  cardWidth = 152; // Width of each brand card (140px + 12px gap)
+  visibleCards = 6; // Number of cards visible at once - 6 brands
   maxSlide = 0;
 
   // Auto-sliding properties
@@ -57,6 +57,7 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('%c🟠 FEATURED-BRANDS Component Initialized', 'color: orange; font-size: 14px; font-weight: bold');
     this.loadFeaturedBrands();
     this.subscribeLikedProducts();
     this.updateResponsiveSettings();
@@ -81,7 +82,10 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     this.error = null;
     this.unifiedApi.getFeaturedBrands(1, 8).subscribe(
       (response) => {
-        this.featuredBrands = response?.data || response?.brands || [];
+        // Log raw API response for debugging
+        console.log('API /featured-brands response:', response);
+        // API returns { data: { brands: [...] } } — prefer that shape
+        this.featuredBrands = response?.data?.brands || response?.brands || [];
         console.log('featuredBrands' ,this.featuredBrands)
         this.isLoading = false;
         this.updateSliderOnBrandsLoad();
@@ -288,6 +292,42 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
     return brand.brand || brand.name || `brand-${index}`;
   }
 
+  getBrandName(brand: FeaturedBrand): string {
+    return brand.brand || brand.name || 'Brand';
+  }
+
+  getBrandInitials(brand: FeaturedBrand): string {
+    const name = this.getBrandName(brand);
+    return name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  getBrandProductCount(brand: FeaturedBrand): number {
+    return Number(brand['productCount'] || brand['productsCount'] || brand['totalProducts'] || 0);
+  }
+
+  getBrandRating(brand: FeaturedBrand): number {
+    const rating = Number(brand['avgRating'] || brand['rating'] || 0);
+    return Math.max(0, Math.min(5, Math.round(rating)));
+  }
+
+  getBrandAccent(brand: FeaturedBrand, type: 'background' | 'color'): string {
+    const accents = [
+      { background: '#E8F5E9', color: '#1B5E20' },
+      { background: '#EDE7F6', color: '#4A148C' },
+      { background: '#E3F2FD', color: '#0D47A1' },
+      { background: '#FBE9E7', color: '#BF360C' },
+      { background: '#FCE4EC', color: '#880E4F' },
+      { background: '#FFF3E0', color: '#E8521A' }
+    ];
+    const seed = this.getBrandName(brand).split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return accents[seed % accents.length][type];
+  }
+
   isProductLiked(productId: string): boolean {
     return this.likedProducts.has(productId);
   }
@@ -338,19 +378,9 @@ export class FeaturedBrandsComponent implements OnInit, OnDestroy {
   private updateResponsiveSettings() {
     const width = window.innerWidth;
 
-    if (width <= 768) {
-      this.cardWidth = 256; // 240px card + 16px gap
-      this.visibleCards = 1;
-    } else if (width <= 1024) {
-      this.cardWidth = 252; // 240px card + 12px gap
-      this.visibleCards = 2;
-    } else if (width <= 1200) {
-      this.cardWidth = 254; // 240px card + 14px gap
-      this.visibleCards = 2;
-    } else {
-      this.cardWidth = 256; // 240px card + 16px gap
-      this.visibleCards = 2;
-    }
+    // Brands slider always shows 6 cards in sidebar
+    this.cardWidth = 152; // 140px card + 12px gap
+    this.visibleCards = 6;
 
     this.updateSliderLimits();
     this.updateSlideOffset();

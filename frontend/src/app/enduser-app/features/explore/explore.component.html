@@ -105,7 +105,7 @@
     <div class="brands-grid">
       <div class="brand-card" *ngFor="let brand of featuredBrands">
         <div class="brand-header">
-          <img [src]="brand.logo ? apiUrl + brand.logo : apiUrl + '/uploads/brands/default-brand.png'" 
+          <img [src]="brand.logo && (brand.logo.startsWith('http') ? brand.logo : apiUrl + brand.logo) || (apiUrl + '/uploads/brands/default-brand.png')" 
                [alt]="brand.name" 
                class="brand-logo">
         </div>
