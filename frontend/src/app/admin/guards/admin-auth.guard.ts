@@ -42,7 +42,7 @@ export class AdminAuthGuard implements CanActivate, CanActivateChild {
     }
 
     // Check admin-specific authentication
-    if (this.adminAuthService.isAuthenticated()) {
+    if (this.adminAuthService.isAuthenticated) {
       console.log('AdminAuthGuard.checkAuth - Admin access granted via admin auth');
 
       // Check if user can access admin panel

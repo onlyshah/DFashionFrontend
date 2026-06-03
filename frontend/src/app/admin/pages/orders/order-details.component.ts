@@ -63,7 +63,7 @@ export class OrderDetailsComponent implements OnInit {
                             this.snackBar.open('Order status and tracking updated', 'Close', { duration: 3000 });
                             this.dialogRef.close({ status: this.selectedStatus, trackingNumber: this.trackingNumber });
                         },
-                        error: (err) => {
+                        error: (err: any) => {
                             console.error('Error updating tracking number:', err);
                             this.isLoading = false;
                             this.snackBar.open('Status updated but failed to update tracking number', 'Close', { duration: 4000 });
@@ -76,7 +76,7 @@ export class OrderDetailsComponent implements OnInit {
                     this.dialogRef.close({ status: this.selectedStatus, trackingNumber: this.trackingNumber });
                 }
             },
-            error: (err) => {
+            error: (err: any) => {
                 console.error('Error updating order status:', err);
                 this.isLoading = false;
                 this.snackBar.open('Failed to update order status', 'Close', { duration: 4000 });

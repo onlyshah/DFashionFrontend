@@ -127,7 +127,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
         console.log('🔍 [Orders] Filter parameters:', filters);
 
         this.orderService.getOrdersWithFallback(filters).subscribe({
-            next: (response) => {
+            next: (response: any) => {
                 console.log('✅ [Orders] Full API Response:', response);
                 console.log('✅ [Orders] Response success:', response?.success);
                 console.log('✅ [Orders] Response data:', response?.data);
@@ -172,7 +172,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
                 console.log('✅ [Orders] Load complete - UI should show', this.dataSource.data.length, 'orders');
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('❌ [Orders] API Error:', error);
                 console.error('❌ [Orders] Error message:', error?.message);
                 console.error('❌ [Orders] Error status:', error?.status);
@@ -219,7 +219,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
 
     viewOrder(order: Order): void {
         this.orderService.getOrderById(order._id!).subscribe({
-            next: (response) => {
+            next: (response: any) => {
                 if (response.success) {
                     // Open order details dialog or navigate to details page
                     console.log('Order details:', response.data);
@@ -228,7 +228,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
                     this.snackBar.open('Failed to load order details', 'Close', { duration: 3000 });
                 }
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error loading order details:', error);
                 this.snackBar.open('Error loading order details', 'Close', { duration: 3000 });
             }
@@ -251,7 +251,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
     updateOrder(orderId: string, formData: any): void {
         this.isLoading = true;
         this.orderService.updateOrderStatus(orderId, formData.status).subscribe({
-            next: (response) => {
+            next: (response: any) => {
                 if (response.success) {
                     this.snackBar.open('Order updated successfully', 'Close', { duration: 3000 });
                     this.loadOrders();
@@ -260,7 +260,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
                     this.snackBar.open('Failed to update order', 'Close', { duration: 3000 });
                 }
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error updating order:', error);
                 this.isLoading = false;
                 this.snackBar.open(error.error?.message || 'Error updating order', 'Close', { duration: 3000 });
@@ -274,7 +274,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
 
         this.isLoading = true;
         this.orderService.deleteOrder(order._id!).subscribe({
-            next: (response) => {
+            next: (response: any) => {
                 if (response.success) {
                     this.snackBar.open('Order deleted successfully', 'Close', { duration: 3000 });
                     this.loadOrders();
@@ -283,7 +283,7 @@ export class OrderManagementComponent implements OnInit, OnDestroy {
                     this.snackBar.open('Failed to delete order', 'Close', { duration: 3000 });
                 }
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error deleting order:', error);
                 this.isLoading = false;
                 this.snackBar.open(error.error?.message || 'Error deleting order', 'Close', { duration: 3000 });

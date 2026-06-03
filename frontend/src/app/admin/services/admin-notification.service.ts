@@ -1,43 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { AdminNotification } from '../models/admin-types';
-import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
+import { NotificationService } from '../../core/services/notification.service';
 
+/**
+ * @deprecated Use NotificationService instead
+ * This service is kept for backward compatibility only.
+ * All new code should use NotificationService directly.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AdminNotificationService {
-  private notificationsSubject = new BehaviorSubject<AdminNotification[]>([]);
-  public notifications$ = this.notificationsSubject.asObservable();
+  constructor(private notificationService: NotificationService) {}
 
-  constructor(private http: HttpClient) {}
-
-  getNotifications(): Observable<AdminNotification[]> {
-      return this.http.get<{ success: boolean; data: AdminNotification[] }>(`${environment.apiUrl}/api/admin/notifications`)
-      .pipe(
-          map(response => {
-            const notifications = Array.isArray(response.data) ? response.data : [];
-            this.notificationsSubject.next(notifications);
-            return notifications;
-        })
-      );
+  // Delegate to core notification service
+  getNotifications(): Observable<any[]> {
+    return this.notificationService.getAdminNotifications();
   }
 
   markAsRead(notificationId: string): Observable<void> {
-    return this.http.patch<void>(`${environment.apiUrl}/api/admin/notifications/${notificationId}/read`, {});
+    return this.notificationService.markAsRead(notificationId);
   }
 
   markAllAsRead(): Observable<void> {
-    return this.http.patch<void>(`${environment.apiUrl}/api/admin/notifications/mark-all-read`, {});
+    return this.notificationService.markAllAsRead();
   }
 
   deleteNotification(notificationId: string): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/api/admin/notifications/${notificationId}`);
+    return this.notificationService.deleteNotification(notificationId);
   }
 
   clearAll(): Observable<void> {
-    return this.http.delete<void>(`${environment.apiUrl}/api/admin/notifications`);
+    return this.notificationService.clearAll();
   }
 }

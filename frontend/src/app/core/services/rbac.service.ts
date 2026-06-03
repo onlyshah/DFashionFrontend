@@ -106,10 +106,10 @@ export class RBACService {
   }
 
   private initializeRoleTracking() {
-    this.adminAuthService.currentUser$.subscribe(adminUser => {
+    this.adminAuthService.currentUser$.subscribe((adminUser: any) => {
       if (adminUser) {
         const permissions: string[] = Array.isArray(adminUser.permissions)
-          ? adminUser.permissions.flatMap(p => {
+          ? adminUser.permissions.flatMap((p: any) => {
               if (typeof p === 'string') return [p];
               if (p && typeof p === 'object') {
                 if ('actions' in p && Array.isArray((p as any).actions)) {
